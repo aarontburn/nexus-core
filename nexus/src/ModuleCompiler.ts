@@ -200,7 +200,6 @@ export class ModuleCompiler {
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
                     )
                 } else {
-                    console.log(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")))
                     await this.copyFromProd(
                         path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
