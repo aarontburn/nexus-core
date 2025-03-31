@@ -213,7 +213,6 @@ var ModuleController = /** @class */ (function () {
             width: WINDOW_DIMENSION.width,
             webPreferences: {
                 additionalArguments: process.argv,
-                devTools: ModuleController.isDevelopmentMode(),
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "preload.js")
             },
