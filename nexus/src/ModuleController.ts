@@ -95,8 +95,20 @@ export class ModuleController implements IPCSource {
             if (module.getHTMLPath() === undefined) {
                 module.initialize();
             }
-        })
+        });
+        this.addDebugConsoleCommands();
+    }
 
+    private addDebugConsoleCommands(): void {
+        this.ipcCallback.requestExternalModule(this, "aarontburn.Debug_Console", "addCommandPrefix", {
+            prefix: "installed-modules",
+            executeCommand: (args: string[]) => {
+                console.info(Array.from(this.modulesByIPCSource.keys()))
+            },
+            documentation: {
+                shortDescription: "Lists IDs of all installed modules."
+            }
+        })
     }
 
     private handleMainEvents(): void | Promise<any> {

@@ -139,6 +139,19 @@ var ModuleController = /** @class */ (function () {
                 module.initialize();
             }
         });
+        this.addDebugConsoleCommands();
+    };
+    ModuleController.prototype.addDebugConsoleCommands = function () {
+        var _this = this;
+        this.ipcCallback.requestExternalModule(this, "aarontburn.Debug_Console", "addCommandPrefix", {
+            prefix: "installed-modules",
+            executeCommand: function (args) {
+                console.info(_this.modulesByIPCSource.keys());
+            },
+            documentation: {
+                shortDescription: "Lists IDs of all installed modules."
+            }
+        });
     };
     ModuleController.prototype.handleMainEvents = function () {
         var _this = this;
