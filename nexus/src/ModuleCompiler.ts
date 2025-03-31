@@ -194,10 +194,19 @@ export class ModuleCompiler {
                 const relativeFontPath: string = path.join(viewFolder, "Yu_Gothic_Light.ttf");
 
 
-                await this.copyFromProd(
-                    path.normalize(path.join(__dirname, "../node_modules/nexus-module-builder/")),
-                    `${builtDirectory}/node_modules/nexus-module-builder`
-                )
+                if (process.argv.includes("--in-core")) {
+                    await this.copyFromProd(
+                        path.normalize(path.join(__dirname, "../node_modules/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/nexus-module-builder`
+                    )
+                } else {
+                    await this.copyFromProd(
+                        path.normalize(path.join(__dirname, "../../nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/nexus-module-builder`
+                    )
+                }
+
+
 
 
                 await fs.promises.copyFile(relativeCSSPath, builtDirectory + "/node_modules/nexus-module-builder/colors.css");
