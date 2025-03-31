@@ -196,13 +196,13 @@ export class ModuleCompiler {
 
                 if (process.argv.includes("--in-core")) {
                     await this.copyFromProd(
-                        path.normalize(path.join(__dirname, "../node_modules/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/nexus-module-builder`
+                        path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
                     )
                 } else {
                     await this.copyFromProd(
-                        path.normalize(path.join(__dirname, "../../nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/nexus-module-builder`
+                        path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
                     )
                 }
 
