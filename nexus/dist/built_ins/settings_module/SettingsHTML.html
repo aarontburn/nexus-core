@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+    <link rel="stylesheet" href="SettingsStyles.css">
+    <link rel="stylesheet" href="../../view/colors.css">
+    <script defer src="../../../dist/built_ins/settings_module/SettingsRenderer.js"></script>
+
+</head>
+
+<body>
+
+    <div id="splitter">
+        <div id="left">
+            <div id="left-list">
+                <p id="manage-button">Manage Modules</p>
+                <p id="import-button">+ Import Module</p>
+
+            </div>
+
+
+        </div>
+        <div id="separator"></div>
+
+        <div id="right">
+            <!-- Settings are put here -->
+
+
+            <div id="manage-module" hidden>
+                <h2 style="font-weight: normal; margin: 15px;">Installed Modules:</h2>
+
+                <div id="installed-modules-list">
+                    
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</body>
+
+</html>

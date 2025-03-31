@@ -1,0 +1,48 @@
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+
+.box .header {
+  flex: 0 1 auto;
+  border-bottom: 1px var(--off-white) solid;
+}
+
+.box .content {
+  flex: 1 1 auto;
+}
+
+#modules > iframe {
+  border-style: hidden;
+}
+
+.header button {
+  color: var(--off-white);
+  background-color: transparent;
+  font-size: 20px;
+  padding: 12px 12px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  background: none;
+  font-weight: normal;
+  transition: 0.2s;
+}
+
+.header button:hover {
+  color: var(--accent-color);
+}
+
+
