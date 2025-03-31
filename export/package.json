@@ -1,0 +1,10 @@
+{
+  "name": "nexus-exporter",
+  "version": "1.0.0",
+  "description": "The module exporter for Nexus.",
+  "author": "aarontburn",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "dialog-node": "^0.2.1"
+  }
+}

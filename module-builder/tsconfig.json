@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "target": "ES5",
+    "module": "commonjs",
+    "declaration": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
