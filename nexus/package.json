@@ -1,5 +1,5 @@
 {
-  "name": "@nexus/nexus-client",
+  "name": "nexus",
   "version": "1.0.0",
   "description": "Micro-app platform.",
   "scripts": {
@@ -26,6 +26,7 @@
   "productName": "Nexus",
   "build": {
     "nsis": {
+      "allowToChangeInstallationDirectory": true,
       "oneClick": false
     },
     "appId": "com.aarontburn.Nexus",
