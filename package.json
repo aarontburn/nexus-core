@@ -2,7 +2,10 @@
   "name": "nexus-core",
   "version": "1.0.0",
   "description": "Dependencies for Nexus.",
-  "scripts": {},
+  "scripts": {
+    "build": "npm run build:module-builder",
+    "build:module-builder": "cd ./module-builder && npm run build"
+  },
   "author": "aarontburn",
   "license": "ISC"
 }
