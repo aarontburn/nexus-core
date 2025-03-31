@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Reusable TypeScript settings and components",
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
   "scripts": {
     "build": "node builder.js && tsc",
     "prepublishOnly": "npm run build"
