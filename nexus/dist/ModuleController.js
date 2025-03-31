@@ -146,7 +146,7 @@ var ModuleController = /** @class */ (function () {
         this.ipcCallback.requestExternalModule(this, "aarontburn.Debug_Console", "addCommandPrefix", {
             prefix: "installed-modules",
             executeCommand: function (args) {
-                console.info(_this.modulesByIPCSource.keys());
+                console.info(Array.from(_this.modulesByIPCSource.keys()));
             },
             documentation: {
                 shortDescription: "Lists IDs of all installed modules."
