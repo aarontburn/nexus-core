@@ -4,8 +4,9 @@
   "description": "Dependencies for Nexus.",
   "scripts": {
     "nexus-start": "cd ./nexus && npm start",
-    "build": "npm run build:module-builder",
-    "build:module-builder": "cd ./module-builder && npm run build"
+    "build": "npm run build:module-builder && npm run build:nexus-client",
+    "build:module-builder": "cd ./module-builder && npm run build",
+    "build:nexus-client": "cd ./nexus && npm run build"
   },
   "author": "aarontburn",
   "license": "ISC"

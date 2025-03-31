@@ -439,7 +439,6 @@ var SettingsProcess = /** @class */ (function (_super) {
         if (this.moduleSettingsList.get(module.getIPCSource()) !== undefined) {
             return;
         }
-        console.log("adding " + module.getIPCSource());
         this.moduleSettingsList.set(module.getIPCSource(), module.getSettings());
     };
     SettingsProcess.MODULE_NAME = "Settings";

@@ -42,6 +42,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
                 headerHtml.innerHTML = "";
                 moduleHtml.innerHTML = "";
                 var _loop_1 = function (moduleName, moduleID, htmlPath) {
+                    if (htmlPath === undefined) {
+                        return "continue";
+                    }
                     var moduleView = document.createElement("iframe");
                     moduleView.id = moduleID;
                     moduleView.setAttribute("src", htmlPath);

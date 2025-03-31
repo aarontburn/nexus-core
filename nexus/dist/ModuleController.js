@@ -125,7 +125,7 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.init = function () {
         var data = [];
-        this.modulesByIPCSource.forEach(function (module, _) {
+        this.modulesByIPCSource.forEach(function (module) {
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
@@ -134,6 +134,11 @@ var ModuleController = /** @class */ (function () {
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
         this.swapVisibleModule(HomeProcess_1.HomeProcess.MODULE_ID);
+        this.modulesByIPCSource.forEach(function (module) {
+            if (module.getHTMLPath() === undefined) {
+                module.initialize();
+            }
+        });
     };
     ModuleController.prototype.handleMainEvents = function () {
         var _this = this;
