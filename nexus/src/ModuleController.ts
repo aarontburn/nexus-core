@@ -166,7 +166,6 @@ export class ModuleController implements IPCSource {
             width: WINDOW_DIMENSION.width,
             webPreferences: {
                 additionalArguments: process.argv,
-                devTools: ModuleController.isDevelopmentMode(),
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "preload.js"),
             },
