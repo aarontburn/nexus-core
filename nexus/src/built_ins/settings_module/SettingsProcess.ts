@@ -2,8 +2,8 @@ import * as path from "path";
 import * as fs from 'fs';
 import { BrowserWindow, OpenDialogOptions, app, dialog, shell } from 'electron';
 import { ModuleCompiler } from "../../ModuleCompiler";
-import { ChangeEvent, IPCCallback, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "nexus-module-builder";
-import { HexColorSetting, NumberSetting, BooleanSetting } from "nexus-module-builder/settings/types";
+import { ChangeEvent, IPCCallback, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
+import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
 
 export class SettingsProcess extends Process {
     public static readonly MODULE_NAME: string = "Settings";

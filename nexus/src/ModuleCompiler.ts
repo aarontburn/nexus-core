@@ -3,7 +3,7 @@ import * as path from 'path';
 import ts from 'typescript';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import { IPCCallback, Process, StorageHandler, ModuleInfo } from "nexus-module-builder";
+import { IPCCallback, Process, StorageHandler, ModuleInfo } from "@nexus/nexus-module-builder";
 
 
 export class ModuleCompiler {
