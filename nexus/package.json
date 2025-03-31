@@ -1,0 +1,37 @@
+{
+  "name": "nexus",
+  "version": "1.0.0",
+  "description": "Micro-app platform.",
+  "scripts": {
+    "build": "tsc && node copyFiles.js",
+    "watch": "tsc -w",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "npm run build && electron ./dist/main.js --dev",
+    "package": "npm run build && npx electron-builder build",
+    "update-nexus": "npm update nexus-exporter nexus-module-builder"
+  },
+  "main": "./dist/main.js",
+  "author": "aarontburn",
+  "devDependencies": {
+    "@types/yauzl-promise": "^4.0.1",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^4.8.3"
+  },
+  "dependencies": {
+    "nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
+    "typescript": "^4.8.3",
+    "yauzl-promise": "^4.0.0"
+  },
+  "productName": "Nexus",
+  "build": {
+    "appId": "com.aarontburn.Nexus",
+    "asar": true,
+    "files": [
+      "./dist/**/*"
+    ],
+    "directories": {
+      "output": "package"
+    }
+  }
+}

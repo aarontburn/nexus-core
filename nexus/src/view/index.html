@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>modules</title>
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <link rel="stylesheet" href="colors.css">
+  <link rel="stylesheet" href="styles.css">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+
+</head>
+
+<body>
+  <div class="box">
+    <div class="header" id="header">
+      <!-- This is where header buttons go -->
+    </div>
+
+
+    <div class="content" id="modules">
+      <!-- This is where IFrames go. -->
+
+    </div>
+  </div>
+
+  <!-- You can also require other files to run in this process -->
+  <script src="../../dist/renderer.js"></script>
+</body>
+
+</html>

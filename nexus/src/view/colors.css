@@ -1,0 +1,57 @@
+@font-face {
+    font-family: "Yu Gothic Light";
+    src: url("./Yu_Gothic_Light.ttf");
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    --off-black: #111111;
+    --off-white: #f5f5f5;
+    --accent-color: #2290B5;
+
+    --accent-text-color: var(--off-black);
+    --default-background-color: var(--off-black);
+}
+
+* {
+    font-family: "Yu Gothic Light";
+    box-sizing: border-box;
+}
+
+h1,
+p {
+    user-select: none;
+}
+
+
+body {
+    background-color: var(--default-background-color);
+    color: var(--off-white);
+    height: 100%;
+    margin: 0;
+}
+
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--default-background-color);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
