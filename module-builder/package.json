@@ -7,10 +7,6 @@
     "build": "node builder.js && tsc",
     "prepublishOnly": "npm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/your-repo.git"
-  },
   "author": "aarontburn",
   "license": "MIT",
   "devDependencies": {
