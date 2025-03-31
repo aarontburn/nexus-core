@@ -46,7 +46,7 @@ export class ModuleCompiler {
 
                 for (const subFile of subFiles) {
                     if (subFile.name.includes("Process")) {
-                        const moduleInfo: ModuleInfo = await this.getModuleInfo(subFile.path + "/moduleinfo.json");
+                        const moduleInfo: ModuleInfo = await this.getModuleInfo(subFile.path + "/module-info.json");
 
                         const module: any = require(subFile.path + "/" + subFile.name);
 
@@ -87,21 +87,21 @@ export class ModuleCompiler {
      *  @returns false if the module should NOT be recompiled.
      */
     private static async checkModuleInfo(externalPath: string, builtPath: string): Promise<boolean> {
-        const builtModuleInfo: any = await this.getModuleInfo(builtPath + "/moduleinfo.json");
+        const builtModuleInfo: any = await this.getModuleInfo(builtPath + "/module-info.json");
         if (!builtModuleInfo) {
             if (builtModuleInfo === undefined) {
-                console.log(`WARNING: ${builtPath} does not contain 'moduleinfo.json'.`);
+                console.log(`WARNING: ${builtPath} does not contain 'module-info.json'.`);
             }
             return true;
         }
 
 
 
-        const moduleInfo: any = await this.getModuleInfo(externalPath + "/moduleinfo.json");
+        const moduleInfo: any = await this.getModuleInfo(externalPath + "/module-info.json");
 
         if (!moduleInfo) {
             if (moduleInfo === undefined) {
-                console.log(`WARNING: ${externalPath} does not contain 'moduleinfo.json'.`);
+                console.log(`WARNING: ${externalPath} does not contain 'module-info.json'.`);
             }
             return true;
         }

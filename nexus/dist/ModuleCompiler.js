@@ -141,7 +141,7 @@ var ModuleCompiler = /** @class */ (function () {
                         if (!(_a < subFiles_1.length)) return [3 /*break*/, 10];
                         subFile = subFiles_1[_a];
                         if (!subFile.name.includes("Process")) return [3 /*break*/, 9];
-                        return [4 /*yield*/, this.getModuleInfo(subFile.path + "/moduleinfo.json")];
+                        return [4 /*yield*/, this.getModuleInfo(subFile.path + "/module-info.json")];
                     case 8:
                         moduleInfo = _b.sent();
                         module_1 = require(subFile.path + "/" + subFile.name);
@@ -200,21 +200,21 @@ var ModuleCompiler = /** @class */ (function () {
             var builtModuleInfo, moduleInfo, _i, _a, _b, key, value;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0: return [4 /*yield*/, this.getModuleInfo(builtPath + "/moduleinfo.json")];
+                    case 0: return [4 /*yield*/, this.getModuleInfo(builtPath + "/module-info.json")];
                     case 1:
                         builtModuleInfo = _c.sent();
                         if (!builtModuleInfo) {
                             if (builtModuleInfo === undefined) {
-                                console.log("WARNING: ".concat(builtPath, " does not contain 'moduleinfo.json'."));
+                                console.log("WARNING: ".concat(builtPath, " does not contain 'module-info.json'."));
                             }
                             return [2 /*return*/, true];
                         }
-                        return [4 /*yield*/, this.getModuleInfo(externalPath + "/moduleinfo.json")];
+                        return [4 /*yield*/, this.getModuleInfo(externalPath + "/module-info.json")];
                     case 2:
                         moduleInfo = _c.sent();
                         if (!moduleInfo) {
                             if (moduleInfo === undefined) {
-                                console.log("WARNING: ".concat(externalPath, " does not contain 'moduleinfo.json'."));
+                                console.log("WARNING: ".concat(externalPath, " does not contain 'module-info.json'."));
                             }
                             return [2 /*return*/, true];
                         }

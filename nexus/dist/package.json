@@ -19,16 +19,5 @@
     "@nexus/nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
     "typescript": "^4.8.3",
     "yauzl-promise": "^4.0.0"
-  },
-  "productName": "Nexus",
-  "build": {
-    "appId": "com.aarontburn.Nexus",
-    "asar": true,
-    "files": [
-      "./dist/**/*"
-    ],
-    "directories": {
-      "output": "package"
-    }
   }
 }
