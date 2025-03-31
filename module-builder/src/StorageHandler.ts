@@ -5,10 +5,11 @@ import * as os from "os";
 
 
 export class StorageHandler {
-    public static readonly PATH: string = os.homedir() + (!process.argv.includes('--dev') ? "/.modules/" : '/.modules_dev/');
+    public static readonly PATH: string = os.homedir() + (!process.argv.includes('--dev') ? "/.nexus/" : '/.nexus_dev/');
     public static readonly STORAGE_PATH: string = this.PATH + "/storage/";
     public static readonly EXTERNAL_MODULES_PATH: string = this.PATH + "/external_modules/"
     public static readonly COMPILED_MODULES_PATH: string = this.PATH + "/built/"
+
 
 
     /**
