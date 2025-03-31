@@ -382,7 +382,9 @@ var ModuleCompiler = /** @class */ (function () {
                     case 10:
                         _b.sent();
                         return [3 /*break*/, 13];
-                    case 11: return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../../nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                    case 11:
+                        console.log(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")));
+                        return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                     case 12:
                         _b.sent();
                         _b.label = 13;

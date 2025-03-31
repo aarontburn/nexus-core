@@ -10,7 +10,7 @@
     "update-nexus": "npm update nexus-exporter nexus-module-builder",
     "core-start": "npm run build && electron ./dist/main.js --dev --in-core"
   },
-  "main": "./dist/main.js",
+  "main": "./main.js",
   "author": "aarontburn",
   "devDependencies": {
     "@types/yauzl-promise": "^4.0.1",
