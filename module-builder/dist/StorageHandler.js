@@ -161,7 +161,7 @@ var StorageHandler = /** @class */ (function () {
     };
     var _a;
     _a = StorageHandler;
-    StorageHandler.PATH = os.homedir() + (!process.argv.includes('--dev') ? "/.modules/" : '/.modules_dev/');
+    StorageHandler.PATH = os.homedir() + (!process.argv.includes('--dev') ? "/.nexus/" : '/.nexus_dev/');
     StorageHandler.STORAGE_PATH = _a.PATH + "/storage/";
     StorageHandler.EXTERNAL_MODULES_PATH = _a.PATH + "/external_modules/";
     StorageHandler.COMPILED_MODULES_PATH = _a.PATH + "/built/";
