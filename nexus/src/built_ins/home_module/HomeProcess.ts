@@ -1,4 +1,5 @@
-import { IPCCallback, NumberSetting, Process, Setting, StringSetting } from "nexus-module-builder";
+import { IPCCallback, Process, Setting } from "nexus-module-builder";
+import {  NumberSetting, StringSetting } from "nexus-module-builder/settings/types";
 
 import * as path from "path";
 

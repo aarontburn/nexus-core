@@ -203,7 +203,6 @@ function checkAndCopyDependencies() {
         }
 
 
-
         if (!nodeModules.includes(dependencyName)) {
             console.log(dependencyName + " was not found in 'node_modules'. Skipping...")
             continue;
