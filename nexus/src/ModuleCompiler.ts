@@ -324,7 +324,7 @@ export class ModuleCompiler {
                     if (href.substring(0, 4) !== "href") {
                         throw new Error("Could not parse css line: " + css);
                     }
-                    const replacedCSS: string = href.replace("../../", "./node_modules/nexus-module-builder/");
+                    const replacedCSS: string = href.replace("../../", "./node_modules/@nexus/nexus-module-builder/");
                     const finalCSS: string = `\t<link rel="stylesheet" ${replacedCSS}">`
                     lines[i + 1] = finalCSS
 
