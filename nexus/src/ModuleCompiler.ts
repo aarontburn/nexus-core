@@ -14,6 +14,7 @@ export class ModuleCompiler {
 
 
     public static async importPluginArchive(filePath: string): Promise<boolean> {
+
         const folderName: string = filePath.split("\\").at(-1);
         try {
             await fs.promises.copyFile(filePath, `${StorageHandler.EXTERNAL_MODULES_PATH}/${folderName}`);
@@ -25,6 +26,8 @@ export class ModuleCompiler {
     }
 
     public static async loadPluginsFromStorage(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
+        console.log(__dirname)
+
         await StorageHandler._createDirectories();
         await this.compileAndCopy(forceReload);
 
@@ -193,8 +196,7 @@ export class ModuleCompiler {
                 const relativeCSSPath: string = path.join(viewFolder, "colors.css");
                 const relativeFontPath: string = path.join(viewFolder, "Yu_Gothic_Light.ttf");
 
-
-                if (process.argv.includes("--in-core")) {
+                if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
                     await this.copyFromProd(
                         path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`

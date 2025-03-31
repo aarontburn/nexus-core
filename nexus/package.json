@@ -8,9 +8,11 @@
     "start": "npm run build && electron ./dist/main.js --dev",
     "package": "npm run build && npx electron-builder build",
     "update-nexus": "npm update @nexus/nexus-module-builder",
-    "core-start": "npm run build && electron ./dist/main.js --dev --in-core"
+    "core-start": "npm run build && electron ./dist/main.js --dev --in-core",
+    "app:dir": "npm run build && electron-builder --dir",
+    "app:dist": "electron-builder"
   },
-  "main": "./main.js",
+  "main": "./dist/main.js",
   "author": "aarontburn",
   "devDependencies": {
     "@types/yauzl-promise": "^4.0.1",

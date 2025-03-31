@@ -108,7 +108,9 @@ var ModuleCompiler = /** @class */ (function () {
             var externalModules, folders, _i, folders_1, folder, moduleFolderPath, subFiles, _a, subFiles_1, subFile, moduleInfo, module_1, m, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler._createDirectories()];
+                    case 0:
+                        console.log(__dirname);
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler._createDirectories()];
                     case 1:
                         _b.sent();
                         return [4 /*yield*/, this.compileAndCopy(forceReload)];
@@ -377,7 +379,7 @@ var ModuleCompiler = /** @class */ (function () {
                         viewFolder = path.join(__dirname, "/view");
                         relativeCSSPath = path.join(viewFolder, "colors.css");
                         relativeFontPath = path.join(viewFolder, "Yu_Gothic_Light.ttf");
-                        if (!process.argv.includes("--in-core")) return [3 /*break*/, 11];
+                        if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 11];
                         return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                     case 10:
                         _b.sent();

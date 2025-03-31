@@ -268,6 +268,7 @@ var ModuleController = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        console.log(path.join(__dirname, "../../@nexus/nexus-module-builder/"));
                         console.log("Registering modules...");
                         this.addModule(new HomeProcess_1.HomeProcess(this.ipcCallback));
                         this.addModule(this.settingsModule);

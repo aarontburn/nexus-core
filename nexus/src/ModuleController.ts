@@ -206,6 +206,8 @@ export class ModuleController implements IPCSource {
     }
 
     private async registerModules(): Promise<void> {
+        console.log(path.join(__dirname, "../../@nexus/nexus-module-builder/"))
+        
         console.log("Registering modules...");
 
         this.addModule(new HomeProcess(this.ipcCallback));

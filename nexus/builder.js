@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const outputDir = __dirname + "/dist";
 
-const packageJSON = __dirname + "/package.json";
+const packageJSON = __dirname + "/build_package.json";
 
 // Remove old /dist/ folder
 fs.rmSync(outputDir, { force: true, recursive: true });
