@@ -5,12 +5,10 @@
   "scripts": {
     "build": "node builder.js && tsc && node copyFiles.js",
     "watch": "tsc -w",
-    "start": "npm run build && electron ./dist/main.js --dev",
+    "start": "npm run build && electron ./dist/main.js --dev --in-core",
     "package": "npm run build && npx electron-builder build",
     "update-nexus": "npm update @nexus/nexus-module-builder",
-    "core-start": "npm run build && electron ./dist/main.js --dev --in-core",
-    "app:dir": "npm run build && electron-builder --dir",
-    "app:dist": "electron-builder"
+    "package:test": "npm run build && electron-builder --dir"
   },
   "main": "./dist/main.js",
   "author": "aarontburn",
@@ -27,6 +25,9 @@
   },
   "productName": "Nexus",
   "build": {
+    "nsis": {
+      "oneClick": false
+    },
     "appId": "com.aarontburn.Nexus",
     "asar": true,
     "files": [
