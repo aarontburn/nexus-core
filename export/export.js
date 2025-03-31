@@ -92,7 +92,7 @@ let chosenFolder;
 
 const getOutputFolder = () => {
     if (inDev) {
-        return `${os.homedir()}/.modules_dev/external_modules/${FOLDER_NAME}/`;
+        return `${os.homedir()}/.nexus_dev/external_modules/${FOLDER_NAME}/`;
     }
 
     return chosenFolder === undefined ? _OUTPUT_FOLDER_PATH : chosenFolder
