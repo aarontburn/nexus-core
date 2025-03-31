@@ -37,6 +37,9 @@
 
 
                 for (const { moduleName, moduleID, htmlPath } of data) {
+                    if (htmlPath === undefined) {
+                        continue;
+                    }
                     const moduleView: HTMLElement = document.createElement("iframe");
                     moduleView.id = moduleID;
                     moduleView.setAttribute("src", htmlPath);

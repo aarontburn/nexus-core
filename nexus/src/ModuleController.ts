@@ -82,7 +82,7 @@ export class ModuleController implements IPCSource {
 
     private init(): void {
         const data: any[] = [];
-        this.modulesByIPCSource.forEach((module: Process, _) => {
+        this.modulesByIPCSource.forEach((module: Process) => {
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
@@ -91,6 +91,11 @@ export class ModuleController implements IPCSource {
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
         this.swapVisibleModule(HomeProcess.MODULE_ID);
+        this.modulesByIPCSource.forEach((module: Process) => {
+            if (module.getHTMLPath() === undefined) {
+                module.initialize();
+            }
+        })
 
     }
 

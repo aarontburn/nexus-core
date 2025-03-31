@@ -359,8 +359,6 @@ export class SettingsProcess extends Process {
             return;
         }
 
-
-        console.log("adding " + module.getIPCSource())
         this.moduleSettingsList.set(module.getIPCSource(), module.getSettings());
     }
 
