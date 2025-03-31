@@ -164,7 +164,11 @@ function copyFiles() {
         try {
             fs.cpSync(path.join(dir, file), path.join(getOutputFolder(), file.split("/").at(-1)), { recursive: true });
         } catch (err) {
-            console.error(err)
+            if (file.includes("react_module")) {
+                console.warn("Could not find react_module. If you haven't built your module yet, ignore this error.")
+            } else {
+                console.error(err)
+            }
         }
     }
 }
@@ -192,10 +196,6 @@ function checkAndCopyDependencies() {
     const nodeModules = fs.readdirSync(NODE_MODULES_PATH);
 
     for (const dependencyName of dependencyNames) {
-        if (dependencyName === "nexus-module-builder") {
-            continue;
-        }
-
 
         if (!nodeModules.includes(dependencyName)) {
             console.log(dependencyName + " was not found in 'node_modules'. Skipping...")
