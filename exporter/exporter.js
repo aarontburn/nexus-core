@@ -27,14 +27,8 @@ const archiver = require('archiver')(os.platform() !== 'linux' ? 'zip' : 'tar');
 // File name of the info file for the module.
 const MODULE_INFO_FILE = "moduleinfo.json";
 
-
-
-
 // The path of the root directory of this module.
 const PWD = path.join(__dirname, "../", "../");
-
-
-
 
 const FOLDER_NAME = (() => {
     const srcPath = path.join(PWD, "src");

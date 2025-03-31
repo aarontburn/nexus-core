@@ -1,5 +1,5 @@
 {
-  "name": "nexus-exporter",
+  "name": "@nexus/nexus-exporter",
   "version": "1.0.0",
   "description": "The module exporter for Nexus.",
   "author": "aarontburn",

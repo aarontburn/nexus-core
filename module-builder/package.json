@@ -1,5 +1,5 @@
 {
-  "name": "nexus-module-builder",
+  "name": "@nexus/nexus-module-builder",
   "version": "1.0.0",
   "description": "Reusable TypeScript settings and components",
   "types": "./dist/index.d.ts",
