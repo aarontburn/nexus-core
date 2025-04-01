@@ -52,7 +52,7 @@ if (EXPORT_CONFIG === undefined) {
     throw new Error(`Could not import ${EXPORT_CONFIG_FILE}. Path: ${path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)}`);
 }
 
-const [excludedDirectories, addToBuild] = [
+const [excludedFiles, addToBuild] = [
     [...DEFAULT_EXCLUDED, ...EXPORT_CONFIG["excluded"] ?? []],
     EXPORT_CONFIG["included"] ?? []
 ];
@@ -144,14 +144,14 @@ function copyFiles() {
 
     const dir = PROJECT_ROOT_DIR + "/src/";
     for (const file of fs.readdirSync(dir, { withFileTypes: true })) {
-        if (excludedDirectories.includes(file.name)) {
-            console.log("Excluding " + file.name)
-            continue;
-        }
-
         console.log(`Copying '${path.join(file.path, file.name)}' to output folder (${path.join(getOutputFolder(), file.name)})`);
         fs.cpSync(path.join(file.path, file.name), path.join(getOutputFolder(), file.name), { recursive: true });
     }
+
+    for (const file of excludedFiles) {
+        fs.rmSync(path.normalize(path.join(getOutputFolder(), file)), { force: true, recursive: true })
+    }
+
 
     for (const file of addToBuild) {
         try {
