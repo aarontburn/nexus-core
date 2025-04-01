@@ -119,7 +119,6 @@ export class ModuleCompiler {
                         return err;
                     }
                 })();
-                console.log(buildConfig)
 
                 if (buildConfig instanceof Error) {
                     console.error(buildConfig)

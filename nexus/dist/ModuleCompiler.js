@@ -227,7 +227,6 @@ var ModuleCompiler = /** @class */ (function () {
                                                 return err;
                                             }
                                         })();
-                                        console.log(buildConfig);
                                         if (buildConfig instanceof Error) {
                                             console.error(buildConfig);
                                             return [2 /*return*/, "continue"];
