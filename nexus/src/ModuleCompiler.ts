@@ -182,7 +182,7 @@ export class ModuleCompiler {
         }
 
         for (const [key, value] of Object.entries(moduleInfo)) {
-            if (builtModuleInfo[key].toString() !== value.toString()) {
+            if (builtModuleInfo[key] === undefined || builtModuleInfo[key].toString() !== value.toString()) {
                 return true;
             }
         }

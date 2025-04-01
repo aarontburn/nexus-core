@@ -91,7 +91,7 @@ var SettingsProcess = /** @class */ (function (_super) {
         _this.window = window;
         _this.getSettings().setName("General");
         _this.setModuleInfo({
-            moduleName: "General",
+            name: "General",
             author: "aarontburn",
             description: "General settings."
         });
@@ -325,7 +325,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                                 }
                                 var settingsList = moduleSettings.getSettingsAndHeaders();
                                 var list = {
-                                    module: moduleName,
+                                    module: name_1,
                                     moduleID: moduleSettings.getModule().getIPCSource(),
                                     moduleInfo: moduleSettings.getModule().getModuleInfo(),
                                     settings: []

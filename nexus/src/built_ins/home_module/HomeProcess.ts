@@ -35,7 +35,7 @@ export class HomeProcess extends Process {
 			ipcCallback);
 
 		this.setModuleInfo({
-			moduleName: "Home",
+			name: "Home",
 			author: "aarontburn",
 			version: "1.0.0",
 			description: "A home screen that displays time and date.",

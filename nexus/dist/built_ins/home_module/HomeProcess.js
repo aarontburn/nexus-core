@@ -83,7 +83,7 @@ var HomeProcess = /** @class */ (function (_super) {
     function HomeProcess(ipcCallback) {
         var _this = _super.call(this, HomeProcess.MODULE_ID, HomeProcess.MODULE_NAME, HomeProcess.HTML_PATH, ipcCallback) || this;
         _this.setModuleInfo({
-            moduleName: "Home",
+            name: "Home",
             author: "aarontburn",
             version: "1.0.0",
             description: "A home screen that displays time and date.",

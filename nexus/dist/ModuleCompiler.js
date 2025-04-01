@@ -319,7 +319,7 @@ var ModuleCompiler = /** @class */ (function () {
                         }
                         for (_i = 0, _a = Object.entries(moduleInfo); _i < _a.length; _i++) {
                             _b = _a[_i], key = _b[0], value = _b[1];
-                            if (builtModuleInfo[key].toString() !== value.toString()) {
+                            if (builtModuleInfo[key] === undefined || builtModuleInfo[key].toString() !== value.toString()) {
                                 return [2 /*return*/, true];
                             }
                         }

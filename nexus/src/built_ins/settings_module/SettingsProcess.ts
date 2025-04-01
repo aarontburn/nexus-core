@@ -28,7 +28,7 @@ export class SettingsProcess extends Process {
 
         this.getSettings().setName("General");
         this.setModuleInfo({
-            moduleName: "General",
+            name: "General",
             author: "aarontburn",
             description: "General settings.",
         });
@@ -264,7 +264,7 @@ export class SettingsProcess extends Process {
 
                     const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
                     const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
-                        module: moduleName,
+                        module: name,
                         moduleID: moduleSettings.getModule().getIPCSource(),
                         moduleInfo: moduleSettings.getModule().getModuleInfo(),
                         settings: []
