@@ -5,7 +5,7 @@ import { Setting } from "./Setting";
 
 
 export interface ModuleInfo {
-    moduleName: string,
+    name: string,
     author: string,
     version?: string,
     description: string,

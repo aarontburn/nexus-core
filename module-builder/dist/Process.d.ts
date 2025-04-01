@@ -2,7 +2,7 @@ import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
 import { Setting } from "./Setting";
 export interface ModuleInfo {
-    moduleName: string;
+    name: string;
     author: string;
     version?: string;
     description: string;
