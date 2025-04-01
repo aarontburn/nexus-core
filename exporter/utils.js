@@ -8,5 +8,6 @@ export const tryOrUndefined = (func) => {
 
 
 export const missingObjectKeys = (obj, keys) => {
-    return Object.keys(obj).filter(k => !keys.includes(k));
+    return keys.filter(k => !Object.keys(obj).includes(k))
+
 } 

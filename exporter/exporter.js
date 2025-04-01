@@ -43,7 +43,8 @@ if (BUILD_CONFIG === undefined) {
     throw new Error(`${EXPORT_CONFIG_FILE} missing 'build'.`);
 }
 
-const missingKeys = missingObjectKeys(BUILD_CONFIG, ["id", "process"]);
+
+const missingKeys = missingObjectKeys(BUILD_CONFIG, ["id", "process", "replace"]);
 if (missingKeys.length > 0) {
     throw new Error(`${EXPORT_CONFIG_FILE}.build missing fields: ${missingKeys}`);
 }
@@ -145,6 +146,20 @@ function copyFiles() {
             }
         }
     }
+
+    for (const { from, to, at } of BUILD_CONFIG["replace"] ?? []) {
+        const replaceTo = to[0] === "%" && to[to.length - 1] === "%" ? BUILD_CONFIG[to.replaceAll("%", '')] : to;
+
+        for (const file of at) {
+            const filePath = path.normalize(path.join(getOutputFolder(), file));
+            const contents = fs.readFileSync(filePath, "utf-8");
+
+
+
+            fs.writeFileSync(filePath, contents.replaceAll(from, replaceTo))
+        }
+    }
+
 }
 
 
