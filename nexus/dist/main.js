@@ -2,9 +2,8 @@
 exports.__esModule = true;
 var electron_1 = require("electron");
 var ModuleController_1 = require("./ModuleController");
-var ipcMain = require('electron').ipcMain;
-var moduleController = new ModuleController_1.ModuleController(ipcMain, process.argv);
-electron_1.Menu.setApplicationMenu(null);
+var moduleController = new ModuleController_1.ModuleController();
+// Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     moduleController.start();
     electron_1.app.on("activate", function () {

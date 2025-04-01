@@ -37,41 +37,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
         // data = data[0];
         switch (eventType) {
             case "load-modules": {
-                var moduleHtml = document.getElementById("modules");
-                var headerHtml = document.getElementById("header");
-                headerHtml.innerHTML = "";
-                moduleHtml.innerHTML = "";
-                var _loop_1 = function (moduleName, moduleID, htmlPath) {
-                    if (htmlPath === undefined) {
-                        return "continue";
-                    }
-                    var moduleView = document.createElement("iframe");
-                    moduleView.id = moduleID;
-                    moduleView.setAttribute("src", htmlPath);
-                    moduleView.setAttribute("style", IFRAME_DEFAULT_STYLE);
-                    // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
-                    moduleHtml.insertAdjacentElement("beforeend", moduleView);
-                    var headerButton = document.createElement("button");
-                    headerButton.id = moduleName + "HeaderButton";
-                    headerButton.textContent = moduleName;
-                    if (moduleName === "Home") {
-                        headerButton.setAttribute("style", "color: var(--accent-color);");
-                        selectedTab = headerButton;
-                    }
-                    headerButton.addEventListener("click", function () {
-                        if (selectedTab !== undefined) {
-                            selectedTab.style.color = "";
-                        }
-                        selectedTab = headerButton;
-                        selectedTab.setAttribute("style", "color: var(--accent-color);");
-                        sendToProcess("swap-modules", moduleID);
-                    });
-                    headerHtml.insertAdjacentElement("beforeend", headerButton);
-                };
-                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-                    var _a = data_1[_i], moduleName = _a.moduleName, moduleID = _a.moduleID, htmlPath = _a.htmlPath;
-                    _loop_1(moduleName, moduleID, htmlPath);
-                }
+                loadModules(data);
                 break;
             }
             case "swap-modules": {
@@ -80,12 +46,65 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
             }
         }
     });
+    var handleButtonClick = function (moduleID, buttonElement) {
+        if (selectedTab !== undefined) {
+            selectedTab.style.color = "";
+            selectedTab.style.borderColor = "";
+        }
+        selectedTab = buttonElement;
+        selectedTab.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
+        document.getElementById("logo-button").style.backgroundColor = selectedTab.id === "home-button" ? 'var(--accent-color)' : 'var(--off-white)';
+        sendToProcess("swap-modules", moduleID);
+    };
+    function registerHome() {
+        var headerHtml = document.getElementById("header");
+        var headerButtonElement = document.createElement("button");
+        headerButtonElement.innerHTML = "<div id=\"logo-button\"></div>";
+        headerButtonElement.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
+        headerButtonElement.id = "home-button";
+        selectedTab = headerButtonElement;
+        headerButtonElement.addEventListener("click", function () {
+            handleButtonClick("built_ins.Home", headerButtonElement);
+        });
+        headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+        headerHtml.insertAdjacentHTML("beforeend", '<div style="background-color: white; height: 1px; margin: 5px 5px"></div>');
+    }
+    registerHome();
     function swapLayout(swapToLayoutId) {
         var modules = document.getElementById("modules").getElementsByTagName("*");
         for (var i = 0; i < modules.length; i++) {
             modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
         }
         document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
+    }
+    function loadModules(data) {
+        var moduleHtml = document.getElementById("modules");
+        var headerHtml = document.getElementById("header");
+        var _loop_1 = function (obj) {
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath;
+            if (htmlPath === undefined) {
+                return "continue";
+            }
+            var moduleIFrameElement = document.createElement("iframe");
+            moduleIFrameElement.id = moduleID;
+            moduleIFrameElement.setAttribute("src", htmlPath);
+            moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
+            // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
+            moduleHtml.insertAdjacentElement("beforeend", moduleIFrameElement);
+            if (moduleID === "built_ins.Home") {
+                return "continue";
+            }
+            var headerButtonElement = document.createElement("button");
+            headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+            headerButtonElement.addEventListener("click", function () {
+                handleButtonClick(moduleID, headerButtonElement);
+            });
+            headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+        };
+        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+            var obj = data_1[_i];
+            _loop_1(obj);
+        }
     }
 })();
 //# sourceMappingURL=renderer.js.map

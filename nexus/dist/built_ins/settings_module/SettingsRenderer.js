@@ -76,14 +76,10 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
             openManageScreen(data);
         });
     });
-    window.parent.ipc.on(MODULE_ID, function (_, eventType) {
-        var data = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            data[_i - 2] = arguments[_i];
-        }
+    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
         switch (eventType) {
             case 'is-dev': {
-                isDeveloperMode = data[0];
+                isDeveloperMode = data;
                 var element = document.getElementById('moduleID');
                 if (element) {
                     element.hidden = !isDeveloperMode;
@@ -91,20 +87,20 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
                 break;
             }
             case "populate-settings-list": {
-                populateSettings(data[0]);
+                populateSettings(data);
                 break;
             }
             case "setting-modified": {
-                var event_2 = data[0];
-                for (var _a = 0, event_1 = event_2; _a < event_1.length; _a++) {
-                    var group = event_1[_a];
+                var event_2 = data;
+                for (var _i = 0, event_1 = event_2; _i < event_1.length; _i++) {
+                    var group = event_1[_i];
                     var element = document.getElementById(group.id);
                     element[group.attribute] = group.value;
                 }
                 break;
             }
             case "refresh-settings": {
-                var newAccentColor = data[0];
+                var newAccentColor = data;
                 var root = window.parent.document.querySelector(':root');
                 root.style.setProperty('--accent-color', newAccentColor);
                 var contentChildren = window.parent.document.body.querySelector(".content").children;

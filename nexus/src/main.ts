@@ -1,11 +1,9 @@
 import { app, BrowserWindow, Menu } from "electron";
 import { ModuleController } from "./ModuleController";
 
-const ipcMain: Electron.IpcMain = require('electron').ipcMain;
-const moduleController: ModuleController = new ModuleController(ipcMain, process.argv);
+const moduleController: ModuleController = new ModuleController();
 
-Menu.setApplicationMenu(null);
-
+// Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {
     moduleController.start();

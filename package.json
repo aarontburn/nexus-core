@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Dependencies for Nexus.",
   "scripts": {
-    "start": "cd ./nexus && npm run core-start",
+    "start": "cd ./nexus && npm start",
     "build": "npm run build:module-builder && npm run build:nexus-client",
     "build:module-builder": "cd ./module-builder && npm run build",
     "build:nexus-client": "cd ./nexus && npm run build"

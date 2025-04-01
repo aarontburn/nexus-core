@@ -60,10 +60,10 @@
         });
     });
 
-    window.parent.ipc.on(MODULE_ID, (_, eventType: string, ...data: any[]) => {
+    window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any) => {
         switch (eventType) {
             case 'is-dev': {
-                isDeveloperMode = data[0] as boolean;
+                isDeveloperMode = data as boolean;
 
                 const element: HTMLElement = document.getElementById('moduleID');
                 if (element) {
@@ -72,11 +72,11 @@
                 break;
             }
             case "populate-settings-list": {
-                populateSettings(data[0]);
+                populateSettings(data);
                 break;
             }
             case "setting-modified": {
-                const event: ChangeEvent[] = data[0];
+                const event: ChangeEvent[] = data;
 
                 for (const group of event) {
                     const element: any = document.getElementById(group.id);
@@ -85,7 +85,7 @@
                 break;
             }
             case "refresh-settings": {
-                const newAccentColor: string = data[0];
+                const newAccentColor: string = data;
                 const root: any = window.parent.document.querySelector(':root');
 
                 root.style.setProperty('--accent-color', newAccentColor);

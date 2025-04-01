@@ -78,9 +78,9 @@ exports.SettingsProcess = void 0;
 var path = __importStar(require("path"));
 var fs = __importStar(require("fs"));
 var electron_1 = require("electron");
-var ModuleCompiler_1 = require("../../ModuleCompiler");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var types_1 = require("@nexus/nexus-module-builder/settings/types");
+var ModuleImporter_1 = require("./ModuleImporter");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
     function SettingsProcess(ipcCallback, window) {
@@ -210,7 +210,9 @@ var SettingsProcess = /** @class */ (function (_super) {
                 module: moduleName,
                 moduleInfo: moduleSettings.getModule().getModuleInfo()
             };
-            settings.push(list);
+            if (moduleSettings.getSettings().length !== 0) {
+                settings.push(list);
+            }
             moduleSettings.getModule().refreshAllSettings();
         }
         // Swap settings and home module so it appears at the top
@@ -247,59 +249,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                 }
             }
         }
-    };
-    SettingsProcess.prototype.importModuleArchive = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var options, response, filePath, successful;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        options = {
-                            properties: ['openFile'],
-                            filters: [{ name: 'Module Archive File (.zip, .tar)', extensions: ['zip', 'tar'] }]
-                        };
-                        return [4 /*yield*/, electron_1.dialog.showOpenDialog(options)];
-                    case 1:
-                        response = _a.sent();
-                        if (response.canceled) {
-                            return [2 /*return*/, undefined];
-                        }
-                        filePath = response.filePaths[0];
-                        return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.importPluginArchive(filePath)];
-                    case 2:
-                        successful = _a.sent();
-                        if (successful) {
-                            console.log("Successfully copied " + filePath + ". Restart required.");
-                            return [2 /*return*/, true];
-                        }
-                        console.log("Error copying " + filePath + ".");
-                        return [2 /*return*/, false];
-                }
-            });
-        });
-    };
-    SettingsProcess.prototype.getImportedModules = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var files, map, out;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, { withFileTypes: true })];
-                    case 1:
-                        files = _a.sent();
-                        map = new Map();
-                        this.deletedModules.forEach(function (name) { return map.set(name, true); });
-                        files.forEach(function (file) {
-                            var extension = path.extname(file.name);
-                            if (extension === '.zip') {
-                                map.set(file.name, false);
-                            }
-                        });
-                        out = [];
-                        map.forEach(function (deleted, name) { return out.push({ name: name, deleted: deleted }); });
-                        return [2 /*return*/, out];
-                }
-            });
-        });
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
@@ -340,12 +289,12 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _c.label = 3;
                     case 3:
                         {
-                            return [2 /*return*/, this.importModuleArchive()];
+                            return [2 /*return*/, (0, ModuleImporter_1.importModuleArchive)()];
                         }
                         _c.label = 4;
                     case 4:
                         {
-                            return [2 /*return*/, this.getImportedModules()];
+                            return [2 /*return*/, (0, ModuleImporter_1.getImportedModules)(this.deletedModules)];
                         }
                         _c.label = 5;
                     case 5:

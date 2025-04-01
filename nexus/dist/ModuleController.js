@@ -77,18 +77,12 @@ var ModuleCompiler_1 = require("./ModuleCompiler");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var WINDOW_DIMENSION = { width: 1920, height: 1080 };
 var ModuleController = /** @class */ (function () {
-    function ModuleController(ipcHandler, args) {
+    function ModuleController() {
+        this.ipc = electron_1.ipcMain;
         this.modulesByIPCSource = new Map();
         this.initReady = false;
         this.rendererReady = false;
-        if (args.includes("--dev")) {
-            ModuleController.isDev = true;
-        }
-        this.ipc = ipcHandler;
     }
-    ModuleController.isDevelopmentMode = function () {
-        return this.isDev;
-    };
     ModuleController.prototype.getIPCSource = function () {
         return "built_ins.Main";
     };
@@ -267,7 +261,6 @@ var ModuleController = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log(path.join(__dirname, "../../@nexus/nexus-module-builder/"));
                         console.log("Registering modules...");
                         this.addModule(new HomeProcess_1.HomeProcess(this.ipcCallback));
                         this.addModule(this.settingsModule);
@@ -278,7 +271,7 @@ var ModuleController = /** @class */ (function () {
                             .getValue();
                         console.log("Force Reload: " + forceReload);
                         return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler
-                                .loadPluginsFromStorage(this.ipcCallback, forceReload)
+                                .load(this.ipcCallback, forceReload)
                                 .then(function (modules) {
                                 modules.forEach(function (module) {
                                     _this.addModule(module);
@@ -325,7 +318,6 @@ var ModuleController = /** @class */ (function () {
         nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module);
         return module;
     };
-    ModuleController.isDev = false;
     return ModuleController;
 }());
 exports.ModuleController = ModuleController;

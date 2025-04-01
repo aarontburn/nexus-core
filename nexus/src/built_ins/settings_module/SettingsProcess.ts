@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BrowserWindow, OpenDialogOptions, app, dialog, shell } from 'electron';
-import { ModuleCompiler } from "../../ModuleCompiler";
+import { BrowserWindow, app, shell } from 'electron';
 import { ChangeEvent, IPCCallback, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
+import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 
 export class SettingsProcess extends Process {
     public static readonly MODULE_NAME: string = "Settings";
@@ -160,8 +160,11 @@ export class SettingsProcess extends Process {
                 module: moduleName,
                 moduleInfo: moduleSettings.getModule().getModuleInfo(),
             };
+            
+            if (moduleSettings.getSettings().length !== 0) {
+                settings.push(list);
+            }
 
-            settings.push(list);
             moduleSettings.getModule().refreshAllSettings();
         }
 
@@ -203,48 +206,8 @@ export class SettingsProcess extends Process {
 
     }
 
-    private async importModuleArchive(): Promise<boolean> {
-        const options: OpenDialogOptions = {
-            properties: ['openFile'],
-            filters: [{ name: 'Module Archive File (.zip, .tar)', extensions: ['zip', 'tar'] }]
-        };
+    
 
-        const response: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(options);
-        if (response.canceled) {
-            return undefined;
-        }
-        const filePath: string = response.filePaths[0];
-        const successful: boolean = await ModuleCompiler.importPluginArchive(filePath);
-
-        if (successful) {
-            console.log("Successfully copied " + filePath + ". Restart required.");
-            return true;
-        }
-        console.log("Error copying " + filePath + ".");
-        return false;
-    }
-
-    private async getImportedModules(): Promise<{ name: string, deleted: boolean }[]> {
-        const files: fs.Dirent[] = await fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH, { withFileTypes: true });
-        // const compiledFiles: fs.Dirent[] = await fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH, { withFileTypes: true });
-
-        const map: Map<string, boolean> = new Map();
-
-        this.deletedModules.forEach(name => map.set(name, true))
-
-        files.forEach(file => {
-            const extension: string = path.extname(file.name);
-
-            if (extension === '.zip') {
-                map.set(file.name, false);
-            }
-        });
-
-        const out: { name: string, deleted: boolean }[] = [];
-        map.forEach((deleted, name) => out.push({ name: name, deleted: deleted }));
-
-        return out;
-    }
 
 
     public async handleEvent(eventType: string, data: any[]): Promise<any> {
@@ -266,10 +229,10 @@ export class SettingsProcess extends Process {
             }
 
             case 'import-module': {
-                return this.importModuleArchive();
+                return importModuleArchive();
             }
             case 'manage-modules': {
-                return this.getImportedModules();
+                return getImportedModules(this.deletedModules);
             }
             case 'remove-module': {
                 const fileName: string = data[0];
@@ -363,3 +326,4 @@ export class SettingsProcess extends Process {
     }
 
 }
+

@@ -7,30 +7,89 @@ import { IPCCallback, Process, StorageHandler, ModuleInfo } from "@nexus/nexus-m
 
 
 export class ModuleCompiler {
+    private static TEMP_ARCHIVE_PATH: string = StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
     private static readonly IO_OPTIONS: { encoding: BufferEncoding, withFileTypes: true } = {
         encoding: "utf-8",
         withFileTypes: true
     }
 
-
-    public static async importPluginArchive(filePath: string): Promise<boolean> {
-
-        const folderName: string = filePath.split("\\").at(-1);
-        try {
-            await fs.promises.copyFile(filePath, `${StorageHandler.EXTERNAL_MODULES_PATH}/${folderName}`);
-            return true;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    public static async loadPluginsFromStorage(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
-        console.log(__dirname)
-
+    public static async load(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
         await StorageHandler._createDirectories();
         await this.compileAndCopy(forceReload);
+        await this.unarchiveFromTemp();
+        return await this.loadPluginsFromStorage(ipcCallback);
+    }
 
+    private static async compileAndCopy(forceReload: boolean = false) {
+        // Read all files within the built directory and external modules directory
+        let [builtModules, externalModules]: string[][] = await Promise.all([
+            fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH),
+            fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH)
+        ]);
+
+        externalModules = externalModules.map(file => file.split('.').slice(0, -1).join('.')).filter(f => f && f !== 'temp');
+
+        const foldersToRemove: string[] =
+            externalModules.length === 0
+                ? builtModules
+                : builtModules.filter((value) => !externalModules.includes(value));
+
+        await Promise.all(
+            foldersToRemove.map(folderName => {
+                const folderPath: string = StorageHandler.COMPILED_MODULES_PATH + "/" + folderName;
+                console.log(`Removing '${folderPath}'`);
+                return fs.promises.rm(folderPath, { force: true, recursive: true });
+            })
+        );
+
+
+        try {
+            const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, this.IO_OPTIONS);
+            for (const folder of files) {
+                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name;
+                if (!folder.isDirectory()) {
+                    continue;
+                }
+                const moduleFolderPath: string = `${folder.path}${folder.name}`;
+                const skipCompile: boolean = !(await this.shouldRecompileModule(moduleFolderPath, builtDirectory))
+
+                if (!forceReload && skipCompile) {
+                    console.log("Skipping compiling of " + folder.name + "; no changes detected.");
+                    continue;
+                }
+
+                console.log("Removing " + builtDirectory);
+                await fs.promises.rm(builtDirectory, { force: true, recursive: true });
+
+                await this.compileAndCopyDirectory(moduleFolderPath, builtDirectory);
+
+                if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
+                    await this.copyFromProd(
+                        path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
+                    )
+                } else {
+                    await this.copyFromProd(
+                        path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
+                    )
+                }
+
+                await fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
+                await fs.promises.copyFile(path.join(__dirname, "/view/Yu_Gothic_Light.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/Yu_Gothic_Light.ttf");
+            }
+
+
+            console.log("All files compiled and copied successfully.");
+        } catch (error) {
+            console.error("Error:", error);
+        }
+
+        await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
+    }
+
+
+    private static async loadPluginsFromStorage(ipcCallback: IPCCallback): Promise<Process[]> {
         const externalModules: Process[] = [];
 
         try {
@@ -51,6 +110,8 @@ export class ModuleCompiler {
                         const module: any = require(subFile.path + "/" + subFile.name);
 
                         const m: Process = new module[Object.keys(module)[0]](ipcCallback);
+                        // const m: Process = new module["default"](ipcCallback);
+
                         m.setModuleInfo(moduleInfo);
                         externalModules.push(m);
                     }
@@ -70,10 +131,9 @@ export class ModuleCompiler {
         try {
             return JSON.parse((await fs.promises.readFile(path)).toString());
         } catch (err) {
-            if (err.code === 'ENOENT') { // File doesn't exist
-                return undefined;
+            if (err.code !== 'ENOENT') { // File doesn't exist
+                console.error(err);
             }
-            console.error(err);
         }
         return undefined;
     }
@@ -86,23 +146,17 @@ export class ModuleCompiler {
      *  @returns true if the module should be recompiled.
      *  @returns false if the module should NOT be recompiled.
      */
-    private static async checkModuleInfo(externalPath: string, builtPath: string): Promise<boolean> {
-        const builtModuleInfo: any = await this.getModuleInfo(builtPath + "/module-info.json");
+    private static async shouldRecompileModule(externalPath: string, builtPath: string): Promise<boolean> {
+        const builtModuleInfo: { [key: string]: any } = await this.getModuleInfo(builtPath + "/module-info.json");
         if (!builtModuleInfo) {
-            if (builtModuleInfo === undefined) {
-                console.log(`WARNING: ${builtPath} does not contain 'module-info.json'.`);
-            }
+            console.log(`WARNING: ${builtPath} does not contain 'module-info.json'.`);
             return true;
         }
 
-
-
-        const moduleInfo: any = await this.getModuleInfo(externalPath + "/module-info.json");
+        const moduleInfo: { [key: string]: any } = await this.getModuleInfo(externalPath + "/module-info.json");
 
         if (!moduleInfo) {
-            if (moduleInfo === undefined) {
-                console.log(`WARNING: ${externalPath} does not contain 'module-info.json'.`);
-            }
+            console.log(`WARNING: ${externalPath} does not contain 'module-info.json'.`);
             return true;
         }
 
@@ -115,11 +169,10 @@ export class ModuleCompiler {
 
     }
 
-    private static TEMP_ARCHIVE_PATH: string = StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
 
-    private static async unarchive() {
+    private static async unarchiveFromTemp() {
         const files: fs.Dirent[] = await fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH, this.IO_OPTIONS);
-        fs.rmSync(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
+        await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
 
         for (const folder of files) {
@@ -147,81 +200,7 @@ export class ModuleCompiler {
         }
     }
 
-    private static async compileAndCopy(forceReload: boolean = false) {
-        await this.unarchive();
 
-        let [compiledModules, moduleArchives]: string[][] = await Promise.all([
-            fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH),
-            fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH)
-        ]);
-
-        moduleArchives = moduleArchives.map(file => file.split('.').at(-2)).filter(f => f && f !== 'temp');
-
-        const foldersToRemove: string[] = moduleArchives.length === 0
-            ? compiledModules
-            : compiledModules.filter((value) => !moduleArchives.includes(value));
-
-        await Promise.all(
-            foldersToRemove.map(folderName => {
-                const folderPath: string = StorageHandler.COMPILED_MODULES_PATH + "/" + folderName;
-                console.log(`Removing '${folderPath}'`);
-                return fs.promises.rm(folderPath, { force: true, recursive: true });
-            })
-        );
-
-
-        try {
-            const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, this.IO_OPTIONS);
-            for (const folder of files) {
-                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name;
-
-                if (!folder.isDirectory()) {
-                    continue;
-                }
-
-                const moduleFolderPath: string = `${folder.path}${folder.name}`;
-
-                const skipCompile: boolean = !(await this.checkModuleInfo(moduleFolderPath, builtDirectory))
-
-                if (!forceReload && skipCompile) {
-                    console.log("Skipping compiling of " + folder.name + "; no changes detected.");
-                    continue;
-                }
-
-                console.log("Removing " + builtDirectory);
-                await fs.promises.rm(builtDirectory, { force: true, recursive: true });
-
-                await this.compileAndCopyDirectory(moduleFolderPath, builtDirectory);
-                const viewFolder: string = path.join(__dirname, "/view");
-                const relativeCSSPath: string = path.join(viewFolder, "colors.css");
-                const relativeFontPath: string = path.join(viewFolder, "Yu_Gothic_Light.ttf");
-
-                if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
-                    await this.copyFromProd(
-                        path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    )
-                } else {
-                    await this.copyFromProd(
-                        path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    )
-                }
-
-                await fs.promises.copyFile(relativeCSSPath, builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
-                await fs.promises.copyFile(relativeFontPath, builtDirectory + "/node_modules/@nexus/nexus-module-builder/Yu_Gothic_Light.ttf");
-
-
-            }
-
-
-            console.log("All files compiled and copied successfully.");
-        } catch (error) {
-            console.error("Error:", error);
-        }
-
-        fs.rmSync(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
-    }
 
     private static async compileAndCopyDirectory(readDirectory: string, outputDirectory: string) {
         const subFiles: fs.Dirent[] = await fs.promises.readdir(readDirectory, this.IO_OPTIONS);
@@ -236,9 +215,6 @@ export class ModuleCompiler {
 
             } else if (subFile.isDirectory()) {
                 await this.compileAndCopyDirectory(readDirectory + "/" + subFile.name, outputDirectory + "/" + subFile.name);
-
-            } else if (path.extname(subFile.name) === ".html") {
-                await this.formatHTML(fullSubFilePath, `${outputDirectory}/${subFile.name}`);
 
             } else {
                 await fs.promises.copyFile(fullSubFilePath, `${outputDirectory}/${subFile.name}`);
@@ -272,7 +248,7 @@ export class ModuleCompiler {
             return;
         }
 
-        const inputFileContent: string = fs.readFileSync(inputFilePath, 'utf8');
+        const inputFileContent: string = await fs.promises.readFile(inputFilePath, 'utf8');
         const { outputText, diagnostics } = ts.transpileModule(inputFileContent, {
             compilerOptions: {
                 esModuleInterop: true,
@@ -308,38 +284,6 @@ export class ModuleCompiler {
 
 
     }
-
-
-    private static async formatHTML(htmlPath: string, outputPath: string) {
-        const contents: string = (await fs.promises.readFile(htmlPath)).toString();
-        const lines: string[] = contents.split("\n")
-
-        for (let i = 0; i < lines.length; i++) {
-            switch (lines[i].trim()) {
-                case "<!-- @css -->": { // Modify colors.css path
-                    const css: string = lines[i + 1].trim();
-
-                    const href: string = css.replace("<", "").replace(">", "").split(" ")[2];
-                    if (href.substring(0, 4) !== "href") {
-                        throw new Error("Could not parse css line: " + css);
-                    }
-                    const replacedCSS: string = href.replace("../../", "./node_modules/@nexus/nexus-module-builder/");
-                    const finalCSS: string = `\t<link rel="stylesheet" ${replacedCSS}">`
-                    lines[i + 1] = finalCSS
-
-                    break;
-                }
-            }
-
-        }
-
-        await fs.promises.writeFile(outputPath, lines.join("\n"));
-
-    }
-
-
-
-
 
 
 }

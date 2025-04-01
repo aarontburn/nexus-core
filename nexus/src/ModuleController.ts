@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
@@ -10,9 +10,7 @@ const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, heigh
 
 export class ModuleController implements IPCSource {
 
-    private static isDev = false;
-
-    private readonly ipc: Electron.IpcMain;
+    private readonly ipc: Electron.IpcMain = ipcMain;
     private modulesByIPCSource: Map<string, Process> = new Map();
 
     private settingsModule: SettingsProcess;
@@ -25,18 +23,6 @@ export class ModuleController implements IPCSource {
     private ipcCallback: IPCCallback;
 
 
-
-    public static isDevelopmentMode(): boolean {
-        return this.isDev;
-    }
-
-    public constructor(ipcHandler: Electron.IpcMain, args: string[]) {
-        if (args.includes("--dev")) {
-            ModuleController.isDev = true;
-        }
-        this.ipc = ipcHandler;
-
-    }
 
     public getIPCSource(): string {
         return "built_ins.Main";
@@ -205,8 +191,6 @@ export class ModuleController implements IPCSource {
     }
 
     private async registerModules(): Promise<void> {
-        console.log(path.join(__dirname, "../../@nexus/nexus-module-builder/"))
-        
         console.log("Registering modules...");
 
         this.addModule(new HomeProcess(this.ipcCallback));
@@ -225,7 +209,7 @@ export class ModuleController implements IPCSource {
 
 
         await ModuleCompiler
-            .loadPluginsFromStorage(this.ipcCallback, forceReload)
+            .load(this.ipcCallback, forceReload)
             .then((modules: Process[]) => {
                 modules.forEach(module => {
                     this.addModule(module);
