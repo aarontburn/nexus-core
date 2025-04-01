@@ -87,13 +87,13 @@ var ModuleCompiler = /** @class */ (function () {
                     case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler._createDirectories()];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.compileAndCopy(forceReload)];
+                        return [4 /*yield*/, this.unarchiveFromTemp()];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, this.unarchiveFromTemp()];
+                        return [4 /*yield*/, this.compileAndCopy(forceReload)];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, this.loadPluginsFromStorage(ipcCallback)];
+                        return [4 /*yield*/, this.loadModulesFromBuiltStorage(ipcCallback)];
                     case 4: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -186,7 +186,7 @@ var ModuleCompiler = /** @class */ (function () {
             });
         });
     };
-    ModuleCompiler.loadPluginsFromStorage = function (ipcCallback) {
+    ModuleCompiler.loadModulesFromBuiltStorage = function (ipcCallback) {
         return __awaiter(this, void 0, void 0, function () {
             var externalModules, folders, _i, folders_1, folder, moduleFolderPath, subFiles, _a, subFiles_1, subFile, moduleInfo, module_1, m, err_1;
             return __generator(this, function (_b) {
@@ -221,8 +221,11 @@ var ModuleCompiler = /** @class */ (function () {
                     case 6:
                         moduleInfo = _b.sent();
                         module_1 = require(subFile.path + "/" + subFile.name);
-                        m = new module_1[Object.keys(module_1)[0]](ipcCallback);
-                        // const m: Process = new module["default"](ipcCallback);
+                        if (module_1["default"] === undefined) {
+                            console.error("LOAD ERROR: Process has no default export. Path: ".concat(subFile.path + "/" + subFile.name));
+                            return [3 /*break*/, 7];
+                        }
+                        m = new module_1["default"](ipcCallback);
                         m.setModuleInfo(moduleInfo);
                         externalModules.push(m);
                         _b.label = 7;

@@ -15,9 +15,9 @@ export class ModuleCompiler {
 
     public static async load(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
         await StorageHandler._createDirectories();
-        await this.compileAndCopy(forceReload);
         await this.unarchiveFromTemp();
-        return await this.loadPluginsFromStorage(ipcCallback);
+        await this.compileAndCopy(forceReload);
+        return await this.loadModulesFromBuiltStorage(ipcCallback);
     }
 
     private static async compileAndCopy(forceReload: boolean = false) {
@@ -89,7 +89,7 @@ export class ModuleCompiler {
     }
 
 
-    private static async loadPluginsFromStorage(ipcCallback: IPCCallback): Promise<Process[]> {
+    private static async loadModulesFromBuiltStorage(ipcCallback: IPCCallback): Promise<Process[]> {
         const externalModules: Process[] = [];
 
         try {
@@ -109,8 +109,12 @@ export class ModuleCompiler {
 
                         const module: any = require(subFile.path + "/" + subFile.name);
 
-                        const m: Process = new module[Object.keys(module)[0]](ipcCallback);
-                        // const m: Process = new module["default"](ipcCallback);
+                        if (module["default"] === undefined) {
+                            console.error(`LOAD ERROR: Process has no default export. Path: ${subFile.path + "/" + subFile.name}`);
+                            continue;
+                        }
+
+                        const m: Process = new module["default"](ipcCallback);
 
                         m.setModuleInfo(moduleInfo);
                         externalModules.push(m);
@@ -173,6 +177,7 @@ export class ModuleCompiler {
     private static async unarchiveFromTemp() {
         const files: fs.Dirent[] = await fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH, this.IO_OPTIONS);
         await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
+
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
 
         for (const folder of files) {
