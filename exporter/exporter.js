@@ -20,56 +20,10 @@ Expected Result:
 const os = require('os');
 const path = require("path");
 const fs = require("fs");
-const dialogNode = require('dialog-node')
+const dialogNode = require('dialog-node');
+const { tryOrUndefined, missingObjectKeys } = require('./utils');
 const archiver = require('archiver')(os.platform() !== 'linux' ? 'zip' : 'tar');
 
-
-// File name of the info file for the module.
-const MODULE_INFO_FILE = "module-info.json";
-
-// The path of the root directory of this module.
-const PWD = path.join(__dirname, "../../../");
-
-const FOLDER_NAME = (() => {
-    const srcPath = path.join(PWD, "src");
-    for (const file of fs.readdirSync(srcPath, { withFileTypes: true })) {
-        if (file.isDirectory() && fs.readdirSync(path.join(file.path, file.name)).includes(MODULE_INFO_FILE)) {
-            return file.name;
-        }
-    }
-})();
-
-if (FOLDER_NAME === undefined) {
-    throw new Error(`Could not locate '${MODULE_INFO_FILE}'. Ensure your module folder contains it.`);
-}
-
-
-const DEFAULT_EXCLUDED = [
-    "export-config.js"
-]
-
-
-const EXPORT_CONFIG_FILE = "export-config.js"
-const [excludedDirectories, addToBuild] = (() => {
-    try {
-        const obj = require(`${PWD}src/${FOLDER_NAME}/${EXPORT_CONFIG_FILE}`);
-        return [
-            [...DEFAULT_EXCLUDED, ...obj["excluded"] ?? []],
-            obj["included"] ?? []
-        ];
-    } catch {
-        return [
-            [...DEFAULT_EXCLUDED],
-            []
-        ];
-    }
-})();
-
-// The path of the output directory in the output folder
-const _OUTPUT_FOLDER_PATH = PWD + "/output/" + FOLDER_NAME + "/";
-
-// The path to the node_modules directory in the output folder.
-const NODE_MODULES_PATH = PWD + "/node_modules";
 
 const inDev = process.argv.includes('--dev');
 if (!process.argv.includes("--verbose")) {
@@ -80,13 +34,52 @@ if (!process.argv.includes("--verbose")) {
 }
 
 
+// File name of the info file for the module.
+const MODULE_INFO_FILE = "module-info.json";
 
+// The path of the root directory of this module.
+const PROJECT_ROOT_DIR = path.join(__dirname, "../../../");
+
+
+
+const EXPORT_CONFIG_FILE = "export-config.js"
+const DEFAULT_EXCLUDED = [
+    // "export-config.js"
+]
+
+const EXPORT_CONFIG = tryOrUndefined(() => require(path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)));
+if (EXPORT_CONFIG === undefined) {
+    throw new Error(`Could not import ${EXPORT_CONFIG_FILE}. Path: ${path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)}`);
+}
+
+const [excludedDirectories, addToBuild] = [
+    [...DEFAULT_EXCLUDED, ...EXPORT_CONFIG["excluded"] ?? []],
+    EXPORT_CONFIG["included"] ?? []
+];
+
+const BUILD_CONFIG = EXPORT_CONFIG["build"];
+if (BUILD_CONFIG === undefined) {
+    throw new Error(`${EXPORT_CONFIG_FILE} missing 'build'.`);
+}
+
+const missingKeys = missingObjectKeys(BUILD_CONFIG, ["id", "process"]);
+if (missingKeys.length > 0) {
+    throw new Error(`${EXPORT_CONFIG_FILE}.build missing fields: ${missingKeys}`);
+}
+
+
+
+// The path of the output directory in the output folder
+const _OUTPUT_FOLDER_PATH = path.normalize(PROJECT_ROOT_DIR + "/output/" + BUILD_CONFIG["id"] + "/");
+
+// The path to the node_modules directory in the output folder.
+const SRC_NODE_MODULES = PROJECT_ROOT_DIR + "/node_modules";
 
 let chosenFolder;
 
 const getOutputFolder = () => {
     if (inDev) {
-        return `${os.homedir()}/.nexus_dev/external_modules/${FOLDER_NAME}/`;
+        return `${os.homedir()}/.nexus_dev/external_modules/${BUILD_CONFIG["id"]}/`;
     }
 
     return chosenFolder === undefined ? _OUTPUT_FOLDER_PATH : chosenFolder
@@ -119,7 +112,7 @@ async function getDirectory() {
             if (directory === '') {
                 resolve(undefined);
             }
-            resolve(`${directory.trim()}/${FOLDER_NAME}/`);
+            resolve(`${directory.trim()}/${BUILD_CONFIG["id"]}/`);
         });
     })
     return promise;
@@ -130,7 +123,7 @@ function modifyModuleInfoJSON() {
     if (inDev) {
         return;
     }
-    const jsonPath = PWD + "/src/" + FOLDER_NAME + "/" + MODULE_INFO_FILE;
+    const jsonPath = PROJECT_ROOT_DIR + "/src/" + MODULE_INFO_FILE;
     const json = JSON.parse(fs.readFileSync(jsonPath));
     json["build_version"] += 1
     fs.writeFileSync(jsonPath, JSON.stringify(json, undefined, 4));
@@ -149,7 +142,7 @@ function createDirectories() {
 function copyFiles() {
     console.log("\n\tCOPYING FILES\n");
 
-    const dir = PWD + "/src/" + FOLDER_NAME + "/";
+    const dir = PROJECT_ROOT_DIR + "/src/";
     for (const file of fs.readdirSync(dir, { withFileTypes: true })) {
         if (excludedDirectories.includes(file.name)) {
             console.log("Excluding " + file.name)
@@ -176,7 +169,7 @@ function copyFiles() {
 
 
 function checkAndCopyDependencies() {
-    const json = JSON.parse(fs.readFileSync(PWD + "/package.json"));
+    const json = JSON.parse(fs.readFileSync(PROJECT_ROOT_DIR + "/package.json"));
 
     const dependencies = json["dependencies"];
 
@@ -193,7 +186,7 @@ function checkAndCopyDependencies() {
 
     const depSet = new Set()
 
-    const nodeModules = fs.readdirSync(NODE_MODULES_PATH);
+    const nodeModules = fs.readdirSync(SRC_NODE_MODULES);
 
     for (const dependencyName of dependencyNames) {
 
@@ -209,7 +202,7 @@ function checkAndCopyDependencies() {
 
 
     depSet.forEach(depName => {
-        const dependencyPath = path.join(NODE_MODULES_PATH, depName);
+        const dependencyPath = path.join(SRC_NODE_MODULES, depName);
         console.log("Copying '" + dependencyPath + "' to '" + getOutputFolder() + "node_modules/'")
         fs.cpSync(dependencyPath, path.join(getOutputFolder(), "node_modules/" + depName), { recursive: true });
     })
@@ -217,7 +210,7 @@ function checkAndCopyDependencies() {
 
 
 function checkDependencysDependencies(depName, depSet) {
-    const depDir = path.join(NODE_MODULES_PATH, depName);
+    const depDir = path.join(SRC_NODE_MODULES, depName);
     const depJson = path.join(depDir, "package.json");
 
     const json = JSON.parse(fs.readFileSync(depJson));

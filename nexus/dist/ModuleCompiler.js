@@ -188,59 +188,84 @@ var ModuleCompiler = /** @class */ (function () {
     };
     ModuleCompiler.loadModulesFromBuiltStorage = function (ipcCallback) {
         return __awaiter(this, void 0, void 0, function () {
-            var externalModules, folders, _i, folders_1, folder, moduleFolderPath, subFiles, _a, subFiles_1, subFile, moduleInfo, module_1, m, err_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var externalModules, folders, _loop_1, this_1, _i, folders_1, folder, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         externalModules = [];
-                        _b.label = 1;
+                        _a.label = 1;
                     case 1:
-                        _b.trys.push([1, 10, , 11]);
+                        _a.trys.push([1, 7, , 8]);
                         return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH, this.IO_OPTIONS)];
                     case 2:
-                        folders = _b.sent();
+                        folders = _a.sent();
+                        _loop_1 = function (folder) {
+                            var moduleFolderPath, buildConfig, moduleInfo, module_1, m;
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
+                                    case 0:
+                                        if (!folder.isDirectory()) { // only read folders
+                                            return [2 /*return*/, "continue"];
+                                        }
+                                        moduleFolderPath = "".concat(folder.path, "/").concat(folder.name);
+                                        buildConfig = (function () {
+                                            try {
+                                                var configPath = path.normalize(moduleFolderPath + "/export-config.js");
+                                                var config = require(configPath);
+                                                if (config["build"] === undefined) {
+                                                    throw new Error("".concat(configPath, " missing 'build'"));
+                                                }
+                                                else if (config["build"]["id"] === undefined) {
+                                                    throw new Error("".concat(configPath, ".build missing 'id'"));
+                                                }
+                                                else if (config["build"]["process"] === undefined) {
+                                                    throw new Error("".concat(configPath, ".build missing 'process'"));
+                                                }
+                                                return config["build"];
+                                            }
+                                            catch (err) {
+                                                return err;
+                                            }
+                                        })();
+                                        console.log(buildConfig);
+                                        if (buildConfig instanceof Error) {
+                                            console.error(buildConfig);
+                                            return [2 /*return*/, "continue"];
+                                        }
+                                        return [4 /*yield*/, this_1.getModuleInfo(moduleFolderPath + "/module-info.json")];
+                                    case 1:
+                                        moduleInfo = _b.sent();
+                                        module_1 = require(moduleFolderPath + "/" + buildConfig["process"]);
+                                        if (module_1["default"] === undefined) {
+                                            console.error("LOAD ERROR: Process has no default export. Path: ".concat(moduleFolderPath + "/" + buildConfig["process"]));
+                                            return [2 /*return*/, "continue"];
+                                        }
+                                        m = new module_1["default"](ipcCallback);
+                                        m.setModuleInfo(moduleInfo);
+                                        externalModules.push(m);
+                                        return [2 /*return*/];
+                                }
+                            });
+                        };
+                        this_1 = this;
                         _i = 0, folders_1 = folders;
-                        _b.label = 3;
+                        _a.label = 3;
                     case 3:
-                        if (!(_i < folders_1.length)) return [3 /*break*/, 9];
+                        if (!(_i < folders_1.length)) return [3 /*break*/, 6];
                         folder = folders_1[_i];
-                        if (!folder.isDirectory()) {
-                            return [3 /*break*/, 8];
-                        }
-                        moduleFolderPath = "".concat(folder.path, "/").concat(folder.name);
-                        return [4 /*yield*/, fs.promises.readdir(moduleFolderPath, this.IO_OPTIONS)];
+                        return [5 /*yield**/, _loop_1(folder)];
                     case 4:
-                        subFiles = _b.sent();
-                        _a = 0, subFiles_1 = subFiles;
-                        _b.label = 5;
+                        _a.sent();
+                        _a.label = 5;
                     case 5:
-                        if (!(_a < subFiles_1.length)) return [3 /*break*/, 8];
-                        subFile = subFiles_1[_a];
-                        if (!subFile.name.includes("Process")) return [3 /*break*/, 7];
-                        return [4 /*yield*/, this.getModuleInfo(subFile.path + "/module-info.json")];
-                    case 6:
-                        moduleInfo = _b.sent();
-                        module_1 = require(subFile.path + "/" + subFile.name);
-                        if (module_1["default"] === undefined) {
-                            console.error("LOAD ERROR: Process has no default export. Path: ".concat(subFile.path + "/" + subFile.name));
-                            return [3 /*break*/, 7];
-                        }
-                        m = new module_1["default"](ipcCallback);
-                        m.setModuleInfo(moduleInfo);
-                        externalModules.push(m);
-                        _b.label = 7;
-                    case 7:
-                        _a++;
-                        return [3 /*break*/, 5];
-                    case 8:
                         _i++;
                         return [3 /*break*/, 3];
-                    case 9: return [3 /*break*/, 11];
-                    case 10:
-                        err_1 = _b.sent();
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
+                        err_1 = _a.sent();
                         console.error(err_1);
-                        return [3 /*break*/, 11];
-                    case 11: return [2 /*return*/, externalModules];
+                        return [3 /*break*/, 8];
+                    case 8: return [2 /*return*/, externalModules];
                 }
             });
         });
@@ -399,7 +424,7 @@ var ModuleCompiler = /** @class */ (function () {
     };
     ModuleCompiler.compileAndCopyDirectory = function (readDirectory, outputDirectory) {
         return __awaiter(this, void 0, void 0, function () {
-            var subFiles, _i, subFiles_2, subFile, fullSubFilePath;
+            var subFiles, _i, subFiles_1, subFile, fullSubFilePath;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, fs.promises.readdir(readDirectory, this.IO_OPTIONS)];
@@ -408,11 +433,11 @@ var ModuleCompiler = /** @class */ (function () {
                         return [4 /*yield*/, fs.promises.mkdir(outputDirectory, { recursive: true })];
                     case 2:
                         _a.sent();
-                        _i = 0, subFiles_2 = subFiles;
+                        _i = 0, subFiles_1 = subFiles;
                         _a.label = 3;
                     case 3:
-                        if (!(_i < subFiles_2.length)) return [3 /*break*/, 10];
-                        subFile = subFiles_2[_i];
+                        if (!(_i < subFiles_1.length)) return [3 /*break*/, 10];
+                        subFile = subFiles_1[_i];
                         fullSubFilePath = subFile.path + "/" + subFile.name;
                         if (!(path.extname(subFile.name) === ".ts" && !subFile.name.endsWith(".d.ts"))) return [3 /*break*/, 5];
                         return [4 /*yield*/, this.compile(fullSubFilePath, outputDirectory)];

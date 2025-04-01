@@ -96,30 +96,47 @@ export class ModuleCompiler {
             const folders: fs.Dirent[] = await fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH, this.IO_OPTIONS);
 
             for (const folder of folders) {
-                if (!folder.isDirectory()) {
+                if (!folder.isDirectory()) { // only read folders
                     continue;
                 }
 
                 const moduleFolderPath: string = `${folder.path}/${folder.name}`;
-                const subFiles: fs.Dirent[] = await fs.promises.readdir(moduleFolderPath, this.IO_OPTIONS);
 
-                for (const subFile of subFiles) {
-                    if (subFile.name.includes("Process")) {
-                        const moduleInfo: ModuleInfo = await this.getModuleInfo(subFile.path + "/module-info.json");
-
-                        const module: any = require(subFile.path + "/" + subFile.name);
-
-                        if (module["default"] === undefined) {
-                            console.error(`LOAD ERROR: Process has no default export. Path: ${subFile.path + "/" + subFile.name}`);
-                            continue;
+                const buildConfig: { [key: string]: string } = (() => {
+                    try {
+                        const configPath: string = path.normalize(moduleFolderPath + "/export-config.js")
+                        const config = require(configPath)
+                        if (config["build"] === undefined) {
+                            throw new Error(`${configPath} missing 'build'`)
+                        } else if (config["build"]["id"] === undefined) {
+                            throw new Error(`${configPath}.build missing 'id'`)
+                        } else if (config["build"]["process"] === undefined) {
+                            throw new Error(`${configPath}.build missing 'process'`)
                         }
 
-                        const m: Process = new module["default"](ipcCallback);
-
-                        m.setModuleInfo(moduleInfo);
-                        externalModules.push(m);
+                        return config["build"];
+                    } catch (err) {
+                        return err;
                     }
+                })();
+                console.log(buildConfig)
+
+                if (buildConfig instanceof Error) {
+                    console.error(buildConfig)
+                    continue;
                 }
+
+                const moduleInfo: ModuleInfo = await this.getModuleInfo(moduleFolderPath + "/module-info.json");
+                const module: any = require(moduleFolderPath + "/" + buildConfig["process"]);
+                if (module["default"] === undefined) {
+                    console.error(`LOAD ERROR: Process has no default export. Path: ${moduleFolderPath + "/" + buildConfig["process"]}`);
+                    continue;
+                }
+
+                const m: Process = new module["default"](ipcCallback);
+
+                m.setModuleInfo(moduleInfo);
+                externalModules.push(m);
 
             }
 
@@ -127,6 +144,7 @@ export class ModuleCompiler {
         } catch (err) {
             console.error(err);
         }
+
 
         return externalModules;
     }
