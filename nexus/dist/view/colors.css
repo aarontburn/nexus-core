@@ -1,6 +1,6 @@
 @font-face {
-    font-family: "Yu Gothic Light";
-    src: url("./Yu_Gothic_Light.ttf");
+    font-family: "Nexus Font";
+    src: url("./font.ttf");
 }
 
 html {
@@ -17,7 +17,7 @@ html {
 }
 
 * {
-    font-family: "Yu Gothic Light";
+    font-family: "Nexus Font";
     box-sizing: border-box;
 }
 

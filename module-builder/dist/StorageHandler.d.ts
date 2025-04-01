@@ -30,12 +30,12 @@ export declare class StorageHandler {
      *  @param encoding The file encoding. Default is 'utf-8'
      *  @returns        The contents of the file, or null if there was an error reading it.
      */
-    static readFromModuleStorage(module: Process, fileName: string, encoding?: string): string | null;
+    static readFromModuleStorage(module: Process, fileName: string, encoding?: string): Promise<string | null>;
     /**
      *  Read settings from module storage.
      *
      *  @param module The source module
      *  @returns A map of setting names to the setting.
      */
-    static readSettingsFromModuleStorage(module: Process): Map<string, any>;
+    static readSettingsFromModuleStorage(module: Process): Promise<Map<string, any>>;
 }

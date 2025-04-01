@@ -197,7 +197,7 @@ export class ModuleController implements IPCSource {
         this.addModule(this.settingsModule);
 
 
-        this.settingsModule.addModuleSetting(this.verifyModuleSettings(this.settingsModule));
+        this.settingsModule.addModuleSetting(await this.verifyModuleSettings(this.settingsModule));
 
         const forceReload: boolean = this.settingsModule
             .getSettings()
@@ -207,17 +207,14 @@ export class ModuleController implements IPCSource {
 
         console.log("Force Reload: " + forceReload);
 
-
         await ModuleCompiler
             .load(this.ipcCallback, forceReload)
             .then((modules: Process[]) => {
-                modules.forEach(module => {
-                    this.addModule(module);
-                })
+                Promise.all(modules.map(m => this.addModule(m)))
             });
     }
 
-    private addModule(module: Process): void {
+    private async addModule(module: Process): Promise<void> {
         const moduleID: string = module.getIPCSource();
 
         const existingIPCProcess: Process = this.modulesByIPCSource.get(moduleID);
@@ -234,11 +231,11 @@ export class ModuleController implements IPCSource {
         this.ipc.handle(moduleID, (_, eventType: string, ...data: any[]) => {
             return module.handleEvent(eventType, ...data);
         });
-        this.settingsModule.addModuleSetting(this.verifyModuleSettings(module));
+        this.settingsModule.addModuleSetting(await this.verifyModuleSettings(module));
     }
 
-    private verifyModuleSettings(module: Process): Process {
-        const settingsMap: Map<string, any> = StorageHandler.readSettingsFromModuleStorage(module);
+    private async verifyModuleSettings(module: Process): Promise<Process> {
+        const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
 
         const moduleSettings: ModuleSettings = module.getSettings();
         settingsMap.forEach((settingValue: any, settingName: string) => {

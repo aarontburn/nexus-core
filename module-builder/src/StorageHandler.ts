@@ -64,13 +64,13 @@ export class StorageHandler {
      *  @param encoding The file encoding. Default is 'utf-8'
      *  @returns        The contents of the file, or null if there was an error reading it.
      */
-    public static readFromModuleStorage(module: Process, fileName: string, encoding: string = 'utf-8'): string | null {
+    public static async readFromModuleStorage(module: Process, fileName: string, encoding: string = 'utf-8'): Promise<string | null> {
         const dirName: string = module.getIPCSource();
         const folderName: string = this.STORAGE_PATH + dirName + "/";
         const filePath: string = folderName + fileName;
 
         try {
-            const content: string = fs.readFileSync(filePath, { encoding: (encoding as BufferEncoding) });
+            const content: string = await fs.promises.readFile(filePath, { encoding: (encoding as BufferEncoding) });
             return content;
         } catch (error) {
             if (error.code !== 'ENOENT') {
@@ -90,7 +90,7 @@ export class StorageHandler {
      *  @param module The source module
      *  @returns A map of setting names to the setting.
      */
-    public static readSettingsFromModuleStorage(module: Process): Map<string, any> {
+    public static async readSettingsFromModuleStorage(module: Process): Promise<Map<string, any>> {
         const settingMap: Map<string, any> = new Map();
 
         const dirName: string = module.getIPCSource();
@@ -100,7 +100,7 @@ export class StorageHandler {
 
         let contents: string;
         try {
-            contents = fs.readFileSync(filePath, 'utf-8');
+            contents = await fs.promises.readFile(filePath, 'utf-8');
         } catch (err) {
             if (err.code !== 'ENOENT') {
                 throw err;

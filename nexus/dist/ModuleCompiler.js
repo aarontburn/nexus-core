@@ -82,19 +82,45 @@ var ModuleCompiler = /** @class */ (function () {
     ModuleCompiler.load = function (ipcCallback, forceReload) {
         if (forceReload === void 0) { forceReload = false; }
         return __awaiter(this, void 0, void 0, function () {
+            var err_1, err_2, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler._createDirectories()];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.unarchiveFromTemp()];
+                        _a.label = 2;
                     case 2:
-                        _a.sent();
-                        return [4 /*yield*/, this.compileAndCopy(forceReload)];
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.unarchiveFromTemp()];
                     case 3:
                         _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        err_1 = _a.sent();
+                        console.error("Error unarchiving files");
+                        console.error(err_1);
+                        return [3 /*break*/, 5];
+                    case 5:
+                        _a.trys.push([5, 7, , 8]);
+                        return [4 /*yield*/, this.compileAndCopy(forceReload)];
+                    case 6:
+                        _a.sent();
+                        return [3 /*break*/, 8];
+                    case 7:
+                        err_2 = _a.sent();
+                        console.error("Error compiling files");
+                        console.error(err_2);
+                        return [3 /*break*/, 8];
+                    case 8:
+                        _a.trys.push([8, 10, , 11]);
                         return [4 /*yield*/, this.loadModulesFromBuiltStorage(ipcCallback)];
-                    case 4: return [2 /*return*/, _a.sent()];
+                    case 9: return [2 /*return*/, _a.sent()];
+                    case 10:
+                        err_3 = _a.sent();
+                        console.error("Error loading modules files");
+                        console.error(err_3);
+                        return [3 /*break*/, 11];
+                    case 11: return [2 /*return*/, []];
                 }
             });
         });
@@ -102,7 +128,7 @@ var ModuleCompiler = /** @class */ (function () {
     ModuleCompiler.compileAndCopy = function (forceReload) {
         if (forceReload === void 0) { forceReload = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var _a, builtModules, externalModules, foldersToRemove, files, _i, files_1, folder, builtDirectory, moduleFolderPath, skipCompile, error_1;
+            var _a, builtModules, externalModules, foldersToRemove, files, _i, files_1, folder, builtDirectory, moduleFolderPath, skipCompile, err_4, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, Promise.all([
@@ -124,18 +150,18 @@ var ModuleCompiler = /** @class */ (function () {
                         _b.sent();
                         _b.label = 3;
                     case 3:
-                        _b.trys.push([3, 17, , 18]);
+                        _b.trys.push([3, 20, , 21]);
                         return [4 /*yield*/, fs.promises.readdir(this.TEMP_ARCHIVE_PATH, this.IO_OPTIONS)];
                     case 4:
                         files = _b.sent();
                         _i = 0, files_1 = files;
                         _b.label = 5;
                     case 5:
-                        if (!(_i < files_1.length)) return [3 /*break*/, 16];
+                        if (!(_i < files_1.length)) return [3 /*break*/, 19];
                         folder = files_1[_i];
                         builtDirectory = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + folder.name;
                         if (!folder.isDirectory()) {
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 18];
                         }
                         moduleFolderPath = "".concat(folder.path).concat(folder.name);
                         return [4 /*yield*/, this.shouldRecompileModule(moduleFolderPath, builtDirectory)];
@@ -143,43 +169,52 @@ var ModuleCompiler = /** @class */ (function () {
                         skipCompile = !(_b.sent());
                         if (!forceReload && skipCompile) {
                             console.log("Skipping compiling of " + folder.name + "; no changes detected.");
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 18];
                         }
                         console.log("Removing " + builtDirectory);
                         return [4 /*yield*/, fs.promises.rm(builtDirectory, { force: true, recursive: true })];
                     case 7:
                         _b.sent();
-                        return [4 /*yield*/, this.compileAndCopyDirectory(moduleFolderPath, builtDirectory)];
+                        _b.label = 8;
                     case 8:
-                        _b.sent();
-                        if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 10];
-                        return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                        _b.trys.push([8, 10, , 11]);
+                        return [4 /*yield*/, this.compileAndCopyDirectory(moduleFolderPath, builtDirectory)];
                     case 9:
                         _b.sent();
-                        return [3 /*break*/, 12];
-                    case 10: return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                        return [3 /*break*/, 11];
+                    case 10:
+                        err_4 = _b.sent();
+                        console.error(err_4);
+                        return [3 /*break*/, 11];
                     case 11:
+                        if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 13];
+                        return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                    case 12:
                         _b.sent();
-                        _b.label = 12;
-                    case 12: return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css")];
-                    case 13:
-                        _b.sent();
-                        return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/Yu_Gothic_Light.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/Yu_Gothic_Light.ttf")];
+                        return [3 /*break*/, 15];
+                    case 13: return [4 /*yield*/, this.copyFromProd(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                     case 14:
                         _b.sent();
                         _b.label = 15;
-                    case 15:
+                    case 15: return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css")];
+                    case 16:
+                        _b.sent();
+                        return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")];
+                    case 17:
+                        _b.sent();
+                        _b.label = 18;
+                    case 18:
                         _i++;
                         return [3 /*break*/, 5];
-                    case 16:
+                    case 19:
                         console.log("All files compiled and copied successfully.");
-                        return [3 /*break*/, 18];
-                    case 17:
+                        return [3 /*break*/, 21];
+                    case 20:
                         error_1 = _b.sent();
                         console.error("Error:", error_1);
-                        return [3 /*break*/, 18];
-                    case 18: return [4 /*yield*/, fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true })];
-                    case 19:
+                        return [3 /*break*/, 21];
+                    case 21: return [4 /*yield*/, fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true })];
+                    case 22:
                         _b.sent();
                         return [2 /*return*/];
                 }
@@ -188,7 +223,7 @@ var ModuleCompiler = /** @class */ (function () {
     };
     ModuleCompiler.loadModulesFromBuiltStorage = function (ipcCallback) {
         return __awaiter(this, void 0, void 0, function () {
-            var externalModules, folders, _loop_1, this_1, _i, folders_1, folder, err_1;
+            var externalModules, folders, _loop_1, this_1, _i, folders_1, folder, err_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -261,8 +296,8 @@ var ModuleCompiler = /** @class */ (function () {
                         return [3 /*break*/, 3];
                     case 6: return [3 /*break*/, 8];
                     case 7:
-                        err_1 = _a.sent();
-                        console.error(err_1);
+                        err_5 = _a.sent();
+                        console.error(err_5);
                         return [3 /*break*/, 8];
                     case 8: return [2 /*return*/, externalModules];
                 }
@@ -271,7 +306,7 @@ var ModuleCompiler = /** @class */ (function () {
     };
     ModuleCompiler.getModuleInfo = function (path) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b, err_2;
+            var _a, _b, err_6;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -280,9 +315,9 @@ var ModuleCompiler = /** @class */ (function () {
                         return [4 /*yield*/, fs.promises.readFile(path)];
                     case 1: return [2 /*return*/, _b.apply(_a, [(_c.sent()).toString()])];
                     case 2:
-                        err_2 = _c.sent();
-                        if (err_2.code !== 'ENOENT') { // File doesn't exist
-                            console.error(err_2);
+                        err_6 = _c.sent();
+                        if (err_6.code !== 'ENOENT') { // File doesn't exist
+                            console.error(err_6);
                         }
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/, undefined];
@@ -426,37 +461,43 @@ var ModuleCompiler = /** @class */ (function () {
             var subFiles, _i, subFiles_1, subFile, fullSubFilePath;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.promises.readdir(readDirectory, this.IO_OPTIONS)];
+                    case 0:
+                        if (!(readDirectory.split('/').at(-1) === "node_modules")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, fs.promises.cp(readDirectory, outputDirectory, { force: true, recursive: true })];
                     case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                    case 2: return [4 /*yield*/, fs.promises.readdir(readDirectory, this.IO_OPTIONS)];
+                    case 3:
                         subFiles = _a.sent();
                         return [4 /*yield*/, fs.promises.mkdir(outputDirectory, { recursive: true })];
-                    case 2:
-                        _a.sent();
-                        _i = 0, subFiles_1 = subFiles;
-                        _a.label = 3;
-                    case 3:
-                        if (!(_i < subFiles_1.length)) return [3 /*break*/, 10];
-                        subFile = subFiles_1[_i];
-                        fullSubFilePath = subFile.path + "/" + subFile.name;
-                        if (!(path.extname(subFile.name) === ".ts" && !subFile.name.endsWith(".d.ts"))) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.compile(fullSubFilePath, outputDirectory)];
                     case 4:
                         _a.sent();
-                        return [3 /*break*/, 9];
+                        _i = 0, subFiles_1 = subFiles;
+                        _a.label = 5;
                     case 5:
-                        if (!subFile.isDirectory()) return [3 /*break*/, 7];
-                        return [4 /*yield*/, this.compileAndCopyDirectory(readDirectory + "/" + subFile.name, outputDirectory + "/" + subFile.name)];
+                        if (!(_i < subFiles_1.length)) return [3 /*break*/, 12];
+                        subFile = subFiles_1[_i];
+                        fullSubFilePath = subFile.path + "/" + subFile.name;
+                        if (!(path.extname(subFile.name) === ".ts" && !subFile.name.endsWith(".d.ts"))) return [3 /*break*/, 7];
+                        return [4 /*yield*/, this.compile(fullSubFilePath, outputDirectory)];
                     case 6:
                         _a.sent();
-                        return [3 /*break*/, 9];
-                    case 7: return [4 /*yield*/, fs.promises.copyFile(fullSubFilePath, "".concat(outputDirectory, "/").concat(subFile.name))];
+                        return [3 /*break*/, 11];
+                    case 7:
+                        if (!subFile.isDirectory()) return [3 /*break*/, 9];
+                        return [4 /*yield*/, this.compileAndCopyDirectory(readDirectory + "/" + subFile.name, outputDirectory + "/" + subFile.name)];
                     case 8:
                         _a.sent();
-                        _a.label = 9;
-                    case 9:
+                        return [3 /*break*/, 11];
+                    case 9: return [4 /*yield*/, fs.promises.copyFile(fullSubFilePath, "".concat(outputDirectory, "/").concat(subFile.name))];
+                    case 10:
+                        _a.sent();
+                        _a.label = 11;
+                    case 11:
                         _i++;
-                        return [3 /*break*/, 3];
-                    case 10: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 12: return [2 /*return*/];
                 }
             });
         });

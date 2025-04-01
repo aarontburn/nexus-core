@@ -109,22 +109,34 @@ var StorageHandler = /** @class */ (function () {
      *  @param encoding The file encoding. Default is 'utf-8'
      *  @returns        The contents of the file, or null if there was an error reading it.
      */
-    StorageHandler.readFromModuleStorage = function (module, fileName, encoding) {
-        if (encoding === void 0) { encoding = 'utf-8'; }
-        var dirName = module.getIPCSource();
-        var folderName = this.STORAGE_PATH + dirName + "/";
-        var filePath = folderName + fileName;
-        try {
-            var content = fs.readFileSync(filePath, { encoding: encoding });
-            return content;
-        }
-        catch (error) {
-            if (error.code !== 'ENOENT') {
-                throw error;
-            }
-            console.log("File not found: " + filePath);
-        }
-        return null;
+    StorageHandler.readFromModuleStorage = function (module_1, fileName_1) {
+        return __awaiter(this, arguments, void 0, function (module, fileName, encoding) {
+            var dirName, folderName, filePath, content, error_1;
+            if (encoding === void 0) { encoding = 'utf-8'; }
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        dirName = module.getIPCSource();
+                        folderName = this.STORAGE_PATH + dirName + "/";
+                        filePath = folderName + fileName;
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, fs.promises.readFile(filePath, { encoding: encoding })];
+                    case 2:
+                        content = _b.sent();
+                        return [2 /*return*/, content];
+                    case 3:
+                        error_1 = _b.sent();
+                        if (error_1.code !== 'ENOENT') {
+                            throw error_1;
+                        }
+                        console.log("File not found: " + filePath);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/, null];
+                }
+            });
+        });
     };
     /**
      *  Read settings from module storage.
@@ -133,31 +145,43 @@ var StorageHandler = /** @class */ (function () {
      *  @returns A map of setting names to the setting.
      */
     StorageHandler.readSettingsFromModuleStorage = function (module) {
-        var settingMap = new Map();
-        var dirName = module.getIPCSource();
-        var folderName = this.STORAGE_PATH + dirName + "/";
-        var filePath = folderName + module.getSettingsFileName();
-        var contents;
-        try {
-            contents = fs.readFileSync(filePath, 'utf-8');
-        }
-        catch (err) {
-            if (err.code !== 'ENOENT') {
-                throw err;
-            }
-            console.log("WARNING: directory not found.");
-            return settingMap;
-        }
-        try {
-            var json = JSON.parse(contents);
-            for (var settingName in json) {
-                settingMap.set(settingName, json[settingName]);
-            }
-        }
-        catch (err) {
-            console.error("Error parsing JSON for setting: " + module.getName());
-        }
-        return settingMap;
+        return __awaiter(this, void 0, void 0, function () {
+            var settingMap, dirName, folderName, filePath, contents, err_1, json, settingName;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        settingMap = new Map();
+                        dirName = module.getIPCSource();
+                        folderName = this.STORAGE_PATH + dirName + "/";
+                        filePath = folderName + module.getSettingsFileName();
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, fs.promises.readFile(filePath, 'utf-8')];
+                    case 2:
+                        contents = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _b.sent();
+                        if (err_1.code !== 'ENOENT') {
+                            throw err_1;
+                        }
+                        console.log("WARNING: directory not found.");
+                        return [2 /*return*/, settingMap];
+                    case 4:
+                        try {
+                            json = JSON.parse(contents);
+                            for (settingName in json) {
+                                settingMap.set(settingName, json[settingName]);
+                            }
+                        }
+                        catch (err) {
+                            console.error("Error parsing JSON for setting: " + module.getName());
+                        }
+                        return [2 /*return*/, settingMap];
+                }
+            });
+        });
     };
     var _a;
     _a = StorageHandler;

@@ -256,15 +256,18 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.registerModules = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var forceReload;
+            var _a, _b, forceReload;
             var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         console.log("Registering modules...");
                         this.addModule(new HomeProcess_1.HomeProcess(this.ipcCallback));
                         this.addModule(this.settingsModule);
-                        this.settingsModule.addModuleSetting(this.verifyModuleSettings(this.settingsModule));
+                        _b = (_a = this.settingsModule).addModuleSetting;
+                        return [4 /*yield*/, this.verifyModuleSettings(this.settingsModule)];
+                    case 1:
+                        _b.apply(_a, [_c.sent()]);
                         forceReload = this.settingsModule
                             .getSettings()
                             .getSetting("force_reload")
@@ -273,50 +276,69 @@ var ModuleController = /** @class */ (function () {
                         return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler
                                 .load(this.ipcCallback, forceReload)
                                 .then(function (modules) {
-                                modules.forEach(function (module) {
-                                    _this.addModule(module);
-                                });
+                                Promise.all(modules.map(function (m) { return _this.addModule(m); }));
                             })];
-                    case 1:
-                        _a.sent();
+                    case 2:
+                        _c.sent();
                         return [2 /*return*/];
                 }
             });
         });
     };
     ModuleController.prototype.addModule = function (module) {
-        var moduleID = module.getIPCSource();
-        var existingIPCProcess = this.modulesByIPCSource.get(moduleID);
-        if (existingIPCProcess !== undefined) {
-            console.error("WARNING: Modules with duplicate IDs have been found.");
-            console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
-            return;
-        }
-        console.log("\tRegistering " + moduleID);
-        this.modulesByIPCSource.set(moduleID, module);
-        this.ipc.handle(moduleID, function (_, eventType) {
-            var data = [];
-            for (var _i = 2; _i < arguments.length; _i++) {
-                data[_i - 2] = arguments[_i];
-            }
-            return module.handleEvent.apply(module, __spreadArray([eventType], data, false));
+        return __awaiter(this, void 0, void 0, function () {
+            var moduleID, existingIPCProcess, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        moduleID = module.getIPCSource();
+                        existingIPCProcess = this.modulesByIPCSource.get(moduleID);
+                        if (existingIPCProcess !== undefined) {
+                            console.error("WARNING: Modules with duplicate IDs have been found.");
+                            console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
+                            return [2 /*return*/];
+                        }
+                        console.log("\tRegistering " + moduleID);
+                        this.modulesByIPCSource.set(moduleID, module);
+                        this.ipc.handle(moduleID, function (_, eventType) {
+                            var data = [];
+                            for (var _i = 2; _i < arguments.length; _i++) {
+                                data[_i - 2] = arguments[_i];
+                            }
+                            return module.handleEvent.apply(module, __spreadArray([eventType], data, false));
+                        });
+                        _b = (_a = this.settingsModule).addModuleSetting;
+                        return [4 /*yield*/, this.verifyModuleSettings(module)];
+                    case 1:
+                        _b.apply(_a, [_c.sent()]);
+                        return [2 /*return*/];
+                }
+            });
         });
-        this.settingsModule.addModuleSetting(this.verifyModuleSettings(module));
     };
     ModuleController.prototype.verifyModuleSettings = function (module) {
-        var settingsMap = nexus_module_builder_1.StorageHandler.readSettingsFromModuleStorage(module);
-        var moduleSettings = module.getSettings();
-        settingsMap.forEach(function (settingValue, settingName) {
-            var setting = moduleSettings.getSetting(settingName);
-            if (setting === undefined) {
-                console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
-            }
-            else {
-                setting.setValue(settingValue);
-            }
+        return __awaiter(this, void 0, void 0, function () {
+            var settingsMap, moduleSettings;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler.readSettingsFromModuleStorage(module)];
+                    case 1:
+                        settingsMap = _a.sent();
+                        moduleSettings = module.getSettings();
+                        settingsMap.forEach(function (settingValue, settingName) {
+                            var setting = moduleSettings.getSetting(settingName);
+                            if (setting === undefined) {
+                                console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
+                            }
+                            else {
+                                setting.setValue(settingValue);
+                            }
+                        });
+                        nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module);
+                        return [2 /*return*/, module];
+                }
+            });
         });
-        nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module);
-        return module;
     };
     return ModuleController;
 }());

@@ -1,22 +1,3 @@
-/*
-Author: 
-    aarontburn (https://github.com/aarontburn)
-Title:
-    Module Export Script
-Purpose:
-    Properly export developed module to use with parent application
-        (https://github.com/aarontburn/modules)
-
-Repository: 
-    https://github.com/aarontburn/modules-export-script
-    
-Usage: 
-    'npm run export', or 'node node_modules/modules-export-script/export.js'
-    
-Expected Result: 
-    In the root directory, a directory 'output/' will be created containing required files for the module.
-*/
-
 const os = require('os');
 const path = require("path");
 const fs = require("fs");
@@ -195,8 +176,8 @@ function checkAndCopyDependencies() {
             continue;
         }
 
-        depSet.add(dependencyName)
-        checkDependencysDependencies(dependencyName, depSet)
+        depSet.add(dependencyName);
+        checkDependencysDependencies(dependencyName, depSet);
     }
 
 

@@ -15,9 +15,28 @@ export class ModuleCompiler {
 
     public static async load(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
         await StorageHandler._createDirectories();
-        await this.unarchiveFromTemp();
-        await this.compileAndCopy(forceReload);
-        return await this.loadModulesFromBuiltStorage(ipcCallback);
+
+        try {
+            await this.unarchiveFromTemp();
+        } catch (err) {
+            console.error("Error unarchiving files");
+            console.error(err)
+        }
+
+        try {
+            await this.compileAndCopy(forceReload);
+        } catch (err) {
+            console.error("Error compiling files");
+            console.error(err)
+        }
+
+        try {
+            return await this.loadModulesFromBuiltStorage(ipcCallback);
+        } catch (err) {
+            console.error("Error loading modules files");
+            console.error(err)
+        }
+        return [];
     }
 
     private static async compileAndCopy(forceReload: boolean = false) {
@@ -61,22 +80,26 @@ export class ModuleCompiler {
                 console.log("Removing " + builtDirectory);
                 await fs.promises.rm(builtDirectory, { force: true, recursive: true });
 
-                await this.compileAndCopyDirectory(moduleFolderPath, builtDirectory);
+                try {
+                    await this.compileAndCopyDirectory(moduleFolderPath, builtDirectory);
+                } catch (err) {
+                    console.error(err)
+                }
 
                 if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
                     await this.copyFromProd(
                         path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    )
+                    );
                 } else {
                     await this.copyFromProd(
                         path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    )
+                    );
                 }
 
                 await fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
-                await fs.promises.copyFile(path.join(__dirname, "/view/Yu_Gothic_Light.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/Yu_Gothic_Light.ttf");
+                await fs.promises.copyFile(path.join(__dirname, "/view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf");
             }
 
 
@@ -225,6 +248,12 @@ export class ModuleCompiler {
 
 
     private static async compileAndCopyDirectory(readDirectory: string, outputDirectory: string) {
+        if (readDirectory.split('/').at(-1) === "node_modules") { // Don't compile directories and just copy over
+            await fs.promises.cp(readDirectory, outputDirectory, { force: true, recursive: true });
+            return;
+        }
+
+
         const subFiles: fs.Dirent[] = await fs.promises.readdir(readDirectory, this.IO_OPTIONS);
 
         await fs.promises.mkdir(outputDirectory, { recursive: true });
