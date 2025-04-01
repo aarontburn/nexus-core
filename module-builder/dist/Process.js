@@ -140,7 +140,7 @@ var Process = /** @class */ (function () {
     };
     /**
      *  Sets the info for this module.
-     *  For external modules, this information is stored within 'moduleinfo.json',
+     *  For external modules, this information is stored within 'module-info.json',
      *      and will automatically be set here.
      *
      *  @param moduleInfo The module info.
@@ -193,7 +193,11 @@ var Process = /** @class */ (function () {
      *  Lifecycle function that is called before the application exits.
      */
     Process.prototype.onExit = function () {
-        // Do nothing by default.
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
     };
     /**
      *  @returns the path to the HTML file associated with this module.

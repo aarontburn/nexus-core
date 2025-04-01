@@ -117,7 +117,7 @@ export declare abstract class Process implements IPCSource {
     getModuleInfo(): ModuleInfo;
     /**
      *  Sets the info for this module.
-     *  For external modules, this information is stored within 'moduleinfo.json',
+     *  For external modules, this information is stored within 'module-info.json',
      *      and will automatically be set here.
      *
      *  @param moduleInfo The module info.
@@ -168,7 +168,7 @@ export declare abstract class Process implements IPCSource {
      *
      *  Lifecycle function that is called before the application exits.
      */
-    onExit(): void;
+    onExit(): Promise<void>;
     /**
      *  @returns the path to the HTML file associated with this module.
      */

@@ -95,11 +95,22 @@ var StorageHandler = /** @class */ (function () {
      *  @param module The source module.
      */
     StorageHandler.writeModuleSettingsToStorage = function (module) {
-        var settingMap = new Map();
-        module.getSettings().getSettings().forEach(function (setting) {
-            settingMap.set(setting.getName(), setting.getValue());
+        return __awaiter(this, void 0, void 0, function () {
+            var settingMap;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        settingMap = new Map();
+                        module.getSettings().getSettings().forEach(function (setting) {
+                            settingMap.set(setting.getName(), setting.getValue());
+                        });
+                        return [4 /*yield*/, this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];
+                    case 1:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
         });
-        this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
     };
     /**
      *  Reads a file from the modules storage.

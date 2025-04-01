@@ -94,7 +94,7 @@ export class SettingsProcess extends Process {
         ];
     }
 
-    public onExit(): void {
+    public async onExit(): Promise<void> {
         // Save window dimensions
         const isWindowMaximized: boolean = this.window.isMaximized();
         const bounds: { width: number, height: number, x: number, y: number } = this.window.getBounds();
@@ -105,7 +105,7 @@ export class SettingsProcess extends Process {
         this.getSettings().getSetting('window_x').setValue(bounds.x);
         this.getSettings().getSetting('window_y').setValue(bounds.y);
 
-        StorageHandler.writeModuleSettingsToStorage(this);
+        await StorageHandler.writeModuleSettingsToStorage(this);
     }
 
 

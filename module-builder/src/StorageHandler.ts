@@ -45,14 +45,14 @@ export class StorageHandler {
      * 
      *  @param module The source module.
      */
-    public static writeModuleSettingsToStorage(module: Process): void {
+    public static async writeModuleSettingsToStorage(module: Process): Promise<void> {
         const settingMap: Map<string, any> = new Map();
 
         module.getSettings().getSettings().forEach((setting: Setting<unknown>) => {
             settingMap.set(setting.getName(), setting.getValue());
         });
 
-        this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
+        await this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
     }
 
 

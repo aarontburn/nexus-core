@@ -21,7 +21,7 @@ export declare class StorageHandler {
      *
      *  @param module The source module.
      */
-    static writeModuleSettingsToStorage(module: Process): void;
+    static writeModuleSettingsToStorage(module: Process): Promise<void>;
     /**
      *  Reads a file from the modules storage.
      *
