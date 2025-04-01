@@ -101,8 +101,13 @@ var HomeProcess = /** @class */ (function (_super) {
         this.clockTimeout = setTimeout(function () { return _this.updateDateAndTime(true); }, 1000 - new Date().getMilliseconds());
     };
     HomeProcess.prototype.onExit = function () {
-        _super.prototype.onExit.call(this);
-        clearTimeout(this.clockTimeout);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                _super.prototype.onExit.call(this);
+                clearTimeout(this.clockTimeout);
+                return [2 /*return*/];
+            });
+        });
     };
     HomeProcess.prototype.createSpan = function (text) {
         return "<span style='color: var(--accent-color)'>".concat(text, "</span>");

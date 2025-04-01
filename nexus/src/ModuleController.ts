@@ -126,10 +126,8 @@ export class ModuleController implements IPCSource {
         }
     }
 
-    public stop(): void {
-        this.modulesByIPCSource.forEach((module: Process, _) => {
-            module.onExit();
-        });
+    public async stop(): Promise<void> {
+        await Promise.all(Array.from(this.modulesByIPCSource.values()).map(async module => await module.onExit()));
     }
 
     private swapVisibleModule(moduleID: string): void {
@@ -158,8 +156,15 @@ export class ModuleController implements IPCSource {
             autoHideMenuBar: true
         });
 
-        this.window.on('close', () => {
-            this.stop();
+
+        this.window.on('close', async (event) => {
+            event.preventDefault(); 
+            try {
+                await this.stop(); 
+                this.window.destroy(); 
+            } catch (error) {
+                console.error("Error during cleanup:", error);
+            }
         })
 
 
@@ -209,8 +214,8 @@ export class ModuleController implements IPCSource {
 
         await ModuleCompiler
             .load(this.ipcCallback, forceReload)
-            .then((modules: Process[]) => {
-                Promise.all(modules.map(m => this.addModule(m)))
+            .then(async (modules: Process[]) => {
+                await Promise.all(modules.map(m => this.addModule(m)))
             });
     }
 

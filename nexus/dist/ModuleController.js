@@ -184,8 +184,21 @@ var ModuleController = /** @class */ (function () {
         });
     };
     ModuleController.prototype.stop = function () {
-        this.modulesByIPCSource.forEach(function (module, _) {
-            module.onExit();
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Promise.all(Array.from(this.modulesByIPCSource.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, module.onExit()];
+                                case 1: return [2 /*return*/, _a.sent()];
+                            }
+                        }); }); }))];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
         });
     };
     ModuleController.prototype.swapVisibleModule = function (moduleID) {
@@ -212,9 +225,28 @@ var ModuleController = /** @class */ (function () {
             },
             autoHideMenuBar: true
         });
-        this.window.on('close', function () {
-            _this.stop();
-        });
+        this.window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.stop()];
+                    case 2:
+                        _a.sent();
+                        this.window.destroy();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_1 = _a.sent();
+                        console.error("Error during cleanup:", error_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); });
         this.window.loadFile(path.join(__dirname, "./view/index.html"));
         this.ipcCallback = {
             notifyRenderer: function (target, eventType) {
@@ -275,9 +307,17 @@ var ModuleController = /** @class */ (function () {
                         console.log("Force Reload: " + forceReload);
                         return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler
                                 .load(this.ipcCallback, forceReload)
-                                .then(function (modules) {
-                                Promise.all(modules.map(function (m) { return _this.addModule(m); }));
-                            })];
+                                .then(function (modules) { return __awaiter(_this, void 0, void 0, function () {
+                                var _this = this;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, Promise.all(modules.map(function (m) { return _this.addModule(m); }))];
+                                        case 1:
+                                            _a.sent();
+                                            return [2 /*return*/];
+                                    }
+                                });
+                            }); })];
                     case 2:
                         _c.sent();
                         return [2 /*return*/];

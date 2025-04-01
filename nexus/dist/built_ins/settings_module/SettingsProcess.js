@@ -148,15 +148,25 @@ var SettingsProcess = /** @class */ (function (_super) {
         ];
     };
     SettingsProcess.prototype.onExit = function () {
-        // Save window dimensions
-        var isWindowMaximized = this.window.isMaximized();
-        var bounds = this.window.getBounds();
-        this.getSettings().getSetting('window_maximized').setValue(isWindowMaximized);
-        this.getSettings().getSetting('window_width').setValue(bounds.width);
-        this.getSettings().getSetting('window_height').setValue(bounds.height);
-        this.getSettings().getSetting('window_x').setValue(bounds.x);
-        this.getSettings().getSetting('window_y').setValue(bounds.y);
-        nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this);
+        return __awaiter(this, void 0, void 0, function () {
+            var isWindowMaximized, bounds;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        isWindowMaximized = this.window.isMaximized();
+                        bounds = this.window.getBounds();
+                        this.getSettings().getSetting('window_maximized').setValue(isWindowMaximized);
+                        this.getSettings().getSetting('window_width').setValue(bounds.width);
+                        this.getSettings().getSetting('window_height').setValue(bounds.height);
+                        this.getSettings().getSetting('window_x').setValue(bounds.x);
+                        this.getSettings().getSetting('window_y').setValue(bounds.y);
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     SettingsProcess.prototype.refreshSettings = function (modifiedSetting) {
         if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'zoom') {

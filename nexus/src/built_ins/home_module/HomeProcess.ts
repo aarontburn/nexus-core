@@ -56,7 +56,7 @@ export class HomeProcess extends Process {
 		
 	}
 
-	public onExit(): void {
+	public async onExit(): Promise<void> {
 		super.onExit();
 		clearTimeout(this.clockTimeout);
 	}
