@@ -113,7 +113,7 @@ export class ModuleController implements IPCSource {
                     break;
                 }
                 case "swap-modules": {
-                    this.swapVisibleModule(data);
+                    this.swapVisibleModule(data[0]);
                     break;
                 }
 
@@ -239,7 +239,7 @@ export class ModuleController implements IPCSource {
 
         this.modulesByIPCSource.set(moduleID, module);
 
-        this.ipc.handle(moduleID, (_, eventType: string, data: any) => {
+        this.ipc.handle(moduleID, (_, eventType: string, data: any = []) => {
             return module.handleEvent(eventType, data);
         });
         this.settingsModule.addModuleSetting(await this.verifyModuleSettings(module));

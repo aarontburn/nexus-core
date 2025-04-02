@@ -1,7 +1,7 @@
 (() => {
     const MODULE_ID: string = 'built_ins.Main';
     const sendToProcess = (eventType: string, ...data: any[]): Promise<void> => {
-        return window.ipc.send(MODULE_ID, eventType, ...data);
+        return window.ipc.send(MODULE_ID, eventType, data);
     }
 
     sendToProcess("renderer-init");

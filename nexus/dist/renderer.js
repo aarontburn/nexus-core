@@ -1,21 +1,11 @@
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 (function () {
     var MODULE_ID = 'built_ins.Main';
     var sendToProcess = function (eventType) {
-        var _a;
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return (_a = window.ipc).send.apply(_a, __spreadArray([MODULE_ID, eventType], data, false));
+        return window.ipc.send(MODULE_ID, eventType, data);
     };
     sendToProcess("renderer-init");
     var IFRAME_DEFAULT_STYLE = "height: 100%; width: 100%;";
