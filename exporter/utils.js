@@ -6,7 +6,7 @@ export const tryOrUndefined = (func) => {
     }
 }
 
-export const tryOrUndefineAsync = async (func) => {
+export const tryOrUndefinedAsync = async (func) => {
     try {
         return await func();
     } catch (e) {

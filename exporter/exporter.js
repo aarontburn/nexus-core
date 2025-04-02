@@ -244,17 +244,12 @@ function toArchive() {
 async function changeLastExported() {
     const devPath = path.normalize(os.homedir() + '/.nexus_dev/');
     await fs.promises.mkdir(devPath, { recursive: true });
-
-    let devJSON = await tryOrUndefineAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
+    let devJSON = JSON.parse(await tryOrUndefinedAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8")));
     if (devJSON === undefined) {
-        await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(defaultDevJSON, undefined, 4));
-        devJSON = await fs.promises.readFile(devPath + "/dev.json", "utf-8");
+        devJSON = defaultDevJSON;
     }
-
-
     devJSON["last_exported_id"] = BUILD_CONFIG["id"];
-
-    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4), "utf-8");
+    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4));
 }
 
 
