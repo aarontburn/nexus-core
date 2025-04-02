@@ -115,18 +115,18 @@ export class ModuleCompiler {
 
                 if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
                     await copyFromProd(
-                        path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")),
+                        path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
                     );
                 } else {
                     await copyFromProd(
-                        path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")),
+                        path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")),
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
                     );
                 }
 
-                await fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
-                await fs.promises.copyFile(path.join(__dirname, "/view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf");
+                await fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
+                await fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf");
             }
 
 

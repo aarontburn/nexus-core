@@ -278,18 +278,18 @@ var ModuleCompiler = /** @class */ (function () {
                         return [3 /*break*/, 11];
                     case 11:
                         if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 13];
-                        return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                        return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                     case 12:
                         _b.sent();
                         return [3 /*break*/, 15];
-                    case 13: return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                    case 13: return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                     case 14:
                         _b.sent();
                         _b.label = 15;
-                    case 15: return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css")];
+                    case 15: return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css")];
                     case 16:
                         _b.sent();
-                        return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "/view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")];
+                        return [4 /*yield*/, fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")];
                     case 17:
                         _b.sent();
                         _b.label = 18;
