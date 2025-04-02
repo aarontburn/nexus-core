@@ -197,7 +197,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         callback(this.getSettings().getSetting('dev_mode').getValue());
                         break;
                     }
-                    case "getAccentColorColor": {
+                    case "getAccentColor": {
                         return [2 /*return*/, this.getSettings().getSetting("accent_color").getValue()];
                     }
                 }
@@ -262,7 +262,6 @@ var SettingsProcess = /** @class */ (function (_super) {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        console.log(data);
                         _a = eventType;
                         switch (_a) {
                             case "settings-init": return [3 /*break*/, 1];

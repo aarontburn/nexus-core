@@ -14,12 +14,12 @@
     const abbreviatedDate: HTMLElement = document.getElementById("abbreviated-date");
     const standardTime: HTMLElement = document.getElementById("standard-time");
     const militaryTime: HTMLElement = document.getElementById("military-time");
-    
+
     let currentOrder: string = undefined;
 
 
     window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
-        switch(eventType) {
+        switch (eventType) {
             case "update-clock": {
                 fullDate.innerHTML = data[0];
                 abbreviatedDate.innerHTML = data[1];

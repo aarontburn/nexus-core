@@ -210,8 +210,6 @@ export class SettingsProcess extends Process {
 
 
     public async handleEvent(eventType: string, data: any): Promise<any> {
-        console.log(data)
-
         switch (eventType) {
             case "settings-init": {
                 this.initialize();

@@ -58,15 +58,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 exports.__esModule = true;
 exports.ModuleController = void 0;
 var electron_1 = require("electron");
@@ -278,7 +269,7 @@ var ModuleController = /** @class */ (function () {
                             console.error("Module '".concat(source.getIPCSource(), "' attempted to access '").concat(targetModuleID, "', but no such module exists."));
                             return [2 /*return*/, new Error("No module with ID of ".concat(source.getIPCSource(), " found."))];
                         }
-                        return [4 /*yield*/, targetModule.handleExternal.apply(targetModule, __spreadArray([source, eventType], data, false))];
+                        return [4 /*yield*/, targetModule.handleExternal(source, eventType, data)];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response];
