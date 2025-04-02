@@ -69,7 +69,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
         switch (eventType) {
             case 'is-dev': {
-                isDeveloperMode = data;
+                isDeveloperMode = data[0];
                 var element = document.getElementById('moduleID');
                 if (element) {
                     element.hidden = !isDeveloperMode;
@@ -77,11 +77,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 break;
             }
             case "populate-settings-list": {
-                populateSettings(data);
+                populateSettings(data[0]);
                 break;
             }
             case "setting-modified": {
-                var event_2 = data;
+                var event_2 = data[0];
                 for (var _i = 0, event_1 = event_2; _i < event_1.length; _i++) {
                     var group = event_1[_i];
                     var element = document.getElementById(group.id);
@@ -90,7 +90,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 break;
             }
             case "refresh-settings": {
-                var newAccentColor = data;
+                var newAccentColor = data[0];
                 var root = window.parent.document.querySelector(':root');
                 root.style.setProperty('--accent-color', newAccentColor);
                 var contentChildren = window.parent.document.body.querySelector(".content").children;

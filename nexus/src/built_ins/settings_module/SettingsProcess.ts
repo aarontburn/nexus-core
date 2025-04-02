@@ -127,7 +127,7 @@ export class SettingsProcess extends Process {
     }
 
 
-    public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<any> {
+    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<any> {
         switch (eventType) {
             case 'isDeveloperMode': {
                 return this.getSettings().getSetting('dev_mode').getValue() as boolean;
@@ -138,7 +138,7 @@ export class SettingsProcess extends Process {
                 callback(this.getSettings().getSetting('dev_mode').getValue() as boolean);
                 break;
             }
-            case "getAccentColorColor": {
+            case "getAccentColor": {
                 return this.getSettings().getSetting("accent_color").getValue();
             }
 

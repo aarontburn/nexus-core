@@ -251,12 +251,11 @@ var ModuleController = /** @class */ (function () {
         this.window.loadFile(path.join(__dirname, "./view/index.html"));
         this.ipcCallback = {
             notifyRenderer: function (target, eventType) {
-                var _a;
                 var data = [];
                 for (var _i = 2; _i < arguments.length; _i++) {
                     data[_i - 2] = arguments[_i];
                 }
-                (_a = _this.window.webContents).send.apply(_a, __spreadArray([target.getIPCSource(), eventType], data, false));
+                _this.window.webContents.send(target.getIPCSource(), eventType, data);
             },
             requestExternalModule: this.handleInterModuleCommunication.bind(this) // Not sure if the binding is required
         };
@@ -272,7 +271,7 @@ var ModuleController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (targetModuleID === this.getIPCSource()) {
-                            return [2 /*return*/, this.handleExternal.apply(this, __spreadArray([source, eventType], data, false))];
+                            return [2 /*return*/, this.handleExternal(source, eventType, data)];
                         }
                         targetModule = this.modulesByIPCSource.get(targetModuleID);
                         if (targetModule === undefined) {

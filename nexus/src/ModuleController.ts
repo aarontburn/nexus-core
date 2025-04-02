@@ -176,7 +176,7 @@ export class ModuleController implements IPCSource {
 
         this.ipcCallback = {
             notifyRenderer: (target: IPCSource, eventType: string, ...data: any[]) => {
-                this.window.webContents.send(target.getIPCSource(), eventType, ...data);
+                this.window.webContents.send(target.getIPCSource(), eventType, data);
             },
             requestExternalModule: this.handleInterModuleCommunication.bind(this) // Not sure if the binding is required
         }
@@ -186,7 +186,7 @@ export class ModuleController implements IPCSource {
 
     private async handleInterModuleCommunication(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]) {
         if (targetModuleID === this.getIPCSource()) {
-            return this.handleExternal(source, eventType, ...data);
+            return this.handleExternal(source, eventType, data);
         }
 
 

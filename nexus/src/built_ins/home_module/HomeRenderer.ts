@@ -18,7 +18,7 @@
     let currentOrder: string = undefined;
 
 
-    window.parent.ipc.on(MODULE_ID, (_, eventType: string, ...data: any[]) => {
+    window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
         switch(eventType) {
             case "update-clock": {
                 fullDate.innerHTML = data[0];

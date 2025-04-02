@@ -183,11 +183,7 @@ var SettingsProcess = /** @class */ (function (_super) {
             });
         }
     };
-    SettingsProcess.prototype.handleExternal = function (source, eventType) {
-        var data = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            data[_i - 2] = arguments[_i];
-        }
+    SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
             var callback;
             return __generator(this, function (_a) {

@@ -27,14 +27,13 @@
 
 
     window.ipc.on(MODULE_ID, (_, eventType: string, data: any) => {
-        // data = data[0];
         switch (eventType) {
             case "load-modules": {
-                loadModules(data);
+                loadModules(data[0]);
                 break;
             }
             case "swap-modules": {
-                swapLayout(data)
+                swapLayout(data[0])
                 break;
             }
         }

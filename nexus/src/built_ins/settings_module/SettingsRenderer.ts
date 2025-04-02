@@ -63,7 +63,7 @@
     window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any) => {
         switch (eventType) {
             case 'is-dev': {
-                isDeveloperMode = data as boolean;
+                isDeveloperMode = data[0] as boolean;
 
                 const element: HTMLElement = document.getElementById('moduleID');
                 if (element) {
@@ -72,11 +72,11 @@
                 break;
             }
             case "populate-settings-list": {
-                populateSettings(data);
+                populateSettings(data[0]);
                 break;
             }
             case "setting-modified": {
-                const event: ChangeEvent[] = data;
+                const event: ChangeEvent[] = data[0];
 
                 for (const group of event) {
                     const element: any = document.getElementById(group.id);
@@ -85,7 +85,7 @@
                 break;
             }
             case "refresh-settings": {
-                const newAccentColor: string = data;
+                const newAccentColor: string = data[0];
                 const root: any = window.parent.document.querySelector(':root');
 
                 root.style.setProperty('--accent-color', newAccentColor);

@@ -24,14 +24,13 @@
     // ])).filter(([_, v]) => v).reduce((prev, [k, _]) => prev += `${k} `, "");
     var selectedTab = undefined;
     window.ipc.on(MODULE_ID, function (_, eventType, data) {
-        // data = data[0];
         switch (eventType) {
             case "load-modules": {
-                loadModules(data);
+                loadModules(data[0]);
                 break;
             }
             case "swap-modules": {
-                swapLayout(data);
+                swapLayout(data[0]);
                 break;
             }
         }

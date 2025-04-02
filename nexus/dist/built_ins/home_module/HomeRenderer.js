@@ -14,11 +14,7 @@
     var standardTime = document.getElementById("standard-time");
     var militaryTime = document.getElementById("military-time");
     var currentOrder = undefined;
-    window.parent.ipc.on(MODULE_ID, function (_, eventType) {
-        var data = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            data[_i - 2] = arguments[_i];
-        }
+    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
         switch (eventType) {
             case "update-clock": {
                 fullDate.innerHTML = data[0];
