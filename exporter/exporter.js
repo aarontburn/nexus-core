@@ -248,7 +248,7 @@ async function changeLastExported() {
     let devJSON = await tryOrUndefineAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
     if (devJSON === undefined) {
         await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(defaultDevJSON, undefined, 4));
-        devJSON = await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
+        devJSON = await fs.promises.readFile(devPath + "/dev.json", "utf-8");
     }
 
 
