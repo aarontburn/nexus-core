@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('ipc', {
 	send: (processID: string, eventType: string, data: any): Promise<any> =>
 		ipcRenderer.invoke(processID, eventType, data),
 
-	on: (channel: string, func: (event: Electron.IpcRendererEvent, ...args: any[]) => void) =>
+	on: (channel: string, func: (event: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => void) =>
 		ipcRenderer.on(channel, func),
 
 });

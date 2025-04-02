@@ -1,7 +1,7 @@
 
 export interface IIPC {
     send(module: string, eventType: string, data: any[]): Promise<any>,
-    on(channel: string, func: (event: Electron.IpcRendererEvent, ...[eventName, args]: [string, any[]]) => void): Electron.IpcRenderer
+    on(channel: string, func: (event: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => void): Electron.IpcRenderer
 }
 
 export interface ICommon {
