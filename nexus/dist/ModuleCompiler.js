@@ -274,7 +274,8 @@ var ModuleCompiler = /** @class */ (function () {
                                             console.error("LOAD ERROR: Process has no default export. Path: ".concat(moduleFolderPath + "/" + buildConfig["process"]));
                                             return [2 /*return*/, "continue"];
                                         }
-                                        m = new module_1["default"](ipcCallback);
+                                        m = new module_1["default"]();
+                                        m.setIPC(ipcCallback);
                                         m.setModuleInfo(moduleInfo);
                                         externalModules.push(m);
                                         return [2 /*return*/];

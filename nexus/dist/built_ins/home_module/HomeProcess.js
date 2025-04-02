@@ -80,8 +80,8 @@ var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
-    function HomeProcess(ipcCallback) {
-        var _this = _super.call(this, HomeProcess.MODULE_ID, HomeProcess.MODULE_NAME, HomeProcess.HTML_PATH, ipcCallback) || this;
+    function HomeProcess() {
+        var _this = _super.call(this, HomeProcess.MODULE_ID, HomeProcess.MODULE_NAME, HomeProcess.HTML_PATH) || this;
         _this.setModuleInfo({
             name: "Home",
             author: "aarontburn",

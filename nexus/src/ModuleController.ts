@@ -32,7 +32,8 @@ export class ModuleController implements IPCSource {
         this.createBrowserWindow();
         this.handleMainEvents();
 
-        this.settingsModule = new SettingsProcess(this.ipcCallback, this.window);
+        this.settingsModule = new SettingsProcess(this.window);
+        this.settingsModule.setIPC(this.ipcCallback)
 
         this.registerModules().then(() => {
             if (this.rendererReady) {
@@ -198,7 +199,9 @@ export class ModuleController implements IPCSource {
     private async registerModules(): Promise<void> {
         console.log("Registering modules...");
 
-        this.addModule(new HomeProcess(this.ipcCallback));
+        const home: HomeProcess = new HomeProcess();
+        home.setIPC(this.ipcCallback);
+        this.addModule(home);
         this.addModule(this.settingsModule);
 
 

@@ -85,7 +85,7 @@ export abstract class Process implements IPCSource {
     }
 
     public setIPC(ipc: IPCCallback) {
-        if (this.ipcCallback === undefined) {
+        if (this.ipcCallback !== undefined) {
             throw new Error("Cannot reassign IPC callback");
         }
         this.ipcCallback = ipc;

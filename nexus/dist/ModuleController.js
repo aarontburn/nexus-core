@@ -90,7 +90,8 @@ var ModuleController = /** @class */ (function () {
         var _this = this;
         this.createBrowserWindow();
         this.handleMainEvents();
-        this.settingsModule = new SettingsProcess_1.SettingsProcess(this.ipcCallback, this.window);
+        this.settingsModule = new SettingsProcess_1.SettingsProcess(this.window);
+        this.settingsModule.setIPC(this.ipcCallback);
         this.registerModules().then(function () {
             if (_this.rendererReady) {
                 _this.init();
@@ -288,13 +289,15 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.registerModules = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b, forceReload;
+            var home, _a, _b, forceReload;
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         console.log("Registering modules...");
-                        this.addModule(new HomeProcess_1.HomeProcess(this.ipcCallback));
+                        home = new HomeProcess_1.HomeProcess();
+                        home.setIPC(this.ipcCallback);
+                        this.addModule(home);
                         this.addModule(this.settingsModule);
                         _b = (_a = this.settingsModule).addModuleSetting;
                         return [4 /*yield*/, this.verifyModuleSettings(this.settingsModule)];

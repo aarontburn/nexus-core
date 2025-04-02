@@ -18,12 +18,11 @@ export class SettingsProcess extends Process {
     private readonly devModeSubscribers: ((isDev: boolean) => void)[] = [];
 
 
-    public constructor(ipcCallback: IPCCallback, window: BrowserWindow) {
+    public constructor(window: BrowserWindow) {
         super(
             SettingsProcess.MODULE_ID,
             SettingsProcess.MODULE_NAME,
-            SettingsProcess.HTML_PATH,
-            ipcCallback);
+            SettingsProcess.HTML_PATH);
         this.window = window;
 
         this.getSettings().setName("General");
@@ -160,7 +159,7 @@ export class SettingsProcess extends Process {
                 module: moduleName,
                 moduleInfo: moduleSettings.getModule().getModuleInfo(),
             };
-            
+
             if (moduleSettings.getSettings().length !== 0) {
                 settings.push(list);
             }
@@ -206,7 +205,7 @@ export class SettingsProcess extends Process {
 
     }
 
-    
+
 
 
 

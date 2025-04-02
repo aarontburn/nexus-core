@@ -83,8 +83,8 @@ var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var ModuleImporter_1 = require("./ModuleImporter");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
-    function SettingsProcess(ipcCallback, window) {
-        var _this = _super.call(this, SettingsProcess.MODULE_ID, SettingsProcess.MODULE_NAME, SettingsProcess.HTML_PATH, ipcCallback) || this;
+    function SettingsProcess(window) {
+        var _this = _super.call(this, SettingsProcess.MODULE_ID, SettingsProcess.MODULE_NAME, SettingsProcess.HTML_PATH) || this;
         _this.moduleSettingsList = new Map();
         _this.deletedModules = [];
         _this.devModeSubscribers = [];

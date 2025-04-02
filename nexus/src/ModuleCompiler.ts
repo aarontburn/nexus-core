@@ -155,7 +155,8 @@ export class ModuleCompiler {
                     continue;
                 }
 
-                const m: Process = new module["default"](ipcCallback);
+                const m: Process = new module["default"]();
+                m.setIPC(ipcCallback);
 
                 m.setModuleInfo(moduleInfo);
                 externalModules.push(m);

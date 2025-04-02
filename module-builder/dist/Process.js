@@ -80,7 +80,7 @@ var Process = /** @class */ (function () {
         this.moduleSettings._addInternalSettings(this.registerInternalSettings());
     }
     Process.prototype.setIPC = function (ipc) {
-        if (this.ipcCallback === undefined) {
+        if (this.ipcCallback !== undefined) {
             throw new Error("Cannot reassign IPC callback");
         }
         this.ipcCallback = ipc;

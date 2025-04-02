@@ -27,12 +27,11 @@ export class HomeProcess extends Process {
 
 	private clockTimeout: NodeJS.Timeout;
 
-	public constructor(ipcCallback: IPCCallback) {
+	public constructor() {
 		super(
 			HomeProcess.MODULE_ID,
 			HomeProcess.MODULE_NAME,
-			HomeProcess.HTML_PATH,
-			ipcCallback);
+			HomeProcess.HTML_PATH);
 
 		this.setModuleInfo({
 			name: "Home",
