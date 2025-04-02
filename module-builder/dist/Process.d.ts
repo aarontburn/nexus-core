@@ -13,66 +13,49 @@ export interface ModuleInfo {
 /**
  *  Class to encapsulate module behavior.
  *
- *  Many fields/methods are not intended to be public. However, the process
- *      of loading external modules forces everything to be public, for some reason.
- *      Fields/methods that have the @private annotations should be treated as if they were
- *      private and should NOT be accessed directly.
- *
  *  @interface
  *  @author aarontburn
  */
 export declare abstract class Process implements IPCSource {
     /**
-     *  @private
      *  @see getSetting
      *
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    private readonly _moduleSettings;
+    private readonly moduleSettings;
     /**
-     *  @private
-     *
      *  IPC callback function.
      */
-    private readonly _ipcCallback;
+    private ipcCallback;
     /**
-     *  @private
      *  @see getName
      *
      *  Ths name of this module.
      */
-    private readonly _moduleName;
+    private readonly moduleName;
     /**
-     *  @private
      *  @see ModuleInfo
      *  @see getModuleInfo
      *
      *  The information about this module.
      *
      */
-    private _moduleInfo;
+    private moduleInfo;
     /**
-     *  @private
-     *  @see isInitialized
-     *
      *  Boolean indicating if this module has been initialized.
      */
-    private _hasBeenInit;
+    private hasBeenInit;
     /**
-     *  @private
      *  @see getHTMLPath
      *
      *  The path to the HTML.
      */
-    private readonly _htmlPath;
+    private readonly htmlPath;
     /**
-     *  @private
-     *  @see getIPCSource
-     *
      *  The ID of this module.
      */
-    private readonly _moduleID;
+    private readonly moduleID;
     /**
      *  Entry point.
      *
@@ -80,7 +63,8 @@ export declare abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    constructor(moduleID: string, moduleName: string, htmlPath: string, ipcCallback: IPCCallback);
+    constructor(moduleID: string, moduleName: string, htmlPath: string);
+    setIPC(ipc: IPCCallback): void;
     /**
      *  @returns the ID of the module.
      */
@@ -111,7 +95,7 @@ export declare abstract class Process implements IPCSource {
      *  Should be overridden and treated as the entry point to the module.
      *
      *  Child classes MUST do super.initialize() to properly
-     *      set @see _hasBeenInit, if the module depends on it.
+     *      set @see hasBeenInit, if the module depends on it.
      */
     initialize(): void;
     /**

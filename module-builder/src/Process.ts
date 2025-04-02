@@ -17,73 +17,56 @@ export interface ModuleInfo {
 /**
  *  Class to encapsulate module behavior.
  * 
- *  Many fields/methods are not intended to be public. However, the process
- *      of loading external modules forces everything to be public, for some reason.
- *      Fields/methods that have the @private annotations should be treated as if they were
- *      private and should NOT be accessed directly.
- * 
  *  @interface
  *  @author aarontburn
  */
 export abstract class Process implements IPCSource {
 
     /**
-     *  @private 
      *  @see getSetting
      * 
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    private readonly _moduleSettings = new ModuleSettings(this);
+    private readonly moduleSettings = new ModuleSettings(this);
 
     /**
-     *  @private 
-     * 
      *  IPC callback function.
      */
-    private readonly _ipcCallback: IPCCallback;
+    private ipcCallback: IPCCallback;
 
     /**
-     *  @private 
      *  @see getName
      * 
      *  Ths name of this module.
      */
-    private readonly _moduleName: string;
+    private readonly moduleName: string;
 
     /**
-     *  @private
      *  @see ModuleInfo
      *  @see getModuleInfo
      * 
      *  The information about this module.
      *
      */
-    private _moduleInfo: ModuleInfo;
+    private moduleInfo: ModuleInfo;
 
     /**
-     *  @private
-     *  @see isInitialized
-     * 
      *  Boolean indicating if this module has been initialized.
      */
-    private _hasBeenInit: boolean = false;
+    private hasBeenInit: boolean = false;
 
     /**
-     *  @private
      *  @see getHTMLPath
      * 
      *  The path to the HTML.
      */
-    private readonly _htmlPath: string;
+    private readonly htmlPath: string;
 
     /**
-     *  @private
-     *  @see getIPCSource
-     * 
      *  The ID of this module.
      */
-    private readonly _moduleID: string;
+    private readonly moduleID: string;
 
     /**
      *  Entry point.
@@ -92,14 +75,20 @@ export abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    public constructor(moduleID: string, moduleName: string, htmlPath: string, ipcCallback: IPCCallback) {
-        this._moduleID = moduleID;
-        this._moduleName = moduleName;
-        this._htmlPath = htmlPath;
-        this._ipcCallback = ipcCallback;
+    public constructor(moduleID: string, moduleName: string, htmlPath: string) {
+        this.moduleID = moduleID;
+        this.moduleName = moduleName;
+        this.htmlPath = htmlPath;
 
-        this._moduleSettings._addSettings(this.registerSettings());
-        this._moduleSettings._addInternalSettings(this.registerInternalSettings());
+        this.moduleSettings._addSettings(this.registerSettings());
+        this.moduleSettings._addInternalSettings(this.registerInternalSettings());
+    }
+
+    public setIPC(ipc: IPCCallback) {
+        if (this.ipcCallback === undefined) {
+            throw new Error("Cannot reassign IPC callback");
+        }
+        this.ipcCallback = ipc;
     }
 
 
@@ -107,7 +96,7 @@ export abstract class Process implements IPCSource {
      *  @returns the ID of the module.
      */
     public getID(): string {
-        return this._moduleID;
+        return this.moduleID;
     }
 
     /**
@@ -115,7 +104,7 @@ export abstract class Process implements IPCSource {
      *      returns the module ID. This should not be modified.
      */
     public getIPCSource(): string {
-        return this._moduleID;
+        return this.moduleID;
     }
 
 
@@ -123,7 +112,7 @@ export abstract class Process implements IPCSource {
      *  @returns the name of the module.
      */
     public getName(): string {
-        return this._moduleName;
+        return this.moduleName;
     }
 
 
@@ -131,7 +120,7 @@ export abstract class Process implements IPCSource {
      *  @returns the settings associated with this module. 
      */
     public getSettings(): ModuleSettings {
-        return this._moduleSettings;
+        return this.moduleSettings;
     }
 
 
@@ -139,7 +128,7 @@ export abstract class Process implements IPCSource {
      *  @returns the name of the settings file associated with this module.
      */
     public getSettingsFileName(): string {
-        return this._moduleName.toLowerCase() + "_settings.json";
+        return this.moduleName.toLowerCase() + "_settings.json";
     }
 
 
@@ -147,7 +136,7 @@ export abstract class Process implements IPCSource {
      *  @returns true if @see initialize() has been called, false otherwise.
      */
     public isInitialized(): boolean {
-        return this._hasBeenInit;
+        return this.hasBeenInit;
     }
 
 
@@ -156,10 +145,10 @@ export abstract class Process implements IPCSource {
      *  Should be overridden and treated as the entry point to the module.
      * 
      *  Child classes MUST do super.initialize() to properly
-     *      set @see _hasBeenInit, if the module depends on it.
+     *      set @see hasBeenInit, if the module depends on it.
      */
     public initialize(): void {
-        this._hasBeenInit = true;
+        this.hasBeenInit = true;
         // Override this, and do a super.initialize() after initializing model.
     }
 
@@ -169,7 +158,7 @@ export abstract class Process implements IPCSource {
      *  @see ModuleInfo
      */
     public getModuleInfo(): ModuleInfo {
-        return this._moduleInfo;
+        return this.moduleInfo;
     }
 
 
@@ -181,10 +170,10 @@ export abstract class Process implements IPCSource {
      *  @param moduleInfo The module info.
      */
     public setModuleInfo(moduleInfo: ModuleInfo) {
-        if (this._moduleInfo !== undefined) {
-            throw new Error("Attempted to reassign module info for " + this._moduleName);
+        if (this.moduleInfo !== undefined) {
+            throw new Error("Attempted to reassign module info for " + this.moduleName);
         }
-        this._moduleInfo = moduleInfo;
+        this.moduleInfo = moduleInfo;
     }
 
 
@@ -264,7 +253,7 @@ export abstract class Process implements IPCSource {
      *  @returns the path to the HTML file associated with this module. 
      */
     public getHTMLPath(): string {
-        return this._htmlPath;
+        return this.htmlPath;
     }
 
 
@@ -272,7 +261,7 @@ export abstract class Process implements IPCSource {
      *  @returns a string representation of this module. Currently, just returns the name.
      */
     public toString(): string {
-        return this._moduleName;
+        return this.moduleName;
     }
 
 
@@ -293,7 +282,7 @@ export abstract class Process implements IPCSource {
      *  @see https://www.electronjs.org/docs/latest/tutorial/ipc#object-serialization
      */
     public sendToRenderer(eventType: string, ...data: any): void {
-        this._ipcCallback.notifyRenderer(this, eventType, ...data);
+        this.ipcCallback.notifyRenderer(this, eventType, ...data);
     }
 
 
@@ -306,7 +295,7 @@ export abstract class Process implements IPCSource {
      *  @returns            A Promise of the data to return.
      */
     public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<any> {
-        console.warn(`[${this._moduleName}]: External module, '${source.getIPCSource()}' requested data.'`);
+        console.warn(`[${this.moduleName}]: External module, '${source.getIPCSource()}' requested data.'`);
         console.warn(`\tWith event type of: ${eventType}`);
         console.warn(`\tAnd data:`);
         console.warn(data);
@@ -323,7 +312,7 @@ export abstract class Process implements IPCSource {
      *  @returns            The data returned from the request.
      */
     public async requestExternal(target: string, eventType: string, ...data: any[]): Promise<any> {
-        return this._ipcCallback.requestExternalModule(this, target, eventType, ...data);
+        return this.ipcCallback.requestExternalModule(this, target, eventType, ...data);
     }
 
 

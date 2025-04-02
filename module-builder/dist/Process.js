@@ -50,11 +50,6 @@ var ModuleSettings_1 = require("./ModuleSettings");
 /**
  *  Class to encapsulate module behavior.
  *
- *  Many fields/methods are not intended to be public. However, the process
- *      of loading external modules forces everything to be public, for some reason.
- *      Fields/methods that have the @private annotations should be treated as if they were
- *      private and should NOT be accessed directly.
- *
  *  @interface
  *  @author aarontburn
  */
@@ -66,75 +61,76 @@ var Process = /** @class */ (function () {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    function Process(moduleID, moduleName, htmlPath, ipcCallback) {
+    function Process(moduleID, moduleName, htmlPath) {
         /**
-         *  @private
          *  @see getSetting
          *
          *  Object to store this module's settings.
          *  This should not be directly accessed.
          */
-        this._moduleSettings = new ModuleSettings_1.ModuleSettings(this);
+        this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
         /**
-         *  @private
-         *  @see isInitialized
-         *
          *  Boolean indicating if this module has been initialized.
          */
-        this._hasBeenInit = false;
-        this._moduleID = moduleID;
-        this._moduleName = moduleName;
-        this._htmlPath = htmlPath;
-        this._ipcCallback = ipcCallback;
-        this._moduleSettings._addSettings(this.registerSettings());
-        this._moduleSettings._addInternalSettings(this.registerInternalSettings());
+        this.hasBeenInit = false;
+        this.moduleID = moduleID;
+        this.moduleName = moduleName;
+        this.htmlPath = htmlPath;
+        this.moduleSettings._addSettings(this.registerSettings());
+        this.moduleSettings._addInternalSettings(this.registerInternalSettings());
     }
+    Process.prototype.setIPC = function (ipc) {
+        if (this.ipcCallback === undefined) {
+            throw new Error("Cannot reassign IPC callback");
+        }
+        this.ipcCallback = ipc;
+    };
     /**
      *  @returns the ID of the module.
      */
     Process.prototype.getID = function () {
-        return this._moduleID;
+        return this.moduleID;
     };
     /**
      *  @returns the name of the IPC source. By default,
      *      returns the module ID. This should not be modified.
      */
     Process.prototype.getIPCSource = function () {
-        return this._moduleID;
+        return this.moduleID;
     };
     /**
      *  @returns the name of the module.
      */
     Process.prototype.getName = function () {
-        return this._moduleName;
+        return this.moduleName;
     };
     /**
      *  @returns the settings associated with this module.
      */
     Process.prototype.getSettings = function () {
-        return this._moduleSettings;
+        return this.moduleSettings;
     };
     /**
      *  @returns the name of the settings file associated with this module.
      */
     Process.prototype.getSettingsFileName = function () {
-        return this._moduleName.toLowerCase() + "_settings.json";
+        return this.moduleName.toLowerCase() + "_settings.json";
     };
     /**
      *  @returns true if @see initialize() has been called, false otherwise.
      */
     Process.prototype.isInitialized = function () {
-        return this._hasBeenInit;
+        return this.hasBeenInit;
     };
     /**
      *  Lifecycle function that is (usually) called when the renderer is ready.
      *  Should be overridden and treated as the entry point to the module.
      *
      *  Child classes MUST do super.initialize() to properly
-     *      set @see _hasBeenInit, if the module depends on it.
+     *      set @see hasBeenInit, if the module depends on it.
      */
     Process.prototype.initialize = function () {
-        this._hasBeenInit = true;
+        this.hasBeenInit = true;
         // Override this, and do a super.initialize() after initializing model.
     };
     /**
@@ -142,7 +138,7 @@ var Process = /** @class */ (function () {
      *  @see ModuleInfo
      */
     Process.prototype.getModuleInfo = function () {
-        return this._moduleInfo;
+        return this.moduleInfo;
     };
     /**
      *  Sets the info for this module.
@@ -152,10 +148,10 @@ var Process = /** @class */ (function () {
      *  @param moduleInfo The module info.
      */
     Process.prototype.setModuleInfo = function (moduleInfo) {
-        if (this._moduleInfo !== undefined) {
-            throw new Error("Attempted to reassign module info for " + this._moduleName);
+        if (this.moduleInfo !== undefined) {
+            throw new Error("Attempted to reassign module info for " + this.moduleName);
         }
-        this._moduleInfo = moduleInfo;
+        this.moduleInfo = moduleInfo;
     };
     /**
      *  Registers internal settings that will not appear under the settings window.
@@ -209,13 +205,13 @@ var Process = /** @class */ (function () {
      *  @returns the path to the HTML file associated with this module.
      */
     Process.prototype.getHTMLPath = function () {
-        return this._htmlPath;
+        return this.htmlPath;
     };
     /**
      *  @returns a string representation of this module. Currently, just returns the name.
      */
     Process.prototype.toString = function () {
-        return this._moduleName;
+        return this.moduleName;
     };
     /**
      *  Send an event to the renderer.
@@ -230,7 +226,7 @@ var Process = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        (_a = this._ipcCallback).notifyRenderer.apply(_a, __spreadArray([this, eventType], data, false));
+        (_a = this.ipcCallback).notifyRenderer.apply(_a, __spreadArray([this, eventType], data, false));
     };
     /**
      *  Exposes an API to external modules.
@@ -247,7 +243,7 @@ var Process = /** @class */ (function () {
         }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                console.warn("[".concat(this._moduleName, "]: External module, '").concat(source.getIPCSource(), "' requested data.'"));
+                console.warn("[".concat(this.moduleName, "]: External module, '").concat(source.getIPCSource(), "' requested data.'"));
                 console.warn("\tWith event type of: ".concat(eventType));
                 console.warn("\tAnd data:");
                 console.warn(data);
@@ -271,7 +267,7 @@ var Process = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a;
             return __generator(this, function (_b) {
-                return [2 /*return*/, (_a = this._ipcCallback).requestExternalModule.apply(_a, __spreadArray([this, target, eventType], data, false))];
+                return [2 /*return*/, (_a = this.ipcCallback).requestExternalModule.apply(_a, __spreadArray([this, target, eventType], data, false))];
             });
         });
     };
