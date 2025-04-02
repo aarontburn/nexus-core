@@ -28,8 +28,8 @@
     }
 
     const MODULE_ID: string = "built_ins.Settings";
-    const sendToProcess = (eventType: string, ...data: any[]): Promise<any> => {
-        return window.parent.ipc.send(MODULE_ID, eventType, ...data);
+    const sendToProcess = (eventType: string, ...data: any): Promise<any> => {
+        return window.parent.ipc.send(MODULE_ID, eventType, data);
     }
 
     sendToProcess("settings-init");

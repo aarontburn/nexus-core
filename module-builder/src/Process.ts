@@ -271,7 +271,7 @@ export abstract class Process implements IPCSource {
      *  @param eventType    The name of the event
      *  @param data         The data sent from the renderer.
      */
-    public abstract handleEvent(eventType: string, ...data: any[]): Promise<any>
+    public abstract handleEvent(eventType: string, data: any): Promise<any>
 
 
     /**

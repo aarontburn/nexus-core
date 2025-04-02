@@ -151,6 +151,7 @@ var ModuleController = /** @class */ (function () {
     ModuleController.prototype.handleMainEvents = function () {
         var _this = this;
         this.ipc.handle(this.getIPCSource(), function (_, eventType, data) {
+            console.log(data);
             switch (eventType) {
                 case "renderer-init": {
                     if (_this.initReady) {
@@ -343,12 +344,8 @@ var ModuleController = /** @class */ (function () {
                         }
                         console.log("\tRegistering " + moduleID);
                         this.modulesByIPCSource.set(moduleID, module);
-                        this.ipc.handle(moduleID, function (_, eventType) {
-                            var data = [];
-                            for (var _i = 2; _i < arguments.length; _i++) {
-                                data[_i - 2] = arguments[_i];
-                            }
-                            return module.handleEvent.apply(module, __spreadArray([eventType], data, false));
+                        this.ipc.handle(moduleID, function (_, eventType, data) {
+                            return module.handleEvent(eventType, data);
                         });
                         _b = (_a = this.settingsModule).addModuleSetting;
                         return [4 /*yield*/, this.verifyModuleSettings(module)];

@@ -102,7 +102,7 @@ export class ModuleController implements IPCSource {
     }
 
     private handleMainEvents(): void | Promise<any> {
-        this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any[]) => {
+        this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any) => {
             switch (eventType) {
                 case "renderer-init": {
                     if (this.initReady) {
@@ -113,7 +113,7 @@ export class ModuleController implements IPCSource {
                     break;
                 }
                 case "swap-modules": {
-                    this.swapVisibleModule(data[0]);
+                    this.swapVisibleModule(data);
                     break;
                 }
 
@@ -239,8 +239,8 @@ export class ModuleController implements IPCSource {
 
         this.modulesByIPCSource.set(moduleID, module);
 
-        this.ipc.handle(moduleID, (_, eventType: string, ...data: any[]) => {
-            return module.handleEvent(eventType, ...data);
+        this.ipc.handle(moduleID, (_, eventType: string, data: any) => {
+            return module.handleEvent(eventType, data);
         });
         this.settingsModule.addModuleSetting(await this.verifyModuleSettings(module));
     }

@@ -266,6 +266,7 @@ var SettingsProcess = /** @class */ (function (_super) {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
+                        console.log(data);
                         _a = eventType;
                         switch (_a) {
                             case "settings-init": return [3 /*break*/, 1];
