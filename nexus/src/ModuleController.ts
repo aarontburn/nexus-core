@@ -2,7 +2,7 @@ import { BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
-import { ModuleCompiler } from "./ModuleCompiler";
+import { ModuleCompiler } from "./compiler/ModuleCompiler";
 import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting } from "@nexus/nexus-module-builder";
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
