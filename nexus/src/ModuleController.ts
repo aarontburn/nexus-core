@@ -29,6 +29,9 @@ export class ModuleController implements IPCSource {
     }
 
     public start(): void {
+        
+
+
         this.createBrowserWindow();
         this.handleMainEvents();
 

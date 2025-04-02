@@ -1,9 +1,28 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow } from "electron";
 import { ModuleController } from "./ModuleController";
+import * as os from "os";
+import * as fs from "fs";
+
+const checkLastCompiledModule = () => {
+    const DEV_PATH: string = os.homedir() + "/.nexus_dev/dev.json";
+    try {
+        const devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
+        if (devJSON["last_exported_id"]) {
+            process.argv.push(`--last_exported_id:${devJSON["last_exported_id"]}`);
+        }
+        fs.rmSync(DEV_PATH);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+if (process.argv.includes("--dev")) {
+    checkLastCompiledModule();
+}
+
+
 
 const moduleController: ModuleController = new ModuleController();
-
-// Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {
     moduleController.start();
@@ -20,6 +39,8 @@ app.on("window-all-closed", () => {
         app.quit();
     }
 });
+
+
 
 
 
