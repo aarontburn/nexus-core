@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const dialogNode = require('dialog-node');
 const { tryOrUndefined, missingObjectKeys } = require('./utils');
-const archiver = require('archiver')(os.platform() !== 'linux' ? 'zip' : 'tar');
+const archiver = require('archiver')('zip');
 
 
 const inDev = process.argv.includes('--dev');

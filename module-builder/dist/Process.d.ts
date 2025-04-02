@@ -29,20 +29,20 @@ export declare abstract class Process implements IPCSource {
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    readonly _moduleSettings: ModuleSettings;
+    private readonly _moduleSettings;
     /**
      *  @private
      *
      *  IPC callback function.
      */
-    readonly _ipcCallback: IPCCallback;
+    private readonly _ipcCallback;
     /**
      *  @private
      *  @see getName
      *
      *  Ths name of this module.
      */
-    readonly _moduleName: string;
+    private readonly _moduleName;
     /**
      *  @private
      *  @see ModuleInfo
@@ -51,28 +51,28 @@ export declare abstract class Process implements IPCSource {
      *  The information about this module.
      *
      */
-    _moduleInfo: ModuleInfo;
+    private _moduleInfo;
     /**
      *  @private
      *  @see isInitialized
      *
      *  Boolean indicating if this module has been initialized.
      */
-    _hasBeenInit: boolean;
+    private _hasBeenInit;
     /**
      *  @private
      *  @see getHTMLPath
      *
      *  The path to the HTML.
      */
-    readonly _htmlPath: string;
+    private readonly _htmlPath;
     /**
      *  @private
      *  @see getIPCSource
      *
      *  The ID of this module.
      */
-    readonly _moduleID: string;
+    private readonly _moduleID;
     /**
      *  Entry point.
      *
@@ -81,6 +81,10 @@ export declare abstract class Process implements IPCSource {
      *  @param ipcCallback  The IPC callback function.
      */
     constructor(moduleID: string, moduleName: string, htmlPath: string, ipcCallback: IPCCallback);
+    /**
+     *  @returns the ID of the module.
+     */
+    getID(): string;
     /**
      *  @returns the name of the IPC source. By default,
      *      returns the module ID. This should not be modified.

@@ -90,6 +90,12 @@ var Process = /** @class */ (function () {
         this._moduleSettings._addInternalSettings(this.registerInternalSettings());
     }
     /**
+     *  @returns the ID of the module.
+     */
+    Process.prototype.getID = function () {
+        return this._moduleID;
+    };
+    /**
      *  @returns the name of the IPC source. By default,
      *      returns the module ID. This should not be modified.
      */

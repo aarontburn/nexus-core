@@ -34,14 +34,14 @@ export abstract class Process implements IPCSource {
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    public readonly _moduleSettings = new ModuleSettings(this);
+    private readonly _moduleSettings = new ModuleSettings(this);
 
     /**
      *  @private 
      * 
      *  IPC callback function.
      */
-    public readonly _ipcCallback: IPCCallback;
+    private readonly _ipcCallback: IPCCallback;
 
     /**
      *  @private 
@@ -49,7 +49,7 @@ export abstract class Process implements IPCSource {
      * 
      *  Ths name of this module.
      */
-    public readonly _moduleName: string;
+    private readonly _moduleName: string;
 
     /**
      *  @private
@@ -59,7 +59,7 @@ export abstract class Process implements IPCSource {
      *  The information about this module.
      *
      */
-    public _moduleInfo: ModuleInfo;
+    private _moduleInfo: ModuleInfo;
 
     /**
      *  @private
@@ -67,7 +67,7 @@ export abstract class Process implements IPCSource {
      * 
      *  Boolean indicating if this module has been initialized.
      */
-    public _hasBeenInit: boolean = false;
+    private _hasBeenInit: boolean = false;
 
     /**
      *  @private
@@ -75,7 +75,7 @@ export abstract class Process implements IPCSource {
      * 
      *  The path to the HTML.
      */
-    public readonly _htmlPath: string;
+    private readonly _htmlPath: string;
 
     /**
      *  @private
@@ -83,7 +83,7 @@ export abstract class Process implements IPCSource {
      * 
      *  The ID of this module.
      */
-    public readonly _moduleID: string;
+    private readonly _moduleID: string;
 
     /**
      *  Entry point.
@@ -102,6 +102,13 @@ export abstract class Process implements IPCSource {
         this._moduleSettings._addInternalSettings(this.registerInternalSettings());
     }
 
+
+    /**
+     *  @returns the ID of the module.
+     */
+    public getID(): string {
+        return this._moduleID;
+    }
 
     /**
      *  @returns the name of the IPC source. By default,
@@ -306,7 +313,7 @@ export abstract class Process implements IPCSource {
         return null;
     }
 
-    
+
     /**
      *  Requests information from another module. 
      * 
