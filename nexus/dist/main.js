@@ -36,8 +36,7 @@ var checkLastCompiledModule = function () {
         }
         fs.rmSync(DEV_PATH);
     }
-    catch (err) {
-        console.error(err);
+    catch (_) {
     }
 };
 if (process.argv.includes("--dev")) {

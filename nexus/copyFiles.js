@@ -1,27 +1,39 @@
 const fs = require("fs")
 const path = require("path")
 
-const PWD = path.join(__dirname, 'src');
-
 if (!process.argv.includes("--verbose")) {
-    // Mute all console.log
-    console.log = function (message) {
-        // original.apply(console, arguments);
-    }
+    console.log = (_) => {};
+}
+
+if (process.argv.includes("--pre")) {
+    const outputDir = __dirname + "/dist";
+    const packageJSON = __dirname + "/build_package.json";
+    const renderer_d_ts = __dirname + "/renderer.d.ts";
+    
+    // Remove old /dist/ folder
+    fs.rmSync(outputDir, { force: true, recursive: true });
+    fs.mkdirSync(outputDir);
+    fs.copyFileSync(packageJSON, outputDir + "/package.json");
+    fs.copyFileSync(renderer_d_ts, outputDir + "/renderer.d.ts");
+    return
 }
 
 
+
+
+const SRC = path.join(__dirname, 'src');
+
 // These are all the files to copy into the "dist" folder
 const pathsToCopy = [
-    PWD + "/view",
-    PWD + "/built_ins/home_module/HomeHTML.html",
-    PWD + "/built_ins/home_module/HomeStyles.css",
-    PWD + "/built_ins/settings_module/SettingsHTML.html",
-    PWD + "/built_ins/settings_module/SettingsStyles.css",
+    SRC + "/view",
+    SRC + "/built_ins/home_module/HomeHTML.html",
+    SRC + "/built_ins/home_module/HomeStyles.css",
+    SRC + "/built_ins/settings_module/SettingsHTML.html",
+    SRC + "/built_ins/settings_module/SettingsStyles.css",
 ];
 
 pathsToCopy.forEach(file => {
-    console.log("Copying `" + file + "` to `" + file.replace("src", "dist") + "`")
+    console.log(`Copying '${file}' to '${file.replace("src", "dist")}'`);
 
     if (!file.includes(".")) {
         fs.cpSync(file, file.replace("src", "dist"), { recursive: true })
@@ -30,5 +42,7 @@ pathsToCopy.forEach(file => {
 
     fs.copyFileSync(file, file.replace("src", "dist"))
 });
+
+
 
 

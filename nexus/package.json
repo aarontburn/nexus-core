@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Micro-app platform.",
   "scripts": {
-    "build": "node builder.js && tsc && node copyFiles.js",
+    "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
     "watch": "tsc -w",
     "start": "npm run build && electron ./dist/main.js --dev --in-core",
     "package": "npm run build && npx electron-builder build",

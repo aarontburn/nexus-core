@@ -11,8 +11,7 @@ const checkLastCompiledModule = () => {
             process.argv.push(`--last_exported_id:${devJSON["last_exported_id"]}`);
         }
         fs.rmSync(DEV_PATH);
-    } catch (err) {
-        console.error(err);
+    } catch (_) {
     }
 }
 
