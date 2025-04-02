@@ -35,15 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 (function () {
-    var MODULE_ID = "built_ins.Settings";
     var sendToProcess = function (eventType) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.parent.ipc.send(MODULE_ID, eventType, data);
+        return window.parent.ipc.send(window, eventType, data);
     };
-    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
+    window.parent.ipc.on(window, function (_, eventType, data) {
         handleEvent(eventType, data);
     });
     sendToProcess("settings-init");

@@ -1,10 +1,10 @@
 (() => {
-    const MODULE_ID: string = 'built_ins.Main';
+    (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main"
     const sendToProcess = (eventType: string, ...data: any[]): Promise<void> => {
-        return window.ipc.send(MODULE_ID, eventType, data);
+        return window.ipc.send(window, eventType, data);
     }
 
-    window.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
+    window.ipc.on(window, (_, eventType: string, data: any[]) => {
         handleEvent(eventType, data);
     });
 

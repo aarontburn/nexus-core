@@ -1,13 +1,13 @@
 (function () {
-    var MODULE_ID = 'built_ins.Main';
+    window["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main";
     var sendToProcess = function (eventType) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.ipc.send(MODULE_ID, eventType, data);
+        return window.ipc.send(window, eventType, data);
     };
-    window.ipc.on(MODULE_ID, function (_, eventType, data) {
+    window.ipc.on(window, function (_, eventType, data) {
         handleEvent(eventType, data);
     });
     sendToProcess("renderer-init");

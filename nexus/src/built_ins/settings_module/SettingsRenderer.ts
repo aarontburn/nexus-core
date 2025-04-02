@@ -27,12 +27,11 @@
         settings: any[]
     }
 
-    const MODULE_ID: string = "built_ins.Settings";
     const sendToProcess = (eventType: string, ...data: any): Promise<any> => {
-        return window.parent.ipc.send(MODULE_ID, eventType, data);
+        return window.parent.ipc.send(window, eventType, data);
     }
 
-    window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
+    window.parent.ipc.on(window, (_, eventType: string, data: any[]) => {
         handleEvent(eventType, data);
     });
 
