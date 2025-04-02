@@ -42,6 +42,9 @@ var checkLastCompiledModule = function () {
 if (process.argv.includes("--dev")) {
     checkLastCompiledModule();
 }
+else {
+    electron_1.Menu.setApplicationMenu(null);
+}
 var moduleController = new ModuleController_1.ModuleController();
 electron_1.app.whenReady().then(function () {
     moduleController.start();

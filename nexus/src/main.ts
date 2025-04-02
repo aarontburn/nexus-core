@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import { ModuleController } from "./ModuleController";
 import * as os from "os";
 import * as fs from "fs";
@@ -17,6 +17,9 @@ const checkLastCompiledModule = () => {
 
 if (process.argv.includes("--dev")) {
     checkLastCompiledModule();
+    
+} else {
+    Menu.setApplicationMenu(null);
 }
 
 
