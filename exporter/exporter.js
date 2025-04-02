@@ -2,11 +2,12 @@ const os = require('os');
 const path = require("path");
 const fs = require("fs");
 const dialogNode = require('dialog-node');
-const { tryOrUndefined, missingObjectKeys } = require('./utils');
+const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefineAsync } = require('./utils');
 const archiver = require('archiver')('zip');
 
 
-const inDev = process.argv.includes('--dev');
+
+
 if (!process.argv.includes("--verbose")) {
     // Mute all console.log
     console.log = function (message) {
@@ -60,7 +61,7 @@ const SRC_NODE_MODULES = PROJECT_ROOT_DIR + "/node_modules";
 let chosenFolder;
 
 const getOutputFolder = () => {
-    if (inDev) {
+    if (process.argv.includes('--dev')) {
         return `${os.homedir()}/.nexus_dev/external_modules/${BUILD_CONFIG["id"]}/`;
     }
 
@@ -68,7 +69,7 @@ const getOutputFolder = () => {
 };
 
 async function main() {
-    if (!inDev) {
+    if (!process.argv.includes('--dev')) {
         const outputPath = await getDirectory();
         console.log("Outputting module to: " + outputPath)
         if (outputPath !== undefined) {
@@ -84,6 +85,7 @@ async function main() {
     checkAndCopyDependencies();
     await toArchive();
     fs.rmSync(getOutputFolder(), { recursive: true, force: true });
+    await changeLastExported()
 
     console.log("\n\tFINISHING BUNDLING MODULE");
 }
@@ -102,7 +104,7 @@ async function getDirectory() {
 }
 
 function modifyModuleInfoJSON() {
-    if (inDev) {
+    if (process.argv.includes('--dev')) {
         return;
     }
     const jsonPath = PROJECT_ROOT_DIR + "/src/" + MODULE_INFO_FILE;
@@ -236,8 +238,22 @@ function toArchive() {
         stream.on('close', () => resolve());
         archiver.finalize();
     });
+}
 
 
+async function changeLastExported() {
+    const devPath = path.normalize(os.homedir() + '/.nexus_dev/');
+    await fs.promises.mkdir(devPath, { recursive: true });
+
+    let devJSON = await tryOrUndefineAsync(async () => await fs.promises.readFile(devPath + "/dev.json"));
+    if (devJSON === undefined) {
+        await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(defaultDevJSON, undefined, 4));
+        devJSON = await fs.promises.readFile(devPath + "/dev.json");
+    }
+
+    devJSON["last_exported_id"] = BUILD_CONFIG["id"]
+
+    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4));
 }
 
 

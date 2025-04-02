@@ -6,8 +6,19 @@ export const tryOrUndefined = (func) => {
     }
 }
 
+export const tryOrUndefineAsync = async (func) => {
+    try {
+        return await func();
+    } catch (e) {
+        return undefined;
+    }
+}
+
 
 export const missingObjectKeys = (obj, keys) => {
     return keys.filter(k => !Object.keys(obj).includes(k))
-
 } 
+
+export const defaultDevJSON = {
+    last_exported_id: null
+}
