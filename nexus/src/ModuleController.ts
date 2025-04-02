@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, ipcMain, ipcRenderer } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
@@ -23,8 +23,8 @@ export class ModuleController implements IPCSource {
     private ipcCallback: IPCCallback;
 
 
-
     public getIPCSource(): string {
+
         return "built_ins.Main";
     }
 
@@ -102,7 +102,7 @@ export class ModuleController implements IPCSource {
     }
 
     private handleMainEvents(): void | Promise<any> {
-        this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any) => {
+        this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any[]) => {
             switch (eventType) {
                 case "renderer-init": {
                     if (this.initReady) {

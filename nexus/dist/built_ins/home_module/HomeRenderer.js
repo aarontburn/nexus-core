@@ -7,6 +7,9 @@
         }
         return window.parent.ipc.send(MODULE_ID, eventType, data);
     };
+    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
+        handleEvent(eventType, data);
+    });
     sendToProcess("init");
     var displayContainer = document.getElementById('center');
     var fullDate = document.getElementById("full-date");
@@ -14,7 +17,7 @@
     var standardTime = document.getElementById("standard-time");
     var militaryTime = document.getElementById("military-time");
     var currentOrder = undefined;
-    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
+    var handleEvent = function (eventType, data) {
         switch (eventType) {
             case "update-clock": {
                 fullDate.innerHTML = data[0];
@@ -38,7 +41,7 @@
                 break;
             }
         }
-    });
+    };
     function changeDisplayOrder(newOrder) {
         currentOrder = newOrder;
         while (displayContainer.firstChild) {

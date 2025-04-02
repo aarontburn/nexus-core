@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
 import { BrowserWindow, app, shell } from 'electron';
-import { ChangeEvent, IPCCallback, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
+import { ChangeEvent, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 

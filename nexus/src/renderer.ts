@@ -4,6 +4,10 @@
         return window.ipc.send(MODULE_ID, eventType, data);
     }
 
+    window.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
+        handleEvent(eventType, data);
+    });
+
     sendToProcess("renderer-init");
 
     const IFRAME_DEFAULT_STYLE: string = "height: 100%; width: 100%;";
@@ -26,7 +30,7 @@
     let selectedTab: HTMLElement = undefined;
 
 
-    window.ipc.on(MODULE_ID, (_, eventType: string, data: any) => {
+    const handleEvent = (eventType: string, data: any[]) => {
         switch (eventType) {
             case "load-modules": {
                 loadModules(data[0]);
@@ -37,7 +41,7 @@
                 break;
             }
         }
-    })
+    }
 
 
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {

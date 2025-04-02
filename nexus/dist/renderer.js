@@ -7,6 +7,9 @@
         }
         return window.ipc.send(MODULE_ID, eventType, data);
     };
+    window.ipc.on(MODULE_ID, function (_, eventType, data) {
+        handleEvent(eventType, data);
+    });
     sendToProcess("renderer-init");
     var IFRAME_DEFAULT_STYLE = "height: 100%; width: 100%;";
     // const SANDBOX_RESTRICTIONS: string = Array.from(new Map([
@@ -23,7 +26,7 @@
     //     ['allow-top-navigation-by-user-activation', false],
     // ])).filter(([_, v]) => v).reduce((prev, [k, _]) => prev += `${k} `, "");
     var selectedTab = undefined;
-    window.ipc.on(MODULE_ID, function (_, eventType, data) {
+    var handleEvent = function (eventType, data) {
         switch (eventType) {
             case "load-modules": {
                 loadModules(data[0]);
@@ -34,7 +37,7 @@
                 break;
             }
         }
-    });
+    };
     var handleButtonClick = function (moduleID, buttonElement) {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";

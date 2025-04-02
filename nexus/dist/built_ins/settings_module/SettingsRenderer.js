@@ -43,6 +43,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         }
         return window.parent.ipc.send(MODULE_ID, eventType, data);
     };
+    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
+        handleEvent(eventType, data);
+    });
     sendToProcess("settings-init");
     var isDeveloperMode = false;
     var selectedTabElement = undefined;
@@ -66,7 +69,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             openManageScreen(data);
         });
     });
-    window.parent.ipc.on(MODULE_ID, function (_, eventType, data) {
+    var handleEvent = function (eventType, data) {
         switch (eventType) {
             case 'is-dev': {
                 isDeveloperMode = data[0];
@@ -105,7 +108,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 break;
             }
         }
-    });
+    };
     function populateSettings(data) {
         var firstModule;
         data.forEach(function (obj) {

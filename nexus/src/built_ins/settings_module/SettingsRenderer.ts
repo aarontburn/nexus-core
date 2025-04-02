@@ -32,6 +32,10 @@
         return window.parent.ipc.send(MODULE_ID, eventType, data);
     }
 
+    window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any[]) => {
+        handleEvent(eventType, data);
+    });
+
     sendToProcess("settings-init");
 
     let isDeveloperMode: boolean = false;
@@ -60,7 +64,7 @@
         });
     });
 
-    window.parent.ipc.on(MODULE_ID, (_, eventType: string, data: any) => {
+    const handleEvent = (eventType: string, data: any[]) => {
         switch (eventType) {
             case 'is-dev': {
                 isDeveloperMode = data[0] as boolean;
@@ -104,7 +108,7 @@
             }
 
         }
-    });
+    };
 
     function populateSettings(data: { module: string, moduleInfo: any }[]): void {
         let firstModule: HTMLElement;

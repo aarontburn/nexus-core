@@ -1,7 +1,7 @@
 var _a = require('electron'), ipcRenderer = _a.ipcRenderer, contextBridge = _a.contextBridge;
 contextBridge.exposeInMainWorld('ipc', {
-    send: function (target, eventType, data) {
-        return ipcRenderer.invoke(target, eventType, data);
+    send: function (processID, eventType, data) {
+        return ipcRenderer.invoke(processID, eventType, data);
     },
     on: function (channel, func) {
         return ipcRenderer.on(channel, func);
