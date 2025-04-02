@@ -245,15 +245,16 @@ async function changeLastExported() {
     const devPath = path.normalize(os.homedir() + '/.nexus_dev/');
     await fs.promises.mkdir(devPath, { recursive: true });
 
-    let devJSON = await tryOrUndefineAsync(async () => await fs.promises.readFile(devPath + "/dev.json"));
+    let devJSON = await tryOrUndefineAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
     if (devJSON === undefined) {
         await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(defaultDevJSON, undefined, 4));
-        devJSON = await fs.promises.readFile(devPath + "/dev.json");
+        devJSON = await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
     }
 
-    devJSON["last_exported_id"] = BUILD_CONFIG["id"]
 
-    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4));
+    devJSON["last_exported_id"] = BUILD_CONFIG["id"];
+
+    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4), "utf-8");
 }
 
 
