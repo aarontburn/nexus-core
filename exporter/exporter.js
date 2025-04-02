@@ -2,7 +2,7 @@ const os = require('os');
 const path = require("path");
 const fs = require("fs");
 const dialogNode = require('dialog-node');
-const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefineAsync } = require('./utils');
+const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefinedAsync } = require('./utils');
 const archiver = require('archiver')('zip');
 
 
