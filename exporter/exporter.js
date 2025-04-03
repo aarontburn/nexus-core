@@ -64,6 +64,7 @@ const getOutputFolder = () => {
 };
 
 async function main() {
+    console.time("Export Time")
     if (!process.argv.includes('--dev')) {
         const outputPath = await getDirectory();
         console.log("Outputting module to: " + outputPath)
@@ -83,6 +84,7 @@ async function main() {
     await changeLastExported()
 
     console.log("\n\tFINISHING BUNDLING MODULE");
+    console.timeEnd("Export Time")
 }
 
 async function getDirectory() {
