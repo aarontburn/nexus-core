@@ -9,8 +9,8 @@ import { Setting } from "./Setting";
  *  @author aarontburn
  */
 export class ModuleSettings {
-    private readonly settingsMap: Map<string, Setting<unknown>> = new Map();
-    private readonly settingsDisplay: (Setting<unknown> | string)[] = [];
+    private readonly settingsMap: Map<string, Setting<unknown>>;
+    private readonly settingsDisplay: (Setting<unknown> | string)[];
     private readonly parentModule: Process;
 
     private settingsName: string;
@@ -18,6 +18,10 @@ export class ModuleSettings {
 
     public constructor(module: Process) {
         this.parentModule = module;
+
+        this.settingsMap = new Map();
+        this.settingsDisplay = [];
+
         this.addSettings(module.registerSettings());
         this.addInternalSettings(module.registerInternalSettings());
 
@@ -160,7 +164,7 @@ export class ModuleSettings {
         return this.settingsMap.get(nameOrAccessID);
     }
 
-    
+
     /**
      *  @returns A reference to the parent process.
      */

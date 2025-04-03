@@ -25,7 +25,7 @@ export class SettingsProcess extends Process {
             SettingsProcess.HTML_PATH);
         this.window = window;
 
-        this.getSettings().setName("General");
+        this.getSettings().setDisplayName("General");
         this.setModuleInfo({
             name: "General",
             author: "aarontburn",
@@ -98,11 +98,11 @@ export class SettingsProcess extends Process {
         const isWindowMaximized: boolean = this.window.isMaximized();
         const bounds: { width: number, height: number, x: number, y: number } = this.window.getBounds();
 
-        this.getSettings().getSetting('window_maximized').setValue(isWindowMaximized);
-        this.getSettings().getSetting('window_width').setValue(bounds.width);
-        this.getSettings().getSetting('window_height').setValue(bounds.height);
-        this.getSettings().getSetting('window_x').setValue(bounds.x);
-        this.getSettings().getSetting('window_y').setValue(bounds.y);
+        this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized);
+        this.getSettings().findSetting('window_width').setValue(bounds.width);
+        this.getSettings().findSetting('window_height').setValue(bounds.height);
+        this.getSettings().findSetting('window_x').setValue(bounds.x);
+        this.getSettings().findSetting('window_y').setValue(bounds.y);
 
         await StorageHandler.writeModuleSettingsToStorage(this);
     }
@@ -130,16 +130,16 @@ export class SettingsProcess extends Process {
     public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<any> {
         switch (eventType) {
             case 'isDeveloperMode': {
-                return this.getSettings().getSetting('dev_mode').getValue() as boolean;
+                return this.getSettings().findSetting('dev_mode').getValue() as boolean;
             }
             case 'listenToDevMode': {
                 const callback: (isDev: boolean) => void = data[0];
                 this.devModeSubscribers.push(callback);
-                callback(this.getSettings().getSetting('dev_mode').getValue() as boolean);
+                callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
                 break;
             }
             case "getAccentColor": {
-                return this.getSettings().getSetting("accent_color").getValue();
+                return this.getSettings().findSetting("accent_color").getValue();
             }
 
         }
@@ -148,23 +148,23 @@ export class SettingsProcess extends Process {
     public initialize(): void {
         super.initialize();
 
-        this.sendToRenderer("is-dev", this.getSettings().getSetting('dev_mode').getValue());
+        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
         const settings: any[] = [];
 
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            const moduleName: string = moduleSettings.getName();
+            const moduleName: string = moduleSettings.getDisplayName();
 
             const list: { module: string, moduleInfo: any } = {
                 module: moduleName,
-                moduleInfo: moduleSettings.getModule().getModuleInfo(),
+                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
             };
 
-            if (moduleSettings.getSettings().length !== 0) {
+            if (moduleSettings.allToArray().length !== 0) {
                 settings.push(list);
             }
 
-            moduleSettings.getModule().refreshAllSettings();
+            moduleSettings.getProcess().refreshAllSettings();
         }
 
         // Swap settings and home module so it appears at the top
@@ -177,7 +177,7 @@ export class SettingsProcess extends Process {
     // TODO: Restructure stuff 
     private onSettingChange(settingID: string, newValue?: any): void {
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            const settingsList: Setting<unknown>[] = moduleSettings.getSettings();
+            const settingsList: Setting<unknown>[] = moduleSettings.allToArray();
 
             for (const setting of settingsList) {
                 const settingBox: SettingBox<unknown> = setting.getUIComponent();
@@ -256,7 +256,7 @@ export class SettingsProcess extends Process {
                 const moduleName: string = data[0];
 
                 for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-                    const name: string = moduleSettings.getName();
+                    const name: string = moduleSettings.getDisplayName();
 
                     if (moduleName !== name) {
                         continue;
@@ -265,8 +265,8 @@ export class SettingsProcess extends Process {
                     const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
                     const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
                         module: name,
-                        moduleID: moduleSettings.getModule().getIPCSource(),
-                        moduleInfo: moduleSettings.getModule().getModuleInfo(),
+                        moduleID: moduleSettings.getProcess().getIPCSource(),
+                        moduleInfo: moduleSettings.getProcess().getModuleInfo(),
                         settings: []
                     };
 

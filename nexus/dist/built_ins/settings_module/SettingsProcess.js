@@ -89,7 +89,7 @@ var SettingsProcess = /** @class */ (function (_super) {
         _this.deletedModules = [];
         _this.devModeSubscribers = [];
         _this.window = window;
-        _this.getSettings().setName("General");
+        _this.getSettings().setDisplayName("General");
         _this.setModuleInfo({
             name: "General",
             author: "aarontburn",
@@ -155,11 +155,11 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 0:
                         isWindowMaximized = this.window.isMaximized();
                         bounds = this.window.getBounds();
-                        this.getSettings().getSetting('window_maximized').setValue(isWindowMaximized);
-                        this.getSettings().getSetting('window_width').setValue(bounds.width);
-                        this.getSettings().getSetting('window_height').setValue(bounds.height);
-                        this.getSettings().getSetting('window_x').setValue(bounds.x);
-                        this.getSettings().getSetting('window_y').setValue(bounds.y);
+                        this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized);
+                        this.getSettings().findSetting('window_width').setValue(bounds.width);
+                        this.getSettings().findSetting('window_height').setValue(bounds.height);
+                        this.getSettings().findSetting('window_x').setValue(bounds.x);
+                        this.getSettings().findSetting('window_y').setValue(bounds.y);
                         return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
                     case 1:
                         _a.sent();
@@ -189,16 +189,16 @@ var SettingsProcess = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (eventType) {
                     case 'isDeveloperMode': {
-                        return [2 /*return*/, this.getSettings().getSetting('dev_mode').getValue()];
+                        return [2 /*return*/, this.getSettings().findSetting('dev_mode').getValue()];
                     }
                     case 'listenToDevMode': {
                         callback = data[0];
                         this.devModeSubscribers.push(callback);
-                        callback(this.getSettings().getSetting('dev_mode').getValue());
+                        callback(this.getSettings().findSetting('dev_mode').getValue());
                         break;
                     }
                     case "getAccentColor": {
-                        return [2 /*return*/, this.getSettings().getSetting("accent_color").getValue()];
+                        return [2 /*return*/, this.getSettings().findSetting("accent_color").getValue()];
                     }
                 }
                 return [2 /*return*/];
@@ -207,19 +207,19 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.initialize = function () {
         _super.prototype.initialize.call(this);
-        this.sendToRenderer("is-dev", this.getSettings().getSetting('dev_mode').getValue());
+        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
         var settings = [];
         for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
             var moduleSettings = _a[_i];
-            var moduleName = moduleSettings.getName();
+            var moduleName = moduleSettings.getDisplayName();
             var list = {
                 module: moduleName,
-                moduleInfo: moduleSettings.getModule().getModuleInfo()
+                moduleInfo: moduleSettings.getProcess().getModuleInfo()
             };
-            if (moduleSettings.getSettings().length !== 0) {
+            if (moduleSettings.allToArray().length !== 0) {
                 settings.push(list);
             }
-            moduleSettings.getModule().refreshAllSettings();
+            moduleSettings.getProcess().refreshAllSettings();
         }
         // Swap settings and home module so it appears at the top
         var temp = settings[0];
@@ -231,7 +231,7 @@ var SettingsProcess = /** @class */ (function (_super) {
     SettingsProcess.prototype.onSettingChange = function (settingID, newValue) {
         for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
             var moduleSettings = _a[_i];
-            var settingsList = moduleSettings.getSettings();
+            var settingsList = moduleSettings.allToArray();
             for (var _b = 0, settingsList_1 = settingsList; _b < settingsList_1.length; _b++) {
                 var setting = settingsList_1[_b];
                 var settingBox = setting.getUIComponent();
@@ -326,15 +326,15 @@ var SettingsProcess = /** @class */ (function (_super) {
                         {
                             moduleName = data[0];
                             _loop_1 = function (moduleSettings) {
-                                var name_1 = moduleSettings.getName();
+                                var name_1 = moduleSettings.getDisplayName();
                                 if (moduleName !== name_1) {
                                     return "continue";
                                 }
                                 var settingsList = moduleSettings.getSettingsAndHeaders();
                                 var list = {
                                     module: name_1,
-                                    moduleID: moduleSettings.getModule().getIPCSource(),
-                                    moduleInfo: moduleSettings.getModule().getModuleInfo(),
+                                    moduleID: moduleSettings.getProcess().getIPCSource(),
+                                    moduleInfo: moduleSettings.getProcess().getModuleInfo(),
                                     settings: []
                                 };
                                 settingsList.forEach(function (s) {

@@ -9,9 +9,9 @@ exports.ModuleSettings = void 0;
 var ModuleSettings = /** @class */ (function () {
     function ModuleSettings(module) {
         var _this = this;
+        this.parentModule = module;
         this.settingsMap = new Map();
         this.settingsDisplay = [];
-        this.parentModule = module;
         this.addSettings(module.registerSettings());
         this.addInternalSettings(module.registerInternalSettings());
         // Bind everything

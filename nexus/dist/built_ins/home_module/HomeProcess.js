@@ -173,15 +173,15 @@ var HomeProcess = /** @class */ (function (_super) {
     HomeProcess.prototype.refreshSettings = function (modifiedSetting) {
         if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID())) {
             var sizes = {
-                fullDate: this.getSettings().getSetting('full_date_fs').getValue(),
-                abbrDate: this.getSettings().getSetting('abbr_date_fs').getValue(),
-                standardTime: this.getSettings().getSetting('standard_time_fs').getValue(),
-                militaryTime: this.getSettings().getSetting('military_time_fs').getValue()
+                fullDate: this.getSettings().findSetting('full_date_fs').getValue(),
+                abbrDate: this.getSettings().findSetting('abbr_date_fs').getValue(),
+                standardTime: this.getSettings().findSetting('standard_time_fs').getValue(),
+                militaryTime: this.getSettings().findSetting('military_time_fs').getValue()
             };
             this.sendToRenderer('font-sizes', sizes);
         }
         else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'display_order') {
-            var order = this.getSettings().getSetting("display_order").getValue();
+            var order = this.getSettings().findSetting("display_order").getValue();
             this.sendToRenderer('display-order', order);
         }
     };

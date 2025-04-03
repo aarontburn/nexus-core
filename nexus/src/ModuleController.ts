@@ -47,13 +47,13 @@ export class ModuleController implements IPCSource {
 
             const settings: ModuleSettings = this.settingsModule.getSettings();
             this.window.setBounds({
-                x: Number(settings.getSetting('window_x').getValue()),
-                y: Number(settings.getSetting('window_y').getValue()),
-                height: Number(settings.getSetting('window_height').getValue()),
-                width: Number(settings.getSetting('window_width').getValue()),
+                x: Number(settings.findSetting('window_x').getValue()),
+                y: Number(settings.findSetting('window_y').getValue()),
+                height: Number(settings.findSetting('window_height').getValue()),
+                width: Number(settings.findSetting('window_width').getValue()),
             });
 
-            if ((settings.getSetting('window_maximized').getValue() as boolean) === true) {
+            if ((settings.findSetting('window_maximized').getValue() as boolean) === true) {
                 this.window.maximize();
             }
 
@@ -212,7 +212,7 @@ export class ModuleController implements IPCSource {
 
         const forceReload: boolean = this.settingsModule
             .getSettings()
-            .getSetting("force_reload")
+            .findSetting("force_reload")
             .getValue() as boolean;
 
 
@@ -250,7 +250,7 @@ export class ModuleController implements IPCSource {
 
         const moduleSettings: ModuleSettings = module.getSettings();
         settingsMap.forEach((settingValue: any, settingName: string) => {
-            const setting: Setting<unknown> = moduleSettings.getSetting(settingName);
+            const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
             if (setting === undefined) {
                 console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
             } else {

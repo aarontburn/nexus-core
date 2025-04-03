@@ -92,12 +92,12 @@ var ModuleController = /** @class */ (function () {
             }
             var settings = _this.settingsModule.getSettings();
             _this.window.setBounds({
-                x: Number(settings.getSetting('window_x').getValue()),
-                y: Number(settings.getSetting('window_y').getValue()),
-                height: Number(settings.getSetting('window_height').getValue()),
-                width: Number(settings.getSetting('window_width').getValue())
+                x: Number(settings.findSetting('window_x').getValue()),
+                y: Number(settings.findSetting('window_y').getValue()),
+                height: Number(settings.findSetting('window_height').getValue()),
+                width: Number(settings.findSetting('window_width').getValue())
             });
-            if (settings.getSetting('window_maximized').getValue() === true) {
+            if (settings.findSetting('window_maximized').getValue() === true) {
                 _this.window.maximize();
             }
             _this.window.show();
@@ -295,7 +295,7 @@ var ModuleController = /** @class */ (function () {
                         _b.apply(_a, [_c.sent()]);
                         forceReload = this.settingsModule
                             .getSettings()
-                            .getSetting("force_reload")
+                            .findSetting("force_reload")
                             .getValue();
                         console.log("Force Reload: " + forceReload);
                         return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler
@@ -356,7 +356,7 @@ var ModuleController = /** @class */ (function () {
                         settingsMap = _a.sent();
                         moduleSettings = module.getSettings();
                         settingsMap.forEach(function (settingValue, settingName) {
-                            var setting = moduleSettings.getSetting(settingName);
+                            var setting = moduleSettings.findSetting(settingName);
                             if (setting === undefined) {
                                 console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
                             }
