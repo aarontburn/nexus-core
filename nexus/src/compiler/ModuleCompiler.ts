@@ -111,11 +111,12 @@ export class ModuleCompiler {
                 const moduleFolderPath: string = `${folder.path}${folder.name}`;
 
 
-                const skipCompile: boolean =
-                    !process.argv.includes(`--last_exported_id:${folder.name}`) ||
-                    !(await shouldRecompileModule(moduleFolderPath, builtDirectory))
 
-                if (!forceReload && skipCompile) {
+                const shouldCompile: boolean =
+                    process.argv.includes(`--last_exported_id:${folder.name}`) ||
+                    await shouldRecompileModule(moduleFolderPath, builtDirectory)
+
+                if (forceReload || shouldCompile) {
                     console.log("Skipping compiling of " + folder.name + "; no changes detected.");
                     return;
                 }

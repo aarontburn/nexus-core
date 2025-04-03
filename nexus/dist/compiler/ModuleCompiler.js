@@ -265,7 +265,7 @@ var ModuleCompiler = /** @class */ (function () {
                     case 4:
                         files = _b.sent();
                         return [4 /*yield*/, Promise.all(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
-                                var builtDirectory, moduleFolderPath, skipCompile, _a, err_4;
+                                var builtDirectory, moduleFolderPath, shouldCompile, _a, err_4;
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
@@ -274,15 +274,15 @@ var ModuleCompiler = /** @class */ (function () {
                                                 return [2 /*return*/];
                                             }
                                             moduleFolderPath = "".concat(folder.path).concat(folder.name);
-                                            _a = !process.argv.includes("--last_exported_id:".concat(folder.name));
+                                            _a = process.argv.includes("--last_exported_id:".concat(folder.name));
                                             if (_a) return [3 /*break*/, 2];
                                             return [4 /*yield*/, (0, CompilerUtils_1.shouldRecompileModule)(moduleFolderPath, builtDirectory)];
                                         case 1:
-                                            _a = !(_b.sent());
+                                            _a = (_b.sent());
                                             _b.label = 2;
                                         case 2:
-                                            skipCompile = _a;
-                                            if (!forceReload && skipCompile) {
+                                            shouldCompile = _a;
+                                            if (forceReload || shouldCompile) {
                                                 console.log("Skipping compiling of " + folder.name + "; no changes detected.");
                                                 return [2 /*return*/];
                                             }
