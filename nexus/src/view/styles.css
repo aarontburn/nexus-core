@@ -69,4 +69,7 @@ body {
   mask-position: center;
   mask-clip: fill-box;
   transition: 0.2s;
+
+  /* Set the mask image on the div */
+  /* mask-image: url(...) */
 }
