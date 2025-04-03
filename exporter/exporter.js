@@ -74,17 +74,17 @@ async function main() {
     }
 
 
-    fs.rmSync(getOutputFolder(), { recursive: true, force: true });
-    modifyModuleInfoJSON();
-    createDirectories();
-    copyFiles();
-    checkAndCopyDependencies();
+    await fs.promises.rm(getOutputFolder(), { recursive: true, force: true });
+    await modifyModuleInfoJSON();
+    await createDirectories();
+    await copyFiles();
+    await checkAndCopyDependencies();
     await toArchive();
-    fs.rmSync(getOutputFolder(), { recursive: true, force: true });
+    await fs.promises.rm(getOutputFolder(), { recursive: true, force: true });
     await changeLastExported()
 
     console.info("\n\tFINISHING BUNDLING MODULE");
-    console.timeEnd("Export Time")
+    console.timeEnd("Export Time");
 }
 
 async function getDirectory() {
@@ -100,62 +100,72 @@ async function getDirectory() {
 
 }
 
-function modifyModuleInfoJSON() {
+async function modifyModuleInfoJSON() {
     if (process.argv.includes('--dev')) {
         return;
     }
     const jsonPath = PROJECT_ROOT_DIR + "/src/" + MODULE_INFO_FILE;
-    const json = JSON.parse(fs.readFileSync(jsonPath));
+    const json = JSON.parse(await fs.promises.readFile(jsonPath));
     json["build_version"] += 1
-    fs.writeFileSync(jsonPath, JSON.stringify(json, undefined, 4));
+    await fs.promises.writeFile(jsonPath, JSON.stringify(json, undefined, 4));
 }
 
-function createDirectories() {
-    function mkdir(directoryName) {
-        fs.mkdirSync(directoryName, { recursive: true })
+async function createDirectories() {
+    async function mkdir(directoryName) {
+        await fs.promises.mkdir(directoryName, { recursive: true })
     }
 
     console.info("\n\tCREATING FOLDERS\n");
-    mkdir(getOutputFolder());
-    mkdir(getOutputFolder() + "node_modules");
+
+    await Promise.all([
+        mkdir(getOutputFolder()),
+        mkdir(getOutputFolder() + "node_modules"),
+    ]);
+
+
 }
 
-function copyFiles() {
+async function copyFiles() {
     console.info("\n\tCOPYING FILES\n");
 
     const dir = PROJECT_ROOT_DIR + "/src/";
-    for (const file of fs.readdirSync(dir, { withFileTypes: true })) {
-        console.info(`Copying '${path.join(file.path, file.name)}' to output folder (${path.join(getOutputFolder(), file.name)})`);
-        fs.cpSync(path.join(file.path, file.name), path.join(getOutputFolder(), file.name), { recursive: true });
-    }
+    const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
-    for (const file of excludedFiles) {
-        fs.rmSync(path.normalize(path.join(getOutputFolder(), file)), { force: true, recursive: true })
-    }
+    await Promise.all(
+        files.map(async file => {
+            console.info(`Copying '${path.join(file.path, file.name)}' to output folder (${path.join(getOutputFolder(), file.name)})`);
+            await fs.promises.cp(path.join(file.path, file.name), path.join(getOutputFolder(), file.name), { recursive: true });
+        })
+    )
 
+    await Promise.all(
+        excludedFiles.map(async file => {
+            await fs.promises.rm(path.normalize(path.join(getOutputFolder(), file)), { force: true, recursive: true })
+        })
+    )
 
-    for (const file of addToBuild) {
-        try {
-            fs.cpSync(path.join(dir, file), path.join(getOutputFolder(), file.split("/").at(-1)), { recursive: true });
-        } catch (err) {
-            if (file.includes("react_module")) {
-                console.warn("Could not find react_module. If you haven't built your module yet, ignore this error.")
-            } else {
-                console.error(err)
+    await Promise.all(
+        addToBuild.map(async file => {
+            try {
+                await fs.promises.cp(path.join(dir, file), path.join(getOutputFolder(), file.split("/").at(-1)), { recursive: true });
+            } catch (err) {
+                if (file.includes("react_module")) {
+                    console.warn("Could not find react_module. If you haven't built your module yet, ignore this error.")
+                } else {
+                    console.error(err)
+                }
             }
-        }
-    }
+        })
+    )
 
     for (const { from, to, at } of BUILD_CONFIG["replace"] ?? []) {
         const replaceTo = to[0] === "%" && to[to.length - 1] === "%" ? BUILD_CONFIG[to.replaceAll("%", '')] : to;
 
         for (const file of at) {
             const filePath = path.normalize(path.join(getOutputFolder(), file));
-            const contents = fs.readFileSync(filePath, "utf-8");
+            const contents = await fs.promises.readFile(filePath, "utf-8");
 
-
-
-            fs.writeFileSync(filePath, contents.replaceAll(from, replaceTo))
+            await fs.promises.writeFile(filePath, contents.replaceAll(from, replaceTo));
         }
     }
 
@@ -163,8 +173,8 @@ function copyFiles() {
 
 
 
-function checkAndCopyDependencies() {
-    const json = JSON.parse(fs.readFileSync(PROJECT_ROOT_DIR + "/package.json"));
+async function checkAndCopyDependencies() {
+    const json = JSON.parse(await fs.promises.readFile(PROJECT_ROOT_DIR + "/package.json"));
 
     const dependencies = json["dependencies"];
 
@@ -181,7 +191,7 @@ function checkAndCopyDependencies() {
 
     const depSet = new Set()
 
-    const nodeModules = fs.readdirSync(SRC_NODE_MODULES);
+    const nodeModules = await fs.promises.readdir(SRC_NODE_MODULES);
 
     for (const dependencyName of dependencyNames) {
 
@@ -195,20 +205,19 @@ function checkAndCopyDependencies() {
     }
 
 
-
-    depSet.forEach(depName => {
+    await Promise.all(Array.from(depSet).map(async depName => {
         const dependencyPath = path.join(SRC_NODE_MODULES, depName);
         console.info("Copying '" + dependencyPath + "' to '" + getOutputFolder() + "node_modules/'")
-        fs.cpSync(dependencyPath, path.join(getOutputFolder(), "node_modules/" + depName), { recursive: true });
-    })
+        await fs.promises.cp(dependencyPath, path.join(getOutputFolder(), "node_modules/" + depName), { recursive: true });
+    }))
 }
 
 
-function checkDependencysDependencies(depName, depSet) {
+async function checkDependencysDependencies(depName, depSet) {
     const depDir = path.join(SRC_NODE_MODULES, depName);
     const depJson = path.join(depDir, "package.json");
 
-    const json = JSON.parse(fs.readFileSync(depJson));
+    const json = JSON.parse(await fs.promises.readFile(depJson));
     const dependencies = json["dependencies"];
 
     if (dependencies !== undefined) {
@@ -220,7 +229,7 @@ function checkDependencysDependencies(depName, depSet) {
     }
 }
 
-function toArchive() {
+async function toArchive() {
     const outputFolder = getOutputFolder();
     const stream = fs.createWriteStream(outputFolder.slice(0, -1) + '.zip');
     console.info("\n\tARCHIVING FOLDER")
