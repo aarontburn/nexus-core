@@ -7,7 +7,7 @@ const archiver = require('archiver')('zip');
 
 
 if (!process.argv.includes("--verbose")) {
-    console.log = (_) => {}
+    console.info = (_) => {}
 }
 
 
@@ -67,7 +67,7 @@ async function main() {
     console.time("Export Time")
     if (!process.argv.includes('--dev')) {
         const outputPath = await getDirectory();
-        console.log("Outputting module to: " + outputPath)
+        console.info("Outputting module to: " + outputPath)
         if (outputPath !== undefined) {
             chosenFolder = outputPath;
         }
@@ -83,7 +83,7 @@ async function main() {
     fs.rmSync(getOutputFolder(), { recursive: true, force: true });
     await changeLastExported()
 
-    console.log("\n\tFINISHING BUNDLING MODULE");
+    console.info("\n\tFINISHING BUNDLING MODULE");
     console.timeEnd("Export Time")
 }
 
@@ -115,17 +115,17 @@ function createDirectories() {
         fs.mkdirSync(directoryName, { recursive: true })
     }
 
-    console.log("\n\tCREATING FOLDERS\n");
+    console.info("\n\tCREATING FOLDERS\n");
     mkdir(getOutputFolder());
     mkdir(getOutputFolder() + "node_modules");
 }
 
 function copyFiles() {
-    console.log("\n\tCOPYING FILES\n");
+    console.info("\n\tCOPYING FILES\n");
 
     const dir = PROJECT_ROOT_DIR + "/src/";
     for (const file of fs.readdirSync(dir, { withFileTypes: true })) {
-        console.log(`Copying '${path.join(file.path, file.name)}' to output folder (${path.join(getOutputFolder(), file.name)})`);
+        console.info(`Copying '${path.join(file.path, file.name)}' to output folder (${path.join(getOutputFolder(), file.name)})`);
         fs.cpSync(path.join(file.path, file.name), path.join(getOutputFolder(), file.name), { recursive: true });
     }
 
@@ -175,7 +175,7 @@ function checkAndCopyDependencies() {
 
     const dependencyNames = Object.keys(dependencies);
     if (dependencyNames.length > 1) {
-        console.log("\n\tBUNDLING DEPENDENCIES\n");
+        console.info("\n\tBUNDLING DEPENDENCIES\n");
     }
 
 
@@ -186,7 +186,7 @@ function checkAndCopyDependencies() {
     for (const dependencyName of dependencyNames) {
 
         if (!nodeModules.includes(dependencyName)) {
-            console.log(dependencyName + " was not found in 'node_modules'. Skipping...")
+            console.info(dependencyName + " was not found in 'node_modules'. Skipping...")
             continue;
         }
 
@@ -198,7 +198,7 @@ function checkAndCopyDependencies() {
 
     depSet.forEach(depName => {
         const dependencyPath = path.join(SRC_NODE_MODULES, depName);
-        console.log("Copying '" + dependencyPath + "' to '" + getOutputFolder() + "node_modules/'")
+        console.info("Copying '" + dependencyPath + "' to '" + getOutputFolder() + "node_modules/'")
         fs.cpSync(dependencyPath, path.join(getOutputFolder(), "node_modules/" + depName), { recursive: true });
     })
 }
@@ -223,8 +223,8 @@ function checkDependencysDependencies(depName, depSet) {
 function toArchive() {
     const outputFolder = getOutputFolder();
     const stream = fs.createWriteStream(outputFolder.slice(0, -1) + '.zip');
-    console.log("\n\tARCHIVING FOLDER")
-    console.log(`From ${outputFolder} to ${outputFolder.slice(0, -1)}.zip`);
+    console.info("\n\tARCHIVING FOLDER")
+    console.info(`From ${outputFolder} to ${outputFolder.slice(0, -1)}.zip`);
     return new Promise((resolve, reject) => {
         archiver
             .directory(outputFolder, false)
