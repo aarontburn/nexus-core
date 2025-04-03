@@ -282,7 +282,7 @@ var ModuleCompiler = /** @class */ (function () {
                                             _b.label = 2;
                                         case 2:
                                             shouldCompile = _a;
-                                            if (forceReload || shouldCompile) {
+                                            if (!forceReload && !shouldCompile) {
                                                 console.log("Skipping compiling of " + folder.name + "; no changes detected.");
                                                 return [2 /*return*/];
                                             }

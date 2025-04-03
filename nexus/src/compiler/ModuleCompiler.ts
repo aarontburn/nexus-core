@@ -116,7 +116,7 @@ export class ModuleCompiler {
                     process.argv.includes(`--last_exported_id:${folder.name}`) ||
                     await shouldRecompileModule(moduleFolderPath, builtDirectory)
 
-                if (forceReload || shouldCompile) {
+                if (!forceReload && !shouldCompile) {
                     console.log("Skipping compiling of " + folder.name + "; no changes detected.");
                     return;
                 }
