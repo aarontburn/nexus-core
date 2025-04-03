@@ -12,6 +12,7 @@ var ModuleSettings = /** @class */ (function () {
         this.parentModule = module;
         this.settingsMap = new Map();
         this.settingsDisplay = [];
+        console.log(this.settingsDisplay);
         this.addSettings(module.registerSettings());
         this.addInternalSettings(module.registerInternalSettings());
         // Bind everything
