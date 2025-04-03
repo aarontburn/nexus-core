@@ -19,5 +19,3 @@ contextBridge.exposeInMainWorld("common", {
 	args: process.argv
 });
 
-contextBridge.exposeInMainWorld("test", "hello")
-

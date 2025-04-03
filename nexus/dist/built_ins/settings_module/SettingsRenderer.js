@@ -220,9 +220,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             }
             var settingId = settingInfo.settingId;
             var inputTypeAndId = settingInfo.inputTypeAndId;
-            var html = settingInfo.ui;
+            var uiHTML = settingInfo.ui;
             var _a = settingInfo.style, sourceObject = _a[0], style = _a[1];
-            settingsList.insertAdjacentHTML("beforeend", html);
+            settingsList.insertAdjacentHTML("beforeend", uiHTML);
             // Attach events to reset button
             var resetButton = document.getElementById("reset-button_".concat(settingId));
             resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener("click", function () {
@@ -269,7 +269,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     }
                     case 'color':
                     case 'range': {
-                        element.addEventListener('input', function () { return sendToProcess('setting-modified', id, returnValue ? returnValue : element[attribute]); });
+                        var debounceTimer_1;
+                        element.addEventListener('input', function () {
+                            clearTimeout(debounceTimer_1);
+                            debounceTimer_1 = setTimeout(function () {
+                                sendToProcess('setting-modified', id, returnValue ? returnValue : element[attribute]);
+                            }, 100);
+                        });
                         break;
                     }
                     case "checkbox":

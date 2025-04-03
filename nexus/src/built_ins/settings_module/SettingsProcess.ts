@@ -175,7 +175,7 @@ export class SettingsProcess extends Process {
     }
 
     // TODO: Restructure stuff 
-    private onSettingChange(settingId: string, newValue?: any): void {
+    private onSettingChange(settingID: string, newValue?: any): void {
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
             const settingsList: Setting<unknown>[] = moduleSettings.getSettings();
 
@@ -184,7 +184,8 @@ export class SettingsProcess extends Process {
 
                 for (const group of settingBox.getInputIdAndType()) {
                     const id: string = group.id;
-                    if (id === settingId) { // found the modified setting
+                    if (id === settingID) { // found the modified setting
+                        const oldValue: unknown = setting.getValue()
                         if (newValue === undefined) {
                             setting.resetToDefault();
                         } else {
@@ -192,7 +193,7 @@ export class SettingsProcess extends Process {
                         }
 
                         setting.getParentModule().refreshSettings(setting);
-                        console.info(`Setting setting "${setting.getName()}" to ${setting.getValue()}`)
+                        console.info(`SETTING CHANGED: '${setting.getName()}' | ${oldValue} => ${setting.getValue()} ${newValue === undefined ? '[RESET TO DEFAULT]' : ''}`);
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
                         StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
@@ -301,9 +302,7 @@ export class SettingsProcess extends Process {
 
             case 'setting-reset': {
                 const settingId: string = data[0];
-                console.info("Resetting: " + settingId);
                 this.onSettingChange(settingId);
-
 
                 break;
             }

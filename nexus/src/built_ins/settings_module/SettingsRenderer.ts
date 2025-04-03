@@ -258,11 +258,11 @@
 
             const settingId: string = settingInfo.settingId;
             const inputTypeAndId: InputElement[] = settingInfo.inputTypeAndId;
-            const html: string = settingInfo.ui;
+            const uiHTML: string = settingInfo.ui;
             const [sourceObject, style]: string[] = settingInfo.style;
 
 
-            settingsList.insertAdjacentHTML("beforeend", html);
+            settingsList.insertAdjacentHTML("beforeend", uiHTML);
 
             // Attach events to reset button
             const resetButton: HTMLElement = document.getElementById(`reset-button_${settingId}`);
@@ -319,10 +319,16 @@
 
                         break;
                     }
-                    case 'color':
+                    case 'color': 
                     case 'range': {
-                        element.addEventListener('input',
-                            () => sendToProcess('setting-modified', id, returnValue ? returnValue : (element as any)[attribute]))
+                        let debounceTimer: NodeJS.Timeout;
+
+                        element.addEventListener('input', () => {
+                            clearTimeout(debounceTimer);
+                            debounceTimer = setTimeout(() => {
+                                sendToProcess('setting-modified', id, returnValue ? returnValue : (element as any)[attribute]);
+                            }, 100);
+                        });
                         break;
                     }
                     case "checkbox":

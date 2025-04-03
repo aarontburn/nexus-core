@@ -228,7 +228,7 @@ var SettingsProcess = /** @class */ (function (_super) {
         this.sendToRenderer("populate-settings-list", settings);
     };
     // TODO: Restructure stuff 
-    SettingsProcess.prototype.onSettingChange = function (settingId, newValue) {
+    SettingsProcess.prototype.onSettingChange = function (settingID, newValue) {
         for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
             var moduleSettings = _a[_i];
             var settingsList = moduleSettings.getSettings();
@@ -238,7 +238,8 @@ var SettingsProcess = /** @class */ (function (_super) {
                 for (var _c = 0, _d = settingBox.getInputIdAndType(); _c < _d.length; _c++) {
                     var group = _d[_c];
                     var id = group.id;
-                    if (id === settingId) { // found the modified setting
+                    if (id === settingID) { // found the modified setting
+                        var oldValue = setting.getValue();
                         if (newValue === undefined) {
                             setting.resetToDefault();
                         }
@@ -246,7 +247,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                             setting.setValue(newValue);
                         }
                         setting.getParentModule().refreshSettings(setting);
-                        console.info("Setting setting \"".concat(setting.getName(), "\" to ").concat(setting.getValue()));
+                        console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         var update = settingBox.onChange(setting.getValue());
                         nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
                         this.sendToRenderer("setting-modified", update);
@@ -373,7 +374,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 10:
                         {
                             settingId = data[0];
-                            console.info("Resetting: " + settingId);
                             this.onSettingChange(settingId);
                             return [3 /*break*/, 12];
                         }

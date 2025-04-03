@@ -11,6 +11,6 @@ export interface ICommon {
 declare global {
     interface Window {
         ipc: IIPC,
-        common: ICommon,
+        common: ICommon
     }
 }
