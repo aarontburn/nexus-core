@@ -68,6 +68,8 @@ export abstract class Process implements IPCSource {
      */
     private readonly moduleID: string;
 
+    private readonly iconPath: string;
+
     /**
      *  Entry point.
      * 
@@ -75,12 +77,19 @@ export abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    public constructor(moduleID: string, moduleName: string, htmlPath: string) {
+    public constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string) {
         this.moduleID = moduleID;
         this.moduleName = moduleName;
         this.htmlPath = htmlPath;
+        this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings(this);
     }
+
+    public getIconPath(): string {
+        return this.iconPath;
+    }
+
+
 
     public setIPC(ipc: IPCCallback) {
         if (this.ipcCallback !== undefined) {

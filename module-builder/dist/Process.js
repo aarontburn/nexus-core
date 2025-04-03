@@ -61,7 +61,7 @@ var Process = /** @class */ (function () {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    function Process(moduleID, moduleName, htmlPath) {
+    function Process(moduleID, moduleName, htmlPath, iconPath) {
         /**
          *  Boolean indicating if this module has been initialized.
          */
@@ -69,8 +69,12 @@ var Process = /** @class */ (function () {
         this.moduleID = moduleID;
         this.moduleName = moduleName;
         this.htmlPath = htmlPath;
+        this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
     }
+    Process.prototype.getIconPath = function () {
+        return this.iconPath;
+    };
     Process.prototype.setIPC = function (ipc) {
         if (this.ipcCallback !== undefined) {
             throw new Error("Cannot reassign IPC callback");

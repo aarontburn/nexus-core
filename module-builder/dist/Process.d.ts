@@ -56,6 +56,7 @@ export declare abstract class Process implements IPCSource {
      *  The ID of this module.
      */
     private readonly moduleID;
+    private readonly iconPath;
     /**
      *  Entry point.
      *
@@ -63,7 +64,8 @@ export declare abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      *  @param ipcCallback  The IPC callback function.
      */
-    constructor(moduleID: string, moduleName: string, htmlPath: string);
+    constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string);
+    getIconPath(): string;
     setIPC(ipc: IPCCallback): void;
     /**
      *  @returns the ID of the module.
