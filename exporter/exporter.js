@@ -1,3 +1,5 @@
+// @ts-check 
+
 const os = require('os');
 const path = require("path");
 const fs = require("fs");
@@ -105,7 +107,7 @@ async function modifyModuleInfoJSON() {
         return;
     }
     const jsonPath = PROJECT_ROOT_DIR + "/src/" + MODULE_INFO_FILE;
-    const json = JSON.parse(await fs.promises.readFile(jsonPath));
+    const json = JSON.parse(await fs.promises.readFile(jsonPath, "utf-8"));
     json["build_version"] += 1
     await fs.promises.writeFile(jsonPath, JSON.stringify(json, undefined, 4));
 }
@@ -174,7 +176,7 @@ async function copyFiles() {
 
 
 async function checkAndCopyDependencies() {
-    const json = JSON.parse(await fs.promises.readFile(PROJECT_ROOT_DIR + "/package.json"));
+    const json = JSON.parse(await fs.promises.readFile(PROJECT_ROOT_DIR + "/package.json", "utf-8"));
 
     const dependencies = json["dependencies"];
 
@@ -217,7 +219,7 @@ async function checkDependencysDependencies(depName, depSet) {
     const depDir = path.join(SRC_NODE_MODULES, depName);
     const depJson = path.join(depDir, "package.json");
 
-    const json = JSON.parse(await fs.promises.readFile(depJson));
+    const json = JSON.parse(await fs.promises.readFile(depJson, "utf-8"));
     const dependencies = json["dependencies"];
 
     if (dependencies !== undefined) {
@@ -241,7 +243,7 @@ async function toArchive() {
             .pipe(stream)
             ;
 
-        stream.on('close', () => resolve());
+        stream.on('close', () => resolve(undefined));
         archiver.finalize();
     });
 }
