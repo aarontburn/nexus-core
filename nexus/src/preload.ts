@@ -6,11 +6,11 @@ contextBridge.exposeInMainWorld('ipc', {
 		return ipcRenderer.invoke(id, eventType, data)
 	},
 
-	on: (rendererWindow: Window, func: (event: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => void) => {
+	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
 		const id = rendererWindow.frameElement?.id ?? (rendererWindow as any)["INTERNAL_ID_DO_NOT_USE"];
-		return ipcRenderer.on(id, func)
+		return ipcRenderer.on(id, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
 	},
-		
+
 
 });
 
@@ -18,4 +18,6 @@ contextBridge.exposeInMainWorld('ipc', {
 contextBridge.exposeInMainWorld("common", {
 	args: process.argv
 });
+
+contextBridge.exposeInMainWorld("test", "hello")
 

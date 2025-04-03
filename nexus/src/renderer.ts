@@ -1,12 +1,13 @@
 (() => {
     (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main"
-    const sendToProcess = (eventType: string, ...data: any[]): Promise<void> => {
-        return window.ipc.send(window, eventType, data);
+    const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
+        return window.ipc.send(window, eventName, data);
     }
 
-    window.ipc.on(window, (_, eventType: string, data: any[]) => {
-        handleEvent(eventType, data);
+    window.ipc.on(window, (eventName: string, data: any[]) => {
+        handleEvent(eventName, data);
     });
+
 
     sendToProcess("renderer-init");
 

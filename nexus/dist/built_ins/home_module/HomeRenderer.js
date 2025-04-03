@@ -1,13 +1,13 @@
 (function () {
-    var sendToProcess = function (eventType) {
+    var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.parent.ipc.send(window, eventType, data);
+        return window.parent.ipc.send(window, eventName, data);
     };
-    window.parent.ipc.on(window, function (_, eventType, data) {
-        handleEvent(eventType, data);
+    window.parent.ipc.on(window, function (eventName, data) {
+        handleEvent(eventName, data);
     });
     sendToProcess("init");
     var displayContainer = document.getElementById('center');

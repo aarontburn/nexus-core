@@ -1,7 +1,7 @@
 
 export interface IIPC {
     send(rendererWindow: Window, eventType: string, data: any[]): Promise<any>,
-    on(rendererWindow: Window, func: (event: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => void): Electron.IpcRenderer
+    on(rendererWindow: Window, func: (eventName: string, ...args: any[]) => void): Electron.IpcRenderer
 }
 
 export interface ICommon {
@@ -11,6 +11,6 @@ export interface ICommon {
 declare global {
     interface Window {
         ipc: IIPC,
-        common: ICommon
+        common: ICommon,
     }
 }

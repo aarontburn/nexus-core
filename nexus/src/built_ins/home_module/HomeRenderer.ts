@@ -1,10 +1,10 @@
 (() => {
-    const sendToProcess = (eventType: string, ...data: any[]): Promise<any> => {
-        return window.parent.ipc.send(window, eventType, data);
+    const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
+        return window.parent.ipc.send(window, eventName, data);
     }
 
-    window.parent.ipc.on(window, (_, eventType: string, data: any[]) => {
-        handleEvent(eventType, data);
+    window.parent.ipc.on(window, (eventName: string, data: any[]) => {
+        handleEvent(eventName, data);
     });
 
 

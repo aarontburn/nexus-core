@@ -6,13 +6,8 @@ const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefinedAsync }
 const archiver = require('archiver')('zip');
 
 
-
-
 if (!process.argv.includes("--verbose")) {
-    // Mute all console.log
-    console.log = function (message) {
-        // original.apply(console, arguments);
-    }
+    console.log = (_) => {}
 }
 
 
