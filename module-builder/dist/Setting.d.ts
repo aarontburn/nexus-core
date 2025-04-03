@@ -1,15 +1,15 @@
 import { Process } from "./Process";
 import { SettingBox } from "./SettingBox";
 export declare abstract class Setting<T> {
-    readonly parentModule: Process;
-    readonly settingID: string;
-    name: string;
-    description: string;
-    accessID: string;
-    inputValidator: (input: any) => T;
-    defaultValue: T;
-    currentValue: T;
-    settingBox: SettingBox<T>;
+    private readonly parentModule;
+    private readonly settingID;
+    private name;
+    private description;
+    private accessID;
+    private inputValidator;
+    private defaultValue;
+    private currentValue;
+    private settingBox;
     /**
      *  Creates a new setting with the module that this setting belongs to.
      *
@@ -22,15 +22,13 @@ export declare abstract class Setting<T> {
      */
     constructor(parentModule: Process, defer?: boolean);
     /**
-     * @private
-     *
      * Checks if the required fields are set before data can be accessed or set.
      *
      * The required fields are {@link name} and {@link defaultValue}.
      *
      * @throws Error if the required fields were NOT set.
      */
-    _checkRequiredFields(): void;
+    private checkRequiredFields;
     reInitUI(): void;
     /**
      * Sets the name of this setting. This is a required field.
@@ -87,7 +85,7 @@ export declare abstract class Setting<T> {
     /**
      *  Changes the value of this setting.
      *
-     *  It passes the value into @see _parseInput, which returns either
+     *  It passes the value into @see parseInput, which returns either
      *      a value of type that matches this settings type, or null indicating that it could
      *      not properly parse the input.
      *
@@ -111,7 +109,7 @@ export declare abstract class Setting<T> {
      *  @param input The input to parse.
      *  @return A {@link T} type valid input, or null if the input couldn't be parsed.
      */
-    _parseInput(input: any): T;
+    private parseInput;
     /**
      *  Child-overridden method to parse inputs IF a {@link inputValidator} is
      *      not specified.
@@ -132,10 +130,10 @@ export declare abstract class Setting<T> {
     /**
      *  Sets the input validator for this setting.
      *
-     *  The {@link _parseInput} function will use the specified input validator instead of
+     *  The {@link parseInput} function will use the specified input validator instead of
      *      the {@link validateInput} to parse input.
      *
-     *  @param inputValidator The input validator to use over the default {@link _parseInput}.
+     *  @param inputValidator The input validator to use over the default {@link parseInput}.
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */

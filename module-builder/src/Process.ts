@@ -23,12 +23,12 @@ export interface ModuleInfo {
 export abstract class Process implements IPCSource {
 
     /**
-     *  @see getSetting
+     *  @see getSettings
      * 
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    private readonly moduleSettings = new ModuleSettings(this);
+    private readonly moduleSettings;
 
     /**
      *  IPC callback function.
@@ -79,9 +79,7 @@ export abstract class Process implements IPCSource {
         this.moduleID = moduleID;
         this.moduleName = moduleName;
         this.htmlPath = htmlPath;
-
-        this.moduleSettings._addSettings(this.registerSettings());
-        this.moduleSettings._addInternalSettings(this.registerInternalSettings());
+        this.moduleSettings = new ModuleSettings(this);
     }
 
     public setIPC(ipc: IPCCallback) {
@@ -213,7 +211,7 @@ export abstract class Process implements IPCSource {
      *      this may result in many frontend updates. Use cautiously.
      */
     public refreshAllSettings(): void {
-        for (const setting of this.getSettings().getSettings()) {
+        for (const setting of this.getSettings().allToArray()) {
             this.refreshSettings(setting);
         }
     }

@@ -3,19 +3,19 @@ import { SettingBox } from "./SettingBox";
 
 export abstract class Setting<T> {
 
-    public readonly parentModule: Process;
-    public readonly settingID: string = "setting_id_" + Math.random().toString(36).replace('0.', '');
+    private readonly parentModule: Process;
+    private readonly settingID: string = "setting_id_" + Math.random().toString(36).replace('0.', '');
 
-    public name: string;
-    public description: string;
-    public accessID: string;
+    private name: string;
+    private description: string;
+    private accessID: string;
 
-    public inputValidator: (input: any) => T;
+    private inputValidator: (input: any) => T;
 
-    public defaultValue: T;
-    public currentValue: T;
+    private defaultValue: T;
+    private currentValue: T;
 
-    public settingBox: SettingBox<T>;
+    private settingBox: SettingBox<T>;
 
 
 
@@ -39,15 +39,13 @@ export abstract class Setting<T> {
 
 
     /**
-     * @private
-     * 
      * Checks if the required fields are set before data can be accessed or set.
      * 
      * The required fields are {@link name} and {@link defaultValue}.
      *
      * @throws Error if the required fields were NOT set.
      */
-    public _checkRequiredFields(): void {
+    private checkRequiredFields(): void {
         if (this.name === undefined
             || this.defaultValue === undefined) {
 
@@ -164,7 +162,7 @@ export abstract class Setting<T> {
      *                               appropriate fields were set.
      */
     public getValue(): T {
-        this._checkRequiredFields();
+        this.checkRequiredFields();
         return this.currentValue;
     }
 
@@ -172,7 +170,7 @@ export abstract class Setting<T> {
     /**
      *  Changes the value of this setting.
      * 
-     *  It passes the value into @see _parseInput, which returns either
+     *  It passes the value into @see parseInput, which returns either
      *      a value of type that matches this settings type, or null indicating that it could
      *      not properly parse the input.
      * 
@@ -184,9 +182,9 @@ export abstract class Setting<T> {
      *                               appropriate fields were set.
      */
     public setValue(value: any): void {
-        this._checkRequiredFields();
+        this.checkRequiredFields();
 
-        const parsedValue: T = this._parseInput(value);
+        const parsedValue: T = this.parseInput(value);
         this.currentValue = parsedValue != null ? parsedValue : this.currentValue;
     }
 
@@ -203,7 +201,7 @@ export abstract class Setting<T> {
      *  @param input The input to parse.
      *  @return A {@link T} type valid input, or null if the input couldn't be parsed.
      */
-    public _parseInput(input: any): T {
+    private parseInput(input: any): T {
         if (this.inputValidator !== undefined) {
             return this.inputValidator(input);
         }
@@ -237,10 +235,10 @@ export abstract class Setting<T> {
     /**
      *  Sets the input validator for this setting.
      * 
-     *  The {@link _parseInput} function will use the specified input validator instead of
+     *  The {@link parseInput} function will use the specified input validator instead of
      *      the {@link validateInput} to parse input.
      *
-     *  @param inputValidator The input validator to use over the default {@link _parseInput}.
+     *  @param inputValidator The input validator to use over the default {@link parseInput}.
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */

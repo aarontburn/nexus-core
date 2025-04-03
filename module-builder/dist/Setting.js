@@ -21,15 +21,13 @@ var Setting = /** @class */ (function () {
         }
     }
     /**
-     * @private
-     *
      * Checks if the required fields are set before data can be accessed or set.
      *
      * The required fields are {@link name} and {@link defaultValue}.
      *
      * @throws Error if the required fields were NOT set.
      */
-    Setting.prototype._checkRequiredFields = function () {
+    Setting.prototype.checkRequiredFields = function () {
         if (this.name === undefined
             || this.defaultValue === undefined) {
             throw new Error("Attempted to access '".concat(this.name, "' before all values were set. Missing: ")
@@ -123,13 +121,13 @@ var Setting = /** @class */ (function () {
      *                               appropriate fields were set.
      */
     Setting.prototype.getValue = function () {
-        this._checkRequiredFields();
+        this.checkRequiredFields();
         return this.currentValue;
     };
     /**
      *  Changes the value of this setting.
      *
-     *  It passes the value into @see _parseInput, which returns either
+     *  It passes the value into @see parseInput, which returns either
      *      a value of type that matches this settings type, or null indicating that it could
      *      not properly parse the input.
      *
@@ -141,8 +139,8 @@ var Setting = /** @class */ (function () {
      *                               appropriate fields were set.
      */
     Setting.prototype.setValue = function (value) {
-        this._checkRequiredFields();
-        var parsedValue = this._parseInput(value);
+        this.checkRequiredFields();
+        var parsedValue = this.parseInput(value);
         this.currentValue = parsedValue != null ? parsedValue : this.currentValue;
     };
     /**
@@ -157,7 +155,7 @@ var Setting = /** @class */ (function () {
      *  @param input The input to parse.
      *  @return A {@link T} type valid input, or null if the input couldn't be parsed.
      */
-    Setting.prototype._parseInput = function (input) {
+    Setting.prototype.parseInput = function (input) {
         if (this.inputValidator !== undefined) {
             return this.inputValidator(input);
         }
@@ -172,10 +170,10 @@ var Setting = /** @class */ (function () {
     /**
      *  Sets the input validator for this setting.
      *
-     *  The {@link _parseInput} function will use the specified input validator instead of
+     *  The {@link parseInput} function will use the specified input validator instead of
      *      the {@link validateInput} to parse input.
      *
-     *  @param inputValidator The input validator to use over the default {@link _parseInput}.
+     *  @param inputValidator The input validator to use over the default {@link parseInput}.
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */

@@ -6,10 +6,10 @@ import { Setting } from "./Setting";
  *  @author aarontburn
  */
 export declare class ModuleSettings {
-    readonly settingsMap: Map<string, Setting<unknown>>;
-    readonly settingsDisplay: (Setting<unknown> | string)[];
-    readonly parentModule: Process;
-    settingsName: string;
+    private readonly settingsMap;
+    private readonly settingsDisplay;
+    private readonly parentModule;
+    private settingsName;
     constructor(module: Process);
     /**
      *  Get the name of the module settings.
@@ -18,14 +18,14 @@ export declare class ModuleSettings {
      *      of the parent module. Only change this if you need to modify how
      *      the name of the settings appears.
      *
-     *  @see setName
+     *  @see setDisplayName
      *  @returns The name of the settings.
      */
-    getName(): string;
+    getDisplayName(): string;
     /**
      *  @returns An array of all the settings.
      */
-    getSettings(): Setting<unknown>[];
+    allToArray(): Setting<unknown>[];
     /**
      *  Get all display settings and headers.
      *  @returns An array of both settings and strings.
@@ -36,10 +36,16 @@ export declare class ModuleSettings {
      *
      *  Under normal conditions, there are very few reasons to change this.
      *
-     *  @see getName
+     *  @see getDisplayName
      *  @param name The name of the settings group.
      */
-    setName(name: string): void;
+    setDisplayName(name: string): void;
+    /**
+     *  Add multiple settings.
+     *
+     *  @param settings The settings to add.
+     */
+    private addSettings;
     /**
      *  Adds a setting.
      *
@@ -47,20 +53,14 @@ export declare class ModuleSettings {
      *
      *  @param setting The setting to add.
      */
-    _addSetting(s: Setting<unknown> | string): void;
-    /**
-     *  Add multiple settings.
-     *
-     *  @param settings The settings to add.
-     */
-    _addSettings(settings: (Setting<unknown> | string)[]): void;
+    private addSetting;
     /**
      *  Add multiple internal settings.
      *
-     *  @see                _addInternalSetting
+     *  @see                addInternalSetting
      *  @param settings     An array of internal settings to add.
      */
-    _addInternalSettings(settings: Setting<unknown>[]): void;
+    private addInternalSettings;
     /**
      *  Adds an internal setting.
      *
@@ -69,16 +69,16 @@ export declare class ModuleSettings {
      *
      *  @param setting  The internal setting to add.
      */
-    _addInternalSetting(setting: Setting<unknown>): void;
+    private addInternalSetting;
     /**
      *  Search for a setting by either name or ID.
      *
-     *  @param nameOrID The name or ID of the setting
+     *  @param nameOrAccessID The name or access ID of the setting
      *  @returns The setting, or undefined if not found.
      */
-    getSetting(nameOrID: string): Setting<unknown> | undefined;
+    findSetting(nameOrAccessID: string): Setting<unknown> | undefined;
     /**
-     *  @returns A reference to the parent module.
+     *  @returns A reference to the parent process.
      */
-    getModule(): Process;
+    getProcess(): Process;
 }

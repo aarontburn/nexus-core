@@ -101,7 +101,7 @@ var StorageHandler = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         settingMap = new Map();
-                        module.getSettings().getSettings().forEach(function (setting) {
+                        module.getSettings().allToArray().forEach(function (setting) {
                             settingMap.set(setting.getName(), setting.getValue());
                         });
                         return [4 /*yield*/, this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];

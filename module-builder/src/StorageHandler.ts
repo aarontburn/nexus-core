@@ -48,7 +48,7 @@ export class StorageHandler {
     public static async writeModuleSettingsToStorage(module: Process): Promise<void> {
         const settingMap: Map<string, any> = new Map();
 
-        module.getSettings().getSettings().forEach((setting: Setting<unknown>) => {
+        module.getSettings().allToArray().forEach((setting: Setting<unknown>) => {
             settingMap.set(setting.getName(), setting.getValue());
         });
 

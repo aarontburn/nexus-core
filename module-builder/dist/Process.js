@@ -63,21 +63,13 @@ var Process = /** @class */ (function () {
      */
     function Process(moduleID, moduleName, htmlPath) {
         /**
-         *  @see getSetting
-         *
-         *  Object to store this module's settings.
-         *  This should not be directly accessed.
-         */
-        this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
-        /**
          *  Boolean indicating if this module has been initialized.
          */
         this.hasBeenInit = false;
         this.moduleID = moduleID;
         this.moduleName = moduleName;
         this.htmlPath = htmlPath;
-        this.moduleSettings._addSettings(this.registerSettings());
-        this.moduleSettings._addInternalSettings(this.registerInternalSettings());
+        this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
     }
     Process.prototype.setIPC = function (ipc) {
         if (this.ipcCallback !== undefined) {
@@ -168,7 +160,7 @@ var Process = /** @class */ (function () {
      *      this may result in many frontend updates. Use cautiously.
      */
     Process.prototype.refreshAllSettings = function () {
-        for (var _i = 0, _a = this.getSettings().getSettings(); _i < _a.length; _i++) {
+        for (var _i = 0, _a = this.getSettings().allToArray(); _i < _a.length; _i++) {
             var setting = _a[_i];
             this.refreshSettings(setting);
         }

@@ -53,7 +53,7 @@ export interface ChangeEvent {
  */
 export declare abstract class SettingBox<T> {
     protected readonly resetID: string;
-    readonly setting: Setting<T>;
+    private readonly setting;
     constructor(setting: Setting<T>);
     getUI(): string;
     /**

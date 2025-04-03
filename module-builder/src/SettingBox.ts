@@ -62,7 +62,7 @@ export abstract class SettingBox<T> {
 
     protected readonly resetID: string;
 
-    public readonly setting: Setting<T>;
+    private readonly setting: Setting<T>;
 
     public constructor(setting: Setting<T>) {
         this.setting = setting;

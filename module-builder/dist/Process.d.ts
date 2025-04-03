@@ -18,7 +18,7 @@ export interface ModuleInfo {
  */
 export declare abstract class Process implements IPCSource {
     /**
-     *  @see getSetting
+     *  @see getSettings
      *
      *  Object to store this module's settings.
      *  This should not be directly accessed.

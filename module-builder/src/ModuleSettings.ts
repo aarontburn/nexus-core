@@ -9,15 +9,17 @@ import { Setting } from "./Setting";
  *  @author aarontburn
  */
 export class ModuleSettings {
-    public readonly settingsMap: Map<string, Setting<unknown>> = new Map();
-    public readonly settingsDisplay: (Setting<unknown> | string)[] = [];
-    public readonly parentModule: Process;
+    private readonly settingsMap: Map<string, Setting<unknown>> = new Map();
+    private readonly settingsDisplay: (Setting<unknown> | string)[] = [];
+    private readonly parentModule: Process;
 
-    public settingsName: string;
+    private settingsName: string;
 
 
     public constructor(module: Process) {
         this.parentModule = module;
+        this.addSettings(module.registerSettings());
+        this.addInternalSettings(module.registerInternalSettings());
 
         // Bind everything
         Object.getOwnPropertyNames(ModuleSettings.prototype).forEach((key) => {
@@ -28,7 +30,6 @@ export class ModuleSettings {
 
     }
 
-
     /**
      *  Get the name of the module settings. 
      *  
@@ -36,10 +37,10 @@ export class ModuleSettings {
      *      of the parent module. Only change this if you need to modify how
      *      the name of the settings appears.
      * 
-     *  @see setName
+     *  @see setDisplayName
      *  @returns The name of the settings.
      */
-    public getName(): string {
+    public getDisplayName(): string {
         return this.settingsName === undefined
             ? this.parentModule.getName()
             : this.settingsName;
@@ -49,7 +50,7 @@ export class ModuleSettings {
     /**
      *  @returns An array of all the settings.
      */
-    public getSettings(): Setting<unknown>[] {
+    public allToArray(): Setting<unknown>[] {
         return Array.from(new Set(this.settingsMap.values()));
     }
 
@@ -68,12 +69,23 @@ export class ModuleSettings {
      *  
      *  Under normal conditions, there are very few reasons to change this.
      * 
-     *  @see getName
+     *  @see getDisplayName
      *  @param name The name of the settings group.
      */
-    public setName(name: string): void {
+    public setDisplayName(name: string): void {
         this.settingsName = name;
     }
+
+
+    /**
+     *  Add multiple settings.
+     * 
+     *  @param settings The settings to add. 
+     */
+    private addSettings(settings: (Setting<unknown> | string)[]): void {
+        settings.forEach(this.addSetting);
+    }
+
 
 
     /**
@@ -83,14 +95,14 @@ export class ModuleSettings {
      * 
      *  @param setting The setting to add.
      */
-    public _addSetting(s: Setting<unknown> | string): void {
+    private addSetting(s: Setting<unknown> | string): void {
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
             return;
         }
 
 
-        const setting = s as Setting<unknown>;
+        const setting: Setting<unknown> = s as Setting<unknown>;
         const settingID: string = setting.getAccessID();
         const settingName: string = setting.getName();
 
@@ -104,24 +116,16 @@ export class ModuleSettings {
     }
 
 
-    /**
-     *  Add multiple settings.
-     * 
-     *  @param settings The settings to add. 
-     */
-    public _addSettings(settings: (Setting<unknown> | string)[]): void {
-        settings.forEach(this._addSetting);
-    }
 
 
     /**
      *  Add multiple internal settings.
      * 
-     *  @see                _addInternalSetting
+     *  @see                addInternalSetting
      *  @param settings     An array of internal settings to add.
      */
-    public _addInternalSettings(settings: Setting<unknown>[]): void {
-        settings.forEach(this._addInternalSetting);
+    private addInternalSettings(settings: Setting<unknown>[]): void {
+        settings.forEach(this.addInternalSetting);
     }
 
 
@@ -133,7 +137,7 @@ export class ModuleSettings {
      * 
      *  @param setting  The internal setting to add.
      */
-    public _addInternalSetting(setting: Setting<unknown>): void {
+    private addInternalSetting(setting: Setting<unknown>): void {
         const settingID: string = setting.getAccessID();
         const settingName: string = setting.getName();
 
@@ -149,18 +153,18 @@ export class ModuleSettings {
     /**
      *  Search for a setting by either name or ID. 
      * 
-     *  @param nameOrID The name or ID of the setting
+     *  @param nameOrAccessID The name or access ID of the setting
      *  @returns The setting, or undefined if not found.
      */
-    public getSetting(nameOrID: string): Setting<unknown> | undefined {
-        return this.settingsMap.get(nameOrID);
+    public findSetting(nameOrAccessID: string): Setting<unknown> | undefined {
+        return this.settingsMap.get(nameOrAccessID);
     }
 
     
     /**
-     *  @returns A reference to the parent module.
+     *  @returns A reference to the parent process.
      */
-    public getModule(): Process {
+    public getProcess(): Process {
         return this.parentModule;
     }
 

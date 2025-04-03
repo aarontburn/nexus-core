@@ -12,6 +12,8 @@ var ModuleSettings = /** @class */ (function () {
         this.settingsMap = new Map();
         this.settingsDisplay = [];
         this.parentModule = module;
+        this.addSettings(module.registerSettings());
+        this.addInternalSettings(module.registerInternalSettings());
         // Bind everything
         Object.getOwnPropertyNames(ModuleSettings.prototype).forEach(function (key) {
             if (key !== 'constructor') {
@@ -26,10 +28,10 @@ var ModuleSettings = /** @class */ (function () {
      *      of the parent module. Only change this if you need to modify how
      *      the name of the settings appears.
      *
-     *  @see setName
+     *  @see setDisplayName
      *  @returns The name of the settings.
      */
-    ModuleSettings.prototype.getName = function () {
+    ModuleSettings.prototype.getDisplayName = function () {
         return this.settingsName === undefined
             ? this.parentModule.getName()
             : this.settingsName;
@@ -37,7 +39,7 @@ var ModuleSettings = /** @class */ (function () {
     /**
      *  @returns An array of all the settings.
      */
-    ModuleSettings.prototype.getSettings = function () {
+    ModuleSettings.prototype.allToArray = function () {
         return Array.from(new Set(this.settingsMap.values()));
     };
     /**
@@ -52,11 +54,19 @@ var ModuleSettings = /** @class */ (function () {
      *
      *  Under normal conditions, there are very few reasons to change this.
      *
-     *  @see getName
+     *  @see getDisplayName
      *  @param name The name of the settings group.
      */
-    ModuleSettings.prototype.setName = function (name) {
+    ModuleSettings.prototype.setDisplayName = function (name) {
         this.settingsName = name;
+    };
+    /**
+     *  Add multiple settings.
+     *
+     *  @param settings The settings to add.
+     */
+    ModuleSettings.prototype.addSettings = function (settings) {
+        settings.forEach(this.addSetting);
     };
     /**
      *  Adds a setting.
@@ -65,7 +75,7 @@ var ModuleSettings = /** @class */ (function () {
      *
      *  @param setting The setting to add.
      */
-    ModuleSettings.prototype._addSetting = function (s) {
+    ModuleSettings.prototype.addSetting = function (s) {
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
             return;
@@ -81,21 +91,13 @@ var ModuleSettings = /** @class */ (function () {
         this.settingsMap.set(settingName, setting);
     };
     /**
-     *  Add multiple settings.
-     *
-     *  @param settings The settings to add.
-     */
-    ModuleSettings.prototype._addSettings = function (settings) {
-        settings.forEach(this._addSetting);
-    };
-    /**
      *  Add multiple internal settings.
      *
-     *  @see                _addInternalSetting
+     *  @see                addInternalSetting
      *  @param settings     An array of internal settings to add.
      */
-    ModuleSettings.prototype._addInternalSettings = function (settings) {
-        settings.forEach(this._addInternalSetting);
+    ModuleSettings.prototype.addInternalSettings = function (settings) {
+        settings.forEach(this.addInternalSetting);
     };
     /**
      *  Adds an internal setting.
@@ -105,7 +107,7 @@ var ModuleSettings = /** @class */ (function () {
      *
      *  @param setting  The internal setting to add.
      */
-    ModuleSettings.prototype._addInternalSetting = function (setting) {
+    ModuleSettings.prototype.addInternalSetting = function (setting) {
         var settingID = setting.getAccessID();
         var settingName = setting.getName();
         if (settingID === settingName) { // No ID was set, or they used the same ID as the setting name.
@@ -118,16 +120,16 @@ var ModuleSettings = /** @class */ (function () {
     /**
      *  Search for a setting by either name or ID.
      *
-     *  @param nameOrID The name or ID of the setting
+     *  @param nameOrAccessID The name or access ID of the setting
      *  @returns The setting, or undefined if not found.
      */
-    ModuleSettings.prototype.getSetting = function (nameOrID) {
-        return this.settingsMap.get(nameOrID);
+    ModuleSettings.prototype.findSetting = function (nameOrAccessID) {
+        return this.settingsMap.get(nameOrAccessID);
     };
     /**
-     *  @returns A reference to the parent module.
+     *  @returns A reference to the parent process.
      */
-    ModuleSettings.prototype.getModule = function () {
+    ModuleSettings.prototype.getProcess = function () {
         return this.parentModule;
     };
     return ModuleSettings;
