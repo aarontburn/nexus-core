@@ -10,6 +10,7 @@ export class ModuleCompiler {
     private static TEMP_ARCHIVE_PATH: string = StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
 
     public static async load(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
+        console.time("Module Load Time");
         await StorageHandler._createDirectories();
 
         try {
@@ -26,13 +27,16 @@ export class ModuleCompiler {
             console.error(err)
         }
 
+
+        let modules: Process[] = [];
         try {
-            return await this.loadModulesFromBuiltStorage(ipcCallback);
+            modules = await this.loadModulesFromBuiltStorage(ipcCallback)
         } catch (err) {
             console.error("Error loading modules files");
             console.error(err)
         }
-        return [];
+        console.timeEnd("Module Load Time");
+        return modules;
     }
 
     private static async unarchiveFromTemp() {
@@ -40,33 +44,40 @@ export class ModuleCompiler {
         await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
 
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
+        await Promise.all(
+            files.map(async (folder) => {
+                const unarchiveDirectory: string = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
 
-        for (const folder of files) {
-            const unarchiveDirectory: string = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
+                if (folder.name.split(".").at(-1) === 'zip') {
+                    try {
+                        const zip: yauzl.ZipFile = await yauzl.open(folder.path + folder.name);
+                        await fs.promises.mkdir(unarchiveDirectory, { recursive: true });
 
-            if (folder.name.split(".").at(-1) === 'zip') {
+                        const entryPromises = [];
+                        for await (const entry of zip) {
+                            const entryPath = `${unarchiveDirectory}/${entry.filename}`;
 
-                const zip: yauzl.ZipFile = await yauzl.open(folder.path + folder.name);
-                await fs.promises.mkdir(unarchiveDirectory, { recursive: true });
-
-                try {
-                    for await (const entry of zip) {
-                        if (entry.filename.endsWith('/')) {
-                            await fs.promises.mkdir(`${unarchiveDirectory}/${entry.filename}`);
-                        } else {
-                            const readStream = await entry.openReadStream();
-                            const writeStream = fs.createWriteStream(`${unarchiveDirectory}/${entry.filename}`);
-                            await pipeline(readStream, writeStream);
+                            if (entry.filename.endsWith('/')) {
+                                entryPromises.push(fs.promises.mkdir(entryPath, { recursive: true }));
+                            } else {
+                                const readStream = await entry.openReadStream();
+                                const writeStream = fs.createWriteStream(entryPath);
+                                entryPromises.push(pipeline(readStream, writeStream));
+                            }
                         }
+
+                        await Promise.all(entryPromises);
+                        await zip.close();
+                    } catch (error) {
+                        console.error(`Error processing ${folder.name}:`, error);
                     }
-                } finally {
-                    await zip.close();
                 }
-            }
-        }
+            })
+        );
     }
 
     private static async compileAndCopy(forceReload: boolean = false) {
+        console.time("compileAndCopy")
         // Read all files within the built directory and external modules directory
         let [builtModules, externalModules]: string[][] = await Promise.all([
             fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH),
@@ -91,17 +102,18 @@ export class ModuleCompiler {
 
         try {
             const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, IO_OPTIONS);
-            for (const folder of files) {
+
+            await Promise.all(files.map(async folder => {
                 const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name;
                 if (!folder.isDirectory()) {
-                    continue;
+                    return;
                 }
                 const moduleFolderPath: string = `${folder.path}${folder.name}`;
                 const skipCompile: boolean = !(await shouldRecompileModule(moduleFolderPath, builtDirectory))
 
                 if (!forceReload && skipCompile) {
                     console.log("Skipping compiling of " + folder.name + "; no changes detected.");
-                    continue;
+                    return;
                 }
 
                 console.log("Removing " + builtDirectory);
@@ -116,19 +128,18 @@ export class ModuleCompiler {
                 if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
                     await copyFromProd(
                         path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    );
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`)
                 } else {
                     await copyFromProd(
                         path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`
-                    );
+                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`)
                 }
 
-                await fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css");
-                await fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf");
-            }
-
+                await Promise.all([
+                    fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
+                    fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
+                ]);
+            }))
 
             console.log("All files compiled and copied successfully.");
         } catch (error) {
@@ -136,18 +147,23 @@ export class ModuleCompiler {
         }
 
         await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
+        console.timeEnd("compileAndCopy");
+
     }
 
 
     private static async loadModulesFromBuiltStorage(ipcCallback: IPCCallback): Promise<Process[]> {
+        console.time("loadModulesFromBuiltStorage")
+
+
         const externalModules: Process[] = [];
 
         try {
             const folders: fs.Dirent[] = await fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH, IO_OPTIONS);
 
-            for (const folder of folders) {
+            await Promise.all(folders.map(async folder => {
                 if (!folder.isDirectory()) { // only read folders
-                    continue;
+                    return;
                 }
 
                 const moduleFolderPath: string = `${folder.path}/${folder.name}`;
@@ -172,14 +188,14 @@ export class ModuleCompiler {
 
                 if (buildConfig instanceof Error) {
                     console.error(buildConfig)
-                    continue;
+                    return;
                 }
 
                 const moduleInfo: ModuleInfo = await readModuleInfo(moduleFolderPath + "/module-info.json");
                 const module: any = require(moduleFolderPath + "/" + buildConfig["process"]);
                 if (module["default"] === undefined) {
                     console.error(`LOAD ERROR: Process has no default export. Path: ${moduleFolderPath + "/" + buildConfig["process"]}`);
-                    continue;
+                    return;
                 }
 
                 const m: Process = new module["default"]();
@@ -187,15 +203,13 @@ export class ModuleCompiler {
 
                 m.setModuleInfo(moduleInfo);
                 externalModules.push(m);
-
-            }
-
+            }))
 
         } catch (err) {
             console.error(err);
         }
 
-
+        console.timeEnd("loadModulesFromBuiltStorage");
         return externalModules;
     }
 
