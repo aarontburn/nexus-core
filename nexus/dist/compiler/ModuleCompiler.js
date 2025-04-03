@@ -265,53 +265,58 @@ var ModuleCompiler = /** @class */ (function () {
                     case 4:
                         files = _b.sent();
                         return [4 /*yield*/, Promise.all(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
-                                var builtDirectory, moduleFolderPath, skipCompile, err_4;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
+                                var builtDirectory, moduleFolderPath, skipCompile, _a, err_4;
+                                return __generator(this, function (_b) {
+                                    switch (_b.label) {
                                         case 0:
                                             builtDirectory = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + folder.name;
                                             if (!folder.isDirectory()) {
                                                 return [2 /*return*/];
                                             }
                                             moduleFolderPath = "".concat(folder.path).concat(folder.name);
+                                            _a = !process.argv.includes("--last_exported_id:".concat(folder.name));
+                                            if (_a) return [3 /*break*/, 2];
                                             return [4 /*yield*/, (0, CompilerUtils_1.shouldRecompileModule)(moduleFolderPath, builtDirectory)];
                                         case 1:
-                                            skipCompile = !(_a.sent());
+                                            _a = !(_b.sent());
+                                            _b.label = 2;
+                                        case 2:
+                                            skipCompile = _a;
                                             if (!forceReload && skipCompile) {
                                                 console.log("Skipping compiling of " + folder.name + "; no changes detected.");
                                                 return [2 /*return*/];
                                             }
                                             console.log("Removing " + builtDirectory);
                                             return [4 /*yield*/, fs.promises.rm(builtDirectory, { force: true, recursive: true })];
-                                        case 2:
-                                            _a.sent();
-                                            _a.label = 3;
                                         case 3:
-                                            _a.trys.push([3, 5, , 6]);
-                                            return [4 /*yield*/, (0, CompilerUtils_1.compileAndCopyDirectory)(moduleFolderPath, builtDirectory)];
+                                            _b.sent();
+                                            _b.label = 4;
                                         case 4:
-                                            _a.sent();
-                                            return [3 /*break*/, 6];
+                                            _b.trys.push([4, 6, , 7]);
+                                            return [4 /*yield*/, (0, CompilerUtils_1.compileAndCopyDirectory)(moduleFolderPath, builtDirectory)];
                                         case 5:
-                                            err_4 = _a.sent();
-                                            console.error(err_4);
-                                            return [3 /*break*/, 6];
+                                            _b.sent();
+                                            return [3 /*break*/, 7];
                                         case 6:
-                                            if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 8];
-                                            return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                            err_4 = _b.sent();
+                                            console.error(err_4);
+                                            return [3 /*break*/, 7];
                                         case 7:
-                                            _a.sent();
-                                            return [3 /*break*/, 10];
-                                        case 8: return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
-                                        case 9:
-                                            _a.sent();
-                                            _a.label = 10;
-                                        case 10: return [4 /*yield*/, Promise.all([
+                                            if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 9];
+                                            return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                        case 8:
+                                            _b.sent();
+                                            return [3 /*break*/, 11];
+                                        case 9: return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                        case 10:
+                                            _b.sent();
+                                            _b.label = 11;
+                                        case 11: return [4 /*yield*/, Promise.all([
                                                 fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
                                                 fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
                                             ])];
-                                        case 11:
-                                            _a.sent();
+                                        case 12:
+                                            _b.sent();
                                             return [2 /*return*/];
                                     }
                                 });

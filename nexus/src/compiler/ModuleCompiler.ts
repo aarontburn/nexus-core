@@ -104,12 +104,16 @@ export class ModuleCompiler {
             const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, IO_OPTIONS);
 
             await Promise.all(files.map(async folder => {
-                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name;
+                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name; // folder.name is also the module ID
                 if (!folder.isDirectory()) {
                     return;
                 }
                 const moduleFolderPath: string = `${folder.path}${folder.name}`;
-                const skipCompile: boolean = !(await shouldRecompileModule(moduleFolderPath, builtDirectory))
+
+
+                const skipCompile: boolean =
+                    !process.argv.includes(`--last_exported_id:${folder.name}`) ||
+                    !(await shouldRecompileModule(moduleFolderPath, builtDirectory))
 
                 if (!forceReload && skipCompile) {
                     console.log("Skipping compiling of " + folder.name + "; no changes detected.");
