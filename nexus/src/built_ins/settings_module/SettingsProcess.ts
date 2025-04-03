@@ -5,11 +5,15 @@ import { ChangeEvent, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, S
 import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 
-export class SettingsProcess extends Process {
-    public static readonly MODULE_NAME: string = "Settings";
-    public static readonly MODULE_ID: string = 'built_ins.Settings';
+const MODULE_NAME: string = "Settings";
+const MODULE_ID: string = 'built_ins.Settings';
 
-    private static readonly HTML_PATH: string = path.join(__dirname, "./SettingsHTML.html");
+const HTML_PATH: string = path.join(__dirname, "./static/SettingsHTML.html");
+const ICON_PATH: string = path.join(__dirname, "./static/setting.svg");
+
+
+
+export class SettingsProcess extends Process {
 
     private readonly moduleSettingsList: Map<string, ModuleSettings> = new Map();
     private readonly window: BrowserWindow;
@@ -19,10 +23,7 @@ export class SettingsProcess extends Process {
 
 
     public constructor(window: BrowserWindow) {
-        super(
-            SettingsProcess.MODULE_ID,
-            SettingsProcess.MODULE_NAME,
-            SettingsProcess.HTML_PATH);
+        super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
         this.window = window;
 
         this.getSettings().setDisplayName("General");

@@ -60,17 +60,13 @@ body {
   border-color: var(--accent-color);
 }
 
-#logo-button {
+
+.svg {
   mask-size: cover;
-  mask-image: url("./logo.svg");
-  background-color: var(--accent-color);
+  background-color: var(--off-white);
   width: 36px;
   height: 36px;
   mask-position: center;
   mask-clip: fill-box;
   transition: 0.2s;
-}
-
-#logo-button:hover {
-  background-color: var(--accent-color);
 }

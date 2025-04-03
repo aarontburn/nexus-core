@@ -28,8 +28,7 @@ const pathsToCopy = [
     SRC + "/view",
     SRC + "/built_ins/home_module/HomeHTML.html",
     SRC + "/built_ins/home_module/HomeStyles.css",
-    SRC + "/built_ins/settings_module/SettingsHTML.html",
-    SRC + "/built_ins/settings_module/SettingsStyles.css",
+    SRC + "/built_ins/settings_module/static",
 ];
 
 pathsToCopy.forEach(file => {

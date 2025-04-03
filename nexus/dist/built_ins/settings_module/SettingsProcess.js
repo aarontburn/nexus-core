@@ -81,10 +81,14 @@ var electron_1 = require("electron");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var ModuleImporter_1 = require("./ModuleImporter");
+var MODULE_NAME = "Settings";
+var MODULE_ID = 'built_ins.Settings';
+var HTML_PATH = path.join(__dirname, "./static/SettingsHTML.html");
+var ICON_PATH = path.join(__dirname, "./static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
     function SettingsProcess(window) {
-        var _this = _super.call(this, SettingsProcess.MODULE_ID, SettingsProcess.MODULE_NAME, SettingsProcess.HTML_PATH) || this;
+        var _this = _super.call(this, MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH) || this;
         _this.moduleSettingsList = new Map();
         _this.deletedModules = [];
         _this.devModeSubscribers = [];
@@ -396,9 +400,6 @@ var SettingsProcess = /** @class */ (function (_super) {
         }
         this.moduleSettingsList.set(module.getIPCSource(), module.getSettings());
     };
-    SettingsProcess.MODULE_NAME = "Settings";
-    SettingsProcess.MODULE_ID = 'built_ins.Settings';
-    SettingsProcess.HTML_PATH = path.join(__dirname, "./SettingsHTML.html");
     return SettingsProcess;
 }(nexus_module_builder_1.Process));
 exports.SettingsProcess = SettingsProcess;

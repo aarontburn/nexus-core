@@ -76,7 +76,8 @@ export class ModuleController implements IPCSource {
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
-                htmlPath: module.getHTMLPath()
+                htmlPath: module.getHTMLPath(),
+                iconPath: module.getIconPath()
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);

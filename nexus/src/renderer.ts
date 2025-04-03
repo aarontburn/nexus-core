@@ -53,7 +53,10 @@
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
 
-        document.getElementById("logo-button").style.backgroundColor = selectedTab.id === "home-button" ? 'var(--accent-color)' : 'var(--off-white)';
+        Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
+            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)'; 
+        });
+
         sendToProcess("swap-modules", moduleID);
     }
 
@@ -62,9 +65,9 @@
         const headerHtml: HTMLElement = document.getElementById("header");
 
         const headerButtonElement: HTMLElement = document.createElement("button");
-        headerButtonElement.innerHTML = `<div id="logo-button"></div>`;
+        headerButtonElement.innerHTML = `<div class="svg" style="mask-image: url('./logo.svg'); background-color: var(--accent-color);"></div>`;
         headerButtonElement.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
-        headerButtonElement.id = "home-button"
+        headerButtonElement.id = "built_ins.Home-header-button"
         selectedTab = headerButtonElement;
 
         headerButtonElement.addEventListener("click", () => {
@@ -85,12 +88,12 @@
 
 
 
-    function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string }[]) {
+    function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
         const moduleHtml: HTMLElement = document.getElementById("modules");
         const headerHtml: HTMLElement = document.getElementById("header");
 
         for (const obj of data) {
-            const { moduleName, moduleID, htmlPath }: { moduleName: string, moduleID: string, htmlPath: string } = obj;
+            const { moduleName, moduleID, htmlPath, iconPath }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string } = obj;
 
             if (htmlPath === undefined) {
                 continue;
@@ -107,7 +110,19 @@
                 continue;
             }
             const headerButtonElement: HTMLElement = document.createElement("button");
-            headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
+            headerButtonElement.id = moduleID + "-header-button";
+
+            if (iconPath === undefined) {
+                headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
+            } else {
+                if (iconPath.split(".").at(-1) === "svg") {
+                    headerButtonElement.innerHTML = `<div class="svg" style="mask-image: url('${iconPath.replace(/\\/g, "/")}')"></div>`
+                } else { // TODO: Handle other images (jpg and png)
+
+                }
+
+            }
+
 
             headerButtonElement.addEventListener("click", () => {
                 handleButtonClick(moduleID, headerButtonElement);

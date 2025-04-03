@@ -45,15 +45,17 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
-        document.getElementById("logo-button").style.backgroundColor = selectedTab.id === "home-button" ? 'var(--accent-color)' : 'var(--off-white)';
+        Array.from(document.getElementsByClassName("svg")).forEach(function (e) {
+            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
+        });
         sendToProcess("swap-modules", moduleID);
     };
     function registerHome() {
         var headerHtml = document.getElementById("header");
         var headerButtonElement = document.createElement("button");
-        headerButtonElement.innerHTML = "<div id=\"logo-button\"></div>";
+        headerButtonElement.innerHTML = "<div class=\"svg\" style=\"mask-image: url('./logo.svg'); background-color: var(--accent-color);\"></div>";
         headerButtonElement.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
-        headerButtonElement.id = "home-button";
+        headerButtonElement.id = "built_ins.Home-header-button";
         selectedTab = headerButtonElement;
         headerButtonElement.addEventListener("click", function () {
             handleButtonClick("built_ins.Home", headerButtonElement);
@@ -73,7 +75,7 @@
         var moduleHtml = document.getElementById("modules");
         var headerHtml = document.getElementById("header");
         var _loop_1 = function (obj) {
-            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath;
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
             if (htmlPath === undefined) {
                 return "continue";
             }
@@ -87,7 +89,17 @@
                 return "continue";
             }
             var headerButtonElement = document.createElement("button");
-            headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+            headerButtonElement.id = moduleID + "-header-button";
+            if (iconPath === undefined) {
+                headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+            }
+            else {
+                if (iconPath.split(".").at(-1) === "svg") {
+                    headerButtonElement.innerHTML = "<div class=\"svg\" style=\"mask-image: url('".concat(iconPath.replace(/\\/g, "/"), "')\"></div>");
+                }
+                else { // TODO: Handle other images (jpg and png)
+                }
+            }
             headerButtonElement.addEventListener("click", function () {
                 handleButtonClick(moduleID, headerButtonElement);
             });
