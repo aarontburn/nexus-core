@@ -12,15 +12,14 @@ var ModuleSettings = /** @class */ (function () {
         this.parentModule = module;
         this.settingsMap = new Map();
         this.settingsDisplay = [];
-        console.log(this.settingsDisplay);
-        this.addSettings(module.registerSettings());
-        this.addInternalSettings(module.registerInternalSettings());
         // Bind everything
         Object.getOwnPropertyNames(ModuleSettings.prototype).forEach(function (key) {
             if (key !== 'constructor') {
                 _this[key] = _this[key].bind(_this);
             }
         });
+        this.addSettings(module.registerSettings());
+        this.addInternalSettings(module.registerInternalSettings());
     }
     /**
      *  Get the name of the module settings.

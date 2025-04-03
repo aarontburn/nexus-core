@@ -22,11 +22,6 @@ export class ModuleSettings {
         this.settingsMap = new Map();
         this.settingsDisplay = [];
 
-        console.log(this.settingsDisplay)
-
-        this.addSettings(module.registerSettings());
-        this.addInternalSettings(module.registerInternalSettings());
-
         // Bind everything
         Object.getOwnPropertyNames(ModuleSettings.prototype).forEach((key) => {
             if (key !== 'constructor') {
@@ -34,6 +29,8 @@ export class ModuleSettings {
             }
         });
 
+        this.addSettings(module.registerSettings());
+        this.addInternalSettings(module.registerInternalSettings());
     }
 
     /**
