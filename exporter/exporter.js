@@ -223,10 +223,12 @@ async function checkDependencysDependencies(depName, depSet) {
     const dependencies = json["dependencies"];
 
     if (dependencies !== undefined) {
-        Object.keys(dependencies).forEach(name => {
-            depSet.add(name);
-            checkDependencysDependencies(name, depSet)
-        })
+        await Promise.all(
+            Object.keys(dependencies).map(name => {
+                depSet.add(name);
+                return checkDependencysDependencies(name, depSet);
+            })
+        );
     }
 }
 
