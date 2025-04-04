@@ -4,6 +4,7 @@ import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
 import { IPCCallback, Process, StorageHandler, ModuleInfo } from "@nexus/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './CompilerUtils';
+import Stream from 'stream';
 
 
 export class ModuleCompiler {
@@ -60,8 +61,8 @@ export class ModuleCompiler {
                             if (entry.filename.endsWith('/')) {
                                 entryPromises.push(fs.promises.mkdir(entryPath, { recursive: true }));
                             } else {
-                                const readStream = await entry.openReadStream();
-                                const writeStream = fs.createWriteStream(entryPath);
+                                const readStream: Stream.Readable = await entry.openReadStream();
+                                const writeStream: fs.WriteStream = fs.createWriteStream(entryPath);
                                 entryPromises.push(pipeline(readStream, writeStream));
                             }
                         }
