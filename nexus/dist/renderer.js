@@ -41,10 +41,11 @@
     var handleButtonClick = function (moduleID, buttonElement) {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";
-            selectedTab.style.borderColor = "";
+            selectedTab.style.outlineColor = "";
+            selectedTab.style.outlineWidth = "";
         }
         selectedTab = buttonElement;
-        selectedTab.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
+        selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
         Array.from(document.getElementsByClassName("svg")).forEach(function (e) {
             e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
         });
@@ -58,6 +59,7 @@
         document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
     }
     function loadModules(data) {
+        var _a;
         var builtIns = ["built_ins.Home", "built_ins.Settings"];
         var moduleHtml = document.getElementById("modules");
         var headerHtml = document.getElementById("header");
@@ -78,10 +80,22 @@
                 headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
             }
             else {
-                if (iconPath.split(".").at(-1) === "svg") {
-                    headerButtonElement.innerHTML = "<div class=\"svg\" style=\"mask-image: url('".concat(iconPath.replace(/\\/g, "/"), "')\"></div>");
-                }
-                else { // TODO: Handle other images (jpg and png)
+                switch (((_a = iconPath.split(".").at(-1)) !== null && _a !== void 0 ? _a : '').toLowerCase()) {
+                    case "svg": {
+                        headerButtonElement.innerHTML = "<div class=\"module-icon svg\" style=\"mask-image: url('".concat(iconPath.replace(/\\/g, "/"), "')\"></div>");
+                        break;
+                    }
+                    case "png":
+                    case "jpeg":
+                    case "jpg": {
+                        headerButtonElement.innerHTML = "<img class=\"module-icon\" src=\"".concat(iconPath.replace(/\\/g, "/"), "\"  />");
+                        break;
+                    }
+                    default: {
+                        console.log("Unsupported icon for ".concat(moduleID, ": ") + iconPath);
+                        headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+                        break;
+                    }
                 }
             }
             headerButtonElement.addEventListener("click", function () {

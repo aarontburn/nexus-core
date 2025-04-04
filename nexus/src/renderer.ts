@@ -48,13 +48,14 @@
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";
-            selectedTab.style.borderColor = "";
+            selectedTab.style.outlineColor = "";
+            selectedTab.style.outlineWidth = "";
         }
         selectedTab = buttonElement;
-        selectedTab.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
+        selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
 
         Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
-            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)'; 
+            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
         });
 
         sendToProcess("swap-modules", moduleID);
@@ -99,12 +100,24 @@
             if (iconPath === undefined) {
                 headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
             } else {
-                if (iconPath.split(".").at(-1) === "svg") {
-                    headerButtonElement.innerHTML = `<div class="svg" style="mask-image: url('${iconPath.replace(/\\/g, "/")}')"></div>`
-                } else { // TODO: Handle other images (jpg and png)
+                switch ((iconPath.split(".").at(-1) ?? '').toLowerCase()) {
+                    case "svg": {
+                        headerButtonElement.innerHTML = `<div class="module-icon svg" style="mask-image: url('${iconPath.replace(/\\/g, "/")}')"></div>`;
+                        break;
+                    }
+                    case "png":
+                    case "jpeg":
+                    case "jpg": {
+                        headerButtonElement.innerHTML = `<img class="module-icon" src="${iconPath.replace(/\\/g, "/")}"  />`;
+                        break;
+                    }
 
+                    default: {
+                        console.log(`Unsupported icon for ${moduleID}: ` + iconPath);
+                        headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
+                        break;
+                    }
                 }
-
             }
             headerButtonElement.addEventListener("click", () => {
                 handleButtonClick(moduleID, headerButtonElement);

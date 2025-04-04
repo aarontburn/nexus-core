@@ -49,8 +49,7 @@ body {
   font-weight: normal;
   transition: 0.2s;
 
-
-  border: 1px solid white;
+  outline: 1px solid white;
   border-radius: 10px;
   margin: 5px;
   width: 48px;
@@ -58,10 +57,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  border: none;
 }
 
 .header>button:hover {
-  border-color: var(--accent-color);
+  outline-color: var(--accent-color);
+}
+
+.module-icon {
+  width: 36px;
+  height: 36px;
+  transition: 0.2s;
 }
 
 
@@ -71,9 +77,6 @@ body {
   width: 36px;
   height: 36px;
   mask-position: center;
-  mask-clip: fill-box;
-  transition: 0.2s;
-
   /* Set the mask image on the div */
   /* mask-image: url(...) */
 }
