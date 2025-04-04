@@ -29,7 +29,7 @@
     var handleEvent = function (eventType, data) {
         switch (eventType) {
             case "load-modules": {
-                console.log(data);
+                console.log(data[0]);
                 loadModules(data[0]);
                 break;
             }
@@ -62,8 +62,8 @@
     function loadModules(data) {
         var _a;
         var builtIns = ["built_ins.Home", "built_ins.Settings"];
-        var moduleHtml = document.getElementById("modules");
-        var headerHtml = document.getElementById("header");
+        var moduleFrameHTML = document.getElementById("modules");
+        var moduleIconsHTML = document.getElementById("header");
         var _loop_1 = function (obj) {
             var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
             if (htmlPath === undefined) { // internal module, ignore
@@ -74,7 +74,7 @@
             moduleIFrameElement.setAttribute("src", htmlPath);
             moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
             // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
-            moduleHtml.insertAdjacentElement("beforeend", moduleIFrameElement);
+            moduleFrameHTML.insertAdjacentElement("beforeend", moduleIFrameElement);
             var headerButtonElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
             if (iconPath === undefined) {
@@ -106,7 +106,7 @@
                 document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
             }
             else {
-                headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+                moduleIconsHTML.insertAdjacentElement("beforeend", headerButtonElement);
             }
         };
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {

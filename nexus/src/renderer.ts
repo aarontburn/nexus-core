@@ -34,7 +34,7 @@
     const handleEvent = (eventType: string, data: any[]) => {
         switch (eventType) {
             case "load-modules": {
-                console.log(data)
+                console.log(data[0]);
                 loadModules(data[0]);
                 break;
             }
@@ -79,8 +79,8 @@
         const builtIns: string[] = ["built_ins.Home", "built_ins.Settings"];
 
 
-        const moduleHtml: HTMLElement = document.getElementById("modules");
-        const headerHtml: HTMLElement = document.getElementById("header");
+        const moduleFrameHTML: HTMLElement = document.getElementById("modules");
+        const moduleIconsHTML: HTMLElement = document.getElementById("header");
 
         for (const obj of data) {
             const { moduleName, moduleID, htmlPath, iconPath }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string } = obj;
@@ -93,7 +93,7 @@
             moduleIFrameElement.setAttribute("src", htmlPath);
             moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
             // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
-            moduleHtml.insertAdjacentElement("beforeend", moduleIFrameElement);
+            moduleFrameHTML.insertAdjacentElement("beforeend", moduleIFrameElement);
 
             const headerButtonElement: HTMLElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
@@ -127,7 +127,7 @@
             if (builtIns.includes(moduleID)) {
                 document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
             } else {
-                headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+                moduleIconsHTML.insertAdjacentElement("beforeend", headerButtonElement);
 
             }
 

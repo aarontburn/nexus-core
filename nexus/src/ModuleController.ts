@@ -22,18 +22,12 @@ export class ModuleController implements IPCSource {
 
     private ipcCallback: IPCCallback;
 
-    private hasBeenInit: boolean = false;
-
 
     public getIPCSource(): string {
-
         return "built_ins.Main";
     }
 
     public start(): void {
-        
-
-
         this.createBrowserWindow();
         this.handleMainEvents();
 
@@ -42,19 +36,10 @@ export class ModuleController implements IPCSource {
 
         this.registerModules().then(() => {
             if (this.rendererReady) {
-                console.log("Sending init signal after modules are registered.")
                 this.init();
             } else {
                 this.processReady = true;
             }
-
-            setTimeout(() => {
-                this.window.webContents.on("did-finish-load", () => {
-                    this.hasBeenInit = false;
-                    console.log("Sending init signal from refresher.")
-                    this.init();
-                });
-            }, 500);
 
             const settings: ModuleSettings = this.settingsModule.getSettings();
             this.window.setBounds({
@@ -75,10 +60,8 @@ export class ModuleController implements IPCSource {
 
     }
 
-    private init(): void {
-        console.log(new Error().stack.split("\n").map(s => s.trim()).slice(1))
-        this.hasBeenInit = true;
 
+    private init(): void {
         const data: any[] = [];
         this.modulesByIPCSource.forEach((module: Process) => {
             data.push({
@@ -115,7 +98,6 @@ export class ModuleController implements IPCSource {
             switch (eventType) {
                 case "renderer-init": {
                     if (this.processReady) {
-                        console.log("Sending init signal from renderer.")
                         this.init();
                     } else {
                         this.rendererReady = true;
@@ -172,17 +154,21 @@ export class ModuleController implements IPCSource {
 
 
         this.window.on('close', async (event) => {
-            event.preventDefault(); 
+            event.preventDefault();
             try {
-                await this.stop(); 
-                this.window.destroy(); 
+                await this.stop();
+                this.window.destroy();
             } catch (error) {
                 console.error("Error during cleanup:", error);
             }
         })
 
 
-        this.window.loadFile(path.join(__dirname, "./view/index.html"));
+        this.window.loadFile(path.join(__dirname, "./view/index.html")).then(() => {
+            this.window.webContents.on("did-finish-load", () => {
+                this.init();
+            });
+        });
 
         this.ipcCallback = {
             notifyRenderer: (target: IPCSource, eventType: string, ...data: any[]) => {
