@@ -112,10 +112,6 @@ var ModuleController = /** @class */ (function () {
         }, 500);
     };
     ModuleController.prototype.init = function () {
-        if (this.hasBeenInit) {
-            console.warn("Attempted to re-initialize the main controller.");
-            return;
-        }
         this.hasBeenInit = true;
         var data = [];
         this.modulesByIPCSource.forEach(function (module) {

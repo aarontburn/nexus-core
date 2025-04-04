@@ -29,6 +29,7 @@
     var handleEvent = function (eventType, data) {
         switch (eventType) {
             case "load-modules": {
+                console.log(data);
                 loadModules(data[0]);
                 break;
             }

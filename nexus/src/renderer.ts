@@ -34,6 +34,7 @@
     const handleEvent = (eventType: string, data: any[]) => {
         switch (eventType) {
             case "load-modules": {
+                console.log(data)
                 loadModules(data[0]);
                 break;
             }

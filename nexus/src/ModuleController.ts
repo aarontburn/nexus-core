@@ -74,10 +74,6 @@ export class ModuleController implements IPCSource {
     }
 
     private init(): void {
-        if (this.hasBeenInit) {
-            console.warn("Attempted to re-initialize the main controller.");
-            return;
-        }
         this.hasBeenInit = true;
 
         const data: any[] = [];
