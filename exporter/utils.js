@@ -1,4 +1,4 @@
-export const tryOrUndefined = (func) => {
+const tryOrUndefined = (func) => {
     try {
         return func();
     } catch (e) {
@@ -6,7 +6,7 @@ export const tryOrUndefined = (func) => {
     }
 }
 
-export const tryOrUndefinedAsync = async (func) => {
+const tryOrUndefinedAsync = async (func) => {
     try {
         return await func();
     } catch (e) {
@@ -15,10 +15,17 @@ export const tryOrUndefinedAsync = async (func) => {
 }
 
 
-export const missingObjectKeys = (obj, keys) => {
+const missingObjectKeys = (obj, keys) => {
     return keys.filter(k => !Object.keys(obj).includes(k))
 } 
 
-export const defaultDevJSON = {
+const defaultDevJSON = {
     last_exported_id: null
+}
+
+module.exports = {
+    tryOrUndefined,
+    tryOrUndefinedAsync,
+    missingObjectKeys,
+    defaultDevJSON
 }
