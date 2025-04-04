@@ -42,10 +42,19 @@ export class ModuleController implements IPCSource {
 
         this.registerModules().then(() => {
             if (this.rendererReady) {
+                console.log("Sending init signal after modules are registered.")
                 this.init();
             } else {
                 this.processReady = true;
             }
+
+            setTimeout(() => {
+                this.window.webContents.on("did-finish-load", () => {
+                    this.hasBeenInit = false;
+                    console.log("Sending init signal from refresher.")
+                    this.init();
+                });
+            }, 500);
 
             const settings: ModuleSettings = this.settingsModule.getSettings();
             this.window.setBounds({
@@ -63,17 +72,11 @@ export class ModuleController implements IPCSource {
         });
 
 
-        // Refresh listener
-        setTimeout(() => {
-            this.window.webContents.on("did-finish-load", () => {
-                this.hasBeenInit = false;
-                this.init();
-            });
-        }, 500);
 
     }
 
     private init(): void {
+        console.log(new Error().stack.split("\n").map(s => s.trim()).slice(1))
         this.hasBeenInit = true;
 
         const data: any[] = [];
@@ -112,6 +115,7 @@ export class ModuleController implements IPCSource {
             switch (eventType) {
                 case "renderer-init": {
                     if (this.processReady) {
+                        console.log("Sending init signal from renderer.")
                         this.init();
                     } else {
                         this.rendererReady = true;

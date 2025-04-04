@@ -86,11 +86,19 @@ var ModuleController = /** @class */ (function () {
         this.settingsModule.setIPC(this.ipcCallback);
         this.registerModules().then(function () {
             if (_this.rendererReady) {
+                console.log("Sending init signal after modules are registered.");
                 _this.init();
             }
             else {
                 _this.processReady = true;
             }
+            setTimeout(function () {
+                _this.window.webContents.on("did-finish-load", function () {
+                    _this.hasBeenInit = false;
+                    console.log("Sending init signal from refresher.");
+                    _this.init();
+                });
+            }, 500);
             var settings = _this.settingsModule.getSettings();
             _this.window.setBounds({
                 x: Number(settings.findSetting('window_x').getValue()),
@@ -103,15 +111,9 @@ var ModuleController = /** @class */ (function () {
             }
             _this.window.show();
         });
-        // Refresh listener
-        setTimeout(function () {
-            _this.window.webContents.on("did-finish-load", function () {
-                _this.hasBeenInit = false;
-                _this.init();
-            });
-        }, 500);
     };
     ModuleController.prototype.init = function () {
+        console.log(new Error().stack.split("\n").map(function (s) { return s.trim(); }));
         this.hasBeenInit = true;
         var data = [];
         this.modulesByIPCSource.forEach(function (module) {
@@ -149,6 +151,7 @@ var ModuleController = /** @class */ (function () {
             switch (eventType) {
                 case "renderer-init": {
                     if (_this.processReady) {
+                        console.log("Sending init signal from renderer.");
                         _this.init();
                     }
                     else {
