@@ -50,20 +50,6 @@
         });
         sendToProcess("swap-modules", moduleID);
     };
-    function registerHome() {
-        var headerHtml = document.getElementById("header");
-        var headerButtonElement = document.createElement("button");
-        headerButtonElement.innerHTML = "<div class=\"svg\" style=\"mask-image: url('./logo.svg'); background-color: var(--accent-color);\"></div>";
-        headerButtonElement.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
-        headerButtonElement.id = "built_ins.Home-header-button";
-        selectedTab = headerButtonElement;
-        headerButtonElement.addEventListener("click", function () {
-            handleButtonClick("built_ins.Home", headerButtonElement);
-        });
-        headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
-        headerHtml.insertAdjacentHTML("beforeend", '<div style="background-color: white; height: 1px; margin: 5px 5px"></div>');
-    }
-    registerHome();
     function swapLayout(swapToLayoutId) {
         var modules = document.getElementById("modules").getElementsByTagName("*");
         for (var i = 0; i < modules.length; i++) {
@@ -72,11 +58,12 @@
         document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
     }
     function loadModules(data) {
+        var builtIns = ["built_ins.Home", "built_ins.Settings"];
         var moduleHtml = document.getElementById("modules");
         var headerHtml = document.getElementById("header");
         var _loop_1 = function (obj) {
             var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
-            if (htmlPath === undefined) {
+            if (htmlPath === undefined) { // internal module, ignore
                 return "continue";
             }
             var moduleIFrameElement = document.createElement("iframe");
@@ -85,9 +72,6 @@
             moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
             // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
             moduleHtml.insertAdjacentElement("beforeend", moduleIFrameElement);
-            if (moduleID === "built_ins.Home") {
-                return "continue";
-            }
             var headerButtonElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
             if (iconPath === undefined) {
@@ -103,7 +87,12 @@
             headerButtonElement.addEventListener("click", function () {
                 handleButtonClick(moduleID, headerButtonElement);
             });
-            headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+            if (builtIns.includes(moduleID)) {
+                document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
+            }
+            else {
+                headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+            }
         };
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var obj = data_1[_i];

@@ -78,10 +78,14 @@ exports.HomeProcess = void 0;
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
+var MODULE_NAME = "Home";
+var MODULE_ID = 'built_ins.Home';
+var HTML_PATH = path.join(__dirname, "./static/HomeHTML.html");
+var ICON_PATH = path.join(__dirname, "./static/logo.svg");
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
     function HomeProcess() {
-        var _this = _super.call(this, HomeProcess.MODULE_ID, HomeProcess.MODULE_NAME, HomeProcess.HTML_PATH) || this;
+        var _this = _super.call(this, MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH) || this;
         _this.setModuleInfo({
             name: "Home",
             author: "aarontburn",
@@ -198,9 +202,6 @@ var HomeProcess = /** @class */ (function (_super) {
             });
         });
     };
-    HomeProcess.MODULE_NAME = "Home";
-    HomeProcess.MODULE_ID = 'built_ins.Home';
-    HomeProcess.HTML_PATH = path.join(__dirname, "./HomeHTML.html");
     HomeProcess.LOCALE = "en-US";
     HomeProcess.STANDARD_TIME_FORMAT = { hour: "numeric", minute: "numeric", second: "numeric", hour12: true };
     HomeProcess.MILITARY_TIME_FORMAT = { hour: "numeric", minute: "numeric", second: "numeric", hour12: false };

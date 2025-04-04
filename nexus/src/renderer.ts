@@ -61,22 +61,7 @@
     }
 
 
-    function registerHome() {
-        const headerHtml: HTMLElement = document.getElementById("header");
 
-        const headerButtonElement: HTMLElement = document.createElement("button");
-        headerButtonElement.innerHTML = `<div class="svg" style="mask-image: url('./logo.svg'); background-color: var(--accent-color);"></div>`;
-        headerButtonElement.setAttribute("style", "color: var(--accent-color); border-color: var(--accent-color);");
-        headerButtonElement.id = "built_ins.Home-header-button"
-        selectedTab = headerButtonElement;
-
-        headerButtonElement.addEventListener("click", () => {
-            handleButtonClick("built_ins.Home", headerButtonElement);
-        });
-        headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
-        headerHtml.insertAdjacentHTML("beforeend", '<div style="background-color: white; height: 1px; margin: 5px 5px"></div>');
-    }
-    registerHome();
 
     function swapLayout(swapToLayoutId: string): void {
         const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
@@ -89,13 +74,16 @@
 
 
     function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
+        const builtIns: string[] = ["built_ins.Home", "built_ins.Settings"];
+
+
         const moduleHtml: HTMLElement = document.getElementById("modules");
         const headerHtml: HTMLElement = document.getElementById("header");
 
         for (const obj of data) {
             const { moduleName, moduleID, htmlPath, iconPath }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string } = obj;
 
-            if (htmlPath === undefined) {
+            if (htmlPath === undefined) { // internal module, ignore
                 continue;
             }
             const moduleIFrameElement: HTMLElement = document.createElement("iframe");
@@ -105,10 +93,6 @@
             // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
             moduleHtml.insertAdjacentElement("beforeend", moduleIFrameElement);
 
-
-            if (moduleID === "built_ins.Home") {
-                continue;
-            }
             const headerButtonElement: HTMLElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
 
@@ -122,12 +106,24 @@
                 }
 
             }
-
-
             headerButtonElement.addEventListener("click", () => {
                 handleButtonClick(moduleID, headerButtonElement);
             });
-            headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+
+            if (builtIns.includes(moduleID)) {
+                document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
+            } else {
+                headerHtml.insertAdjacentElement("beforeend", headerButtonElement);
+
+            }
+
+
+
+
+
+
+
+
         }
 
     }

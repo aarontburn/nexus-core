@@ -81,7 +81,7 @@ export class ModuleController implements IPCSource {
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
-        this.swapVisibleModule(HomeProcess.MODULE_ID);
+        this.swapVisibleModule("built_ins.Home");
         this.modulesByIPCSource.forEach((module: Process) => {
             if (module.getHTMLPath() === undefined) {
                 module.initialize();

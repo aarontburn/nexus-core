@@ -26,9 +26,8 @@ const SRC = path.join(__dirname, 'src');
 // These are all the files to copy into the "dist" folder
 const pathsToCopy = [
     SRC + "/view",
-    SRC + "/built_ins/home_module/HomeHTML.html",
-    SRC + "/built_ins/home_module/HomeStyles.css",
     SRC + "/built_ins/settings_module/static",
+    SRC + "/built_ins/home_module/static",
 ];
 
 pathsToCopy.forEach(file => {

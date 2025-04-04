@@ -120,7 +120,7 @@ var ModuleController = /** @class */ (function () {
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
-        this.swapVisibleModule(HomeProcess_1.HomeProcess.MODULE_ID);
+        this.swapVisibleModule("built_ins.Home");
         this.modulesByIPCSource.forEach(function (module) {
             if (module.getHTMLPath() === undefined) {
                 module.initialize();

@@ -13,7 +13,11 @@ body {
   width: 100vw;
 }
 
+#built-ins {
+  border-right: none;
+  padding: 0;
 
+}
 .box .header {
   display: flex;
   flex: 0 1 auto;
@@ -35,7 +39,7 @@ body {
   border-style: hidden;
 }
 
-.header>button {
+.header>button{
   color: var(--off-white);
   background-color: transparent;
   font-size: 20px;
@@ -69,4 +73,7 @@ body {
   mask-position: center;
   mask-clip: fill-box;
   transition: 0.2s;
+
+  /* Set the mask image on the div */
+  /* mask-image: url(...) */
 }

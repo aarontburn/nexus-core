@@ -1,16 +1,16 @@
 import { Process, Setting } from "@nexus/nexus-module-builder";
-import {  NumberSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
+import { NumberSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
 
 import * as path from "path";
 
 
+const MODULE_NAME: string = "Home";
+const MODULE_ID: string = 'built_ins.Home';
+const HTML_PATH: string = path.join(__dirname, "./static/HomeHTML.html");
+const ICON_PATH: string = path.join(__dirname, "./static/logo.svg");
+
 
 export class HomeProcess extends Process {
-	public static readonly MODULE_NAME: string = "Home";
-	public static readonly MODULE_ID: string = 'built_ins.Home';
-
-	private static readonly HTML_PATH: string = path.join(__dirname, "./HomeHTML.html");
-
 
 	private static readonly LOCALE: string = "en-US";
 	private static readonly STANDARD_TIME_FORMAT: Intl.DateTimeFormatOptions =
@@ -28,10 +28,7 @@ export class HomeProcess extends Process {
 	private clockTimeout: NodeJS.Timeout;
 
 	public constructor() {
-		super(
-			HomeProcess.MODULE_ID,
-			HomeProcess.MODULE_NAME,
-			HomeProcess.HTML_PATH);
+		super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
 
 		this.setModuleInfo({
 			name: "Home",
@@ -52,7 +49,7 @@ export class HomeProcess extends Process {
 
 
 		this.clockTimeout = setTimeout(() => this.updateDateAndTime(true), 1000 - new Date().getMilliseconds());
-		
+
 	}
 
 	public async onExit(): Promise<void> {
@@ -82,7 +79,7 @@ export class HomeProcess extends Process {
 			this.clockTimeout = setTimeout(() => this.updateDateAndTime(true), 1000);
 		}
 	}
-	
+
 
 	public registerSettings(): (Setting<unknown> | string)[] {
 		return [
