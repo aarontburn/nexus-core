@@ -17,10 +17,12 @@ export class ModuleController implements IPCSource {
     private window: BrowserWindow;
     private currentDisplayedModule: Process;
 
-    private initReady: boolean = false;
+    private processReady: boolean = false;
     private rendererReady: boolean = false;
 
     private ipcCallback: IPCCallback;
+
+    private hasBeenInit: boolean = false;
 
 
     public getIPCSource(): string {
@@ -42,7 +44,7 @@ export class ModuleController implements IPCSource {
             if (this.rendererReady) {
                 this.init();
             } else {
-                this.initReady = true;
+                this.processReady = true;
             }
 
             const settings: ModuleSettings = this.settingsModule.getSettings();
@@ -64,6 +66,7 @@ export class ModuleController implements IPCSource {
         // Refresh listener
         setTimeout(() => {
             this.window.webContents.on("did-finish-load", () => {
+                this.hasBeenInit = false;
                 this.init();
             });
         }, 500);
@@ -71,6 +74,12 @@ export class ModuleController implements IPCSource {
     }
 
     private init(): void {
+        if (this.hasBeenInit) {
+            console.warn("Attempted to re-initialize the main controller.");
+            return;
+        }
+        this.hasBeenInit = true;
+
         const data: any[] = [];
         this.modulesByIPCSource.forEach((module: Process) => {
             data.push({
@@ -106,7 +115,7 @@ export class ModuleController implements IPCSource {
         this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any[]) => {
             switch (eventType) {
                 case "renderer-init": {
-                    if (this.initReady) {
+                    if (this.processReady) {
                         this.init();
                     } else {
                         this.rendererReady = true;

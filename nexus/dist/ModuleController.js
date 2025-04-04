@@ -71,8 +71,9 @@ var ModuleController = /** @class */ (function () {
     function ModuleController() {
         this.ipc = electron_1.ipcMain;
         this.modulesByIPCSource = new Map();
-        this.initReady = false;
+        this.processReady = false;
         this.rendererReady = false;
+        this.hasBeenInit = false;
     }
     ModuleController.prototype.getIPCSource = function () {
         return "built_ins.Main";
@@ -88,7 +89,7 @@ var ModuleController = /** @class */ (function () {
                 _this.init();
             }
             else {
-                _this.initReady = true;
+                _this.processReady = true;
             }
             var settings = _this.settingsModule.getSettings();
             _this.window.setBounds({
@@ -105,11 +106,17 @@ var ModuleController = /** @class */ (function () {
         // Refresh listener
         setTimeout(function () {
             _this.window.webContents.on("did-finish-load", function () {
+                _this.hasBeenInit = false;
                 _this.init();
             });
         }, 500);
     };
     ModuleController.prototype.init = function () {
+        if (this.hasBeenInit) {
+            console.warn("Attempted to re-initialize the main controller.");
+            return;
+        }
+        this.hasBeenInit = true;
         var data = [];
         this.modulesByIPCSource.forEach(function (module) {
             data.push({
@@ -145,7 +152,7 @@ var ModuleController = /** @class */ (function () {
         this.ipc.handle(this.getIPCSource(), function (_, eventType, data) {
             switch (eventType) {
                 case "renderer-init": {
-                    if (_this.initReady) {
+                    if (_this.processReady) {
                         _this.init();
                     }
                     else {
