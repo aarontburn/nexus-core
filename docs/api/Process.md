@@ -1,12 +1,7 @@
-### Modules: The Process
-Author: [@aarontburn](https://github.com/aarontburn)  
-Guide for [Modules](https://github.com/aarontburn/modules)
+# Nexus: Process
+## The Process
+The process is the backend of your module. It has no access to the DOM, and sends/receive data from the renderer process. Inside the parent `Process` class are many functions that can be utilized to control the state of the module at various times.
 
-
-# The Process
-The process is the "true backend" of your module. It has no access to the DOM, and can only send/receive data from the renderer process. Inside the parent `Process` class are many functions that can be utilized to control the state of the module at various times.
-
-Many fields in the parent `Process` object are public. This is an unfortunate side-effect of the module-loading process. Functions and fields that start with an underscore (e.g. `_moduleName`) should not be directly referenced.
 
 
 ## Main Functions
@@ -20,7 +15,7 @@ You must do a call to `super.initialize()`
 This is the entry point of your module. This function is called when the renderer sends the `init` signal to tell the process that it is ready. 
 
 ### `registerSettings(): (Setting\<unknown> | string)[]`
-This function is used to intialize any settings your module may use.
+This function is used to initialize any settings your module may use.
 
 **Returns:**
 > An array of either Settings or strings.
@@ -182,5 +177,5 @@ This function passes each setting into the `refreshSettings` function as if they
 
 
 ### `setModuleInfo(moduleInfo: ModuleInfo): void`
-This function is called when the controller parses the `moduleinfo.json` and attaches it to the module. This should not be used anywhere. 
+This function is called when the controller parses the `module-info.json` and attaches it to the module. This should not be used anywhere. 
 <br/>

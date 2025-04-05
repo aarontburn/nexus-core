@@ -1,5 +1,5 @@
 (() => {
-    (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main"
+    (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main";
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
         return window.ipc.send(window, eventName, data);
     }
@@ -64,7 +64,6 @@
 
 
 
-
     function swapLayout(swapToLayoutId: string): void {
         const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
         for (let i = 0; i < modules.length; i++) {
@@ -97,6 +96,7 @@
 
             const headerButtonElement: HTMLElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
+            headerButtonElement.className = "header-button";
 
             if (iconPath === undefined) {
                 headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
@@ -131,18 +131,9 @@
 
             }
 
-
-
-
-
-
-
-
         }
 
     }
-
-
 
 })();
 

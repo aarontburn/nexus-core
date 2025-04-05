@@ -18,6 +18,7 @@ body {
   padding: 0;
 
 }
+
 .box .header {
   display: flex;
   flex: 0 1 auto;
@@ -39,7 +40,7 @@ body {
   border-style: hidden;
 }
 
-.header>button{
+.header-button {
   color: var(--off-white);
   background-color: transparent;
   font-size: 20px;
@@ -58,6 +59,8 @@ body {
   justify-content: center;
   align-items: center;
   border: none;
+  user-select: none;
+  cursor: pointer;
 }
 
 .header>button:hover {

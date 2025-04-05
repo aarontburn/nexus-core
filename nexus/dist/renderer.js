@@ -77,6 +77,7 @@
             moduleFrameHTML.insertAdjacentElement("beforeend", moduleIFrameElement);
             var headerButtonElement = document.createElement("button");
             headerButtonElement.id = moduleID + "-header-button";
+            headerButtonElement.className = "header-button";
             if (iconPath === undefined) {
                 headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
             }
