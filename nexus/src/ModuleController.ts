@@ -7,7 +7,6 @@ import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Settin
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
-console.log("test")
 export class ModuleController implements IPCSource {
 
     private readonly ipc: Electron.IpcMain = ipcMain;
