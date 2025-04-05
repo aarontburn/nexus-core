@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, ipcRenderer } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
@@ -7,7 +7,7 @@ import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Settin
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
-
+console.log("test")
 export class ModuleController implements IPCSource {
 
     private readonly ipc: Electron.IpcMain = ipcMain;

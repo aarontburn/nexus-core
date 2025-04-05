@@ -67,6 +67,7 @@ var HomeProcess_1 = require("./built_ins/home_module/HomeProcess");
 var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var WINDOW_DIMENSION = { width: 1920, height: 1080 };
+console.log("test");
 var ModuleController = /** @class */ (function () {
     function ModuleController() {
         this.ipc = electron_1.ipcMain;
