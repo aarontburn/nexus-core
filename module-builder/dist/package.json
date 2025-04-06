@@ -5,7 +5,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "node builder.js && tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs": "jsdoc2md ./dist/Process.js"
   },
   "author": "aarontburn",
   "license": "MIT",
