@@ -33,13 +33,6 @@
 }
 
 
-#left p {
-    font-size: 28px;
-    cursor: default;
-    margin: 0px;
-    padding: 10px;
-    user-select: none;
-}
 
 .setting {
     padding-left: 15px;
@@ -72,6 +65,11 @@
 }
 
 .setting-group {
+    font-size: 22px;
+    cursor: pointer;
+    margin: 0px;
+    padding: 10px;
+    user-select: none;
     transition: 0.25s;
 }
 

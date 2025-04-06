@@ -254,14 +254,15 @@ export class SettingsProcess extends Process {
             }
 
             case "swap-settings-tab": {
-                const moduleName: string = data[0];
+                const swapToModule: string = data[0];
 
                 for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
                     const name: string = moduleSettings.getDisplayName();
 
-                    if (moduleName !== name) {
+                    if (swapToModule !== name) {
                         continue;
                     }
+
 
                     const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
                     const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
@@ -271,11 +272,13 @@ export class SettingsProcess extends Process {
                         settings: []
                     };
 
-                    settingsList.forEach((s: (Setting<unknown> | string)) => {
+                    
+                    for (const s of settingsList) {
                         if (typeof s === 'string') {
                             list.settings.push(s);
-                            return;
+                            continue;
                         }
+
 
                         const setting: Setting<unknown> = s as Setting<unknown>;
                         const settingBox: SettingBox<unknown> = setting.getUIComponent();
@@ -286,7 +289,7 @@ export class SettingsProcess extends Process {
                             style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()],
                         };
                         list.settings.push(settingInfo);
-                    });
+                    }
                     return list;
                 }
 

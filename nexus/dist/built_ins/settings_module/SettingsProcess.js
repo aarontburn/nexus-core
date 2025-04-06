@@ -263,9 +263,9 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, moduleID_1, fileName, result, moduleName, _loop_1, _i, _b, moduleSettings, state_1, elementId, elementValue, settingId, link;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var _a, moduleID_1, fileName, result, swapToModule, _i, _b, moduleSettings, name_1, settingsList, list, _c, settingsList_2, s, setting, settingBox, settingInfo, elementId, elementValue, settingId, link;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         _a = eventType;
                         switch (_a) {
@@ -286,7 +286,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                             this.initialize();
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 2;
+                        _d.label = 2;
                     case 2:
                         {
                             moduleID_1 = data[0];
@@ -297,22 +297,22 @@ var SettingsProcess = /** @class */ (function (_super) {
                             });
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 3;
+                        _d.label = 3;
                     case 3:
                         {
                             return [2 /*return*/, (0, ModuleImporter_1.importModuleArchive)()];
                         }
-                        _c.label = 4;
+                        _d.label = 4;
                     case 4:
                         {
                             return [2 /*return*/, (0, ModuleImporter_1.getImportedModules)(this.deletedModules)];
                         }
-                        _c.label = 5;
+                        _d.label = 5;
                     case 5:
                         fileName = data[0];
                         return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
                     case 6:
-                        result = _c.sent();
+                        result = _d.sent();
                         console.log("Removing " + fileName);
                         if (result === undefined) {
                             this.deletedModules.push(fileName);
@@ -325,48 +325,44 @@ var SettingsProcess = /** @class */ (function (_super) {
                             electron_1.app.exit();
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 8;
+                        _d.label = 8;
                     case 8:
                         {
-                            moduleName = data[0];
-                            _loop_1 = function (moduleSettings) {
-                                var name_1 = moduleSettings.getDisplayName();
-                                if (moduleName !== name_1) {
-                                    return "continue";
+                            swapToModule = data[0];
+                            for (_i = 0, _b = Array.from(this.moduleSettingsList.values()); _i < _b.length; _i++) {
+                                moduleSettings = _b[_i];
+                                name_1 = moduleSettings.getDisplayName();
+                                if (swapToModule !== name_1) {
+                                    continue;
                                 }
-                                var settingsList = moduleSettings.getSettingsAndHeaders();
-                                var list = {
+                                settingsList = moduleSettings.getSettingsAndHeaders();
+                                list = {
                                     module: name_1,
                                     moduleID: moduleSettings.getProcess().getIPCSource(),
                                     moduleInfo: moduleSettings.getProcess().getModuleInfo(),
                                     settings: []
                                 };
-                                settingsList.forEach(function (s) {
+                                for (_c = 0, settingsList_2 = settingsList; _c < settingsList_2.length; _c++) {
+                                    s = settingsList_2[_c];
                                     if (typeof s === 'string') {
                                         list.settings.push(s);
-                                        return;
+                                        continue;
                                     }
-                                    var setting = s;
-                                    var settingBox = setting.getUIComponent();
-                                    var settingInfo = {
+                                    setting = s;
+                                    settingBox = setting.getUIComponent();
+                                    settingInfo = {
                                         settingId: setting.getID(),
                                         inputTypeAndId: settingBox.getInputIdAndType(),
                                         ui: settingBox.getUI(),
                                         style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()]
                                     };
                                     list.settings.push(settingInfo);
-                                });
-                                return { value: list };
-                            };
-                            for (_i = 0, _b = Array.from(this.moduleSettingsList.values()); _i < _b.length; _i++) {
-                                moduleSettings = _b[_i];
-                                state_1 = _loop_1(moduleSettings);
-                                if (typeof state_1 === "object")
-                                    return [2 /*return*/, state_1.value];
+                                }
+                                return [2 /*return*/, list];
                             }
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 9;
+                        _d.label = 9;
                     case 9:
                         {
                             elementId = data[0];
@@ -374,21 +370,21 @@ var SettingsProcess = /** @class */ (function (_super) {
                             this.onSettingChange(elementId, elementValue);
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 10;
+                        _d.label = 10;
                     case 10:
                         {
                             settingId = data[0];
                             this.onSettingChange(settingId);
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 11;
+                        _d.label = 11;
                     case 11:
                         {
                             link = data[0];
                             electron_1.shell.openExternal(link);
                             return [3 /*break*/, 12];
                         }
-                        _c.label = 12;
+                        _d.label = 12;
                     case 12: return [2 /*return*/];
                 }
             });

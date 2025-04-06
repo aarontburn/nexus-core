@@ -31,7 +31,7 @@ var RangeSettingBox = /** @class */ (function (_super) {
         var setting = this.getSetting();
         var range = setting.getRange();
         var step = setting.getStep();
-        return "\n            <div class=\"right-component\">\n                <div style=\"display: flex; flex-wrap: wrap\">\n                    <h1><span id='".concat(this.resetID, "'>\u21A9</span> ").concat(setting.getName(), "</h1>\n                    <p style=\"align-self: flex-end; padding-left: 24px;\">").concat(setting.getDescription(), "</p>\n                </div>\n\n                <input type=\"range\" \n                    style='width: 500px;'\n                    min=\"").concat(range.min, "\" max=\"").concat(range.max, "\" step='").concat(step, "' \n                    id=\"").concat(setting.getID(), "_slider\" value='").concat(setting.getValue(), "'>\n            </div>\n        ");
+        return "\n            <div class=\"right-component\">\n                <div style=\"display: flex; flex-wrap: wrap\">\n                    <h1><span id='".concat(this.resetID, "'>\u21A9</span> ").concat(setting.getName(), "</h1>\n                    <p style=\"align-self: flex-end; padding-left: 24px;\">").concat(setting.getDescription(), "</p>\n                </div>\n\n                <input type=\"range\" \n                    style='width: 500px; margin-top: 3px'\n                    min=\"").concat(range.min, "\" max=\"").concat(range.max, "\" step='").concat(step, "' \n                    id=\"").concat(setting.getID(), "_slider\" value='").concat(setting.getValue(), "'>\n            </div>\n        ");
     };
     RangeSettingBox.prototype.getInputIdAndType = function () {
         return [

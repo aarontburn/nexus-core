@@ -27,7 +27,7 @@ export class RangeSettingBox extends NumberSettingBox {
                 </div>
 
                 <input type="range" 
-                    style='width: 500px;'
+                    style='width: 500px; margin-top: 3px'
                     min="${range.min}" max="${range.max}" step='${step}' 
                     id="${setting.getID()}_slider" value='${setting.getValue()}'>
             </div>
