@@ -4,14 +4,11 @@ Because each module requires quite a bit of configuration, it is **highly recomm
 
 
 
-### [Nexus React Template](https://github.com/aarontburn/nexus-template-react) 
-This template utilizes Vite + React + TypeScript to create 
+### [Nexus with React](./ReactSetup.md) 
+This template utilizes Vite + React + TypeScript to your module.
 
+### [Nexus with Vanilla TypeScript](https://github.com/aarontburn/nexus-template-vanilla-ts)
 
-
-## Developing with Vanilla HTML + CSS + TypeScript
-
-### [Nexus Vanilla TypeScript Template](https://github.com/aarontburn/nexus-template-vanilla-ts)
-
-## Developing an internal, no-GUI module with TypeScript
+---
 ### [Nexus Internal Template](https://github.com/aarontburn/nexus-template-internal)
+This is to create modules with no GUI, useful for monitoring, adding additional settings, or interfacing with other modules.
