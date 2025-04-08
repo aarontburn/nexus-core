@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HttpStatusCode = void 0;
 /**
  * From {@link https://gist.github.com/scokmen/f813c904ef79022e84ab2409574d1b45#file-httpstatuscode-ts}
  *
@@ -320,5 +321,4 @@ var HttpStatusCode;
      * to require agreement to Terms of Service before granting full Internet access via a Wi-Fi hotspot).
      */
     HttpStatusCode[HttpStatusCode["NETWORK_AUTHENTICATION_REQUIRED"] = 511] = "NETWORK_AUTHENTICATION_REQUIRED";
-})(HttpStatusCode || (HttpStatusCode = {}));
-exports.default = HttpStatusCode;
+})(HttpStatusCode || (exports.HttpStatusCode = HttpStatusCode = {}));

@@ -8,7 +8,7 @@
     "watch": "tsc -w",
     "start": "npm run build && electron --trace-warnings ./dist/main.js --dev --in-core ",
     "package": "npm run build && npx electron-builder build",
-    "update-nexus": "npm update @nexus/nexus-module-builder && npm update @nexus/nexus-exporter",
+    "update-nexus": "npm run postinstall",
     "package:test": "npm run build && electron-builder --dir"
   },
   "main": "./dist/main.js",

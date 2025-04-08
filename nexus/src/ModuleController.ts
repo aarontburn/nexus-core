@@ -3,7 +3,7 @@ import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
 import { ModuleCompiler } from "./compiler/ModuleCompiler";
-import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting } from "@nexus/nexus-module-builder";
+import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HttpStatusCodes } from "@nexus/nexus-module-builder";
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
@@ -173,6 +173,7 @@ export class ModuleController implements IPCSource {
             });
         });
 
+
         this.ipcCallback = {
             notifyRenderer: (target: IPCSource, eventType: string, ...data: any[]) => {
                 this.window.webContents.send(target.getIPCSource(), eventType, data);
@@ -183,9 +184,11 @@ export class ModuleController implements IPCSource {
 
     }
 
-    private async handleInterModuleCommunication(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]) {
+    private async handleInterModuleCommunication(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<Response> {
         if (targetModuleID === this.getIPCSource()) {
-            return this.handleExternal(source, eventType, data);
+            const result: any = await this.handleExternal(source, eventType, data)
+
+            return new Response(result, {status: Http});
         }
 
 
