@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
 import { BrowserWindow, app, shell } from 'electron';
-import { ChangeEvent, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
+import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 
@@ -128,19 +128,23 @@ export class SettingsProcess extends Process {
     }
 
 
-    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<any> {
+    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
             case 'isDeveloperMode': {
-                return this.getSettings().findSetting('dev_mode').getValue() as boolean;
+                return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCode.OK };
             }
             case 'listenToDevMode': {
                 const callback: (isDev: boolean) => void = data[0];
                 this.devModeSubscribers.push(callback);
                 callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
-                break;
+
+                return { body: undefined, code: HTTPStatusCode.OK };
             }
             case "getAccentColor": {
-                return this.getSettings().findSetting("accent_color").getValue();
+                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCode.OK };
+            }
+            default: {
+                return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
             }
 
         }
@@ -272,7 +276,7 @@ export class SettingsProcess extends Process {
                         settings: []
                     };
 
-                    
+
                     for (const s of settingsList) {
                         if (typeof s === 'string') {
                             list.settings.push(s);

@@ -3,7 +3,7 @@ import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
 import { ModuleCompiler } from "./compiler/ModuleCompiler";
-import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HTTPStatusCode } from "@nexus/nexus-module-builder";
+import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HTTPStatusCode, DataResponse } from "@nexus/nexus-module-builder";
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
@@ -115,14 +115,13 @@ export class ModuleController implements IPCSource {
 
 
 
-    private async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<Response> {
+    private async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse> {
         switch (eventType) {
             case "get-module-IDs": {
-                return new Response(Array.from(this.modulesByIPCSource.keys()), {status: HTTPStatusCode.OK});
+                return { body: Array.from(this.modulesByIPCSource.keys()), code: HTTPStatusCode.OK };
             }
             default: {
-                return new Response('', { status: HTTPStatusCode.NOT_IMPLEMENTED });
-                break;
+                return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
             }
 
         }
@@ -188,21 +187,18 @@ export class ModuleController implements IPCSource {
 
     }
 
-    private async handleInterModuleCommunication(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<Response> {
+    private async handleInterModuleCommunication(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<DataResponse> {
         if (targetModuleID === this.getIPCSource()) {
-            const result: any = await this.handleExternal(source, eventType, data)
-
-            return new Response(result, { status: HTTPStatusCode.OK });
+            return await this.handleExternal(source, eventType, data);
         }
 
 
         const targetModule: Process = this.modulesByIPCSource.get(targetModuleID);
         if (targetModule === undefined) {
             console.error(`Module '${source.getIPCSource()}' attempted to access '${targetModuleID}', but no such module exists.`);
-            return new Response(`No module with ID of ${source.getIPCSource()} found.`, { status: HTTPStatusCode.NOT_FOUND });
+            return { body: `No module with ID of ${source.getIPCSource()} found.`, code: HTTPStatusCode.NOT_FOUND };
         }
-        const response = await targetModule.handleExternal(source, eventType, data);
-        return response;
+        return await targetModule.handleExternal(source, eventType, data);
     }
 
     private async registerModules(): Promise<void> {

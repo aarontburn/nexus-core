@@ -326,7 +326,7 @@ export abstract class Process implements IPCSource {
      *  @returns            The data returned from the request.
      */
     public async requestExternal(target: string, eventType: string, ...data: any[]): Promise<DataResponse> {
-        return this.ipcCallback.requestExternalModule(this, target, eventType, ...data);
+        return await this.ipcCallback.requestExternalModule(this, target, eventType, ...data);
     }
 
 

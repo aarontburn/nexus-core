@@ -193,16 +193,19 @@ var SettingsProcess = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (eventType) {
                     case 'isDeveloperMode': {
-                        return [2 /*return*/, this.getSettings().findSetting('dev_mode').getValue()];
+                        return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     case 'listenToDevMode': {
                         callback = data[0];
                         this.devModeSubscribers.push(callback);
                         callback(this.getSettings().findSetting('dev_mode').getValue());
-                        break;
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     case "getAccentColor": {
-                        return [2 /*return*/, this.getSettings().findSetting("accent_color").getValue()];
+                        return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                    }
+                    default: {
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];
                     }
                 }
                 return [2 /*return*/];

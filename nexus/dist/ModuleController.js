@@ -163,7 +163,10 @@ var ModuleController = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (eventType) {
                     case "get-module-IDs": {
-                        return [2 /*return*/, Array.from(this.modulesByIPCSource.keys())];
+                        return [2 /*return*/, { body: Array.from(this.modulesByIPCSource.keys()), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                    }
+                    default: {
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];
                     }
                 }
                 return [2 /*return*/];
@@ -257,22 +260,21 @@ var ModuleController = /** @class */ (function () {
             data[_i - 3] = arguments[_i];
         }
         return __awaiter(this, void 0, void 0, function () {
-            var targetModule, response;
+            var targetModule;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (targetModuleID === this.getIPCSource()) {
-                            return [2 /*return*/, this.handleExternal(source, eventType, data)];
-                        }
+                        if (!(targetModuleID === this.getIPCSource())) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.handleExternal(source, eventType, data)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
                         targetModule = this.modulesByIPCSource.get(targetModuleID);
                         if (targetModule === undefined) {
                             console.error("Module '".concat(source.getIPCSource(), "' attempted to access '").concat(targetModuleID, "', but no such module exists."));
-                            return [2 /*return*/, new Error("No module with ID of ".concat(source.getIPCSource(), " found."))];
+                            return [2 /*return*/, { body: "No module with ID of ".concat(source.getIPCSource(), " found."), code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND }];
                         }
                         return [4 /*yield*/, targetModule.handleExternal(source, eventType, data)];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response];
+                    case 3: return [2 /*return*/, _a.sent()];
                 }
             });
         });

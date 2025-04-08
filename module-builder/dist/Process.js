@@ -295,7 +295,10 @@ var Process = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a;
             return __generator(this, function (_b) {
-                return [2 /*return*/, (_a = this.ipcCallback).requestExternalModule.apply(_a, __spreadArray([this, target, eventType], data, false))];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (_a = this.ipcCallback).requestExternalModule.apply(_a, __spreadArray([this, target, eventType], data, false))];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         });
     };
