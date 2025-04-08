@@ -59,7 +59,6 @@ var Process = /** @class */ (function () {
      *
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
-     *  @param ipcCallback  The IPC callback function.
      */
     function Process(moduleID, moduleName, htmlPath, iconPath) {
         /**
@@ -127,7 +126,7 @@ var Process = /** @class */ (function () {
      */
     Process.prototype.initialize = function () {
         this.hasBeenInit = true;
-        // Override this, and do a super.initialize() after initializing model.
+        // Override this, and do a super.initialize() after initializing module..
     };
     /**
      *  @returns the info for this module.
@@ -150,12 +149,31 @@ var Process = /** @class */ (function () {
         this.moduleInfo = moduleInfo;
     };
     /**
+     *  Abstract function to register settings for this module.
+     *
+     *  This should not be called externally.
+     *
+     *  @returns An array of both Settings and strings (for section headers.)
+     */
+    Process.prototype.registerSettings = function () {
+        return [];
+    };
+    /**
      *  Registers internal settings that will not appear under the settings window.
      *
      *  @returns An array of Settings.
      */
     Process.prototype.registerInternalSettings = function () {
         return [];
+    };
+    /**
+     *  Function that is called whenever a setting that belongs to this
+     *      module is modified.
+     *
+     *  For an example on how to use this, see {@link HomeProcess}
+     */
+    Process.prototype.refreshSettings = function (modifiedSetting) {
+        console.warn("Uncaught setting change: ".concat(this.getName(), " has no handler for setting modification."));
     };
     /**
      *  Refreshes all settings by passing them into {@link refreshSettings}

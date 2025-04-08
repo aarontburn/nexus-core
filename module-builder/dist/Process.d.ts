@@ -62,7 +62,6 @@ export declare abstract class Process implements IPCSource {
      *
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
-     *  @param ipcCallback  The IPC callback function.
      */
     constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string);
     getIconPath(): string;
@@ -120,7 +119,7 @@ export declare abstract class Process implements IPCSource {
      *
      *  @returns An array of both Settings and strings (for section headers.)
      */
-    abstract registerSettings(): (Setting<unknown> | string)[];
+    registerSettings(): (Setting<unknown> | string)[];
     /**
      *  Registers internal settings that will not appear under the settings window.
      *
@@ -133,7 +132,7 @@ export declare abstract class Process implements IPCSource {
      *
      *  For an example on how to use this, see {@link HomeProcess}
      */
-    abstract refreshSettings(modifiedSetting: Setting<unknown>): void;
+    refreshSettings(modifiedSetting: Setting<unknown>): void;
     /**
      *  Refreshes all settings by passing them into {@link refreshSettings}
      *

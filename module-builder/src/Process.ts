@@ -75,7 +75,6 @@ export abstract class Process implements IPCSource {
      * 
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
-     *  @param ipcCallback  The IPC callback function.
      */
     public constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string) {
         this.moduleID = moduleID;
@@ -156,7 +155,7 @@ export abstract class Process implements IPCSource {
      */
     public initialize(): void {
         this.hasBeenInit = true;
-        // Override this, and do a super.initialize() after initializing model.
+        // Override this, and do a super.initialize() after initializing module..
     }
 
 
@@ -185,13 +184,15 @@ export abstract class Process implements IPCSource {
 
 
     /**
-     *  Abstract function to register settings for this module.
+     *  Function to register settings for this module.
      * 
      *  This should not be called externally.
      *  
      *  @returns An array of both Settings and strings (for section headers.)
      */
-    public abstract registerSettings(): (Setting<unknown> | string)[];
+    public registerSettings(): (Setting<unknown> | string)[] {
+        return [];
+    }
 
 
     /**
@@ -210,7 +211,9 @@ export abstract class Process implements IPCSource {
      * 
      *  For an example on how to use this, see {@link HomeProcess}
      */
-    public abstract refreshSettings(modifiedSetting: Setting<unknown>): void;
+    public refreshSettings(modifiedSetting: Setting<unknown>): void {
+        console.warn(`Uncaught setting change: ${this.getName()} has no handler for setting modification.`);
+    }
 
 
     /**
