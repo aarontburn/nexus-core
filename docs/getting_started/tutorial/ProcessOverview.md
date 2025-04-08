@@ -1,10 +1,42 @@
 # Nexus: The Process
 
-## What is the Process?
-The process is the backend of your module. It has no access to the DOM, and sends/receive data from the renderer process. However, it has full access to the Node.js API, file system, and external packages (through services like `npm`).
+Regardless of what template you are using, the `process` remains unchanged.
+
+## Overview
+Nexus is built on [Electron](https://www.electronjs.org/) so modules must follow some of Electron's architectural rules — especially its [Process Model](https://www.electronjs.org/docs/latest/tutorial/process-model).
+
+Your module will be split in two parts: The **process** and the **renderer**. 
+
+- The process is the backend of your module. It can interact with the Node.js API, the filesystem, and external packages - but it **cannot interact with the DOM directly**.
+
+- The renderer is the frontend of your module. It can manipulate the DOM and render your UI, but has **no direct access to the Node.js API**.
+
+You will need to have the process and renderer work together to make a module. The API provided by Nexus makes this simple and easy to understand.
+
+Utilizing [Inter-Process Communication](https://www.electronjs.org/docs/latest/tutorial/ipc), your process and renderer communicate through message-passing. This is already fully configured and all template repositories have these functions pre-written.
 
 
-## Getting Started:
+To communicate data from the process to renderer, it may look like this:  
+> 1. The process wants to send arbitrary numbers to the renderer
+> 2. Process invokes `this.sendToRenderer("number-event", 4, 5)`
+> 3. Renderer catches the event in `handleEvent(eventType, data)`   
+>       ↳ `eventType` = `"number-event"`   
+>       ↳ `data` = `[4, 5]`   
+> 4. Renderer displays the numbers in the UI. 
+
+To communicate data from the renderer to the process:
+
+> 1. A user clicks a button in the UI.
+> 2. Renderer invokes  `sendToProcess("button-pressed", 1)`
+> 3. Process handles this in `handleEvent(eventType, data)`   
+>       ↳ `eventType` = `"button-pressed"`   
+>       ↳ `data` = `[1]`   
+> 4. Process can do something with the number. 
+
+This section focuses on the `Process` overview.
+
+
+## Getting Started
 By default, the process is located in the `src/process` directory as `main.ts`.
 
 Let's break down critical parts of this file.
@@ -69,7 +101,7 @@ export default class SampleProcess extends Process {
 
 // ...
 ```
-This class contains all the logic relevant for your Process. The class name (`SampleProcess` by default) is not important and can be changed. However, it is important that this class is the `default` export and extends the parent class `Process`.
+This class contains all the logic relevant for your Process. The class name (`SampleProcess` by default) is not important and can be changed. However, it is important that this class is the `default` export and extends the parent class `Process`. This is required for the Nexus client to correctly load your module.
 
 Notice how the `constructor` is very bare-bones. While the `constructor` is the entry point to your module, it takes time for the renderer to be initialized. Therefore, your `constructor` should NOT have logic that is pertinent to your GUI.
 
@@ -85,7 +117,7 @@ export default class SampleProcess extends Process {
 
     public async handleEvent(eventType: string, data: any[]): Promise<any> {
         switch (eventType) {
-            // This is called when the renderer is ready to receive events.
+            // Called when renderer has finished initializing
             case "init": {
                 this.initialize();
                 break;
@@ -114,6 +146,13 @@ Notice how we handle `"init"` here. When the renderer finishes initialization, i
 
 Notice how the return type is `Promise<any>`. If you need to reply back to the renderer after receiving an event, anything that you `return` here will be replied, which can be handled in the renderer using `.then(...)`.
 
+For example, in the renderer file:
+``` typescript
+sendToProcess("get-data").then((data) => {
+  console.log("Received from process:", data);
+});
+```
+
 #### Settings
 ```typescript
 // src/process/main.ts
@@ -130,10 +169,8 @@ export default class SampleProcess extends Process {
                 .setName("Sample Toggle Setting")
                 .setDescription("An example of a true/false setting.")
                 .setAccessID('sample_bool'),
-
         ];
     }
-
 
     public refreshSettings(modifiedSetting: Setting<unknown>): void {
         if (modifiedSetting.getAccessID() === "sample_bool") {
@@ -146,4 +183,36 @@ export default class SampleProcess extends Process {
 
 // ...
 ```
-The Nexus API provides an quick and easy way to add settings that the user may want to tweak. The `registerSettings` function 
+The Nexus API provides an quick and easy way to add settings that the user may want to tweak. The `registerSettings` function is how you can register settings for your module.
+
+The current implementation will result in a UI like this:
+![Sample Setting UI](../../assets/sample-setting.png)
+
+In order, if you provide a `string`, it will result in a section header. If you provide an `Setting`, it will be a fully functional setting. 
+
+There are many different types of `Settings`, such as `BooleanSetting` for true/false, `StringSetting` for text input, `ChoiceSetting` for either radio buttons or dropdowns, etc.. Most default HTML `<input>` types are supported, however you are able to create your own settings. Visit the [Settings API](link) to learn more.
+
+Each `Setting` may have its own configurations, but all settings must have a:
+- Display Name (set via `setName()`)
+- Default Value (set via `setDefault()`)
+- Access ID (set via `setAccessID`) (not technically required, but if this value isn't set, the ID of the setting will be its display name, which is error prone during development).
+
+
+The `refreshSettings` function is called whenever a Setting belonging to your module is modified, with the input being the setting modified. You can handle this change by retrieving the new value of the setting via `modifiedSetting.getValue()`, and update your process and renderer accordingly.
+
+### Communicating with the Renderer
+To send data to your renderer, the following function is provided from within your Process:
+
+`this.sendToRenderer(eventType: string, ...data: any[])`
+
+Similar to how you receive events in your process, this sends information to your renderer. More information can be found in the next section.
+
+---
+There are many more functions in the parent `Process` class that you can override, such as `onGUIShown`, `onGUIHidden`, `onExit`, and more. Visit the [Process API](link) for more documentation about all the functions you can use.
+
+## Next Steps
+Learn about the renderer for your respective template.
+
+### [Nexus: React Template](./react/1%20ReactSetup.md)  
+### [Nexus: Vanilla TS Template](./vanilla/2%20VanillaRenderer.md)
+### [Nexus: Internal Template]()

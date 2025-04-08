@@ -144,6 +144,7 @@ export class ModuleController implements IPCSource {
             height: WINDOW_DIMENSION.height,
             width: WINDOW_DIMENSION.width,
             webPreferences: {
+                webviewTag: true,
                 additionalArguments: process.argv,
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "preload.js"),

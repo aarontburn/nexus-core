@@ -210,6 +210,20 @@ var Process = /** @class */ (function () {
         return this.moduleName;
     };
     /**
+     *  Entry point to receive events from the renderer.
+     *
+     *  @param eventType    The name of the event
+     *  @param data         The data sent from the renderer.
+     */
+    Process.prototype.handleEvent = function (eventType, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                console.warn("Uncaught message: ".concat(this.getName(), " has no renderer event handler."));
+                return [2 /*return*/];
+            });
+        });
+    };
+    /**
      *  Send an event to the renderer.
      *
      *  @param eventType    The name of the event.

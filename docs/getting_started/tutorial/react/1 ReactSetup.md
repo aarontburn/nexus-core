@@ -1,11 +1,18 @@
-# Nexus: React
+# Nexus: React Setup
 
+## Installation
 
+Download the provided template.
 
+### [Nexus with React](https://github.com/aarontburn/nexus-template-react) 
+<sup>or https://github.com/aarontburn/nexus-template-react</sup>
 
+Once downloaded, open your text editor to the root directory of the project. Open a CLI in the same location and run
 
-
-
+```
+npm start
+```
+To install the required packages.
 
 ## Project Structure
 After downloading the template and running `npm install`, your project should look something like this:
@@ -50,7 +57,7 @@ Starting with root files and directories that are self-explanatory, unchanged fr
 - `tsconfig.json`: Standard [tsconfig.json](https://www.typescriptlang.org/tsconfig/); modified to remove `/react-wrapper/`, which is mentioned later.
 - `package.json`: Standard [package.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-json). However, this does list many commands you may be using throughout development. See the [Commands](#cli-commands) section for more information.
 
-### The Important Stuff
+### Key Project Files
 By default, the `src/` folder is set up how standard MVC applications are organized, but the file structure can be modified. However, all files used by your module **need to stay within the `src/` directory.**
 
 ```
@@ -114,39 +121,4 @@ Here are the files that are important:
 
 ---
 ### Next Steps:
-Now that you've understood how the project is laid out, visit the [Process](./TheProcess.md) guide to learn how it works.
-
-
-
-
-## Developing a module with Nexus
-
-Nexus is built on [Electron](https://www.electronjs.org/) so modules must follow some of Electron's architectural rules — especially its [Process Model](https://www.electronjs.org/docs/latest/tutorial/process-model).
-
-Your module will be split in two parts: The **process** and the **renderer**. 
-
-- The process is the backend of your module. It can interact with the Node.js API, the filesystem, and external packages - but it **cannot interact with the DOM directly**.
-
-- The renderer is the frontend of your module. It can manipulate the DOM and render your UI, but has **no direct access to the Node.js API**.
-
-You will need to have the process and renderer work together to make a module. The API provided by Nexus makes this simple and easy to understand.
-
-Utilizing [Inter-Process Communication](https://www.electronjs.org/docs/latest/tutorial/ipc), your process and renderer communicate through message-passing. This is already fully configured and all template repositories have these functions pre-written.
-
-
-To communicate data from the process to renderer, it may look like this:  
-> 1. The process wants to send arbitrary numbers to the renderer
-> 2. Process invokes `this.sendToRenderer("number-event", 4, 5)`
-> 3. Renderer catches the event in `handleEvent(eventType, data)`   
->       ↳ `eventType` = `"number-event"`   
->       ↳ `data` = `[4, 5]`   
-> 4. Renderer displays the numbers in the UI. 
-
-To communicate data from the renderer to the process:
-
-> 1. A user clicks a button in the UI.
-> 2. Renderer invokes  `sendToProcess("button-pressed", 1)`
-> 3. Process handles this in `handleEvent(eventType, data)`   
->       ↳ `eventType` = `"button-pressed"`   
->       ↳ `data` = `[1]`   
-> 4. Process can do something with the number. 
+Now that you've understood how the project is laid out, visit the [Process](./ProcessOverview.md) guide to learn how it works.
