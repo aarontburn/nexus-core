@@ -4,3 +4,4 @@ export * from './Process';
 export * from './Setting';
 export * from './SettingBox';
 export * from './StorageHandler';
+export * from './HTMLStatusCodes';
