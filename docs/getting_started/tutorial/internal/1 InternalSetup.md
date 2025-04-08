@@ -1,7 +1,7 @@
 # Nexus: Internal Template Setup
 
 ## Overview
-This template is to create an "internal" module. An internal module has **no GUI** (and thus no renderer). This is useful 
+This template helps you create an **internal module**. An internal module has **no GUI** (and thus no renderer). These can be used to run background tasks, listen to system events, interact with other modules, or expose settings without needing a full UI.
 
 ## Installation
 
@@ -10,12 +10,12 @@ Download the provided template.
 ### [Nexus Internal Template](https://github.com/aarontburn/nexus-template-internal)
 <sup>or https://github.com/aarontburn/nexus-template-internal</sup>
 
-Once downloaded, open your text editor to the root directory of the project. Open a CLI in the same location and run
+Once downloaded, open your text editor to the root directory of the project. Then, open a terminal in the same location and run:
 
 ```
 npm start
 ```
-To install the required packages.
+to install the required packages.
 
 
 
@@ -77,4 +77,4 @@ root/
 
 ---
 ### Next Steps:
-Now that you've understood how the project is laid out, visit the [Internal Process](./3%20InternalProcess.md) guide to learn how it works.
+Now that you've understood how the project is laid out, visit the [Internal Process](./2%20InternalProcess.md) guide to learn how it works.

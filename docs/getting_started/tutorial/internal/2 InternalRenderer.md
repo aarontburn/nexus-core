@@ -1,4 +1,0 @@
-# Nexus: Internal Renderer
-
-## Overview
-

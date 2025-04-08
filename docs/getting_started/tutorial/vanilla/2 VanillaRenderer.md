@@ -167,3 +167,4 @@ However, just like in standard web development, you **can** create multiple rend
 If you need access to process event handling from within your other renderer files, you can reuse the same `sendToProcess`, `handleEvent`, and `ipc.on` logic from above in your other renderer scripts.
 
 ## Next Steps
+Learn about the various [CLI commands](./3%20VanillaCommands.md) you may use during development.

@@ -14,6 +14,12 @@ npm start
 ```
 To install the required packages.
 
+To get a grasp on the program, (still in the root directory), run the command:
+```
+npm start
+```
+to start Nexus with your module loaded.
+
 
 ## Project Structure
 After downloading the template and running `npm install`, your project should look something like this:

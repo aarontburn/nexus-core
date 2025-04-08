@@ -33,7 +33,7 @@ To communicate data from the renderer to the process:
 >       ↳ `data` = `[1]`   
 > 4. Process can do something with the number. 
 
-This section focuses on the `Process` overview.
+This section focuses on the `Process`.
 
 
 ## Getting Started

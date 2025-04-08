@@ -293,7 +293,11 @@ export abstract class Process implements IPCSource {
      *  @param data         The data to send.
      *  @see https://www.electronjs.org/docs/latest/tutorial/ipc#object-serialization
      */
-    public sendToRenderer(eventType: string, ...data: any): void {
+    public sendToRenderer(eventType: string, ...data: any[]): void {
+        if (this.getHTMLPath() === undefined) {
+            return;
+        }
+
         this.ipcCallback.notifyRenderer(this, eventType, ...data);
     }
 

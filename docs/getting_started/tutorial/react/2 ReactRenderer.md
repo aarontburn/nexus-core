@@ -100,3 +100,6 @@ Use `CTRL + R` will refresh the application and should reflect any changes you'v
 ---
 
 Regardless, everything from here is standard React. You can learn more about the React API on their [official website](https://react.dev/learn).
+
+## Next Steps
+Learn about the various [CLI commands](./3%20ReactCommands.md) you may use during development.
