@@ -149,7 +149,7 @@ var Process = /** @class */ (function () {
         this.moduleInfo = moduleInfo;
     };
     /**
-     *  Abstract function to register settings for this module.
+     *  Function to register settings for this module.
      *
      *  This should not be called externally.
      *
@@ -253,6 +253,9 @@ var Process = /** @class */ (function () {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
+        }
+        if (this.getHTMLPath() === undefined) {
+            return;
         }
         (_a = this.ipcCallback).notifyRenderer.apply(_a, __spreadArray([this, eventType], data, false));
     };

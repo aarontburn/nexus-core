@@ -113,7 +113,7 @@ export declare abstract class Process implements IPCSource {
      */
     setModuleInfo(moduleInfo: ModuleInfo): void;
     /**
-     *  Abstract function to register settings for this module.
+     *  Function to register settings for this module.
      *
      *  This should not be called externally.
      *
@@ -180,7 +180,7 @@ export declare abstract class Process implements IPCSource {
      *  @param data         The data to send.
      *  @see https://www.electronjs.org/docs/latest/tutorial/ipc#object-serialization
      */
-    sendToRenderer(eventType: string, ...data: any): void;
+    sendToRenderer(eventType: string, ...data: any[]): void;
     /**
      *  Exposes an API to external modules.
      *

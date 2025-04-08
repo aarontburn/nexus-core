@@ -5,17 +5,17 @@ This section is to help you understand some of the commands defined within the `
 ---
 Within the `package.json` at the root of your project, the `scripts` field may look like:
 ```json
-    // package.json
-    // ...
+// package.json
+// ...
 
-    "scripts": {
-        "start": "npm run dev_export && electron ./node_modules/@nexus/nexus-client/main.js --dev",
-        "export": "node node_modules/@nexus/nexus-exporter/exporter.js",
-        "dev_export": "node node_modules/@nexus/nexus-exporter/exporter.js --dev",
-        "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/nexus/dist?main --no-save"
-    },
+"scripts": {
+    "start": "npm run dev_export && electron ./node_modules/@nexus/nexus-client/main.js --dev",
+    "export": "node node_modules/@nexus/nexus-exporter/exporter.js",
+    "dev_export": "node node_modules/@nexus/nexus-exporter/exporter.js --dev",
+    "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/nexus/dist?main --no-save"
+},
 
-    // ...
+// ...
 ```
 These commands are ran via:
 ```
@@ -23,7 +23,7 @@ npm run <command name>
 ```
 
 ## Command Overview
-Useful Commands:
+Useful commands:
 - `npm start`: Run Nexus in developer mode.
 - `npm run export`: Export your module for distribution.
   
@@ -54,3 +54,6 @@ This exports your module directly to `C:\Users\<user home>\.nexus_dev\external_m
 
 #### `npm run postinstall`
 This command updates the Nexus dependencies. There should be no reason to run this command.
+
+## Next Steps
+Learn about [Exporting and Configuration](../ConfigurationAndExport.md) to finalize up your module.

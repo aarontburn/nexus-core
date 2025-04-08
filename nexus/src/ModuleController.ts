@@ -109,8 +109,11 @@ export class ModuleController implements IPCSource {
                 }
 
             }
+ 
         });
     }
+
+
 
     private async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<any> {
         switch (eventType) {

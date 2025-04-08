@@ -6,24 +6,24 @@ This section is to help you understand some of the commands defined within the `
 ---
 Within the `package.json` at the root of your project, the `scripts` field may look like:
 ```json
-    // package.json
-    // ...
+// package.json
+// ...
 
-    "config": {
-        "react-wrapper-directory": "./src/renderer/react-wrapper"
-    },
-    "scripts": {
-        "start": "npm-run-all --parallel vite:start electron-start",
-        "export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js",
-        "dev_export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js --dev",
-        "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/nexus/dist?main --no-save",
-        "preinstall": "cd %npm_package_config_react-wrapper-directory% && npm install",
-        "vite:build": "cd %npm_package_config_react-wrapper-directory% && npm run build",
-        "vite:start": "cd %npm_package_config_react-wrapper-directory% && npm run dev",
-        "electron-start": "npm run dev_export && electron ./node_modules/@nexus/nexus-client/main.js --dev"
-    },
+"config": {
+    "react-wrapper-directory": "./src/renderer/react-wrapper"
+},
+"scripts": {
+    "start": "npm-run-all --parallel vite:start electron-start",
+    "export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js",
+    "dev_export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js --dev",
+    "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/nexus/dist?main --no-save",
+    "preinstall": "cd %npm_package_config_react-wrapper-directory% && npm install",
+    "vite:build": "cd %npm_package_config_react-wrapper-directory% && npm run build",
+    "vite:start": "cd %npm_package_config_react-wrapper-directory% && npm run dev",
+    "electron-start": "npm run dev_export && electron ./node_modules/@nexus/nexus-client/main.js --dev"
+},
 
-    // ...
+// ...
 ```
 These commands are ran via:
 ```
@@ -82,3 +82,6 @@ This command installs all required packages within the `react-wrapper` directory
 
 #### `npm run electron-start`
 This command exports your module directly to `C:\Users\<user home>\.nexus_dev\external_modules` and initializes the Nexus. However, because you will need to rebuild the contents of `react-wrapper`, this should not be ran independently.
+
+## Next Steps
+Learn about [Exporting and Configuration](../ConfigurationAndExport.md) to finalize up your module.

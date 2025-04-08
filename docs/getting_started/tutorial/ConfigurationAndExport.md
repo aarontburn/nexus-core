@@ -15,9 +15,6 @@ root
 
 Located within the `src/` directory of your project are two important files: `export-config.js` and `module-info.json`. These files are used during both production and exporting.
 
-## `module-info.json`
-
-
 ## `export-config.js`
 Note: Paths within this file are relative from the `src/` directory, **not the root directory of the project**.
 
@@ -82,9 +79,9 @@ This file contains metadata about your module that Nexus reads when loading it. 
     "name": "{EXPORTED_MODULE_NAME}",
     "author": "developer",
     "version": "1.0.0",
-    "description": "A template to develop react applications for Modules.",
-    "build_version": 16,
-    "platforms": []
+    "description": "A template to create a module for Nexus using React.",
+    "build_version": 1,
+    "platforms": ["win32", "linux", "darwin"]
 }
 ```
 Notice how `name` is `"{EXPORTED_MODULE_NAME}"`; similar to the process, we can replace this file during module exporting so all these values remain the same.
@@ -94,3 +91,16 @@ Unlike `export-config.js`, most of these properties have no restrictions on nami
 Here are the properties that have need special information:
 - `build_version`: This value is automatically incremented each time you run npm run export. Nexus uses it to detect changes and trigger a recompile.
 - `platforms`: While Nexus is cross-platform, there are some dependencies that may not work across all operating systems. You should list the operating systems your module can (or is expected to) run on. Possible values are: `win32` (Windows), `linux` (Linux), and `darwin` (MacOS).
+
+## Exporting your module
+Once you’ve configured `export-config.js`, you can export your module for production by running the following command from the root directory of your project:
+
+```
+npm run export
+```
+
+To export your module. This will open a file picker where you can choose the location to save your module; if no location is chosen (via the `cancel` or `x` button), it will save it in an `output/` folder in the root directory of your project.
+
+Your module will be exported as `<id>.zip`, where `<id>` is the `id` defined in `export-config.js`. This should NOT be modified.
+
+And that's it! You can easily distribute this `.zip` to the Nexus marketplace and import it into your Nexus client from the Settings.
