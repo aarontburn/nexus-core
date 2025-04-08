@@ -46,6 +46,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Process = void 0;
+var HTTPStatusCodes_1 = require("./HTTPStatusCodes");
 var ModuleSettings_1 = require("./ModuleSettings");
 /**
  *  Class to encapsulate module behavior.
@@ -274,11 +275,7 @@ var Process = /** @class */ (function () {
         }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                console.warn("[".concat(this.moduleName, "]: External module, '").concat(source.getIPCSource(), "' requested data.'"));
-                console.warn("\tWith event type of: ".concat(eventType));
-                console.warn("\tAnd data:");
-                console.warn(data);
-                return [2 /*return*/, null];
+                return [2 /*return*/, new Response(null, { status: HTTPStatusCodes_1.HTTPStatusCode.NOT_IMPLEMENTED })];
             });
         });
     };

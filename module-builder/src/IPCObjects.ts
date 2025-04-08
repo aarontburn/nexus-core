@@ -10,5 +10,5 @@ export interface IPCSource {
  */
 export interface IPCCallback {
     notifyRenderer(target: IPCSource, eventType: string, ...data: any[]): void;
-    requestExternalModule(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<any>;
+    requestExternalModule(source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<Response>;
 }

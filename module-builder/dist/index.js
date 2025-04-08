@@ -20,4 +20,4 @@ __exportStar(require("./Process"), exports);
 __exportStar(require("./Setting"), exports);
 __exportStar(require("./SettingBox"), exports);
 __exportStar(require("./StorageHandler"), exports);
-__exportStar(require("./HTMLStatusCodes"), exports);
+__exportStar(require("./HTTPStatusCodes"), exports);

@@ -189,7 +189,7 @@ export declare abstract class Process implements IPCSource {
      *  @param data         Any additional data supplied;
      *  @returns            A Promise of the data to return.
      */
-    handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<any>;
+    handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<Response>;
     /**
      *  Requests information from another module.
      *
@@ -198,5 +198,5 @@ export declare abstract class Process implements IPCSource {
      *  @param data         Any additional data to be supplied
      *  @returns            The data returned from the request.
      */
-    requestExternal(target: string, eventType: string, ...data: any[]): Promise<any>;
+    requestExternal(target: string, eventType: string, ...data: any[]): Promise<Response>;
 }
