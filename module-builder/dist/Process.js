@@ -275,7 +275,7 @@ var Process = /** @class */ (function () {
         }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Response(null, { status: HTTPStatusCodes_1.HTTPStatusCode.NOT_IMPLEMENTED })];
+                return [2 /*return*/, { code: HTTPStatusCodes_1.HTTPStatusCode.NOT_IMPLEMENTED, body: undefined }];
             });
         });
     };

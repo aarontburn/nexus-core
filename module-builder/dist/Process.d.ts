@@ -1,5 +1,6 @@
 import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
+import { DataResponse } from "./DataResponse";
 import { Setting } from "./Setting";
 export interface ModuleInfo {
     name: string;
@@ -189,7 +190,7 @@ export declare abstract class Process implements IPCSource {
      *  @param data         Any additional data supplied;
      *  @returns            A Promise of the data to return.
      */
-    handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<Response>;
+    handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse>;
     /**
      *  Requests information from another module.
      *
@@ -198,5 +199,5 @@ export declare abstract class Process implements IPCSource {
      *  @param data         Any additional data to be supplied
      *  @returns            The data returned from the request.
      */
-    requestExternal(target: string, eventType: string, ...data: any[]): Promise<Response>;
+    requestExternal(target: string, eventType: string, ...data: any[]): Promise<DataResponse>;
 }

@@ -1,6 +1,7 @@
 import { HTTPStatusCode } from "./HTTPStatusCodes";
 import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
+import { DataResponse } from "./DataResponse";
 import { Setting } from "./Setting";
 
 
@@ -311,8 +312,8 @@ export abstract class Process implements IPCSource {
      *  @param data         Any additional data supplied;
      *  @returns            A Promise of the data to return.
      */
-    public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<Response> {
-        return new Response(null, { status: HTTPStatusCode.NOT_IMPLEMENTED });
+    public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse> {
+        return { code: HTTPStatusCode.NOT_IMPLEMENTED, body: undefined };
     }
 
 
@@ -324,7 +325,7 @@ export abstract class Process implements IPCSource {
      *  @param data         Any additional data to be supplied
      *  @returns            The data returned from the request.
      */
-    public async requestExternal(target: string, eventType: string, ...data: any[]): Promise<Response> {
+    public async requestExternal(target: string, eventType: string, ...data: any[]): Promise<DataResponse> {
         return this.ipcCallback.requestExternalModule(this, target, eventType, ...data);
     }
 
