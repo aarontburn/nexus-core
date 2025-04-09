@@ -86,7 +86,6 @@ var ModuleSettings = /** @class */ (function () {
         }
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
-            this.settingsDisplay.push(s);
             return;
         }
         var setting = s;

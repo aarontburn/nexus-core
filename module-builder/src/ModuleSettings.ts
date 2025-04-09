@@ -108,7 +108,6 @@ export class ModuleSettings {
 
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
-            this.settingsDisplay.push(s);
             return;
         }
 
