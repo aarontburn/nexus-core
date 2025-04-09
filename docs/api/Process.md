@@ -209,7 +209,7 @@ In most cases, this is synonymous to [`getID`](#getid-string).
 
 ### `getSettings(): ModuleSettings`
 > **Returns**  
-> A [`ModuleSettings`](link) class that manages the settings associated with your module.
+> A [`ModuleSettings`](./ModuleSettings.md) class that manages the settings associated with your module.
 
 
 

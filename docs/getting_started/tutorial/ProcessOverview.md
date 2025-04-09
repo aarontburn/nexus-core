@@ -77,7 +77,7 @@ These constants are used to identify and create your module.
 - `ICON_PATH`: The relative path to the modules icon. If this is undefined, the icon is replaced by the abbreviation of the `MODULE_NAME`. 
     - Can be a `svg`, `png`, `jpg`, or `jpeg`.
 
-You may have noticed that `MODULE_ID` and `MODULE_NAME` are `"{EXPORTED_MODULE_ID}"` and `"{EXPORTED_MODULE_NAME}"`, respectively. These values are replaced during module building to the values defined in `export-config.js` (learn more [here](link)) and **should not be modified.**
+You may have noticed that `MODULE_ID` and `MODULE_NAME` are `"{EXPORTED_MODULE_ID}"` and `"{EXPORTED_MODULE_NAME}"`, respectively. These values are replaced during module building to the values defined in `export-config.js` (learn more [here](../../api/export-config.js.md)) and **should not be modified.**
 
 
 ### The Process Class
@@ -190,7 +190,7 @@ The current implementation will result in a UI like this:
 
 In order, if you provide a `string`, it will result in a section header. If you provide an `Setting`, it will be a fully functional setting. 
 
-There are many different types of `Settings`, such as `BooleanSetting` for true/false, `StringSetting` for text input, `ChoiceSetting` for either radio buttons or dropdowns, etc.. Most default HTML `<input>` types are supported, however you are able to create your own settings. Visit the [Settings API](link) to learn more.
+There are many different types of `Settings`, such as `BooleanSetting` for true/false, `StringSetting` for text input, `ChoiceSetting` for either radio buttons or dropdowns, etc.. Most default HTML `<input>` types are supported, however you are able to create your own settings. Visit the [Settings API](../../api/Settings.md) to learn more.
 
 Each `Setting` may have its own configurations, but all settings must have a:
 - Display Name (set via `setName()`)
@@ -208,7 +208,7 @@ To send data to your renderer, the following function is provided from within yo
 Similar to how you receive events in your process, this sends information to your renderer. More information can be found in the next section.
 
 ---
-There are many more functions in the parent `Process` class that you can override, such as `onGUIShown`, `onGUIHidden`, `onExit`, and more. Visit the [Process API](link) for more documentation about all the functions you can use.
+There are many more functions in the parent `Process` class that you can override, such as `onGUIShown`, `onGUIHidden`, `onExit`, and more. Visit the [Process API](../../api/Process.md) for more documentation about all the functions you can use.
 
 ## Next Steps
 Learn about the renderer for your respective template.

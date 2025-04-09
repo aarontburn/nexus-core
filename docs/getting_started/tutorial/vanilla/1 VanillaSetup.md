@@ -62,7 +62,7 @@ Starting with root files and directories that are self-explanatory, unchanged fr
 - `README.md`: Standard [README.md](https://docs.github.com/en/repositories/.managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes). Change this to show off your module.
 - `electron.ts`: This file is used to let your editor know that Electron is being used. This file is ignored and should not be modified.   
 - `tsconfig.json`: Standard [tsconfig.json](https://www.typescriptlang.org/tsconfig/).
-- `package.json`: Standard [package.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-json). However, this does list many commands you may be using throughout development. See the [Commands](#cli-commands) section for more information.
+- `package.json`: Standard [package.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-json). However, this does list many commands you may be using throughout development. See the [Commands](./3%20VanillaCommands.md) section for more information.
 
 
 
@@ -87,10 +87,10 @@ root/
     +-- module-info.json
 ```
 - `src/`: This is the folder that will be converted into your module and should contain ALL of your source code and assets.
-- `src/export-config.js`: A file containing export configurations for your module. Read the [Exporting](link) section for more details.
-- `src/module-info.json`: A file containing details about your module. Read the [Exporting](link) section for more details.
+- `src/export-config.js`: A file containing export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
+- `src/module-info.json`: A file containing details about your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/process/`: The directory containing all code and assets for the process (backend).
-- `src/process/main.ts`: The entry point to your module and the main [Process](link). If you move or rename this file, ensure your changes are also reflected in `src/export-config.js` (read about [export-config.js](link)).  
+- `src/process/main.ts`: The entry point to your module and the main [Process](../ProcessOverview.md). If you move or rename this file, ensure your changes are also reflected in `src/export-config.js` (read about [export-config.js](../../../api/export-config.js.md)).  
 - `src/renderer/`: The directory containing all code and assets for the renderer (frontend).
 - `src/renderer/index.html`: The default UI for your module.
 - `src/renderer/renderer.ts`: The main logic file for the renderer. It listens for messages from the process and interacts with the DOM accordingly.
