@@ -18,7 +18,7 @@ if (!process.argv.includes("--verbose")) {
 const MODULE_INFO_FILE = "module-info.json";
 
 // The path of the root directory of this module.
-const PROJECT_ROOT_DIR = process.argv.includes("--test") ? path.join(__dirname, "../sample/") : path.join(__dirname, "../../../../");
+const PROJECT_ROOT_DIR = process.argv.includes("--test") ? path.join(__dirname, "../sample/") : path.join(__dirname, "../../../");
 
 
 const EXPORT_CONFIG_FILE = "export-config.js"
