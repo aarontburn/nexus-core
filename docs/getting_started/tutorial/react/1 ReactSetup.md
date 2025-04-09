@@ -10,7 +10,7 @@ Download the provided template.
 Once downloaded, open your text editor to the root directory of the project. Open a CLI in the same location and run
 
 ```
-npm start
+npm install
 ```
 To install the required packages.
 
