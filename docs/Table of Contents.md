@@ -2,12 +2,12 @@
 
 ## Getting Started
 [**Introduction**](./getting_started/Introduction.md)  
-[**Templates**](./getting_started/Introduction.md#developing-a-module-with-nexus)   
-[**Tutorial**](./getting_started/tutorial/Prerequisites.md)
+[**Tutorial and Templates**](./getting_started/tutorial/BuildingYourFirstModule.md)   
 
 ## Guides
 [**Communicating Between Modules**](./guides/CommunicatingWithOtherModules.md)  
 [**Creating a Custom Setting**](./guides/CreatingACustomSetting.md)
+[**Writing To Storage**](./guides/WritingToStorage.md)
 
 ## API
 [**Process**](./api/Process.md)  

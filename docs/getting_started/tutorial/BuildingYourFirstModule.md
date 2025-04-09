@@ -1,7 +1,20 @@
 # Nexus: Building your First Module
 
-Because each module requires quite a bit of configuration, it is **highly recommended** to use one of the provided templates to start developing your module. These templates are fully functional out of the box and provide everything you need to start.
 
+## Required Tools
+### Code Editor
+You will need a text editor. Nexus was developed and tested using [Visual Studio Code](https://code.visualstudio.com/), which is what we recommend.
+
+### Command Line
+You will need access to a command line to run and export your module. Many IDEs come with an integrated terminal, but you can also use your operating systems native one.
+
+### Node.js and npm
+You will need to install [Node.js](https://nodejs.org/en/download/) and npm (which should be bundled with Node.js).
+
+
+## Templates
+
+Because each module requires quite a bit of configuration, it is **highly recommended** to use one of the provided templates to start developing your module. These templates are fully functional out of the box and provide everything you need to start.
 
 Visit the tutorial for the template you want to develop with.
 
