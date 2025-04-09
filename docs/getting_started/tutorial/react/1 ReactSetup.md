@@ -121,4 +121,4 @@ Here are the files that are important:
 
 ---
 ### Next Steps:
-Now that you've understood how the project is laid out, visit the [Process](./ProcessOverview.md) guide to learn how it works.
+Now that you've understood how the project is laid out, visit the [Process](../ProcessOverview.md) guide to learn how it works.

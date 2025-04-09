@@ -132,13 +132,6 @@ export abstract class Process implements IPCSource {
     }
 
 
-    /**
-     *  @returns the name of the settings file associated with this module.
-     */
-    public getSettingsFileName(): string {
-        return this.moduleName.toLowerCase() + "_settings.json";
-    }
-
 
     /**
      *  @returns true if @see initialize() has been called, false otherwise.
@@ -266,14 +259,6 @@ export abstract class Process implements IPCSource {
      */
     public getHTMLPath(): string {
         return this.htmlPath;
-    }
-
-
-    /**
-     *  @returns a string representation of this module. Currently, just returns the name.
-     */
-    public toString(): string {
-        return this.moduleName;
     }
 
 

@@ -15,7 +15,6 @@ export class ModuleSettings {
 
     private settingsName: string;
 
-
     public constructor(module: Process) {
         this.parentModule = module;
 
@@ -99,8 +98,17 @@ export class ModuleSettings {
      *  @param setting The setting to add.
      */
     private addSetting(s: Setting<unknown> | string): void {
+        try {
+            if (typeof s !== "string") {
+                s.checkRequiredFields();
+            }
+        } catch(err) {
+            console.error(err)
+        }
+
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
+            this.settingsDisplay.push(s);
             return;
         }
 

@@ -45,7 +45,7 @@ export abstract class Setting<T> {
      *
      * @throws Error if the required fields were NOT set.
      */
-    private checkRequiredFields(): void {
+    public checkRequiredFields(): void {
         if (this.name === undefined
             || this.defaultValue === undefined) {
 
@@ -242,7 +242,7 @@ export abstract class Setting<T> {
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */
-    public setValidator(inputValidator: (input: any) => T): Setting<T> {
+    public setValidator(inputValidator: (input: any) => T | null): Setting<T> {
         if (this.inputValidator !== undefined) {
             throw new Error("Cannot redefine input validator for " + this.name);
         }

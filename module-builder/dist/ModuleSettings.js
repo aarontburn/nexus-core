@@ -76,8 +76,17 @@ var ModuleSettings = /** @class */ (function () {
      *  @param setting The setting to add.
      */
     ModuleSettings.prototype.addSetting = function (s) {
+        try {
+            if (typeof s !== "string") {
+                s.checkRequiredFields();
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
         this.settingsDisplay.push(s);
         if (typeof s === 'string') {
+            this.settingsDisplay.push(s);
             return;
         }
         var setting = s;

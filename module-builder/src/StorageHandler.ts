@@ -52,7 +52,7 @@ export class StorageHandler {
             settingMap.set(setting.getName(), setting.getValue());
         });
 
-        await this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
+        await this.writeToModuleStorage(module, this.getModuleSettingsName(module), JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
     }
 
 
@@ -77,7 +77,7 @@ export class StorageHandler {
                 throw error;
             }
 
-            console.log("File not found: " + filePath);
+            console.error("File not found: " + filePath);
         }
 
         return null;
@@ -95,7 +95,7 @@ export class StorageHandler {
 
         const dirName: string = module.getIPCSource();
         const folderName: string = this.STORAGE_PATH + dirName + "/";
-        const filePath: string = folderName + module.getSettingsFileName();
+        const filePath: string = folderName + this.getModuleSettingsName(module);
 
 
         let contents: string;
@@ -106,7 +106,7 @@ export class StorageHandler {
                 throw err;
             }
 
-            console.log("WARNING: directory not found.");
+            console.error("WARNING: directory not found.");
             return settingMap;
         }
 
@@ -122,4 +122,11 @@ export class StorageHandler {
         return settingMap;
     }
 
+
+
+    private static getModuleSettingsName(module: Process): string {
+        return module.getName().toLowerCase()  + "_settings.json";
+    }
 }
+
+

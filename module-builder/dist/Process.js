@@ -107,12 +107,6 @@ var Process = /** @class */ (function () {
         return this.moduleSettings;
     };
     /**
-     *  @returns the name of the settings file associated with this module.
-     */
-    Process.prototype.getSettingsFileName = function () {
-        return this.moduleName.toLowerCase() + "_settings.json";
-    };
-    /**
      *  @returns true if @see initialize() has been called, false otherwise.
      */
     Process.prototype.isInitialized = function () {
@@ -221,12 +215,6 @@ var Process = /** @class */ (function () {
      */
     Process.prototype.getHTMLPath = function () {
         return this.htmlPath;
-    };
-    /**
-     *  @returns a string representation of this module. Currently, just returns the name.
-     */
-    Process.prototype.toString = function () {
-        return this.moduleName;
     };
     /**
      *  Entry point to receive events from the renderer.

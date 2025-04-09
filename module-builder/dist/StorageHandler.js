@@ -104,7 +104,7 @@ var StorageHandler = /** @class */ (function () {
                         module.getSettings().allToArray().forEach(function (setting) {
                             settingMap.set(setting.getName(), setting.getValue());
                         });
-                        return [4 /*yield*/, this.writeToModuleStorage(module, module.getSettingsFileName(), JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];
+                        return [4 /*yield*/, this.writeToModuleStorage(module, this.getModuleSettingsName(module), JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];
                     case 1:
                         _b.sent();
                         return [2 /*return*/];
@@ -142,7 +142,7 @@ var StorageHandler = /** @class */ (function () {
                         if (error_1.code !== 'ENOENT') {
                             throw error_1;
                         }
-                        console.log("File not found: " + filePath);
+                        console.error("File not found: " + filePath);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/, null];
                 }
@@ -164,7 +164,7 @@ var StorageHandler = /** @class */ (function () {
                         settingMap = new Map();
                         dirName = module.getIPCSource();
                         folderName = this.STORAGE_PATH + dirName + "/";
-                        filePath = folderName + module.getSettingsFileName();
+                        filePath = folderName + this.getModuleSettingsName(module);
                         _b.label = 1;
                     case 1:
                         _b.trys.push([1, 3, , 4]);
@@ -177,7 +177,7 @@ var StorageHandler = /** @class */ (function () {
                         if (err_1.code !== 'ENOENT') {
                             throw err_1;
                         }
-                        console.log("WARNING: directory not found.");
+                        console.error("WARNING: directory not found.");
                         return [2 /*return*/, settingMap];
                     case 4:
                         try {
@@ -193,6 +193,9 @@ var StorageHandler = /** @class */ (function () {
                 }
             });
         });
+    };
+    StorageHandler.getModuleSettingsName = function (module) {
+        return module.getName().toLowerCase() + "_settings.json";
     };
     var _a;
     _a = StorageHandler;

@@ -260,7 +260,7 @@ var ModuleController = /** @class */ (function () {
             data[_i - 3] = arguments[_i];
         }
         return __awaiter(this, void 0, void 0, function () {
-            var targetModule;
+            var targetModule, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -274,7 +274,9 @@ var ModuleController = /** @class */ (function () {
                             return [2 /*return*/, { body: "No module with ID of ".concat(source.getIPCSource(), " found."), code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND }];
                         }
                         return [4 /*yield*/, targetModule.handleExternal(source, eventType, data)];
-                    case 3: return [2 /*return*/, _a.sent()];
+                    case 3:
+                        response = _a.sent();
+                        return [2 /*return*/, response];
                 }
             });
         });

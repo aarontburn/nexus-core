@@ -28,7 +28,7 @@ export declare abstract class Setting<T> {
      *
      * @throws Error if the required fields were NOT set.
      */
-    private checkRequiredFields;
+    checkRequiredFields(): void;
     reInitUI(): void;
     /**
      * Sets the name of this setting. This is a required field.
@@ -137,7 +137,7 @@ export declare abstract class Setting<T> {
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */
-    setValidator(inputValidator: (input: any) => T): Setting<T>;
+    setValidator(inputValidator: (input: any) => T | null): Setting<T>;
     /**
      *  Abstract function to be defined by child classes.
      *

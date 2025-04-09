@@ -38,4 +38,5 @@ export declare class StorageHandler {
      *  @returns A map of setting names to the setting.
      */
     static readSettingsFromModuleStorage(module: Process): Promise<Map<string, any>>;
+    private static getModuleSettingsName;
 }

@@ -85,10 +85,6 @@ export declare abstract class Process implements IPCSource {
      */
     getSettings(): ModuleSettings;
     /**
-     *  @returns the name of the settings file associated with this module.
-     */
-    getSettingsFileName(): string;
-    /**
      *  @returns true if @see initialize() has been called, false otherwise.
      */
     isInitialized(): boolean;
@@ -163,10 +159,6 @@ export declare abstract class Process implements IPCSource {
      *  @returns the path to the HTML file associated with this module.
      */
     getHTMLPath(): string;
-    /**
-     *  @returns a string representation of this module. Currently, just returns the name.
-     */
-    toString(): string;
     /**
      *  Entry point to receive events from the renderer.
      *

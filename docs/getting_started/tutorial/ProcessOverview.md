@@ -215,4 +215,4 @@ Learn about the renderer for your respective template.
 
 ### [Nexus: React Template](./react/1%20ReactSetup.md)  
 ### [Nexus: Vanilla TS Template](./vanilla/2%20VanillaRenderer.md)
-### [Nexus: Internal Template]()
+### [Nexus: Internal Template](./internal/3%20InternalRenderer.md)

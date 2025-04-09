@@ -3,6 +3,16 @@
 ## Overview
 In the Nexus environment, you can expose an API for other modules to communicate with, as well as communicate with other modules.
 
+## `DataResponse`
+Inside` @nexus/nexus-module-builder`, you'll find two key tools for module communication: the `DataResponse` object (similar to an HTTP Response), and the `HTTPStatusCode` enum, which provides all standard HTTP status codes.
+
+```typescript
+interface DataResponse {
+    code: HTTPStatusCode,
+    body: any
+}
+```
+
 ## Exposing an API
 Within your process, you can override the function `handleExternal` to expose an API to other modules.
 
@@ -12,7 +22,7 @@ Within your process, you can override the function `handleExternal` to expose an
 export default SampleProcess extends Process {
     // ...
 
-    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<any> {
+    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         // ...
     }
 
@@ -28,19 +38,32 @@ Any data you return from `handleExternal` will be sent back to the caller as a r
 For example, this is the `handleExternal` of the Settings module.
 
 ```typescript
-public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<any> {
+public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
     switch (eventType) {
         case 'isDeveloperMode': {
-            return this.getSettings().findSetting('dev_mode').getValue() as boolean;
+            return { 
+                body: this.getSettings().findSetting('dev_mode').getValue() as boolean, 
+                code: HTTPStatusCode.OK 
+            };
         }
         case 'listenToDevMode': {
             const callback: (isDev: boolean) => void = data[0];
             this.devModeSubscribers.push(callback);
             callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
-            break;
+
+            return { 
+                body: undefined, 
+                code: HTTPStatusCode.OK 
+            };
         }
         case "getAccentColor": {
-            return this.getSettings().findSetting("accent_color").getValue();
+            return { 
+                body: this.getSettings().findSetting("accent_color").getValue(), 
+                code: HTTPStatusCode.OK 
+            };
+        }
+        default: {
+            return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
         }
 
     }
@@ -63,21 +86,27 @@ export default SampleProcess extends Process {
     // ...
 
     public initialize(): void {
-        super.initialize(); // This should be called.
+        super.initialize();
 
         this.refreshAllSettings();
-        // Request the accent color from the built-in 'Settings' module and send it to the renderer.
+        // Request the accent color from the built-in 'Settings' 
+        // module and send it to the renderer.
         this.requestExternal("built_ins.Settings", "getAccentColor").then(value => {
             this.sendToRenderer("accent-color-changed", value)
         });
     }
 
     // ...
-
 }
+```
+You can find the ID from within the Settings tab, or requesting it from the main process.
+
+```typescript
+const installedModules: string[] = await this.requestExternal("built_ins.Main", "get-module-IDs")
+console.log(installedModules.body)
 ```
 
 ## Best Practices
-### Accessing other modules
 
-- **Never** send a direct reference of your process to any module that requests it. 
+- **Never** send a direct reference of your process (like `this`) to any module that requests it. This can lead to unintended side effects or security issues
+- When returning arrays or objects, use the spread operator (`[...arr]` or `{...obj}`) to ensure you're sending a copy, not a reference. This prevents external modules from mutating your internal state.

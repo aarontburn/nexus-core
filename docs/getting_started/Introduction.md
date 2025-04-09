@@ -24,6 +24,8 @@ The benefit of developing with Nexus is that any module you install can be loade
 **Export and Distribution**: Nexus comes pre-configured to export your module into an archive file for easy distribution without much (or any) configuration.
 
 ## Installing Nexus
+TODO
+
 
 ## Developing for Nexus
 To begin developing a module for Nexus, visit [Building Your First Module](./tutorial/BuildingYourFirstModule.md).

@@ -1,33 +1,31 @@
-
 # Nexus
-**Nexus** is a platform designed to simplify the creation, sharing, and installation of Node.js sub-applications, called a *module*. A *module* can be anything; a system volume controller, calendar, alarm; anything that can be created using TypeScript and Node.js, which mean it can quite literally be anything.
 
-![image](https://github.com/aarontburn/modules/assets/103211131/9c37290c-1368-451f-a272-98ff778165c2)
+## What is Nexus?
+Nexus is an application environment and loader. Developers can create applications, or **modules**, that can be loaded into the Nexus environment, keeping everything in one place. 
 
-Doesn't seem like much on its own, right? Let's add a module...
-![image](https://github.com/aarontburn/modules/assets/103211131/0c56c4ca-6305-43cd-b30e-d913d2dbf982)
-## Developer Features:
-- Full Node.js support
-- Full dependency support (able to use NPM packages for modules)
-  - If your module has a dependency, it will automatically be bundled with your module as you export it. Simply make sure it is listed in `package.json`.
- - Simple, yet effective, API
-   - Pre-defined functions and objects are designed to streamline the creation of your module, including:
-	   - Pre-built option UIs 
-	   - Defined application lifecycle functions (`onExit()`, `onGUIShown()`, `onGUIHidden()`)
- - Inter-Module Communication
-   - Modules are able to send/receive data from each other.  
- 
+Think of Nexus as a customizable toolbox — one app that can do anything that you (or the community) build into it.
 
-## Example: [Volume Controller Module](https://github.com/aarontburn/modules-volume_controller) 
-![image](https://github.com/aarontburn/modules/assets/103211131/a1311957-7fce-47ea-a449-7370aa381645)
+## What is a module?
 
-This module is a substitute for the Windows Audio Mixer and includes additional functions. While simple, this module is meant to serve as a demonstration of how this platform could be used.
+A **module** can be anything you can create in Node.js. From anything from a [system volume controller](https://github.com/aarontburn/nexus-volume-controller) to an [internal debug console](https://github.com/aarontburn/nexus-debug-console), there are no limits to what you can create. 
 
-## Developing a Module:
-Visit the **modules-module-quickstart** GitHub repository to develop a module.  
-[modules quickstart template](https://github.com/aarontburn/modules-module-quickstart)
 
-## Additional Screenshots:
-The settings for the built-in *Home* module.
-![image](https://github.com/aarontburn/modules/assets/103211131/9f678c8f-88ba-4c32-894f-6bab67b4700e)
+The benefit of developing with Nexus is that any module you install can be loaded into a single application, reducing window clutter, and Nexus provides an extensive framework to allow for module interconnectivity and ease-of-development.
 
+
+**Application Lifecycle Handling**: Built-in and easily-modifiable functions are called during different parts of the application lifecycle, such as when your module is opened, closed, and initialized.
+
+**User Configuration Settings**: Nexus provides a simple way to create and handle settings that your module may want the user to configure. Simply provide the settings you want to expose, and Nexus will create the UI, event handling, and do the storage reading/writing for you.
+
+**Storage Handling**: Built-in classes and methods make it easy to read/write from storage.
+
+**Module Communication**: Modules have the ability to communicate with each other and expose an API that other modules can access, which allows for interconnectivity and extensibility.
+
+**Export and Distribution**: Nexus comes pre-configured to export your module into an archive file for easy distribution without much (or any) configuration.
+
+## Installing Nexus
+TODO
+
+
+## Developing for Nexus
+To begin developing a module for Nexus, visit [Building Your First Module](./docs/getting_started/tutorial/BuildingYourFirstModule.md).
