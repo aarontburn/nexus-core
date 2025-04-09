@@ -5,11 +5,12 @@ const path = require("path");
 const fs = require("fs");
 const dialogNode = require('dialog-node');
 const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefinedAsync } = require('./utils');
+const { verifyExportConfig } = require('./verifier');
 const archiver = require('archiver')('zip');
 
 
 if (!process.argv.includes("--verbose")) {
-    console.info = (_) => {}
+    console.info = () => {}
 }
 
 
@@ -17,18 +18,17 @@ if (!process.argv.includes("--verbose")) {
 const MODULE_INFO_FILE = "module-info.json";
 
 // The path of the root directory of this module.
-const PROJECT_ROOT_DIR = path.join(__dirname, "../../../");
-
+const PROJECT_ROOT_DIR = process.argv.includes("--test") ? path.join(__dirname, "../sample/") : path.join(__dirname, "../../../../");
 
 
 const EXPORT_CONFIG_FILE = "export-config.js"
-const DEFAULT_EXCLUDED = [
-    // "export-config.js"
-]
+const DEFAULT_EXCLUDED = []
 
 const EXPORT_CONFIG = tryOrUndefined(() => require(path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)));
 if (EXPORT_CONFIG === undefined) {
     throw new Error(`Could not import ${EXPORT_CONFIG_FILE}. Path: ${path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)}`);
+} else if (!verifyExportConfig(EXPORT_CONFIG)) {
+    throw new Error(`${EXPORT_CONFIG_FILE} contains invalid fields and cannot be exported.`);
 }
 
 const [excludedFiles, addToBuild] = [
@@ -50,7 +50,7 @@ if (missingKeys.length > 0) {
 
 
 // The path of the output directory in the output folder
-const _OUTPUT_FOLDER_PATH = path.normalize(PROJECT_ROOT_DIR + "/output/" + BUILD_CONFIG["id"] + "/");
+const _OUTPUT_FOLDER_PATH = process.argv.includes("--test") ? path.normalize(__dirname + "/output/") : path.normalize(PROJECT_ROOT_DIR + "/output/" + BUILD_CONFIG["id"] + "/");
 
 // The path to the node_modules directory in the output folder.
 const SRC_NODE_MODULES = PROJECT_ROOT_DIR + "/node_modules";
@@ -58,6 +58,10 @@ const SRC_NODE_MODULES = PROJECT_ROOT_DIR + "/node_modules";
 let chosenFolder;
 
 const getOutputFolder = () => {
+    if (process.argv.includes("--test")) {
+        return _OUTPUT_FOLDER_PATH
+    }
+
     if (process.argv.includes('--dev')) {
         return `${os.homedir()}/.nexus_dev/external_modules/${BUILD_CONFIG["id"]}/`;
     }
@@ -67,7 +71,8 @@ const getOutputFolder = () => {
 
 async function main() {
     console.time("Export Time")
-    if (!process.argv.includes('--dev')) {
+    if (!process.argv.includes('--dev') && !process.argv.includes('--test')) {
+        // open file picker
         const outputPath = await getDirectory();
         console.info("Outputting module to: " + outputPath)
         if (outputPath !== undefined) {
@@ -176,6 +181,10 @@ async function copyFiles() {
 
 
 async function checkAndCopyDependencies() {
+    if (process.argv.includes("--test")) {
+        return
+    }
+
     const json = JSON.parse(await fs.promises.readFile(PROJECT_ROOT_DIR + "/package.json", "utf-8"));
 
     const dependencies = json["dependencies"];
@@ -251,6 +260,10 @@ async function toArchive() {
 
 
 async function changeLastExported() {
+    if (process.argv.includes('--test')) {
+        return;
+    }
+
     const devPath = path.normalize(os.homedir() + '/.nexus_dev/');
     await fs.promises.mkdir(devPath, { recursive: true });
     let devJSON = await tryOrUndefinedAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
