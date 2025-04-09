@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Micro-app platform.",
   "scripts": {
-    "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main --no-save && npm install https://gitpkg.vercel.app/aarontburn/nexus-core/exporter?main --no-save",
     "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
     "watch": "tsc -w",
     "start": "npm run build && electron --trace-warnings ./dist/main.js --dev --in-core ",
