@@ -5,36 +5,8 @@
     }
 
     window.ipc.on(window, (eventName: string, data: any[]) => {
-        handleEvent(eventName, data);
-    });
-
-
-    sendToProcess("renderer-init");
-
-    const IFRAME_DEFAULT_STYLE: string = "height: 100%; width: 100%;";
-
-    // const SANDBOX_RESTRICTIONS: string = Array.from(new Map([
-    //     ["allow-forms", true], // Module can submit forms.
-    //     ['allow-modals', true],  // Module can spawn alerts, prompts, and confirms
-    //     ['allow-orientation-lock', false],
-    //     ['allow-pointer-lock', false], // Module can 
-    //     ['allow-popups', true],
-    //     ['allow-popups-to-escape-sandbox', true],
-    //     ['allow-presentation', false],
-    //     ['allow-same-origin', true],
-    //     ['allow-scripts', true],
-    //     ['allow-top-navigation', false],
-    //     ['allow-top-navigation-by-user-activation', false],
-    // ])).filter(([_, v]) => v).reduce((prev, [k, _]) => prev += `${k} `, "");
-
-
-    let selectedTab: HTMLElement = undefined;
-
-
-    const handleEvent = (eventType: string, data: any[]) => {
-        switch (eventType) {
+        switch (eventName) {
             case "load-modules": {
-                console.log(data[0]);
                 loadModules(data[0]);
                 break;
             }
@@ -43,7 +15,13 @@
                 break;
             }
         }
-    }
+    });
+
+    sendToProcess("renderer-init");
+    const IFRAME_DEFAULT_STYLE: string = "height: 100%; width: 100%;";
+
+    let selectedTab: HTMLElement = undefined;
+
 
 
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {
@@ -75,11 +53,79 @@
 
 
     function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
-        const builtIns: string[] = ["built_ins.Home", "built_ins.Settings"];
-
 
         const moduleFrameHTML: HTMLElement = document.getElementById("modules");
         const moduleIconsHTML: HTMLElement = document.getElementById("header");
+
+
+        const createAndInsertIFrame = (moduleID: string, htmlPath: string) => {
+            const iframe: HTMLElement = document.createElement("iframe");
+            iframe.id = moduleID;
+            iframe.setAttribute("src", htmlPath);
+            iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
+            moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
+        }
+
+        const createAndInsertButton = (moduleName: string, moduleID: string, iconPath: string | undefined) => {
+            const getAbbreviation = (name: string) => {
+                const ABBREVIATION_LENGTH: number = 3;
+                const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
+                const out: string[] = [];
+
+                for (let i = 0; i < ABBREVIATION_LENGTH; i++) {
+                    if (i >= abbreviation.length) {
+                        break;
+                    }
+                    out.push(abbreviation[i]);
+                }
+                return out.join("");
+            }
+
+            const button: HTMLElement = document.createElement("button");
+            button.id = moduleID + "-header-button";
+            button.className = "header-button drag-item";
+            button.draggable = true;
+
+            if (iconPath === undefined) {
+                button.textContent = getAbbreviation(moduleName);
+            } else {
+                switch ((iconPath.split(".").at(-1) ?? '').toLowerCase()) {
+                    case "svg": {
+                        button.innerHTML = `<div class="module-icon svg" style="mask-image: url('${iconPath.replace(/\\/g, "/")}')"></div>`;
+                        break;
+                    }
+                    case "png":
+                    case "jpeg":
+                    case "jpg": {
+                        button.innerHTML = `<img class="module-icon" src="${iconPath.replace(/\\/g, "/")}"  />`;
+                        break;
+                    }
+
+                    default: {
+                        console.log(`Unsupported icon for ${moduleID}: ` + iconPath);
+                        button.textContent = getAbbreviation(moduleName);
+                        break;
+                    }
+                }
+            }
+            button.addEventListener("click", () => {
+                handleButtonClick(moduleID, button);
+            });
+
+
+
+            const builtIns: string[] = ["built_ins.Home", "built_ins.Settings"];
+            if (builtIns.includes(moduleID)) {
+                button.draggable = false;
+
+                document.getElementById('built-ins').insertAdjacentElement("beforeend", button);
+            } else {
+                moduleIconsHTML.insertAdjacentElement("beforeend", button);
+
+            }
+
+        }
+
 
         for (const obj of data) {
             const { moduleName, moduleID, htmlPath, iconPath }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string } = obj;
@@ -87,53 +133,91 @@
             if (htmlPath === undefined) { // internal module, ignore
                 continue;
             }
-            const moduleIFrameElement: HTMLElement = document.createElement("iframe");
-            moduleIFrameElement.id = moduleID;
-            moduleIFrameElement.setAttribute("src", htmlPath);
-            moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
-            // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
-            moduleFrameHTML.insertAdjacentElement("beforeend", moduleIFrameElement);
 
-            const headerButtonElement: HTMLElement = document.createElement("button");
-            headerButtonElement.id = moduleID + "-header-button";
-            headerButtonElement.className = "header-button";
-
-            if (iconPath === undefined) {
-                headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
-            } else {
-                switch ((iconPath.split(".").at(-1) ?? '').toLowerCase()) {
-                    case "svg": {
-                        headerButtonElement.innerHTML = `<div class="module-icon svg" style="mask-image: url('${iconPath.replace(/\\/g, "/")}')"></div>`;
-                        break;
-                    }
-                    case "png":
-                    case "jpeg":
-                    case "jpg": {
-                        headerButtonElement.innerHTML = `<img class="module-icon" src="${iconPath.replace(/\\/g, "/")}"  />`;
-                        break;
-                    }
-
-                    default: {
-                        console.log(`Unsupported icon for ${moduleID}: ` + iconPath);
-                        headerButtonElement.textContent = moduleName.split(" ").map(s => s[0]).join("");
-                        break;
-                    }
-                }
-            }
-            headerButtonElement.addEventListener("click", () => {
-                handleButtonClick(moduleID, headerButtonElement);
-            });
-
-            if (builtIns.includes(moduleID)) {
-                document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
-            } else {
-                moduleIconsHTML.insertAdjacentElement("beforeend", headerButtonElement);
-
-            }
-
+            createAndInsertIFrame(moduleID, htmlPath);
+            createAndInsertButton(moduleName, moduleID, iconPath);
         }
 
     }
+
+
+
+
+
+    const dragList = document.getElementById('drag-list');
+    const importedModulesList = document.getElementById('header');
+
+    let draggedItem: HTMLElement | null = null;
+    let lastLine: HTMLElement | null = null;
+
+
+    // Add event listeners for drag and drop events
+    dragList.addEventListener('dragstart', handleDragStart);
+    dragList.addEventListener('dragover', handleDragOver);
+    dragList.addEventListener('drop', handleDrop);
+
+
+    // Drag start event handler
+    function handleDragStart(event: DragEvent) {
+        draggedItem = event.target as HTMLElement;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/html', draggedItem.innerHTML);
+    }
+
+    // Drag over event handler
+    function handleDragOver(event: DragEvent) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+
+        const targetItem = event.target as HTMLElement;
+
+        if (targetItem.id === "header") {
+            return
+        } else if (!targetItem.classList.contains('drag-item')
+            || targetItem === draggedItem) {
+            removeOldLineAndCreateLine();
+            return;
+        };
+
+        const rect = targetItem.getBoundingClientRect();
+        const isBelow = event.clientY > rect.top + (rect.height / 2);
+
+        if (targetItem.parentElement.id === "built-ins") {
+            return
+        }
+
+        importedModulesList.insertBefore(removeOldLineAndCreateLine(), isBelow ? targetItem.nextSibling : targetItem);
+
+    }
+
+    function handleDrop(event: DragEvent) {
+        event.preventDefault();
+        console.log(event)
+
+        if (lastLine) {
+            try {
+                importedModulesList.insertBefore(draggedItem, lastLine);
+            } catch (_) { }
+        }
+
+        removeOldLineAndCreateLine();
+        draggedItem = null;
+    }
+
+    function removeOldLineAndCreateLine() {
+        if (lastLine !== null) {
+            lastLine.remove()
+            lastLine = null;
+        }
+        const line = document.createElement("div");
+        line.style.outline = "1px dashed var(--accent-color)";
+
+        lastLine = line;
+        return line;
+    }
+
+
+
 
 })();
 

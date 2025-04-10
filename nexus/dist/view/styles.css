@@ -71,6 +71,7 @@ body {
   width: 36px;
   height: 36px;
   transition: 0.2s;
+  pointer-events: none;
 }
 
 

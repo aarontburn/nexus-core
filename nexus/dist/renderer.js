@@ -8,28 +8,8 @@
         return window.ipc.send(window, eventName, data);
     };
     window.ipc.on(window, function (eventName, data) {
-        handleEvent(eventName, data);
-    });
-    sendToProcess("renderer-init");
-    var IFRAME_DEFAULT_STYLE = "height: 100%; width: 100%;";
-    // const SANDBOX_RESTRICTIONS: string = Array.from(new Map([
-    //     ["allow-forms", true], // Module can submit forms.
-    //     ['allow-modals', true],  // Module can spawn alerts, prompts, and confirms
-    //     ['allow-orientation-lock', false],
-    //     ['allow-pointer-lock', false], // Module can 
-    //     ['allow-popups', true],
-    //     ['allow-popups-to-escape-sandbox', true],
-    //     ['allow-presentation', false],
-    //     ['allow-same-origin', true],
-    //     ['allow-scripts', true],
-    //     ['allow-top-navigation', false],
-    //     ['allow-top-navigation-by-user-activation', false],
-    // ])).filter(([_, v]) => v).reduce((prev, [k, _]) => prev += `${k} `, "");
-    var selectedTab = undefined;
-    var handleEvent = function (eventType, data) {
-        switch (eventType) {
+        switch (eventName) {
             case "load-modules": {
-                console.log(data[0]);
                 loadModules(data[0]);
                 break;
             }
@@ -38,7 +18,10 @@
                 break;
             }
         }
-    };
+    });
+    sendToProcess("renderer-init");
+    var IFRAME_DEFAULT_STYLE = "height: 100%; width: 100%;";
+    var selectedTab = undefined;
     var handleButtonClick = function (moduleID, buttonElement) {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";
@@ -60,60 +43,133 @@
         document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
     }
     function loadModules(data) {
-        var _a;
-        var builtIns = ["built_ins.Home", "built_ins.Settings"];
         var moduleFrameHTML = document.getElementById("modules");
         var moduleIconsHTML = document.getElementById("header");
-        var _loop_1 = function (obj) {
-            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
-            if (htmlPath === undefined) { // internal module, ignore
-                return "continue";
-            }
-            var moduleIFrameElement = document.createElement("iframe");
-            moduleIFrameElement.id = moduleID;
-            moduleIFrameElement.setAttribute("src", htmlPath);
-            moduleIFrameElement.setAttribute("style", IFRAME_DEFAULT_STYLE);
-            // moduleView.setAttribute("sandbox", SANDBOX_RESTRICTIONS)
-            moduleFrameHTML.insertAdjacentElement("beforeend", moduleIFrameElement);
-            var headerButtonElement = document.createElement("button");
-            headerButtonElement.id = moduleID + "-header-button";
-            headerButtonElement.className = "header-button";
+        var createAndInsertIFrame = function (moduleID, htmlPath) {
+            var iframe = document.createElement("iframe");
+            iframe.id = moduleID;
+            iframe.setAttribute("src", htmlPath);
+            iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
+            moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
+        };
+        var createAndInsertButton = function (moduleName, moduleID, iconPath) {
+            var _a;
+            var getAbbreviation = function (name) {
+                var ABBREVIATION_LENGTH = 3;
+                var abbreviation = moduleName.split(" ").map(function (s) { return s[0]; });
+                var out = [];
+                for (var i = 0; i < ABBREVIATION_LENGTH; i++) {
+                    if (i >= abbreviation.length) {
+                        break;
+                    }
+                    out.push(abbreviation[i]);
+                }
+                return out.join("");
+            };
+            var button = document.createElement("button");
+            button.id = moduleID + "-header-button";
+            button.className = "header-button drag-item";
+            button.draggable = true;
             if (iconPath === undefined) {
-                headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+                button.textContent = getAbbreviation(moduleName);
             }
             else {
                 switch (((_a = iconPath.split(".").at(-1)) !== null && _a !== void 0 ? _a : '').toLowerCase()) {
                     case "svg": {
-                        headerButtonElement.innerHTML = "<div class=\"module-icon svg\" style=\"mask-image: url('".concat(iconPath.replace(/\\/g, "/"), "')\"></div>");
+                        button.innerHTML = "<div class=\"module-icon svg\" style=\"mask-image: url('".concat(iconPath.replace(/\\/g, "/"), "')\"></div>");
                         break;
                     }
                     case "png":
                     case "jpeg":
                     case "jpg": {
-                        headerButtonElement.innerHTML = "<img class=\"module-icon\" src=\"".concat(iconPath.replace(/\\/g, "/"), "\"  />");
+                        button.innerHTML = "<img class=\"module-icon\" src=\"".concat(iconPath.replace(/\\/g, "/"), "\"  />");
                         break;
                     }
                     default: {
                         console.log("Unsupported icon for ".concat(moduleID, ": ") + iconPath);
-                        headerButtonElement.textContent = moduleName.split(" ").map(function (s) { return s[0]; }).join("");
+                        button.textContent = getAbbreviation(moduleName);
                         break;
                     }
                 }
             }
-            headerButtonElement.addEventListener("click", function () {
-                handleButtonClick(moduleID, headerButtonElement);
+            button.addEventListener("click", function () {
+                handleButtonClick(moduleID, button);
             });
+            var builtIns = ["built_ins.Home", "built_ins.Settings"];
             if (builtIns.includes(moduleID)) {
-                document.getElementById('built-ins').insertAdjacentElement("beforeend", headerButtonElement);
+                button.draggable = false;
+                document.getElementById('built-ins').insertAdjacentElement("beforeend", button);
             }
             else {
-                moduleIconsHTML.insertAdjacentElement("beforeend", headerButtonElement);
+                moduleIconsHTML.insertAdjacentElement("beforeend", button);
             }
         };
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var obj = data_1[_i];
-            _loop_1(obj);
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
+            if (htmlPath === undefined) { // internal module, ignore
+                continue;
+            }
+            createAndInsertIFrame(moduleID, htmlPath);
+            createAndInsertButton(moduleName, moduleID, iconPath);
         }
+    }
+    var dragList = document.getElementById('drag-list');
+    var importedModulesList = document.getElementById('header');
+    var draggedItem = null;
+    var lastLine = null;
+    // Add event listeners for drag and drop events
+    dragList.addEventListener('dragstart', handleDragStart);
+    dragList.addEventListener('dragover', handleDragOver);
+    dragList.addEventListener('drop', handleDrop);
+    // Drag start event handler
+    function handleDragStart(event) {
+        draggedItem = event.target;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/html', draggedItem.innerHTML);
+    }
+    // Drag over event handler
+    function handleDragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        var targetItem = event.target;
+        if (targetItem.id === "header") {
+            return;
+        }
+        else if (!targetItem.classList.contains('drag-item')
+            || targetItem === draggedItem) {
+            removeOldLineAndCreateLine();
+            return;
+        }
+        ;
+        var rect = targetItem.getBoundingClientRect();
+        var isBelow = event.clientY > rect.top + (rect.height / 2);
+        if (targetItem.parentElement.id === "built-ins") {
+            return;
+        }
+        importedModulesList.insertBefore(removeOldLineAndCreateLine(), isBelow ? targetItem.nextSibling : targetItem);
+    }
+    function handleDrop(event) {
+        event.preventDefault();
+        console.log(event);
+        if (lastLine) {
+            try {
+                importedModulesList.insertBefore(draggedItem, lastLine);
+            }
+            catch (_) { }
+        }
+        removeOldLineAndCreateLine();
+        draggedItem = null;
+    }
+    function removeOldLineAndCreateLine() {
+        if (lastLine !== null) {
+            lastLine.remove();
+            lastLine = null;
+        }
+        var line = document.createElement("div");
+        line.style.outline = "1px dashed var(--accent-color)";
+        lastLine = line;
+        return line;
     }
 })();
 //# sourceMappingURL=renderer.js.map

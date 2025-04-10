@@ -17,5 +17,6 @@ contextBridge.exposeInMainWorld('ipc', {
 // Note: This differs from process.argv in the process and has renderer information.
 contextBridge.exposeInMainWorld("common", {
 	args: process.argv
+
 });
 
