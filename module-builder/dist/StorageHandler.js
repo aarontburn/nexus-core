@@ -142,7 +142,6 @@ var StorageHandler = /** @class */ (function () {
                         if (error_1.code !== 'ENOENT') {
                             throw error_1;
                         }
-                        console.error("File not found: " + filePath);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/, null];
                 }

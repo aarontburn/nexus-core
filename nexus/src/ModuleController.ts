@@ -72,7 +72,27 @@ export class ModuleController implements IPCSource {
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
-        this.swapVisibleModule(this.settingsModule.getSettings().findSetting("startup_module_id").getValue() as string);
+
+        let startupModuleID: string = "built_ins.Home";
+
+        const openLastModule: boolean = this.settingsModule
+            .getSettings()
+            .findSetting("startup_should_open_last_closed")
+            .getValue() as boolean;
+
+        if (openLastModule) {
+            startupModuleID = this.settingsModule
+                .getSettings()
+                .findSetting("startup_last_open_id")
+                .getValue() as string;
+        } else {
+            startupModuleID = this.settingsModule.getSettings().findSetting("startup_module_id").getValue() as string;
+            if (!this.modulesByIPCSource.has(startupModuleID)) {
+                startupModuleID = "built_ins.Home";
+            }
+        }
+
+        this.swapVisibleModule(startupModuleID);
 
         this.modulesByIPCSource.forEach((module: Process) => {
             if (module.getHTMLPath() === undefined) {
@@ -125,6 +145,9 @@ export class ModuleController implements IPCSource {
         switch (eventType) {
             case "get-module-IDs": {
                 return { body: Array.from(this.modulesByIPCSource.keys()), code: HTTPStatusCode.OK };
+            }
+            case "get-current-module-id": {
+                return { body: this.currentDisplayedModule.getID(), code: HTTPStatusCode.OK };
             }
             default: {
                 return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
@@ -217,7 +240,7 @@ export class ModuleController implements IPCSource {
         this.addModule(home);
         this.addModule(this.settingsModule);
 
-
+        this.settingsModule.addModuleSetting(await this.verifyModuleSettings(home));
         this.settingsModule.addModuleSetting(await this.verifyModuleSettings(this.settingsModule));
 
         const forceReload: boolean = this.settingsModule
@@ -244,6 +267,9 @@ export class ModuleController implements IPCSource {
         for (const module of loadedModules) {
             await this.addModule(module);
         }
+        for (const module of loadedModules) {
+            this.settingsModule.addModuleSetting(await this.verifyModuleSettings(module));
+        }
     }
 
     private async addModule(module: Process): Promise<void> {
@@ -263,20 +289,26 @@ export class ModuleController implements IPCSource {
         this.ipc.handle(moduleID, (_, eventType: string, data: any = []) => {
             return module.handleEvent(eventType, data);
         });
-        this.settingsModule.addModuleSetting(await this.verifyModuleSettings(module));
     }
+
 
     private async verifyModuleSettings(module: Process): Promise<Process> {
         const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
 
         const moduleSettings: ModuleSettings = module.getSettings();
 
+
         await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
+
             const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
             if (setting === undefined) {
                 console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
             } else {
                 await setting.setValue(settingValue);
+            }
+
+            if (settingName === "Startup Module ID") {
+                console.log(setting.getValue())
             }
         }))
         await StorageHandler.writeModuleSettingsToStorage(module);

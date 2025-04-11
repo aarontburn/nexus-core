@@ -133,25 +133,28 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.onExit = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var isWindowMaximized, bounds;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var isWindowMaximized, bounds, _a, _b, _c, _d, _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         isWindowMaximized = this.window.isMaximized();
                         bounds = this.window.getBounds();
-                        return [4 /*yield*/, Promise.allSettled([
-                                this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
-                                this.getSettings().findSetting('window_width').setValue(bounds.width),
-                                this.getSettings().findSetting('window_height').setValue(bounds.height),
-                                this.getSettings().findSetting('window_x').setValue(bounds.x),
-                                this.getSettings().findSetting('window_y').setValue(bounds.y),
-                                this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y)
-                            ])];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                        _b = (_a = Promise).allSettled;
+                        _c = [this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
+                            this.getSettings().findSetting('window_width').setValue(bounds.width),
+                            this.getSettings().findSetting('window_height').setValue(bounds.height),
+                            this.getSettings().findSetting('window_x').setValue(bounds.x),
+                            this.getSettings().findSetting('window_y').setValue(bounds.y)];
+                        _e = (_d = this.getSettings().findSetting('startup_last_open_id')).setValue;
+                        return [4 /*yield*/, this.requestExternal("built_ins.Main", "get-current-module-id")];
+                    case 1: return [4 /*yield*/, _b.apply(_a, [_c.concat([
+                                _e.apply(_d, [(_f.sent()).body])
+                            ])])];
                     case 2:
-                        _a.sent();
+                        _f.sent();
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                    case 3:
+                        _f.sent();
                         return [2 /*return*/];
                 }
             });
@@ -207,49 +210,51 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _i = 0, _a = Array.from(this.moduleSettingsList.values());
                         _e.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 11];
+                        if (!(_i < _a.length)) return [3 /*break*/, 12];
                         moduleSettings = _a[_i];
                         settingsList = moduleSettings.allToArray();
                         _b = 0, settingsList_1 = settingsList;
                         _e.label = 2;
                     case 2:
-                        if (!(_b < settingsList_1.length)) return [3 /*break*/, 10];
+                        if (!(_b < settingsList_1.length)) return [3 /*break*/, 11];
                         setting = settingsList_1[_b];
                         settingBox = setting.getUIComponent();
                         _c = 0, _d = settingBox.getInputIdAndType();
                         _e.label = 3;
                     case 3:
-                        if (!(_c < _d.length)) return [3 /*break*/, 9];
+                        if (!(_c < _d.length)) return [3 /*break*/, 10];
                         group = _d[_c];
                         id = group.id;
-                        if (!(id === settingID)) return [3 /*break*/, 8];
+                        if (!(id === settingID)) return [3 /*break*/, 9];
                         oldValue = setting.getValue();
-                        if (!(newValue === undefined)) return [3 /*break*/, 4];
-                        setting.resetToDefault();
-                        return [3 /*break*/, 6];
-                    case 4: return [4 /*yield*/, setting.setValue(newValue)];
-                    case 5:
+                        if (!(newValue === undefined)) return [3 /*break*/, 5];
+                        return [4 /*yield*/, setting.resetToDefault()];
+                    case 4:
                         _e.sent();
-                        _e.label = 6;
+                        return [3 /*break*/, 7];
+                    case 5: return [4 /*yield*/, setting.setValue(newValue)];
                     case 6:
+                        _e.sent();
+                        _e.label = 7;
+                    case 7:
                         setting.getParentModule().refreshSettings(setting);
                         console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
                         return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(setting.getParentModule())];
-                    case 7:
+                    case 8:
                         _e.sent();
                         return [2 /*return*/];
-                    case 8:
+                    case 9:
                         _c++;
                         return [3 /*break*/, 3];
-                    case 9:
+                    case 10:
                         _b++;
                         return [3 /*break*/, 2];
-                    case 10:
+                    case 11:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 11: return [2 /*return*/];
+                    case 12: return [2 /*return*/];
                 }
             });
         });

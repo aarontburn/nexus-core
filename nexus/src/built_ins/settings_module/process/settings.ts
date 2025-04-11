@@ -26,14 +26,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
         new StringSetting(module)
             .setName("Startup Module ID")
             .setDefault('built_ins.Home')
-            .setAccessID('startup_module_id')
-            .setValidator(async (input: any): Promise<string | null> => {
-                const installedModules: string[] = (await module.requestExternal("built_ins.Main", "get-module-IDs")).body;
-                if (installedModules.includes(input.toString())) {
-                    return input;
-                }
-                return null;
-            }),
+            .setAccessID('startup_module_id'),
 
         "Developer",
         new BooleanSetting(module)

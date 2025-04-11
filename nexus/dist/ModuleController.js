@@ -115,7 +115,24 @@ var ModuleController = /** @class */ (function () {
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
-        this.swapVisibleModule(this.settingsModule.getSettings().findSetting("startup_module_id").getValue());
+        var startupModuleID = "built_ins.Home";
+        var openLastModule = this.settingsModule
+            .getSettings()
+            .findSetting("startup_should_open_last_closed")
+            .getValue();
+        if (openLastModule) {
+            startupModuleID = this.settingsModule
+                .getSettings()
+                .findSetting("startup_last_open_id")
+                .getValue();
+        }
+        else {
+            startupModuleID = this.settingsModule.getSettings().findSetting("startup_module_id").getValue();
+            if (!this.modulesByIPCSource.has(startupModuleID)) {
+                startupModuleID = "built_ins.Home";
+            }
+        }
+        this.swapVisibleModule(startupModuleID);
         this.modulesByIPCSource.forEach(function (module) {
             if (module.getHTMLPath() === undefined) {
                 module.initialize();
@@ -169,6 +186,9 @@ var ModuleController = /** @class */ (function () {
                 switch (eventType) {
                     case "get-module-IDs": {
                         return [2 /*return*/, { body: Array.from(this.modulesByIPCSource.keys()), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                    }
+                    case "get-current-module-id": {
+                        return [2 /*return*/, { body: this.currentDisplayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     default: {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];
@@ -288,9 +308,9 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.registerModules = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var home, _a, _b, forceReload, moduleOrder, loadedModules, _c, _d, _i, loadedModules_1, module_1;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
+            var home, _a, _b, _c, _d, forceReload, moduleOrder, loadedModules, _e, _f, _i, loadedModules_1, module_1, _g, loadedModules_2, module_2, _h, _j;
+            return __generator(this, function (_k) {
+                switch (_k.label) {
                     case 0:
                         console.log("Registering modules...");
                         home = new HomeProcess_1.HomeProcess();
@@ -298,9 +318,13 @@ var ModuleController = /** @class */ (function () {
                         this.addModule(home);
                         this.addModule(this.settingsModule);
                         _b = (_a = this.settingsModule).addModuleSetting;
-                        return [4 /*yield*/, this.verifyModuleSettings(this.settingsModule)];
+                        return [4 /*yield*/, this.verifyModuleSettings(home)];
                     case 1:
-                        _b.apply(_a, [_e.sent()]);
+                        _b.apply(_a, [_k.sent()]);
+                        _d = (_c = this.settingsModule).addModuleSetting;
+                        return [4 /*yield*/, this.verifyModuleSettings(this.settingsModule)];
+                    case 2:
+                        _d.apply(_c, [_k.sent()]);
                         forceReload = this.settingsModule
                             .getSettings()
                             .findSetting("force_reload")
@@ -310,60 +334,69 @@ var ModuleController = /** @class */ (function () {
                             .findSetting("module_order")
                             .getValue();
                         console.log("Force Reload: " + forceReload);
-                        _c = ModuleReorderer_1.reorderModules;
-                        _d = [moduleOrder];
+                        _e = ModuleReorderer_1.reorderModules;
+                        _f = [moduleOrder];
                         return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(this.ipcCallback, forceReload)];
-                    case 2:
-                        loadedModules = _c.apply(void 0, _d.concat([_e.sent()]));
-                        this.settingsModule
-                            .getSettings()
-                            .findSetting('module_order')
-                            .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"));
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this.settingsModule)];
                     case 3:
-                        _e.sent();
-                        _i = 0, loadedModules_1 = loadedModules;
-                        _e.label = 4;
+                        loadedModules = _e.apply(void 0, _f.concat([_k.sent()]));
+                        return [4 /*yield*/, this.settingsModule
+                                .getSettings()
+                                .findSetting('module_order')
+                                .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"))];
                     case 4:
-                        if (!(_i < loadedModules_1.length)) return [3 /*break*/, 7];
+                        _k.sent();
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this.settingsModule)];
+                    case 5:
+                        _k.sent();
+                        _i = 0, loadedModules_1 = loadedModules;
+                        _k.label = 6;
+                    case 6:
+                        if (!(_i < loadedModules_1.length)) return [3 /*break*/, 9];
                         module_1 = loadedModules_1[_i];
                         return [4 /*yield*/, this.addModule(module_1)];
-                    case 5:
-                        _e.sent();
-                        _e.label = 6;
-                    case 6:
+                    case 7:
+                        _k.sent();
+                        _k.label = 8;
+                    case 8:
                         _i++;
-                        return [3 /*break*/, 4];
-                    case 7: return [2 /*return*/];
+                        return [3 /*break*/, 6];
+                    case 9:
+                        _g = 0, loadedModules_2 = loadedModules;
+                        _k.label = 10;
+                    case 10:
+                        if (!(_g < loadedModules_2.length)) return [3 /*break*/, 13];
+                        module_2 = loadedModules_2[_g];
+                        _j = (_h = this.settingsModule).addModuleSetting;
+                        return [4 /*yield*/, this.verifyModuleSettings(module_2)];
+                    case 11:
+                        _j.apply(_h, [_k.sent()]);
+                        _k.label = 12;
+                    case 12:
+                        _g++;
+                        return [3 /*break*/, 10];
+                    case 13: return [2 /*return*/];
                 }
             });
         });
     };
     ModuleController.prototype.addModule = function (module) {
         return __awaiter(this, void 0, void 0, function () {
-            var moduleID, existingIPCProcess, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        moduleID = module.getIPCSource();
-                        existingIPCProcess = this.modulesByIPCSource.get(moduleID);
-                        if (existingIPCProcess !== undefined) {
-                            console.error("WARNING: Modules with duplicate IDs have been found.");
-                            console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
-                            return [2 /*return*/];
-                        }
-                        console.log("\tRegistering " + moduleID);
-                        this.modulesByIPCSource.set(moduleID, module);
-                        this.ipc.handle(moduleID, function (_, eventType, data) {
-                            if (data === void 0) { data = []; }
-                            return module.handleEvent(eventType, data);
-                        });
-                        _b = (_a = this.settingsModule).addModuleSetting;
-                        return [4 /*yield*/, this.verifyModuleSettings(module)];
-                    case 1:
-                        _b.apply(_a, [_c.sent()]);
-                        return [2 /*return*/];
+            var moduleID, existingIPCProcess;
+            return __generator(this, function (_a) {
+                moduleID = module.getIPCSource();
+                existingIPCProcess = this.modulesByIPCSource.get(moduleID);
+                if (existingIPCProcess !== undefined) {
+                    console.error("WARNING: Modules with duplicate IDs have been found.");
+                    console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
+                    return [2 /*return*/];
                 }
+                console.log("\tRegistering " + moduleID);
+                this.modulesByIPCSource.set(moduleID, module);
+                this.ipc.handle(moduleID, function (_, eventType, data) {
+                    if (data === void 0) { data = []; }
+                    return module.handleEvent(eventType, data);
+                });
+                return [2 /*return*/];
             });
         });
     };
@@ -392,7 +425,11 @@ var ModuleController = /** @class */ (function () {
                                             case 2:
                                                 _b.sent();
                                                 _b.label = 3;
-                                            case 3: return [2 /*return*/];
+                                            case 3:
+                                                if (settingName === "Startup Module ID") {
+                                                    console.log(setting.getValue());
+                                                }
+                                                return [2 /*return*/];
                                         }
                                     });
                                 });

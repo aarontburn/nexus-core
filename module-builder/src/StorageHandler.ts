@@ -76,8 +76,6 @@ export class StorageHandler {
             if (error.code !== 'ENOENT') {
                 throw error;
             }
-
-            console.error("File not found: " + filePath);
         }
 
         return null;

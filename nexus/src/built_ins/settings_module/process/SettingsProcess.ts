@@ -87,8 +87,8 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('window_height').setValue(bounds.height),
             this.getSettings().findSetting('window_x').setValue(bounds.x),
             this.getSettings().findSetting('window_y').setValue(bounds.y),
-            this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y)
-        ]),
+            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("built_ins.Main", "get-current-module-id")).body),
+        ])
         await StorageHandler.writeModuleSettingsToStorage(this);
 
 
@@ -151,7 +151,7 @@ export class SettingsProcess extends Process {
                     if (id === settingID) { // found the modified setting
                         const oldValue: unknown = setting.getValue()
                         if (newValue === undefined) {
-                            setting.resetToDefault();
+                            await setting.resetToDefault();
                         } else {
                             await setting.setValue(newValue);
                         }
