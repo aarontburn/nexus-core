@@ -10,7 +10,7 @@ export abstract class Setting<T> {
     private description: string;
     private accessID: string;
 
-    private inputValidator: (input: any) => Promise<T | null>;
+    private inputValidator: (input: any) => Promise<T | null> | (T | null);
 
     private defaultValue: T;
     private currentValue: T;
@@ -203,7 +203,13 @@ export abstract class Setting<T> {
      */
     private async parseInput(input: any): Promise<T> {
         if (this.inputValidator !== undefined) {
-            return await this.inputValidator(input);
+            const validatorType: Promise<T | null> | null | T = this.inputValidator(input);
+
+            if (validatorType instanceof Promise) {
+                return await validatorType;
+            } else {
+                return validatorType;
+            }
         }
 
         return this.validateInput(input);
@@ -242,7 +248,7 @@ export abstract class Setting<T> {
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */
-    public setValidator(inputValidator: (input: any) => Promise<T | null>): Setting<T> {
+    public setValidator(inputValidator: (input: any) => Promise<T | null> | T | null): Setting<T> {
         if (this.inputValidator !== undefined) {
             throw new Error("Cannot redefine input validator for " + this.name);
         }
