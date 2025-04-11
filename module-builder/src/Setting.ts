@@ -203,13 +203,7 @@ export abstract class Setting<T> {
      */
     private async parseInput(input: any): Promise<T> {
         if (this.inputValidator !== undefined) {
-            const validatorType: Promise<T | null> | null | T = this.inputValidator(input);
-
-            if (validatorType instanceof Promise) {
-                return await validatorType;
-            } else {
-                return validatorType;
-            }
+            return await this.inputValidator(input);
         }
 
         return this.validateInput(input);

@@ -90,6 +90,7 @@
     height: 40px;
     accent-color: var(--accent-color);
     transition: 0.2s;
+    font-weight: 300;
 }
 
 input:focus {

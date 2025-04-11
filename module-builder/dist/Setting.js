@@ -204,17 +204,13 @@ var Setting = /** @class */ (function () {
      */
     Setting.prototype.parseInput = function (input) {
         return __awaiter(this, void 0, void 0, function () {
-            var validatorType;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(this.inputValidator !== undefined)) return [3 /*break*/, 3];
-                        validatorType = this.inputValidator(input);
-                        if (!(validatorType instanceof Promise)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, validatorType];
+                        if (!(this.inputValidator !== undefined)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.inputValidator(input)];
                     case 1: return [2 /*return*/, _a.sent()];
-                    case 2: return [2 /*return*/, validatorType];
-                    case 3: return [2 /*return*/, this.validateInput(input)];
+                    case 2: return [2 /*return*/, this.validateInput(input)];
                 }
             });
         });

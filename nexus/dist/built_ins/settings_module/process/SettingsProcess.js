@@ -101,6 +101,30 @@ var SettingsProcess = /** @class */ (function (_super) {
         });
         return _this;
     }
+    SettingsProcess.prototype.initialize = function () {
+        _super.prototype.initialize.call(this);
+        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
+        var settings = [];
+        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
+            var moduleSettings = _a[_i];
+            var moduleName = moduleSettings.getDisplayName();
+            var list = {
+                module: moduleName,
+                moduleInfo: moduleSettings.getProcess().getModuleInfo()
+            };
+            if (moduleSettings.allToArray().length !== 0) {
+                settings.push(list);
+            }
+            moduleSettings.getProcess().refreshAllSettings();
+        }
+        // Swap settings and home module so it appears at the toap
+        if (settings[0].module === "Home") {
+            var temp = settings[0];
+            settings[0] = settings[1];
+            settings[1] = temp;
+        }
+        this.sendToRenderer("populate-settings-list", settings);
+    };
     SettingsProcess.prototype.registerSettings = function () {
         return (0, settings_1.getSettings)(this);
     };
@@ -115,13 +139,18 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 0:
                         isWindowMaximized = this.window.isMaximized();
                         bounds = this.window.getBounds();
-                        this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized);
-                        this.getSettings().findSetting('window_width').setValue(bounds.width);
-                        this.getSettings().findSetting('window_height').setValue(bounds.height);
-                        this.getSettings().findSetting('window_x').setValue(bounds.x);
-                        this.getSettings().findSetting('window_y').setValue(bounds.y);
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                        return [4 /*yield*/, Promise.allSettled([
+                                this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
+                                this.getSettings().findSetting('window_width').setValue(bounds.width),
+                                this.getSettings().findSetting('window_height').setValue(bounds.height),
+                                this.getSettings().findSetting('window_x').setValue(bounds.x),
+                                this.getSettings().findSetting('window_y').setValue(bounds.y),
+                                this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y)
+                            ])];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -167,30 +196,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                 return [2 /*return*/];
             });
         });
-    };
-    SettingsProcess.prototype.initialize = function () {
-        _super.prototype.initialize.call(this);
-        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
-        var settings = [];
-        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
-            var moduleSettings = _a[_i];
-            var moduleName = moduleSettings.getDisplayName();
-            var list = {
-                module: moduleName,
-                moduleInfo: moduleSettings.getProcess().getModuleInfo()
-            };
-            if (moduleSettings.allToArray().length !== 0) {
-                settings.push(list);
-            }
-            moduleSettings.getProcess().refreshAllSettings();
-        }
-        // Swap settings and home module so it appears at the toap
-        if (settings[0].module === "Home") {
-            var temp = settings[0];
-            settings[0] = settings[1];
-            settings[1] = temp;
-        }
-        this.sendToRenderer("populate-settings-list", settings);
     };
     // TODO: Restructure stuff 
     SettingsProcess.prototype.onSettingChange = function (settingID, newValue) {
@@ -300,11 +305,11 @@ var SettingsProcess = /** @class */ (function (_super) {
                             case 'open-link': return [3 /*break*/, 11];
                             case "module-order": return [3 /*break*/, 12];
                         }
-                        return [3 /*break*/, 14];
+                        return [3 /*break*/, 15];
                     case 1:
                         {
                             this.initialize();
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 2;
                     case 2:
@@ -315,7 +320,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                                     throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.StorageHandler.STORAGE_PATH + moduleID_1));
                                 }
                             });
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 3;
                     case 3:
@@ -343,7 +348,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         {
                             electron_1.app.relaunch();
                             electron_1.app.exit();
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 8;
                     case 8:
@@ -356,31 +361,33 @@ var SettingsProcess = /** @class */ (function (_super) {
                             elementId = data[0];
                             elementValue = data[1];
                             this.onSettingChange(elementId, elementValue);
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 10;
                     case 10:
                         {
                             settingId = data[0];
                             this.onSettingChange(settingId);
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 11;
                     case 11:
                         {
                             link = data[0];
                             electron_1.shell.openExternal(link);
-                            return [3 /*break*/, 14];
+                            return [3 /*break*/, 15];
                         }
                         _b.label = 12;
                     case 12:
                         moduleOrder = data[0];
-                        this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                        return [4 /*yield*/, this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"))];
                     case 13:
                         _b.sent();
-                        return [3 /*break*/, 14];
-                    case 14: return [2 /*return*/];
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                    case 14:
+                        _b.sent();
+                        return [3 /*break*/, 15];
+                    case 15: return [2 /*return*/];
                 }
             });
         });

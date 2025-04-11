@@ -34,6 +34,39 @@ export class SettingsProcess extends Process {
 
     }
 
+    public initialize(): void {
+        super.initialize();
+        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
+
+        const settings: { module: string, moduleInfo: any }[] = [];
+
+        for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
+            const moduleName: string = moduleSettings.getDisplayName();
+
+            const list: { module: string, moduleInfo: any } = {
+                module: moduleName,
+                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
+            };
+
+            if (moduleSettings.allToArray().length !== 0) {
+                settings.push(list);
+            }
+
+            moduleSettings.getProcess().refreshAllSettings();
+        }
+
+        // Swap settings and home module so it appears at the toap
+
+        if (settings[0].module === "Home") {
+            const temp = settings[0];
+            settings[0] = settings[1];
+            settings[1] = temp;
+        }
+
+
+        this.sendToRenderer("populate-settings-list", settings);
+    }
+
     public registerSettings(): (Setting<unknown> | string)[] {
         return getSettings(this);
     }
@@ -47,15 +80,18 @@ export class SettingsProcess extends Process {
         const isWindowMaximized: boolean = this.window.isMaximized();
         const bounds: { width: number, height: number, x: number, y: number } = this.window.getBounds();
 
-        this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized);
-        this.getSettings().findSetting('window_width').setValue(bounds.width);
-        this.getSettings().findSetting('window_height').setValue(bounds.height);
-        this.getSettings().findSetting('window_x').setValue(bounds.x);
-        this.getSettings().findSetting('window_y').setValue(bounds.y);
-        
-        this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y);
 
+        await Promise.allSettled([
+            this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
+            this.getSettings().findSetting('window_width').setValue(bounds.width),
+            this.getSettings().findSetting('window_height').setValue(bounds.height),
+            this.getSettings().findSetting('window_x').setValue(bounds.x),
+            this.getSettings().findSetting('window_y').setValue(bounds.y),
+            this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y)
+        ]),
         await StorageHandler.writeModuleSettingsToStorage(this);
+
+
     }
 
 
@@ -100,38 +136,7 @@ export class SettingsProcess extends Process {
         }
     }
 
-    public initialize(): void {
-        super.initialize();
-        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
-        const settings: { module: string, moduleInfo: any }[] = [];
-
-        for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            const moduleName: string = moduleSettings.getDisplayName();
-
-            const list: { module: string, moduleInfo: any } = {
-                module: moduleName,
-                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
-            };
-
-            if (moduleSettings.allToArray().length !== 0) {
-                settings.push(list);
-            }
-
-            moduleSettings.getProcess().refreshAllSettings();
-        }
-
-        // Swap settings and home module so it appears at the toap
-
-        if (settings[0].module === "Home") {
-            const temp = settings[0];
-            settings[0] = settings[1];
-            settings[1] = temp;
-        }
-
-
-        this.sendToRenderer("populate-settings-list", settings);
-    }
 
     // TODO: Restructure stuff 
     private async onSettingChange(settingID: string, newValue?: any): Promise<void> {
@@ -166,7 +171,6 @@ export class SettingsProcess extends Process {
     }
 
     private swapSettingsTab(moduleToSwapTo: string) {
-
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
             const name: string = moduleSettings.getDisplayName();
 
@@ -278,7 +282,7 @@ export class SettingsProcess extends Process {
             }
             case "module-order": {
                 const moduleOrder: string[] = data[0];
-                this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
+                await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
                 await StorageHandler.writeModuleSettingsToStorage(this);
                 break;
             }

@@ -55,7 +55,7 @@ var getSettings = function (module) {
         new types_1.BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
             .setDefault(false)
-            .setAccessID('startup_open_last_closed'),
+            .setAccessID('startup_should_open_last_closed'),
         new types_1.StringSetting(module)
             .setName("Startup Module ID")
             .setDefault('built_ins.Home')
@@ -67,6 +67,7 @@ var getSettings = function (module) {
                     case 0: return [4 /*yield*/, module.requestExternal("built_ins.Main", "get-module-IDs")];
                     case 1:
                         installedModules = (_a.sent()).body;
+                        console.log(installedModules, input.toString(), installedModules.includes(input.toString()));
                         if (installedModules.includes(input.toString())) {
                             return [2 /*return*/, input];
                         }
@@ -113,6 +114,10 @@ var getInternalSettings = function (module) {
             .setName('Module Order')
             .setDefault('')
             .setAccessID('module_order'),
+        new types_1.StringSetting(module)
+            .setName('Last Opened Module')
+            .setDefault('built_ins.Home')
+            .setAccessID('startup_last_open_id'),
     ];
 };
 exports.getInternalSettings = getInternalSettings;
