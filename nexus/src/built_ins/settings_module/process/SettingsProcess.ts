@@ -55,7 +55,7 @@ export class SettingsProcess extends Process {
             moduleSettings.getProcess().refreshAllSettings();
         }
 
-        // Swap settings and home module so it appears at the toap
+        // Swap settings and home module so it appears at the top
 
         if (settings[0].module === "Home") {
             const temp = settings[0];

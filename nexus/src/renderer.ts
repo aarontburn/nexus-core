@@ -58,7 +58,18 @@
         const moduleIconsHTML: HTMLElement = document.getElementById("header");
 
 
-        const createAndInsertIFrame = (moduleID: string, htmlPath: string) => {
+        const createAndInsertIFrame = (moduleID: string, htmlPath: string, url?: string) => {
+            if (url) {
+                const webView: HTMLElement = document.createElement("webview");
+                webView.setAttribute("src", url);
+                webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
+                webView.id = moduleID
+
+                moduleFrameHTML.insertAdjacentElement("beforeend", webView);
+                return;
+            }
+
+
             const iframe: HTMLElement = document.createElement("iframe");
             iframe.id = moduleID;
             iframe.setAttribute("src", htmlPath);
@@ -67,7 +78,7 @@
         }
 
         const createAndInsertButton = (moduleName: string, moduleID: string, iconPath: string | undefined) => {
-            const getAbbreviation = (name: string) => {
+            const getAbbreviation = () => {
                 const ABBREVIATION_LENGTH: number = 3;
                 const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
                 const out: string[] = [];
@@ -87,7 +98,7 @@
             button.draggable = true;
 
             if (iconPath === undefined) {
-                button.textContent = getAbbreviation(moduleName);
+                button.textContent = getAbbreviation();
             } else {
                 switch ((iconPath.split(".").at(-1) ?? '').toLowerCase()) {
                     case "svg": {
@@ -103,7 +114,7 @@
 
                     default: {
                         console.log(`Unsupported icon for ${moduleID}: ` + iconPath);
-                        button.textContent = getAbbreviation(moduleName);
+                        button.textContent = getAbbreviation();
                         break;
                     }
                 }
@@ -128,13 +139,13 @@
 
 
         for (const obj of data) {
-            const { moduleName, moduleID, htmlPath, iconPath }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string } = obj;
+            const { moduleName, moduleID, htmlPath, iconPath, url }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string, url?: string } = obj;
 
-            if (htmlPath === undefined) { // internal module, ignore
+            if (htmlPath === undefined && url === undefined) { // internal module, ignore
                 continue;
             }
 
-            createAndInsertIFrame(moduleID, htmlPath);
+            createAndInsertIFrame(moduleID, htmlPath, url);
             createAndInsertButton(moduleName, moduleID, iconPath);
         }
 

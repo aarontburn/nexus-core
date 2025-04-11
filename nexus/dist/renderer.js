@@ -45,7 +45,15 @@
     function loadModules(data) {
         var moduleFrameHTML = document.getElementById("modules");
         var moduleIconsHTML = document.getElementById("header");
-        var createAndInsertIFrame = function (moduleID, htmlPath) {
+        var createAndInsertIFrame = function (moduleID, htmlPath, url) {
+            if (url) {
+                var webView = document.createElement("webview");
+                webView.setAttribute("src", url);
+                webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
+                webView.id = moduleID;
+                moduleFrameHTML.insertAdjacentElement("beforeend", webView);
+                return;
+            }
             var iframe = document.createElement("iframe");
             iframe.id = moduleID;
             iframe.setAttribute("src", htmlPath);
@@ -54,7 +62,7 @@
         };
         var createAndInsertButton = function (moduleName, moduleID, iconPath) {
             var _a;
-            var getAbbreviation = function (name) {
+            var getAbbreviation = function () {
                 var ABBREVIATION_LENGTH = 3;
                 var abbreviation = moduleName.split(" ").map(function (s) { return s[0]; });
                 var out = [];
@@ -71,7 +79,7 @@
             button.className = "header-button drag-item";
             button.draggable = true;
             if (iconPath === undefined) {
-                button.textContent = getAbbreviation(moduleName);
+                button.textContent = getAbbreviation();
             }
             else {
                 switch (((_a = iconPath.split(".").at(-1)) !== null && _a !== void 0 ? _a : '').toLowerCase()) {
@@ -87,7 +95,7 @@
                     }
                     default: {
                         console.log("Unsupported icon for ".concat(moduleID, ": ") + iconPath);
-                        button.textContent = getAbbreviation(moduleName);
+                        button.textContent = getAbbreviation();
                         break;
                     }
                 }
@@ -106,11 +114,11 @@
         };
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var obj = data_1[_i];
-            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath;
-            if (htmlPath === undefined) { // internal module, ignore
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath, url = obj.url;
+            if (htmlPath === undefined && url === undefined) { // internal module, ignore
                 continue;
             }
-            createAndInsertIFrame(moduleID, htmlPath);
+            createAndInsertIFrame(moduleID, htmlPath, url);
             createAndInsertButton(moduleName, moduleID, iconPath);
         }
     }

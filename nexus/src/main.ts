@@ -27,6 +27,7 @@ if (process.argv.includes("--dev")) {
 const moduleController: ModuleController = new ModuleController();
 
 app.whenReady().then(() => {
+    
     moduleController.start();
     app.on("activate", () => { // MacOS stuff
         if (BrowserWindow.getAllWindows().length === 0) {

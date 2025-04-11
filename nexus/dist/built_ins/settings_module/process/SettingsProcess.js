@@ -117,7 +117,7 @@ var SettingsProcess = /** @class */ (function (_super) {
             }
             moduleSettings.getProcess().refreshAllSettings();
         }
-        // Swap settings and home module so it appears at the toap
+        // Swap settings and home module so it appears at the top
         if (settings[0].module === "Home") {
             var temp = settings[0];
             settings[0] = settings[1];

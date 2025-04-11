@@ -107,11 +107,14 @@ var ModuleController = /** @class */ (function () {
     ModuleController.prototype.init = function () {
         var data = [];
         this.modulesByIPCSource.forEach(function (module) {
+            var _a;
+            console.log(module.getURL());
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
                 htmlPath: module.getHTMLPath(),
-                iconPath: module.getIconPath()
+                iconPath: module.getIconPath(),
+                url: (_a = module.getURL()) === null || _a === void 0 ? void 0 : _a.toString()
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
@@ -229,6 +232,17 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.createBrowserWindow = function () {
         var _this = this;
+        electron_1.session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
+        electron_1.session.defaultSession.setDisplayMediaRequestHandler(function (request, callback) {
+            electron_1.desktopCapturer.getSources({ types: ['screen'] }).then(function (sources) {
+                // Grant access to the first screen found.
+                callback({ video: sources[0], audio: 'loopback' });
+            });
+            // If true, use the system picker if available.
+            // Note: this is currently experimental. If the system picker
+            // is available, it will be used and the media request handler
+            // will not be invoked.
+        }, { useSystemPicker: true });
         this.window = new electron_1.BrowserWindow({
             show: false,
             height: WINDOW_DIMENSION.height,

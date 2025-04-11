@@ -5,6 +5,10 @@ var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var getSettings = function (module) {
     return [
         "Display",
+        new types_1.BooleanSetting(module)
+            .setName("Dark Mode")
+            .setDefault(true)
+            .setAccessID('dark_mode'),
         new types_1.HexColorSetting(module)
             .setName("Accent Color")
             .setAccessID("accent_color")

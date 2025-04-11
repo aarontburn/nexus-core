@@ -1,10 +1,11 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, desktopCapturer, ipcMain, session } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
 import { ModuleCompiler } from "./compiler/ModuleCompiler";
 import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HTTPStatusCode, DataResponse } from "@nexus/nexus-module-builder";
 import { reorderModules } from "./utils/ModuleReorderer";
+
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
@@ -64,11 +65,13 @@ export class ModuleController implements IPCSource {
     private init(): void {
         const data: any[] = [];
         this.modulesByIPCSource.forEach((module: Process) => {
+            console.log(module.getURL())
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
                 htmlPath: module.getHTMLPath(),
-                iconPath: module.getIconPath()
+                iconPath: module.getIconPath(),
+                url: module.getURL()?.toString()
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
@@ -113,7 +116,6 @@ export class ModuleController implements IPCSource {
             }
         })
     }
-
     private handleMainEvents(): void | Promise<any> {
         this.ipc.handle(this.getIPCSource(), (_, eventType: string, data: any[]) => {
             switch (eventType) {
@@ -174,6 +176,8 @@ export class ModuleController implements IPCSource {
 
 
     private createBrowserWindow(): void {
+        session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
+
         this.window = new BrowserWindow({
             show: false,
             height: WINDOW_DIMENSION.height,
