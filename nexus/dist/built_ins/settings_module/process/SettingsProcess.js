@@ -207,47 +207,49 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _i = 0, _a = Array.from(this.moduleSettingsList.values());
                         _e.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 8];
+                        if (!(_i < _a.length)) return [3 /*break*/, 11];
                         moduleSettings = _a[_i];
                         settingsList = moduleSettings.allToArray();
                         _b = 0, settingsList_1 = settingsList;
                         _e.label = 2;
                     case 2:
-                        if (!(_b < settingsList_1.length)) return [3 /*break*/, 7];
+                        if (!(_b < settingsList_1.length)) return [3 /*break*/, 10];
                         setting = settingsList_1[_b];
                         settingBox = setting.getUIComponent();
                         _c = 0, _d = settingBox.getInputIdAndType();
                         _e.label = 3;
                     case 3:
-                        if (!(_c < _d.length)) return [3 /*break*/, 6];
+                        if (!(_c < _d.length)) return [3 /*break*/, 9];
                         group = _d[_c];
                         id = group.id;
-                        if (!(id === settingID)) return [3 /*break*/, 5];
+                        if (!(id === settingID)) return [3 /*break*/, 8];
                         oldValue = setting.getValue();
-                        if (newValue === undefined) {
-                            setting.resetToDefault();
-                        }
-                        else {
-                            setting.setValue(newValue);
-                        }
+                        if (!(newValue === undefined)) return [3 /*break*/, 4];
+                        setting.resetToDefault();
+                        return [3 /*break*/, 6];
+                    case 4: return [4 /*yield*/, setting.setValue(newValue)];
+                    case 5:
+                        _e.sent();
+                        _e.label = 6;
+                    case 6:
                         setting.getParentModule().refreshSettings(setting);
                         console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
                         return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(setting.getParentModule())];
-                    case 4:
+                    case 7:
                         _e.sent();
                         return [2 /*return*/];
-                    case 5:
+                    case 8:
                         _c++;
                         return [3 /*break*/, 3];
-                    case 6:
+                    case 9:
                         _b++;
                         return [3 /*break*/, 2];
-                    case 7:
+                    case 10:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 8: return [2 /*return*/];
+                    case 11: return [2 /*return*/];
                 }
             });
         });

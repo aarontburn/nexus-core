@@ -29,7 +29,6 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setAccessID('startup_module_id')
             .setValidator(async (input: any): Promise<string | null> => {
                 const installedModules: string[] = (await module.requestExternal("built_ins.Main", "get-module-IDs")).body;
-                console.log(installedModules, input.toString(), installedModules.includes(input.toString()))
                 if (installedModules.includes(input.toString())) {
                     return input;
                 }

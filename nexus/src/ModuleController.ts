@@ -235,7 +235,7 @@ export class ModuleController implements IPCSource {
 
 
         const loadedModules: Process[] = reorderModules(moduleOrder, await ModuleCompiler.load(this.ipcCallback, forceReload));
-        this.settingsModule
+        await this.settingsModule
             .getSettings()
             .findSetting('module_order')
             .setValue(loadedModules.map(module => module.getID()).join("|"));
@@ -270,15 +270,15 @@ export class ModuleController implements IPCSource {
         const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
 
         const moduleSettings: ModuleSettings = module.getSettings();
-        settingsMap.forEach((settingValue: any, settingName: string) => {
+
+        await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
             const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
             if (setting === undefined) {
                 console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
             } else {
-                setting.setValue(settingValue);
+                await setting.setValue(settingValue);
             }
-        });
-
+        }))
         await StorageHandler.writeModuleSettingsToStorage(module);
         return module;
     }

@@ -126,7 +126,7 @@ export declare abstract class Setting<T> {
     /**
      * Resets the setting to default.
      */
-    resetToDefault(): void;
+    resetToDefault(): Promise<void>;
     /**
      *  Sets the input validator for this setting.
      *

@@ -228,8 +228,8 @@ export abstract class Setting<T> {
     /**
      * Resets the setting to default.
      */
-    public resetToDefault(): void {
-        this.setValue(this.defaultValue);
+    public async resetToDefault(): Promise<void> {
+        await this.setValue(this.defaultValue);
     }
 
     /**

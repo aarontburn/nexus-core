@@ -153,7 +153,7 @@ export class SettingsProcess extends Process {
                         if (newValue === undefined) {
                             setting.resetToDefault();
                         } else {
-                            setting.setValue(newValue);
+                            await setting.setValue(newValue);
                         }
 
                         setting.getParentModule().refreshSettings(setting);

@@ -370,23 +370,37 @@ var ModuleController = /** @class */ (function () {
     ModuleController.prototype.verifyModuleSettings = function (module) {
         return __awaiter(this, void 0, void 0, function () {
             var settingsMap, moduleSettings;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler.readSettingsFromModuleStorage(module)];
                     case 1:
                         settingsMap = _a.sent();
                         moduleSettings = module.getSettings();
-                        settingsMap.forEach(function (settingValue, settingName) {
-                            var setting = moduleSettings.findSetting(settingName);
-                            if (setting === undefined) {
-                                console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
-                            }
-                            else {
-                                setting.setValue(settingValue);
-                            }
-                        });
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
+                        return [4 /*yield*/, Promise.allSettled(Array.from(settingsMap).map(function (_a) {
+                                var settingName = _a[0], settingValue = _a[1];
+                                return __awaiter(_this, void 0, void 0, function () {
+                                    var setting;
+                                    return __generator(this, function (_b) {
+                                        switch (_b.label) {
+                                            case 0:
+                                                setting = moduleSettings.findSetting(settingName);
+                                                if (!(setting === undefined)) return [3 /*break*/, 1];
+                                                console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
+                                                return [3 /*break*/, 3];
+                                            case 1: return [4 /*yield*/, setting.setValue(settingValue)];
+                                            case 2:
+                                                _b.sent();
+                                                _b.label = 3;
+                                            case 3: return [2 /*return*/];
+                                        }
+                                    });
+                                });
+                            }))];
                     case 2:
+                        _a.sent();
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
+                    case 3:
                         _a.sent();
                         return [2 /*return*/, module];
                 }
