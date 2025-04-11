@@ -11,7 +11,7 @@
                 break;
             }
             case "swap-modules": {
-                swapLayout(data[0])
+                swapVisibleModule(data[0])
                 break;
             }
         }
@@ -42,12 +42,12 @@
 
 
 
-    function swapLayout(swapToLayoutId: string): void {
+    function swapVisibleModule(moduleIDToSwapTo: string): void {
         const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
         for (let i = 0; i < modules.length; i++) {
             modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
         }
-        document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
+        document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
     }
 
 

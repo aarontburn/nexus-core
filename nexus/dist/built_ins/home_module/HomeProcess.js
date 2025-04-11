@@ -133,7 +133,6 @@ var HomeProcess = /** @class */ (function (_super) {
         }
     };
     HomeProcess.prototype.registerSettings = function () {
-        var _this = this;
         return [
             'Date/Time',
             new types_1.NumberSetting(this)
@@ -169,13 +168,10 @@ var HomeProcess = /** @class */ (function (_super) {
                 .setDescription("Adjusts the order of the time/date displays.")
                 .setDefault("12 34")
                 .setAccessID("display_order")
-                .setValidator(function (o) { return __awaiter(_this, void 0, void 0, function () {
-                var s;
-                return __generator(this, function (_a) {
-                    s = o.toString();
-                    return [2 /*return*/, s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null];
-                });
-            }); }),
+                .setValidator(function (o) {
+                var s = o.toString();
+                return s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null;
+            }),
         ];
     };
     HomeProcess.prototype.refreshSettings = function (modifiedSetting) {

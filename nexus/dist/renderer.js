@@ -14,7 +14,7 @@
                 break;
             }
             case "swap-modules": {
-                swapLayout(data[0]);
+                swapVisibleModule(data[0]);
                 break;
             }
         }
@@ -35,12 +35,12 @@
         });
         sendToProcess("swap-modules", moduleID);
     };
-    function swapLayout(swapToLayoutId) {
+    function swapVisibleModule(moduleIDToSwapTo) {
         var modules = document.getElementById("modules").getElementsByTagName("*");
         for (var i = 0; i < modules.length; i++) {
             modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
         }
-        document.getElementById(swapToLayoutId).setAttribute("style", IFRAME_DEFAULT_STYLE);
+        document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
     }
     function loadModules(data) {
         var moduleFrameHTML = document.getElementById("modules");

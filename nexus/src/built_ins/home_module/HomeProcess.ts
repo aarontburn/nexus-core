@@ -129,7 +129,7 @@ export class HomeProcess extends Process {
 				.setDescription("Adjusts the order of the time/date displays.")
 				.setDefault("12 34")
 				.setAccessID("display_order")
-				.setValidator(async (o) => {
+				.setValidator((o) => {
 					const s: string = o.toString();
 					return s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null;
 				}),

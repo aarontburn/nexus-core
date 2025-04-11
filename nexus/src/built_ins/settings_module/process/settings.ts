@@ -21,7 +21,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
         new BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
             .setDefault(false)
-            .setAccessID('startup_open_last_closed'),
+            .setAccessID('startup_should_open_last_closed'),
 
         new StringSetting(module)
             .setName("Startup Module ID")
@@ -80,5 +80,10 @@ export const getInternalSettings = (module: Process): Setting<unknown>[] => {
             .setName('Module Order')
             .setDefault('')
             .setAccessID('module_order'),
+
+        new StringSetting(module)
+            .setName('Last Opened Module')
+            .setDefault('built_ins.Home')
+            .setAccessID('startup_last_open_id'),
     ];
 }

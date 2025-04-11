@@ -52,6 +52,8 @@ export class SettingsProcess extends Process {
         this.getSettings().findSetting('window_height').setValue(bounds.height);
         this.getSettings().findSetting('window_x').setValue(bounds.x);
         this.getSettings().findSetting('window_y').setValue(bounds.y);
+        
+        this.getSettings().findSetting('startup_last_open_id').setValue(bounds.y);
 
         await StorageHandler.writeModuleSettingsToStorage(this);
     }
@@ -171,7 +173,6 @@ export class SettingsProcess extends Process {
             if (moduleToSwapTo !== name) {
                 continue;
             }
-
 
             const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
             const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
