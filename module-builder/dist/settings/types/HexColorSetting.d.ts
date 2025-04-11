@@ -8,6 +8,6 @@ import { Process } from "../../Process";
  */
 export declare class HexColorSetting extends Setting<string> {
     constructor(module: Process);
-    validateInput(input: any): string | null;
+    validateInput(input: any): Promise<string | null>;
     setUIComponent(): SettingBox<string>;
 }

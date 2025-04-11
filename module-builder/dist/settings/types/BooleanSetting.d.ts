@@ -9,6 +9,6 @@ import { SettingBox } from "../../SettingBox";
  */
 export declare class BooleanSetting extends Setting<boolean> {
     constructor(module: Process);
-    validateInput(input: any): boolean | null;
+    validateInput(input: any): Promise<boolean | null>;
     setUIComponent(): SettingBox<boolean>;
 }

@@ -16,7 +16,7 @@ export class StringSettingBox extends SettingBox<string> {
                     <p style="align-self: flex-end; padding-left: 24px;">${this.getSetting().getDescription()}</p>
                 </div>
 
-                <input type="text" style="width: 500px; box-sizing: border-box; padding-left: 15px; margin-top: 5px;" 
+                <input type="text" style="width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 5px;" 
                     value="${this.getSetting().getValue()}" id="${this.getSetting().getID()}">
             </div>
         `;

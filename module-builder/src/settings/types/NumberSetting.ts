@@ -140,7 +140,7 @@ export class NumberSetting extends Setting<number> {
     }
 
 
-    public validateInput(input: any): number | null {
+    public async validateInput(input: any): Promise<number | null> {
         let value: number;
 
         if (input === 'increase') {

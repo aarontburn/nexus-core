@@ -64,6 +64,6 @@ export declare class NumberSetting extends Setting<number> {
         min: number | undefined;
         max: number | undefined;
     } | undefined;
-    validateInput(input: any): number | null;
+    validateInput(input: any): Promise<number | null>;
     setUIComponent(): SettingBox<number>;
 }

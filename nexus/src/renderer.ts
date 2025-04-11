@@ -155,6 +155,7 @@
     dragList.addEventListener('dragstart', handleDragStart);
     dragList.addEventListener('dragover', handleDragOver);
     dragList.addEventListener('drop', handleDrop);
+    dragList.addEventListener("dragend", handleDragEnd)
 
 
     // Drag start event handler
@@ -192,7 +193,6 @@
 
     function handleDrop(event: DragEvent) {
         event.preventDefault();
-        console.log(event)
 
         if (lastLine) {
             try {
@@ -200,8 +200,19 @@
             } catch (_) { }
         }
 
-        removeOldLineAndCreateLine();
         draggedItem = null;
+    }
+
+    function handleDragEnd(event: DragEvent) {
+        event.preventDefault();
+        removeOldLineAndCreateLine();
+
+        const order = Array.from(importedModulesList.childNodes)
+            .filter(node => node.nodeName === "BUTTON")
+            .map(node => (node as HTMLElement).id.replace("-header-button", ''));
+
+        sendToProcess("module-order", order);
+
     }
 
     function removeOldLineAndCreateLine() {

@@ -1,9 +1,10 @@
 import { BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
-import { SettingsProcess } from "./built_ins/settings_module/SettingsProcess";
+import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
 import { ModuleCompiler } from "./compiler/ModuleCompiler";
 import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HTTPStatusCode, DataResponse } from "@nexus/nexus-module-builder";
+import { reorderModules } from "./utils/ModuleReorderer";
 
 const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
@@ -105,6 +106,10 @@ export class ModuleController implements IPCSource {
                 }
                 case "swap-modules": {
                     this.swapVisibleModule(data[0]);
+                    break;
+                }
+                case "module-order": {
+                    this.settingsModule.handleEvent("module-order", data);
                     break;
                 }
 
@@ -219,14 +224,25 @@ export class ModuleController implements IPCSource {
             .findSetting("force_reload")
             .getValue() as boolean;
 
+        const moduleOrder: string = this.settingsModule
+            .getSettings()
+            .findSetting("module_order")
+            .getValue() as string;
+
 
         console.log("Force Reload: " + forceReload);
 
-        await ModuleCompiler
-            .load(this.ipcCallback, forceReload)
-            .then(async (modules: Process[]) => {
-                await Promise.all(modules.map(m => this.addModule(m)))
-            });
+
+        const loadedModules: Process[] = reorderModules(moduleOrder, await ModuleCompiler.load(this.ipcCallback, forceReload));
+        this.settingsModule
+            .getSettings()
+            .findSetting('module_order')
+            .setValue(loadedModules.map(module => module.getID()).join("|"));
+        await StorageHandler.writeModuleSettingsToStorage(this.settingsModule);
+
+        for (const module of loadedModules) {
+            await this.addModule(module);
+        }
     }
 
     private async addModule(module: Process): Promise<void> {
@@ -262,7 +278,7 @@ export class ModuleController implements IPCSource {
             }
         });
 
-        StorageHandler.writeModuleSettingsToStorage(module);
+        await StorageHandler.writeModuleSettingsToStorage(module);
         return module;
     }
 

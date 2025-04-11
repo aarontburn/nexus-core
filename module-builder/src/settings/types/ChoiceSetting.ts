@@ -84,7 +84,7 @@ export class ChoiceSetting extends Setting<string> {
         return new Set(this.options.keys());
     }
 
-    public validateInput(input: any): string | null {
+    public async validateInput(input: any): Promise<string | null> {
         const s: string = JSON.stringify(input).replace(/"/g, '');
 
         if (!this.options.has(s)) {

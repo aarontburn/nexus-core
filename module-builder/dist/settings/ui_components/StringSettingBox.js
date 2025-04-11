@@ -26,7 +26,7 @@ var StringSettingBox = /** @class */ (function (_super) {
         return "\n            <div class=\"left-component\" style=\"display: flex;\"></div>\n        ";
     };
     StringSettingBox.prototype.createRight = function () {
-        return "\n            <div class=\"right-component\">\n                <div style=\"display: flex; flex-wrap: wrap\">\n                    <h1><span id='".concat(this.resetID, "'>\u21A9</span> ").concat(this.getSetting().getName(), "</h1>\n                    <p style=\"align-self: flex-end; padding-left: 24px;\">").concat(this.getSetting().getDescription(), "</p>\n                </div>\n\n                <input type=\"text\" style=\"width: 500px; box-sizing: border-box; padding-left: 15px; margin-top: 5px;\" \n                    value=\"").concat(this.getSetting().getValue(), "\" id=\"").concat(this.getSetting().getID(), "\">\n            </div>\n        ");
+        return "\n            <div class=\"right-component\">\n                <div style=\"display: flex; flex-wrap: wrap\">\n                    <h1><span id='".concat(this.resetID, "'>\u21A9</span> ").concat(this.getSetting().getName(), "</h1>\n                    <p style=\"align-self: flex-end; padding-left: 24px;\">").concat(this.getSetting().getDescription(), "</p>\n                </div>\n\n                <input type=\"text\" style=\"width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 5px;\" \n                    value=\"").concat(this.getSetting().getValue(), "\" id=\"").concat(this.getSetting().getID(), "\">\n            </div>\n        ");
     };
     StringSettingBox.prototype.getInputIdAndType = function () {
         return [{ id: this.getSetting().getID(), inputType: 'text' }];

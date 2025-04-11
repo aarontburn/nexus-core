@@ -18,7 +18,7 @@ export class BooleanSetting extends Setting<boolean> {
     }
 
 
-    public validateInput(input: any): boolean | null {
+    public async validateInput(input: any): Promise<boolean | null> {
         if (input === null) {
             return null;
         }

@@ -62,10 +62,11 @@ exports.__esModule = true;
 exports.ModuleController = void 0;
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
-var SettingsProcess_1 = require("./built_ins/settings_module/SettingsProcess");
+var SettingsProcess_1 = require("./built_ins/settings_module/process/SettingsProcess");
 var HomeProcess_1 = require("./built_ins/home_module/HomeProcess");
 var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var ModuleReorderer_1 = require("./utils/ModuleReorderer");
 var WINDOW_DIMENSION = { width: 1920, height: 1080 };
 var ModuleController = /** @class */ (function () {
     function ModuleController() {
@@ -149,6 +150,10 @@ var ModuleController = /** @class */ (function () {
                 }
                 case "swap-modules": {
                     _this.swapVisibleModule(data[0]);
+                    break;
+                }
+                case "module-order": {
+                    _this.settingsModule.handleEvent("module-order", data);
                     break;
                 }
             }
@@ -283,10 +288,9 @@ var ModuleController = /** @class */ (function () {
     };
     ModuleController.prototype.registerModules = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var home, _a, _b, forceReload;
-            var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var home, _a, _b, forceReload, moduleOrder, loadedModules, _c, _d, _i, loadedModules_1, module_1;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         console.log("Registering modules...");
                         home = new HomeProcess_1.HomeProcess();
@@ -296,28 +300,41 @@ var ModuleController = /** @class */ (function () {
                         _b = (_a = this.settingsModule).addModuleSetting;
                         return [4 /*yield*/, this.verifyModuleSettings(this.settingsModule)];
                     case 1:
-                        _b.apply(_a, [_c.sent()]);
+                        _b.apply(_a, [_e.sent()]);
                         forceReload = this.settingsModule
                             .getSettings()
                             .findSetting("force_reload")
                             .getValue();
+                        moduleOrder = this.settingsModule
+                            .getSettings()
+                            .findSetting("module_order")
+                            .getValue();
                         console.log("Force Reload: " + forceReload);
-                        return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler
-                                .load(this.ipcCallback, forceReload)
-                                .then(function (modules) { return __awaiter(_this, void 0, void 0, function () {
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, Promise.all(modules.map(function (m) { return _this.addModule(m); }))];
-                                        case 1:
-                                            _a.sent();
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); })];
+                        _c = ModuleReorderer_1.reorderModules;
+                        _d = [moduleOrder];
+                        return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(this.ipcCallback, forceReload)];
                     case 2:
-                        _c.sent();
-                        return [2 /*return*/];
+                        loadedModules = _c.apply(void 0, _d.concat([_e.sent()]));
+                        this.settingsModule
+                            .getSettings()
+                            .findSetting('module_order')
+                            .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"));
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this.settingsModule)];
+                    case 3:
+                        _e.sent();
+                        _i = 0, loadedModules_1 = loadedModules;
+                        _e.label = 4;
+                    case 4:
+                        if (!(_i < loadedModules_1.length)) return [3 /*break*/, 7];
+                        module_1 = loadedModules_1[_i];
+                        return [4 /*yield*/, this.addModule(module_1)];
+                    case 5:
+                        _e.sent();
+                        _e.label = 6;
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 4];
+                    case 7: return [2 /*return*/];
                 }
             });
         });
@@ -368,7 +385,9 @@ var ModuleController = /** @class */ (function () {
                                 setting.setValue(settingValue);
                             }
                         });
-                        nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module);
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, module];
                 }
             });

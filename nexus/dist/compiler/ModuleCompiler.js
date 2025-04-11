@@ -147,17 +147,18 @@ var ModuleCompiler = /** @class */ (function () {
                     case 3:
                         _a.sent();
                         return [4 /*yield*/, Promise.all(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
-                                var unarchiveDirectory, zip, entryPromises, _a, zip_1, zip_1_1, entry, entryPath, readStream, writeStream, e_1_1, error_1;
+                                var unarchiveDirectory, zip, entryPromises, _loop_1, _a, zip_1, zip_1_1, e_1_1, error_1;
+                                var _this = this;
                                 var _b, e_1, _c, _d;
                                 return __generator(this, function (_e) {
                                     switch (_e.label) {
                                         case 0:
                                             unarchiveDirectory = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
-                                            if (!(folder.name.split(".").at(-1) === 'zip')) return [3 /*break*/, 24];
+                                            if (!(folder.name.split(".").at(-1) === 'zip')) return [3 /*break*/, 19];
                                             _e.label = 1;
                                         case 1:
-                                            _e.trys.push([1, 23, , 24]);
-                                            return [4 /*yield*/, yauzl.open(folder.path + folder.name)];
+                                            _e.trys.push([1, 18, , 19]);
+                                            return [4 /*yield*/, yauzl.open(path.join(folder.path, folder.name))];
                                         case 2:
                                             zip = _e.sent();
                                             return [4 /*yield*/, fs.promises.mkdir(unarchiveDirectory, { recursive: true })];
@@ -166,62 +167,73 @@ var ModuleCompiler = /** @class */ (function () {
                                             entryPromises = [];
                                             _e.label = 4;
                                         case 4:
-                                            _e.trys.push([4, 14, 15, 20]);
+                                            _e.trys.push([4, 9, 10, 15]);
+                                            _loop_1 = function () {
+                                                _d = zip_1_1.value;
+                                                _a = false;
+                                                try {
+                                                    var entry = _d;
+                                                    var entryPath = "".concat(unarchiveDirectory, "/").concat(entry.filename);
+                                                    if (entry.filename.endsWith('/')) {
+                                                        entryPromises.push(fs.promises.mkdir(entryPath, { recursive: true }));
+                                                    }
+                                                    else {
+                                                        var dirPath = path.dirname(entryPath);
+                                                        entryPromises.push(fs.promises.mkdir(dirPath, { recursive: true }).then(function () { return __awaiter(_this, void 0, void 0, function () {
+                                                            var readStream, writeStream;
+                                                            return __generator(this, function (_a) {
+                                                                switch (_a.label) {
+                                                                    case 0: return [4 /*yield*/, entry.openReadStream()];
+                                                                    case 1:
+                                                                        readStream = _a.sent();
+                                                                        writeStream = fs.createWriteStream(entryPath);
+                                                                        return [2 /*return*/, (0, promises_1.pipeline)(readStream, writeStream)];
+                                                                }
+                                                            });
+                                                        }); }));
+                                                    }
+                                                }
+                                                finally {
+                                                    _a = true;
+                                                }
+                                            };
                                             _a = true, zip_1 = __asyncValues(zip);
                                             _e.label = 5;
                                         case 5: return [4 /*yield*/, zip_1.next()];
                                         case 6:
-                                            if (!(zip_1_1 = _e.sent(), _b = zip_1_1.done, !_b)) return [3 /*break*/, 13];
-                                            _d = zip_1_1.value;
-                                            _a = false;
+                                            if (!(zip_1_1 = _e.sent(), _b = zip_1_1.done, !_b)) return [3 /*break*/, 8];
+                                            _loop_1();
                                             _e.label = 7;
-                                        case 7:
-                                            _e.trys.push([7, , 11, 12]);
-                                            entry = _d;
-                                            entryPath = "".concat(unarchiveDirectory, "/").concat(entry.filename);
-                                            if (!entry.filename.endsWith('/')) return [3 /*break*/, 8];
-                                            entryPromises.push(fs.promises.mkdir(entryPath, { recursive: true }));
-                                            return [3 /*break*/, 10];
-                                        case 8: return [4 /*yield*/, entry.openReadStream()];
+                                        case 7: return [3 /*break*/, 5];
+                                        case 8: return [3 /*break*/, 15];
                                         case 9:
-                                            readStream = _e.sent();
-                                            writeStream = fs.createWriteStream(entryPath);
-                                            entryPromises.push((0, promises_1.pipeline)(readStream, writeStream));
-                                            _e.label = 10;
-                                        case 10: return [3 /*break*/, 12];
-                                        case 11:
-                                            _a = true;
-                                            return [7 /*endfinally*/];
-                                        case 12: return [3 /*break*/, 5];
-                                        case 13: return [3 /*break*/, 20];
-                                        case 14:
                                             e_1_1 = _e.sent();
                                             e_1 = { error: e_1_1 };
-                                            return [3 /*break*/, 20];
-                                        case 15:
-                                            _e.trys.push([15, , 18, 19]);
-                                            if (!(!_a && !_b && (_c = zip_1["return"]))) return [3 /*break*/, 17];
+                                            return [3 /*break*/, 15];
+                                        case 10:
+                                            _e.trys.push([10, , 13, 14]);
+                                            if (!(!_a && !_b && (_c = zip_1["return"]))) return [3 /*break*/, 12];
                                             return [4 /*yield*/, _c.call(zip_1)];
-                                        case 16:
+                                        case 11:
                                             _e.sent();
-                                            _e.label = 17;
-                                        case 17: return [3 /*break*/, 19];
-                                        case 18:
+                                            _e.label = 12;
+                                        case 12: return [3 /*break*/, 14];
+                                        case 13:
                                             if (e_1) throw e_1.error;
                                             return [7 /*endfinally*/];
-                                        case 19: return [7 /*endfinally*/];
-                                        case 20: return [4 /*yield*/, Promise.all(entryPromises)];
-                                        case 21:
+                                        case 14: return [7 /*endfinally*/];
+                                        case 15: return [4 /*yield*/, Promise.allSettled(entryPromises)];
+                                        case 16:
                                             _e.sent();
                                             return [4 /*yield*/, zip.close()];
-                                        case 22:
+                                        case 17:
                                             _e.sent();
-                                            return [3 /*break*/, 24];
-                                        case 23:
+                                            return [3 /*break*/, 19];
+                                        case 18:
                                             error_1 = _e.sent();
                                             console.error("Error processing ".concat(folder.name, ":"), error_1);
-                                            return [3 /*break*/, 24];
-                                        case 24: return [2 /*return*/];
+                                            return [3 /*break*/, 19];
+                                        case 19: return [2 /*return*/];
                                     }
                                 });
                             }); }))];
@@ -264,26 +276,26 @@ var ModuleCompiler = /** @class */ (function () {
                         return [4 /*yield*/, fs.promises.readdir(this.TEMP_ARCHIVE_PATH, CompilerUtils_1.IO_OPTIONS)];
                     case 4:
                         files = _b.sent();
-                        return [4 /*yield*/, Promise.all(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
-                                var builtDirectory, moduleFolderPath, shouldCompile, _a, err_4;
+                        return [4 /*yield*/, Promise.allSettled(files.map(function (tempFolders) { return __awaiter(_this, void 0, void 0, function () {
+                                var builtDirectory, modulePathInTempDir, shouldRecompile, _a, err_4;
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
-                                            builtDirectory = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + folder.name;
-                                            if (!folder.isDirectory()) {
+                                            builtDirectory = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + tempFolders.name;
+                                            if (!tempFolders.isDirectory()) {
                                                 return [2 /*return*/];
                                             }
-                                            moduleFolderPath = "".concat(folder.path).concat(folder.name);
-                                            _a = process.argv.includes("--last_exported_id:".concat(folder.name));
+                                            modulePathInTempDir = "".concat(tempFolders.path).concat(tempFolders.name);
+                                            _a = process.argv.includes("--last_exported_id:".concat(tempFolders.name));
                                             if (_a) return [3 /*break*/, 2];
-                                            return [4 /*yield*/, (0, CompilerUtils_1.shouldRecompileModule)(moduleFolderPath, builtDirectory)];
+                                            return [4 /*yield*/, (0, CompilerUtils_1.shouldRecompileModule)(modulePathInTempDir, builtDirectory)];
                                         case 1:
                                             _a = (_b.sent());
                                             _b.label = 2;
                                         case 2:
-                                            shouldCompile = _a;
-                                            if (!forceReload && !shouldCompile) {
-                                                console.log("Skipping compiling of " + folder.name + "; no changes detected.");
+                                            shouldRecompile = _a;
+                                            if (!forceReload && !shouldRecompile) {
+                                                console.log("Skipping compiling of " + tempFolders.name + "; no changes detected.");
                                                 return [2 /*return*/];
                                             }
                                             console.log("Removing " + builtDirectory);
@@ -293,7 +305,7 @@ var ModuleCompiler = /** @class */ (function () {
                                             _b.label = 4;
                                         case 4:
                                             _b.trys.push([4, 6, , 7]);
-                                            return [4 /*yield*/, (0, CompilerUtils_1.compileAndCopyDirectory)(moduleFolderPath, builtDirectory)];
+                                            return [4 /*yield*/, (0, CompilerUtils_1.compileAndCopyDirectory)(modulePathInTempDir, builtDirectory)];
                                         case 5:
                                             _b.sent();
                                             return [3 /*break*/, 7];
@@ -311,7 +323,7 @@ var ModuleCompiler = /** @class */ (function () {
                                         case 10:
                                             _b.sent();
                                             _b.label = 11;
-                                        case 11: return [4 /*yield*/, Promise.all([
+                                        case 11: return [4 /*yield*/, Promise.allSettled([
                                                 fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
                                                 fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
                                             ])];
@@ -353,7 +365,7 @@ var ModuleCompiler = /** @class */ (function () {
                         return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH, CompilerUtils_1.IO_OPTIONS)];
                     case 2:
                         folders = _a.sent();
-                        return [4 /*yield*/, Promise.all(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, Promise.allSettled(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
                                 var moduleFolderPath, buildConfig, moduleInfo, module, m;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {

@@ -53,6 +53,6 @@ export declare class ChoiceSetting extends Setting<string> {
      *  @returns a copy of all options.
      */
     getOptionNames(): Set<string>;
-    validateInput(input: any): string | null;
+    validateInput(input: any): Promise<string | null>;
     setUIComponent(): SettingBox<string>;
 }

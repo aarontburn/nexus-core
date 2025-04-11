@@ -85,7 +85,7 @@
     border-radius: 5px;
     background-color: var(--default-background-color);
 
-    font-size: 26px;
+    font-size: 22px;
     color: var(--off-white);
     height: 40px;
     accent-color: var(--accent-color);
@@ -112,15 +112,17 @@ input[type='range'] {
 .setting h1 {
     margin: -5px 0px;
     padding: 0;
-    font-size: 26px;
-    font-weight: normal;
+    font-size: 24px;
+    font-weight: 200;
 }
 
 .setting p {
     margin: 0;
     padding: 0;
     font-size: 16px;
-    margin-top: 3px
+    margin-top: 3px;
+    font-weight: 200;
+
 
 }
 
@@ -144,6 +146,8 @@ input[type='range'] {
     margin: 0;
     padding: 0;
     font-size: 19px;
+    font-weight: 200;
+    margin-top: 5px;
 }
 
 .module-info>p>span {

@@ -2,15 +2,14 @@ import * as path from "path";
 import * as fs from 'fs';
 import { BrowserWindow, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
-import { HexColorSetting, NumberSetting, BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
+import { getInternalSettings, getSettings } from "./settings";
 
 const MODULE_NAME: string = "Settings";
 const MODULE_ID: string = 'built_ins.Settings';
 
-const HTML_PATH: string = path.join(__dirname, "./static/SettingsHTML.html");
-const ICON_PATH: string = path.join(__dirname, "./static/setting.svg");
-
+const HTML_PATH: string = path.join(__dirname, "../static/SettingsHTML.html");
+const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");
 
 
 export class SettingsProcess extends Process {
@@ -36,62 +35,11 @@ export class SettingsProcess extends Process {
     }
 
     public registerSettings(): (Setting<unknown> | string)[] {
-        return [
-            "Display",
-            new HexColorSetting(this)
-                .setName("Accent Color")
-                .setAccessID("accent_color")
-                .setDescription("Changes the color of various elements.")
-                .setDefault("#2290B5"),
-
-            new NumberSetting(this)
-                .setRange(25, 300)
-                .setStep(10)
-                .setName("Zoom Level (%)")
-                .setDefault(100)
-                .setAccessID('zoom'),
-
-            "Developer",
-            new BooleanSetting(this)
-                .setName('Developer Mode')
-                .setAccessID('dev_mode')
-                .setDefault(false),
-
-            new BooleanSetting(this)
-                .setName("Force Reload Modules at Launch")
-                .setDescription("Always recompile modules at launch. Will result in a slower boot.")
-                .setAccessID("force_reload")
-                .setDefault(false),
-        ];
+        return getSettings(this);
     }
 
     public registerInternalSettings(): Setting<unknown>[] {
-        return [
-            new BooleanSetting(this)
-                .setName("Window Maximized")
-                .setDefault(false)
-                .setAccessID('window_maximized'),
-
-            new NumberSetting(this)
-                .setName('Window Width')
-                .setDefault(1920)
-                .setAccessID("window_width"),
-
-            new NumberSetting(this)
-                .setName('Window Height')
-                .setDefault(1080)
-                .setAccessID('window_height'),
-
-            new NumberSetting(this)
-                .setName('Window X')
-                .setDefault(50)
-                .setAccessID('window_x'),
-
-            new NumberSetting(this)
-                .setName('Window Y')
-                .setDefault(50)
-                .setAccessID('window_y'),
-        ];
+        return getInternalSettings(this);
     }
 
     public async onExit(): Promise<void> {
@@ -152,10 +100,9 @@ export class SettingsProcess extends Process {
 
     public initialize(): void {
         super.initialize();
-
         this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
-        const settings: any[] = [];
+        const settings: { module: string, moduleInfo: any }[] = [];
 
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
             const moduleName: string = moduleSettings.getDisplayName();
@@ -172,15 +119,20 @@ export class SettingsProcess extends Process {
             moduleSettings.getProcess().refreshAllSettings();
         }
 
-        // Swap settings and home module so it appears at the top
-        const temp = settings[0];
-        settings[0] = settings[1];
-        settings[1] = temp;
+        // Swap settings and home module so it appears at the toap
+
+        if (settings[0].module === "Home") {
+            const temp = settings[0];
+            settings[0] = settings[1];
+            settings[1] = temp;
+        }
+
+
         this.sendToRenderer("populate-settings-list", settings);
     }
 
     // TODO: Restructure stuff 
-    private onSettingChange(settingID: string, newValue?: any): void {
+    private async onSettingChange(settingID: string, newValue?: any): Promise<void> {
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
             const settingsList: Setting<unknown>[] = moduleSettings.allToArray();
 
@@ -201,13 +153,55 @@ export class SettingsProcess extends Process {
                         console.info(`SETTING CHANGED: '${setting.getName()}' | ${oldValue} => ${setting.getValue()} ${newValue === undefined ? '[RESET TO DEFAULT]' : ''}`);
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
-                        StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
                         this.sendToRenderer("setting-modified", update);
+                        await StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
                         return;
                     }
                 }
             }
         }
+
+    }
+
+    private swapSettingsTab(moduleToSwapTo: string) {
+
+        for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
+            const name: string = moduleSettings.getDisplayName();
+
+            if (moduleToSwapTo !== name) {
+                continue;
+            }
+
+
+            const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
+            const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
+                module: name,
+                moduleID: moduleSettings.getProcess().getIPCSource(),
+                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
+                settings: []
+            };
+
+
+            for (const s of settingsList) {
+                if (typeof s === 'string') {
+                    list.settings.push(s);
+                    continue;
+                }
+
+
+                const setting: Setting<unknown> = s as Setting<unknown>;
+                const settingBox: SettingBox<unknown> = setting.getUIComponent();
+                const settingInfo: any = {
+                    settingId: setting.getID(),
+                    inputTypeAndId: settingBox.getInputIdAndType(),
+                    ui: settingBox.getUI(),
+                    style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()],
+                };
+                list.settings.push(settingInfo);
+            }
+            return list;
+        }
+
 
     }
 
@@ -258,46 +252,7 @@ export class SettingsProcess extends Process {
             }
 
             case "swap-settings-tab": {
-                const swapToModule: string = data[0];
-
-                for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-                    const name: string = moduleSettings.getDisplayName();
-
-                    if (swapToModule !== name) {
-                        continue;
-                    }
-
-
-                    const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
-                    const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
-                        module: name,
-                        moduleID: moduleSettings.getProcess().getIPCSource(),
-                        moduleInfo: moduleSettings.getProcess().getModuleInfo(),
-                        settings: []
-                    };
-
-
-                    for (const s of settingsList) {
-                        if (typeof s === 'string') {
-                            list.settings.push(s);
-                            continue;
-                        }
-
-
-                        const setting: Setting<unknown> = s as Setting<unknown>;
-                        const settingBox: SettingBox<unknown> = setting.getUIComponent();
-                        const settingInfo: any = {
-                            settingId: setting.getID(),
-                            inputTypeAndId: settingBox.getInputIdAndType(),
-                            ui: settingBox.getUI(),
-                            style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()],
-                        };
-                        list.settings.push(settingInfo);
-                    }
-                    return list;
-                }
-
-                break;
+                return this.swapSettingsTab(data[0]);
             }
 
             case "setting-modified": {
@@ -318,6 +273,12 @@ export class SettingsProcess extends Process {
                 const link: string = data[0];
                 shell.openExternal(link);
 
+                break;
+            }
+            case "module-order": {
+                const moduleOrder: string[] = data[0];
+                this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
+                await StorageHandler.writeModuleSettingsToStorage(this);
                 break;
             }
         }

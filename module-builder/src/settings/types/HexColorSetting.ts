@@ -15,7 +15,7 @@ export class HexColorSetting extends Setting<string> {
     }
 
 
-    public validateInput(input: any): string | null {
+    public async validateInput(input: any): Promise<string | null> {
         if (input === null) {
             return null;
         }

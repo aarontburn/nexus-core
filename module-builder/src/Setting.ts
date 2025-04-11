@@ -10,7 +10,7 @@ export abstract class Setting<T> {
     private description: string;
     private accessID: string;
 
-    private inputValidator: (input: any) => T;
+    private inputValidator: (input: any) => Promise<T | null>;
 
     private defaultValue: T;
     private currentValue: T;
@@ -181,10 +181,10 @@ export abstract class Setting<T> {
      * @throws Error if an attempt was made to set the value before all
      *                               appropriate fields were set.
      */
-    public setValue(value: any): void {
+    public async setValue(value: any): Promise<void> {
         this.checkRequiredFields();
 
-        const parsedValue: T = this.parseInput(value);
+        const parsedValue: T = await this.parseInput(value);
         this.currentValue = parsedValue != null ? parsedValue : this.currentValue;
     }
 
@@ -201,9 +201,9 @@ export abstract class Setting<T> {
      *  @param input The input to parse.
      *  @return A {@link T} type valid input, or null if the input couldn't be parsed.
      */
-    private parseInput(input: any): T {
+    private async parseInput(input: any): Promise<T> {
         if (this.inputValidator !== undefined) {
-            return this.inputValidator(input);
+            return await this.inputValidator(input);
         }
 
         return this.validateInput(input);
@@ -222,7 +222,7 @@ export abstract class Setting<T> {
      *  @param input The input to parse.
      *  @return A {@link T} valid input, or null if the input could not be parsed.
      */
-    public abstract validateInput(input: any): T | null;
+    public abstract validateInput(input: any): Promise<T | null>;
 
 
     /**
@@ -242,7 +242,7 @@ export abstract class Setting<T> {
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */
-    public setValidator(inputValidator: (input: any) => T | null): Setting<T> {
+    public setValidator(inputValidator: (input: any) => Promise<T | null>): Setting<T> {
         if (this.inputValidator !== undefined) {
             throw new Error("Cannot redefine input validator for " + this.name);
         }

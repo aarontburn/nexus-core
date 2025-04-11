@@ -122,6 +122,7 @@
     dragList.addEventListener('dragstart', handleDragStart);
     dragList.addEventListener('dragover', handleDragOver);
     dragList.addEventListener('drop', handleDrop);
+    dragList.addEventListener("dragend", handleDragEnd);
     // Drag start event handler
     function handleDragStart(event) {
         draggedItem = event.target;
@@ -151,15 +152,21 @@
     }
     function handleDrop(event) {
         event.preventDefault();
-        console.log(event);
         if (lastLine) {
             try {
                 importedModulesList.insertBefore(draggedItem, lastLine);
             }
             catch (_) { }
         }
-        removeOldLineAndCreateLine();
         draggedItem = null;
+    }
+    function handleDragEnd(event) {
+        event.preventDefault();
+        removeOldLineAndCreateLine();
+        var order = Array.from(importedModulesList.childNodes)
+            .filter(function (node) { return node.nodeName === "BUTTON"; })
+            .map(function (node) { return node.id.replace("-header-button", ''); });
+        sendToProcess("module-order", order);
     }
     function removeOldLineAndCreateLine() {
         if (lastLine !== null) {

@@ -8,6 +8,6 @@ import { SettingBox } from "../../SettingBox";
  */
 export declare class StringSetting extends Setting<string> {
     constructor(module: Process);
-    validateInput(input: any): string | null;
+    validateInput(input: any): Promise<string | null>;
     setUIComponent(): SettingBox<string>;
 }

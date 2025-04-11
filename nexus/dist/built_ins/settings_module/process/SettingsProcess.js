@@ -79,12 +79,12 @@ var path = __importStar(require("path"));
 var fs = __importStar(require("fs"));
 var electron_1 = require("electron");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
-var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var ModuleImporter_1 = require("./ModuleImporter");
+var settings_1 = require("./settings");
 var MODULE_NAME = "Settings";
 var MODULE_ID = 'built_ins.Settings';
-var HTML_PATH = path.join(__dirname, "./static/SettingsHTML.html");
-var ICON_PATH = path.join(__dirname, "./static/setting.svg");
+var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
+var ICON_PATH = path.join(__dirname, "../static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
     function SettingsProcess(window) {
@@ -102,54 +102,10 @@ var SettingsProcess = /** @class */ (function (_super) {
         return _this;
     }
     SettingsProcess.prototype.registerSettings = function () {
-        return [
-            "Display",
-            new types_1.HexColorSetting(this)
-                .setName("Accent Color")
-                .setAccessID("accent_color")
-                .setDescription("Changes the color of various elements.")
-                .setDefault("#2290B5"),
-            new types_1.NumberSetting(this)
-                .setRange(25, 300)
-                .setStep(10)
-                .setName("Zoom Level (%)")
-                .setDefault(100)
-                .setAccessID('zoom'),
-            "Developer",
-            new types_1.BooleanSetting(this)
-                .setName('Developer Mode')
-                .setAccessID('dev_mode')
-                .setDefault(false),
-            new types_1.BooleanSetting(this)
-                .setName("Force Reload Modules at Launch")
-                .setDescription("Always recompile modules at launch. Will result in a slower boot.")
-                .setAccessID("force_reload")
-                .setDefault(false),
-        ];
+        return (0, settings_1.getSettings)(this);
     };
     SettingsProcess.prototype.registerInternalSettings = function () {
-        return [
-            new types_1.BooleanSetting(this)
-                .setName("Window Maximized")
-                .setDefault(false)
-                .setAccessID('window_maximized'),
-            new types_1.NumberSetting(this)
-                .setName('Window Width')
-                .setDefault(1920)
-                .setAccessID("window_width"),
-            new types_1.NumberSetting(this)
-                .setName('Window Height')
-                .setDefault(1080)
-                .setAccessID('window_height'),
-            new types_1.NumberSetting(this)
-                .setName('Window X')
-                .setDefault(50)
-                .setAccessID('window_x'),
-            new types_1.NumberSetting(this)
-                .setName('Window Y')
-                .setDefault(50)
-                .setAccessID('window_y'),
-        ];
+        return (0, settings_1.getInternalSettings)(this);
     };
     SettingsProcess.prototype.onExit = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -228,25 +184,41 @@ var SettingsProcess = /** @class */ (function (_super) {
             }
             moduleSettings.getProcess().refreshAllSettings();
         }
-        // Swap settings and home module so it appears at the top
-        var temp = settings[0];
-        settings[0] = settings[1];
-        settings[1] = temp;
+        // Swap settings and home module so it appears at the toap
+        if (settings[0].module === "Home") {
+            var temp = settings[0];
+            settings[0] = settings[1];
+            settings[1] = temp;
+        }
         this.sendToRenderer("populate-settings-list", settings);
     };
     // TODO: Restructure stuff 
     SettingsProcess.prototype.onSettingChange = function (settingID, newValue) {
-        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
-            var moduleSettings = _a[_i];
-            var settingsList = moduleSettings.allToArray();
-            for (var _b = 0, settingsList_1 = settingsList; _b < settingsList_1.length; _b++) {
-                var setting = settingsList_1[_b];
-                var settingBox = setting.getUIComponent();
-                for (var _c = 0, _d = settingBox.getInputIdAndType(); _c < _d.length; _c++) {
-                    var group = _d[_c];
-                    var id = group.id;
-                    if (id === settingID) { // found the modified setting
-                        var oldValue = setting.getValue();
+        return __awaiter(this, void 0, void 0, function () {
+            var _i, _a, moduleSettings, settingsList, _b, settingsList_1, setting, settingBox, _c, _d, group, id, oldValue, update;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0:
+                        _i = 0, _a = Array.from(this.moduleSettingsList.values());
+                        _e.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 8];
+                        moduleSettings = _a[_i];
+                        settingsList = moduleSettings.allToArray();
+                        _b = 0, settingsList_1 = settingsList;
+                        _e.label = 2;
+                    case 2:
+                        if (!(_b < settingsList_1.length)) return [3 /*break*/, 7];
+                        setting = settingsList_1[_b];
+                        settingBox = setting.getUIComponent();
+                        _c = 0, _d = settingBox.getInputIdAndType();
+                        _e.label = 3;
+                    case 3:
+                        if (!(_c < _d.length)) return [3 /*break*/, 6];
+                        group = _d[_c];
+                        id = group.id;
+                        if (!(id === settingID)) return [3 /*break*/, 5];
+                        oldValue = setting.getValue();
                         if (newValue === undefined) {
                             setting.resetToDefault();
                         }
@@ -255,20 +227,64 @@ var SettingsProcess = /** @class */ (function (_super) {
                         }
                         setting.getParentModule().refreshSettings(setting);
                         console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
-                        var update = settingBox.onChange(setting.getValue());
-                        nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
+                        update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
-                        return;
-                    }
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(setting.getParentModule())];
+                    case 4:
+                        _e.sent();
+                        return [2 /*return*/];
+                    case 5:
+                        _c++;
+                        return [3 /*break*/, 3];
+                    case 6:
+                        _b++;
+                        return [3 /*break*/, 2];
+                    case 7:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 8: return [2 /*return*/];
                 }
+            });
+        });
+    };
+    SettingsProcess.prototype.swapSettingsTab = function (moduleToSwapTo) {
+        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
+            var moduleSettings = _a[_i];
+            var name_1 = moduleSettings.getDisplayName();
+            if (moduleToSwapTo !== name_1) {
+                continue;
             }
+            var settingsList = moduleSettings.getSettingsAndHeaders();
+            var list = {
+                module: name_1,
+                moduleID: moduleSettings.getProcess().getIPCSource(),
+                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
+                settings: []
+            };
+            for (var _b = 0, settingsList_2 = settingsList; _b < settingsList_2.length; _b++) {
+                var s = settingsList_2[_b];
+                if (typeof s === 'string') {
+                    list.settings.push(s);
+                    continue;
+                }
+                var setting = s;
+                var settingBox = setting.getUIComponent();
+                var settingInfo = {
+                    settingId: setting.getID(),
+                    inputTypeAndId: settingBox.getInputIdAndType(),
+                    ui: settingBox.getUI(),
+                    style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()]
+                };
+                list.settings.push(settingInfo);
+            }
+            return list;
         }
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, moduleID_1, fileName, result, swapToModule, _i, _b, moduleSettings, name_1, settingsList, list, _c, settingsList_2, s, setting, settingBox, settingInfo, elementId, elementValue, settingId, link;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var _a, moduleID_1, fileName, result, elementId, elementValue, settingId, link, moduleOrder;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         _a = eventType;
                         switch (_a) {
@@ -282,14 +298,15 @@ var SettingsProcess = /** @class */ (function (_super) {
                             case "setting-modified": return [3 /*break*/, 9];
                             case 'setting-reset': return [3 /*break*/, 10];
                             case 'open-link': return [3 /*break*/, 11];
+                            case "module-order": return [3 /*break*/, 12];
                         }
-                        return [3 /*break*/, 12];
+                        return [3 /*break*/, 14];
                     case 1:
                         {
                             this.initialize();
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 2;
+                        _b.label = 2;
                     case 2:
                         {
                             moduleID_1 = data[0];
@@ -298,24 +315,24 @@ var SettingsProcess = /** @class */ (function (_super) {
                                     throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.StorageHandler.STORAGE_PATH + moduleID_1));
                                 }
                             });
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 3;
+                        _b.label = 3;
                     case 3:
                         {
                             return [2 /*return*/, (0, ModuleImporter_1.importModuleArchive)()];
                         }
-                        _d.label = 4;
+                        _b.label = 4;
                     case 4:
                         {
                             return [2 /*return*/, (0, ModuleImporter_1.getImportedModules)(this.deletedModules)];
                         }
-                        _d.label = 5;
+                        _b.label = 5;
                     case 5:
                         fileName = data[0];
                         return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
                     case 6:
-                        result = _d.sent();
+                        result = _b.sent();
                         console.log("Removing " + fileName);
                         if (result === undefined) {
                             this.deletedModules.push(fileName);
@@ -326,69 +343,44 @@ var SettingsProcess = /** @class */ (function (_super) {
                         {
                             electron_1.app.relaunch();
                             electron_1.app.exit();
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 8;
+                        _b.label = 8;
                     case 8:
                         {
-                            swapToModule = data[0];
-                            for (_i = 0, _b = Array.from(this.moduleSettingsList.values()); _i < _b.length; _i++) {
-                                moduleSettings = _b[_i];
-                                name_1 = moduleSettings.getDisplayName();
-                                if (swapToModule !== name_1) {
-                                    continue;
-                                }
-                                settingsList = moduleSettings.getSettingsAndHeaders();
-                                list = {
-                                    module: name_1,
-                                    moduleID: moduleSettings.getProcess().getIPCSource(),
-                                    moduleInfo: moduleSettings.getProcess().getModuleInfo(),
-                                    settings: []
-                                };
-                                for (_c = 0, settingsList_2 = settingsList; _c < settingsList_2.length; _c++) {
-                                    s = settingsList_2[_c];
-                                    if (typeof s === 'string') {
-                                        list.settings.push(s);
-                                        continue;
-                                    }
-                                    setting = s;
-                                    settingBox = setting.getUIComponent();
-                                    settingInfo = {
-                                        settingId: setting.getID(),
-                                        inputTypeAndId: settingBox.getInputIdAndType(),
-                                        ui: settingBox.getUI(),
-                                        style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()]
-                                    };
-                                    list.settings.push(settingInfo);
-                                }
-                                return [2 /*return*/, list];
-                            }
-                            return [3 /*break*/, 12];
+                            return [2 /*return*/, this.swapSettingsTab(data[0])];
                         }
-                        _d.label = 9;
+                        _b.label = 9;
                     case 9:
                         {
                             elementId = data[0];
                             elementValue = data[1];
                             this.onSettingChange(elementId, elementValue);
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 10;
+                        _b.label = 10;
                     case 10:
                         {
                             settingId = data[0];
                             this.onSettingChange(settingId);
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 11;
+                        _b.label = 11;
                     case 11:
                         {
                             link = data[0];
                             electron_1.shell.openExternal(link);
-                            return [3 /*break*/, 12];
+                            return [3 /*break*/, 14];
                         }
-                        _d.label = 12;
-                    case 12: return [2 /*return*/];
+                        _b.label = 12;
+                    case 12:
+                        moduleOrder = data[0];
+                        this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
+                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(this)];
+                    case 13:
+                        _b.sent();
+                        return [3 /*break*/, 14];
+                    case 14: return [2 /*return*/];
                 }
             });
         });

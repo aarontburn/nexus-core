@@ -51,7 +51,7 @@ export class ModuleCompiler {
 
                 if (folder.name.split(".").at(-1) === 'zip') {
                     try {
-                        const zip: yauzl.ZipFile = await yauzl.open(folder.path + folder.name);
+                        const zip: yauzl.ZipFile = await yauzl.open(path.join(folder.path, folder.name));
                         await fs.promises.mkdir(unarchiveDirectory, { recursive: true });
 
                         const entryPromises = [];
@@ -61,13 +61,17 @@ export class ModuleCompiler {
                             if (entry.filename.endsWith('/')) {
                                 entryPromises.push(fs.promises.mkdir(entryPath, { recursive: true }));
                             } else {
-                                const readStream: Stream.Readable = await entry.openReadStream();
-                                const writeStream: fs.WriteStream = fs.createWriteStream(entryPath);
-                                entryPromises.push(pipeline(readStream, writeStream));
+                                const dirPath = path.dirname(entryPath);
+                                entryPromises.push(
+                                    fs.promises.mkdir(dirPath, { recursive: true }).then(async () => {
+                                        const readStream: Stream.Readable = await entry.openReadStream();
+                                        const writeStream: fs.WriteStream = fs.createWriteStream(entryPath);
+                                        return pipeline(readStream, writeStream);
+                                    })
+                                );
                             }
                         }
-
-                        await Promise.all(entryPromises);
+                        await Promise.allSettled(entryPromises);
                         await zip.close();
                     } catch (error) {
                         console.error(`Error processing ${folder.name}:`, error);
@@ -104,21 +108,19 @@ export class ModuleCompiler {
         try {
             const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, IO_OPTIONS);
 
-            await Promise.all(files.map(async folder => {
-                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + folder.name; // folder.name is also the module ID
-                if (!folder.isDirectory()) {
+            await Promise.allSettled(files.map(async tempFolders => {
+                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + tempFolders.name; // folder.name is also the module ID
+                if (!tempFolders.isDirectory()) {
                     return;
                 }
-                const moduleFolderPath: string = `${folder.path}${folder.name}`;
+                const modulePathInTempDir: string = `${tempFolders.path}${tempFolders.name}`;
 
+                const shouldRecompile: boolean =
+                    process.argv.includes(`--last_exported_id:${tempFolders.name}`) ||
+                    await shouldRecompileModule(modulePathInTempDir, builtDirectory)
 
-
-                const shouldCompile: boolean =
-                    process.argv.includes(`--last_exported_id:${folder.name}`) ||
-                    await shouldRecompileModule(moduleFolderPath, builtDirectory)
-
-                if (!forceReload && !shouldCompile) {
-                    console.log("Skipping compiling of " + folder.name + "; no changes detected.");
+                if (!forceReload && !shouldRecompile) {
+                    console.log("Skipping compiling of " + tempFolders.name + "; no changes detected.");
                     return;
                 }
 
@@ -126,7 +128,7 @@ export class ModuleCompiler {
                 await fs.promises.rm(builtDirectory, { force: true, recursive: true });
 
                 try {
-                    await compileAndCopyDirectory(moduleFolderPath, builtDirectory);
+                    await compileAndCopyDirectory(modulePathInTempDir, builtDirectory);
                 } catch (err) {
                     console.error(err)
                 }
@@ -141,7 +143,7 @@ export class ModuleCompiler {
                         `${builtDirectory}/node_modules/@nexus/nexus-module-builder`)
                 }
 
-                await Promise.all([
+                await Promise.allSettled([
                     fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
                     fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
                 ]);
@@ -167,7 +169,7 @@ export class ModuleCompiler {
         try {
             const folders: fs.Dirent[] = await fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH, IO_OPTIONS);
 
-            await Promise.all(folders.map(async folder => {
+            await Promise.allSettled(folders.map(async folder => {
                 if (!folder.isDirectory()) { // only read folders
                     return;
                 }

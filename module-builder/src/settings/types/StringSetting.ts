@@ -15,7 +15,7 @@ export class StringSetting extends Setting<string> {
     }
 
 
-    public validateInput(input: any): string | null {
+    public async validateInput(input: any): Promise<string | null> {
         const s: string = JSON.stringify(input).replace(/"/g, '')
         return s === "" ? null : s;
     }

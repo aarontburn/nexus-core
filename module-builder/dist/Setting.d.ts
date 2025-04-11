@@ -96,7 +96,7 @@ export declare abstract class Setting<T> {
      * @throws Error if an attempt was made to set the value before all
      *                               appropriate fields were set.
      */
-    setValue(value: any): void;
+    setValue(value: any): Promise<void>;
     /**
      *  @private
      *
@@ -122,7 +122,7 @@ export declare abstract class Setting<T> {
      *  @param input The input to parse.
      *  @return A {@link T} valid input, or null if the input could not be parsed.
      */
-    abstract validateInput(input: any): T | null;
+    abstract validateInput(input: any): Promise<T | null>;
     /**
      * Resets the setting to default.
      */
@@ -137,7 +137,7 @@ export declare abstract class Setting<T> {
      *  @return itself.
      *  @throws {Error} if the input validator is already defined.
      */
-    setValidator(inputValidator: (input: any) => T | null): Setting<T>;
+    setValidator(inputValidator: (input: any) => Promise<T | null>): Setting<T>;
     /**
      *  Abstract function to be defined by child classes.
      *
