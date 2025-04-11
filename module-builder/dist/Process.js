@@ -68,12 +68,20 @@ var Process = /** @class */ (function () {
         this.hasBeenInit = false;
         this.moduleID = moduleID;
         this.moduleName = moduleName;
-        this.htmlPath = htmlPath;
+        if (typeof htmlPath === "string") {
+            this.htmlPath = htmlPath;
+        }
+        else {
+            this.url = htmlPath;
+        }
         this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
     }
     Process.prototype.getIconPath = function () {
         return this.iconPath;
+    };
+    Process.prototype.getURL = function () {
+        return this.url;
     };
     Process.prototype.setIPC = function (ipc) {
         if (this.ipcCallback !== undefined) {

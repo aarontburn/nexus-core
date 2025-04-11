@@ -72,16 +72,24 @@ export abstract class Process implements IPCSource {
 
     private readonly iconPath: string;
 
+    private readonly url: URL | undefined;
+
     /**
      *  Entry point.
      * 
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
      */
-    public constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string) {
+    public constructor(moduleID: string, moduleName: string, htmlPath: string | URL, iconPath?: string) {
         this.moduleID = moduleID;
         this.moduleName = moduleName;
-        this.htmlPath = htmlPath;
+
+        if (typeof htmlPath === "string") {
+            this.htmlPath = htmlPath;
+        } else {
+            this.url = htmlPath;
+        }
+
         this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings(this);
     }
@@ -90,6 +98,9 @@ export abstract class Process implements IPCSource {
         return this.iconPath;
     }
 
+    public getURL(): URL | undefined {
+        return this.url;
+    }
 
 
     public setIPC(ipc: IPCCallback) {

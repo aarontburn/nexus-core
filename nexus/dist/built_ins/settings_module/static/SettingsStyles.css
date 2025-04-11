@@ -218,23 +218,10 @@ br {
     text-align: center;
     color: var(--off-white);
     margin: 0;
-    margin-top: 15px;
+    margin-top: 20px;
+    white-space: pre;
 }
 
-.section p:before,
-.section p:after {
-    background: linear-gradient(var(--accent-color) 0 0) center/ 95% 1px no-repeat, transparent;
-    content: "";
-    padding: 0px 20%;
-}
-
-.section p:before {
-    margin-right: 10px
-}
-
-.section p:after {
-    margin-left: 10px
-}
 
 #manage-module {
     border: 1px solid var(--off-white);

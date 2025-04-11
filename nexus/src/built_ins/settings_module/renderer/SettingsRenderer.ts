@@ -248,7 +248,7 @@
             if (typeof settingInfo === 'string') {
                 const headerHTML: string = `
                     <div class='section'>
-                        <p>${settingInfo}</p>
+                        <p>—    ${settingInfo}    —</p>
                     </div>
 
                 `

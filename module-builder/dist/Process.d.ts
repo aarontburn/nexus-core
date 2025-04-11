@@ -58,14 +58,16 @@ export declare abstract class Process implements IPCSource {
      */
     private readonly moduleID;
     private readonly iconPath;
+    private readonly url;
     /**
      *  Entry point.
      *
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
      */
-    constructor(moduleID: string, moduleName: string, htmlPath: string, iconPath?: string);
+    constructor(moduleID: string, moduleName: string, htmlPath: string | URL, iconPath?: string);
     getIconPath(): string;
+    getURL(): URL | undefined;
     setIPC(ipc: IPCCallback): void;
     /**
      *  @returns the ID of the module.

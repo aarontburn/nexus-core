@@ -214,7 +214,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         }
         tabInfo.settings.forEach(function (settingInfo) {
             if (typeof settingInfo === 'string') {
-                var headerHTML = "\n                    <div class='section'>\n                        <p>".concat(settingInfo, "</p>\n                    </div>\n\n                ");
+                var headerHTML = "\n                    <div class='section'>\n                        <p>\u2014    ".concat(settingInfo, "    \u2014</p>\n                    </div>\n\n                ");
                 settingsList.insertAdjacentHTML('beforeend', headerHTML);
                 return;
             }
