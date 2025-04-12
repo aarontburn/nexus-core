@@ -1,6 +1,6 @@
 import { Process, StorageHandler, ModuleSettings, Setting } from "@nexus/nexus-module-builder";
 import { ipcMain } from "electron";
-import { InitContext } from "../constants/types";
+import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/ModuleCompiler";
 import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess } from "../built_ins/home_module/HomeProcess";

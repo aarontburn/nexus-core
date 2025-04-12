@@ -1,5 +1,5 @@
 import { DataResponse, HTTPStatusCode, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
-import { InitContext } from "../constants/types";
+import { InitContext } from "../utils/types";
 import { ipcMain } from "electron";
 
 

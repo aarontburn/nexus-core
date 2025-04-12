@@ -62,7 +62,7 @@ exports.__esModule = true;
 exports.showWindow = exports.createBrowserWindow = void 0;
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
-var constants_1 = require("../constants/constants");
+var constants_1 = require("../utils/constants");
 function createBrowserWindow(context) {
     return __awaiter(this, void 0, void 0, function () {
         var window;

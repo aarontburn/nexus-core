@@ -3,7 +3,7 @@ import { getInternalArguments } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
 import { createBrowserWindow, showWindow } from "./init/window-creator";
-import { InitContext } from "./constants/types";
+import { InitContext } from "./utils/types";
 import { loadModules } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
@@ -77,10 +77,7 @@ async function nexusStart() {
     context.setProcessReady();
 
     // Run module preload
-    for (const module of Array.from(context.moduleMap.values())) {
-        await module.beforeWindowCreated?.();
-    }
-
+    await Promise.allSettled(Array.from(context.moduleMap.values()).map(async module => await module.beforeWindowCreated()));
 
     // Create window
     context.window = await createBrowserWindow(context);

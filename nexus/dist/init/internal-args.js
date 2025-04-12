@@ -72,7 +72,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.getInternalArguments = void 0;
 var fs = __importStar(require("fs"));
-var nexus_paths_1 = require("../constants/nexus-paths");
+var nexus_paths_1 = require("../utils/nexus-paths");
 var DEFAULT_INTERNAL_FILE = {
     "args": ''
 };

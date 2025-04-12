@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { DIRECTORIES } from "../constants/nexus-paths";
+import { DIRECTORIES } from "../utils/nexus-paths";
 
 
 export async function createAllDirectories() {

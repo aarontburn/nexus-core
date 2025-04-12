@@ -64,6 +64,7 @@ electron_1.app.on("window-all-closed", function () {
 function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
         var processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
+        var _this = this;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -113,10 +114,20 @@ function nexusStart() {
                     _a.moduleMap = _c.sent();
                     context.settingModule = context.moduleMap.get("built_ins.Settings");
                     context.setProcessReady();
+                    // Run module preload
+                    return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, module.beforeWindowCreated()];
+                                case 1: return [2 /*return*/, _a.sent()];
+                            }
+                        }); }); }))];
+                case 4:
+                    // Run module preload
+                    _c.sent();
                     // Create window
                     _b = context;
                     return [4 /*yield*/, (0, window_creator_1.createBrowserWindow)(context)];
-                case 4:
+                case 5:
                     // Create window
                     _b.window = _c.sent();
                     // Register IPC Callback

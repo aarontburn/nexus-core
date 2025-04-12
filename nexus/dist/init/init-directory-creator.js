@@ -61,7 +61,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.createAllDirectories = void 0;
 var fs = __importStar(require("fs"));
-var nexus_paths_1 = require("../constants/nexus-paths");
+var nexus_paths_1 = require("../utils/nexus-paths");
 function createAllDirectories() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
