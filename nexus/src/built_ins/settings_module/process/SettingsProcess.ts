@@ -101,7 +101,7 @@ export class SettingsProcess extends Process {
     public refreshSettings(modifiedSetting?: Setting<unknown>): void {
         if (modifiedSetting?.getAccessID() === 'zoom') {
             const zoom: number = modifiedSetting.getValue() as number;
-            BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(zoom / 100);
+            BrowserWindow.getAllWindows()[0]?.webContents.setZoomFactor(zoom / 100);
 
         } else if (modifiedSetting?.getAccessID() === 'accent_color') {
             this.sendToRenderer("refresh-settings", modifiedSetting.getValue());

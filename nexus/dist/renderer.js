@@ -50,6 +50,7 @@
                 var webView = document.createElement("webview");
                 webView.setAttribute("src", url);
                 webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
+                webView.setAttribute("partition", "persist:".concat(moduleID));
                 webView.id = moduleID;
                 moduleFrameHTML.insertAdjacentElement("beforeend", webView);
                 return;

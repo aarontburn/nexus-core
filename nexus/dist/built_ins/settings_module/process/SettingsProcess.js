@@ -162,9 +162,10 @@ var SettingsProcess = /** @class */ (function (_super) {
         });
     };
     SettingsProcess.prototype.refreshSettings = function (modifiedSetting) {
+        var _a;
         if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'zoom') {
             var zoom = modifiedSetting.getValue();
-            electron_1.BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(zoom / 100);
+            (_a = electron_1.BrowserWindow.getAllWindows()[0]) === null || _a === void 0 ? void 0 : _a.webContents.setZoomFactor(zoom / 100);
         }
         else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'accent_color') {
             this.sendToRenderer("refresh-settings", modifiedSetting.getValue());
