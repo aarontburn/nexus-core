@@ -4,6 +4,8 @@ import { BrowserWindow, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
+import { DIRECTORIES, FILE_NAMES } from "../../../utils/nexus-paths";
+import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
 
 const MODULE_NAME: string = "Settings";
 const MODULE_ID: string = 'built_ins.Settings';
@@ -108,6 +110,20 @@ export class SettingsProcess extends Process {
             this.sendToRenderer("is-dev", modifiedSetting.getValue());
             this.devModeSubscribers.forEach((callback) => {
                 callback(modifiedSetting.getValue() as boolean);
+            })
+        } else if (modifiedSetting?.getAccessID() === "force_reload") {
+            const shouldForceReload: boolean = modifiedSetting.getValue() as boolean;
+
+            readInternal().then(parseInternalArgs).then(args => { 
+                if (shouldForceReload) {
+                    if (!args.includes("--force-reload")) {
+                        args.push("--force-reload");
+                    }
+                } else {
+                    args = args.filter(arg => arg !== "--force-reload");
+                }
+
+                return writeInternal(args);
             })
 
         }

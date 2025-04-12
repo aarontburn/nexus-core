@@ -12,7 +12,7 @@ export async function getInternalArguments(): Promise<string[]> {
 
 }
 
-async function readInternal(): Promise<{ [key: string]: any }> {
+export async function readInternal(): Promise<{ [key: string]: any }> {
     const internalFilePath: string = DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON;
 
     let parsedContents = { ...DEFAULT_INTERNAL_FILE };
@@ -26,7 +26,19 @@ async function readInternal(): Promise<{ [key: string]: any }> {
     return parsedContents;
 }
 
-async function parseInternalArgs(internal: { [key: string]: any }) {
+export async function writeInternal(args: string[]) {
+    await fs.promises.writeFile(
+        DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON,
+        JSON.stringify(
+            {
+                args: args.length === 0
+                    ? ''
+                    : args.filter(arg => !arg.startsWith('--last_exported_id')).join(' ')
+            }, undefined, 4)
+    );
+}
+
+export async function parseInternalArgs(internal: { [key: string]: any }): Promise<string[]> {
     const args: string[] = [];
     const internalArgs = internal["args"];
 

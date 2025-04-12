@@ -80,7 +80,6 @@ const requestExternalModuleWrapper = (context: InitContext) => {
 
         const targetModule: Process = context.moduleMap.get(targetModuleID);
         if (targetModule === undefined) {
-            console.error(`Module '${source.getIPCSource()}' attempted to access '${targetModuleID}', but no such module exists.`);
             return { body: `No module with ID of ${source.getIPCSource()} found.`, code: HTTPStatusCode.NOT_FOUND };
         }
 

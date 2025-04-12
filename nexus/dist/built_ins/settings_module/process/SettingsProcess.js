@@ -81,6 +81,7 @@ var electron_1 = require("electron");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var ModuleImporter_1 = require("./ModuleImporter");
 var settings_1 = require("./settings");
+var internal_args_1 = require("../../../init/internal-args");
 var MODULE_NAME = "Settings";
 var MODULE_ID = 'built_ins.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
@@ -172,6 +173,20 @@ var SettingsProcess = /** @class */ (function (_super) {
             this.sendToRenderer("is-dev", modifiedSetting.getValue());
             this.devModeSubscribers.forEach(function (callback) {
                 callback(modifiedSetting.getValue());
+            });
+        }
+        else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === "force_reload") {
+            var shouldForceReload_1 = modifiedSetting.getValue();
+            (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                if (shouldForceReload_1) {
+                    if (!args.includes("--force-reload")) {
+                        args.push("--force-reload");
+                    }
+                }
+                else {
+                    args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                }
+                return (0, internal_args_1.writeInternal)(args);
             });
         }
     };

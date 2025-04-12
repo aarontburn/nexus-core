@@ -128,7 +128,6 @@ var requestExternalModuleWrapper = function (context) {
                     case 2:
                         targetModule = context.moduleMap.get(targetModuleID);
                         if (targetModule === undefined) {
-                            console.error("Module '".concat(source.getIPCSource(), "' attempted to access '").concat(targetModuleID, "', but no such module exists."));
                             return [2 /*return*/, { body: "No module with ID of ".concat(source.getIPCSource(), " found."), code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND }];
                         }
                         return [4 /*yield*/, targetModule.handleExternal(source, eventType, data)];

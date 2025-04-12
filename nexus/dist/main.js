@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -65,8 +42,6 @@ var init_directory_creator_1 = require("./init/init-directory-creator");
 var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
-var nexus_paths_1 = require("./utils/nexus-paths");
-var fs = __importStar(require("fs"));
 if (process.argv.includes("--dev")) {
 }
 else {
@@ -89,7 +64,6 @@ electron_1.app.on("window-all-closed", function () {
 function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
         var processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
-        var _this = this;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -131,13 +105,7 @@ function nexusStart() {
                         arg = internalArguments_1[_i];
                         process.argv.push(arg);
                     }
-                    console.log(process.argv);
-                    console.log(internalArguments.filter(function (arg) { return !arg.startsWith('--last_exported_id'); }));
-                    return [4 /*yield*/, fs.promises.writeFile(nexus_paths_1.DIRECTORIES.INTERNAL_PATH + nexus_paths_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
-                            args: internalArguments.length === 0
-                                ? ''
-                                : internalArguments.filter(function (arg) { return !arg.startsWith('--last_exported_id'); }).join(' ')
-                        }, undefined, 4))];
+                    return [4 /*yield*/, (0, internal_args_1.writeInternal)(internalArguments)];
                 case 3:
                     _c.sent();
                     // Load modules
@@ -149,12 +117,7 @@ function nexusStart() {
                     context.settingModule = context.moduleMap.get("built_ins.Settings");
                     context.setProcessReady();
                     // Run module preload
-                    return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, module.beforeWindowCreated()];
-                                case 1: return [2 /*return*/, _a.sent()];
-                            }
-                        }); }); }))];
+                    return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { module.beforeWindowCreated(); }))];
                 case 5:
                     // Run module preload
                     _c.sent();

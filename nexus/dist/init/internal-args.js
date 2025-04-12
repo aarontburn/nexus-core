@@ -70,7 +70,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getInternalArguments = void 0;
+exports.parseInternalArgs = exports.writeInternal = exports.readInternal = exports.getInternalArguments = void 0;
 var fs = __importStar(require("fs"));
 var nexus_paths_1 = require("../utils/nexus-paths");
 var DEFAULT_INTERNAL_FILE = {
@@ -119,6 +119,24 @@ function readInternal() {
         });
     });
 }
+exports.readInternal = readInternal;
+function writeInternal(args) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fs.promises.writeFile(nexus_paths_1.DIRECTORIES.INTERNAL_PATH + nexus_paths_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
+                        args: args.length === 0
+                            ? ''
+                            : args.filter(function (arg) { return !arg.startsWith('--last_exported_id'); }).join(' ')
+                    }, undefined, 4))];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.writeInternal = writeInternal;
 function parseInternalArgs(internal) {
     return __awaiter(this, void 0, void 0, function () {
         var args, internalArgs, unparsedArgs, _i, unparsedArgs_1, arg;
@@ -150,4 +168,5 @@ function parseInternalArgs(internal) {
         });
     });
 }
+exports.parseInternalArgs = parseInternalArgs;
 //# sourceMappingURL=internal-args.js.map

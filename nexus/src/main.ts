@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu } from "electron";
-import { getInternalArguments } from "./init/internal-args";
+import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
 import { createBrowserWindow, showWindow } from "./init/window-creator";
@@ -72,15 +72,7 @@ async function nexusStart() {
     for (const arg of internalArguments) {
         process.argv.push(arg);
     }
-    await fs.promises.writeFile(
-        DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON,
-        JSON.stringify(
-            {
-                args: internalArguments.length === 0
-                    ? ''
-                    : internalArguments.filter(arg => !arg.startsWith('--last_exported_id')).join(' ')
-            }, undefined, 4)
-    );
+    await writeInternal(internalArguments);
 
     // Load modules
     context.moduleMap = await loadModules(context);
@@ -88,8 +80,10 @@ async function nexusStart() {
     context.setProcessReady();
 
     // Run module preload
-    await Promise.allSettled(Array.from(context.moduleMap.values()).map(async module => await module.beforeWindowCreated()));
-
+    await Promise.allSettled(
+        Array.from(context.moduleMap.values()).map(module => {  module.beforeWindowCreated()})
+    );
+    
     // Create window
     context.window = await createBrowserWindow(context);
 
