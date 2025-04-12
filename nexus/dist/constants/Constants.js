@@ -2,4 +2,4 @@
 exports.__esModule = true;
 exports.WINDOW_DIMENSION = void 0;
 exports.WINDOW_DIMENSION = { width: 1920, height: 1080 };
-//# sourceMappingURL=Constants.js.map
+//# sourceMappingURL=constants.js.map

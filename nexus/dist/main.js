@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -60,40 +37,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var electron_1 = require("electron");
-var ModuleController_1 = require("./ModuleController");
-var os = __importStar(require("os"));
-var fs = __importStar(require("fs"));
-var InternalHandler_1 = require("./init/InternalHandler");
-var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
-var InitDirectoryCreator_1 = require("./init/InitDirectoryCreator");
-console.log(electron_1.ipcMain);
-var checkLastCompiledModule = function () {
-    var DEV_PATH = os.homedir() + "/.nexus_dev/dev.json";
-    try {
-        var devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
-        if (devJSON["last_exported_id"]) {
-            process.argv.push("--last_exported_id:".concat(devJSON["last_exported_id"]));
-        }
-        fs.rmSync(DEV_PATH);
-    }
-    catch (_) {
-    }
-};
+var internal_args_1 = require("./init/internal-args");
+var init_directory_creator_1 = require("./init/init-directory-creator");
+var window_creator_1 = require("./init/window-creator");
+var module_loader_1 = require("./init/module-loader");
+var global_event_handler_1 = require("./init/global-event-handler");
 if (process.argv.includes("--dev")) {
-    (0, InternalHandler_1.getInternalArguments)().then(console.log);
-    checkLastCompiledModule();
 }
 else {
     electron_1.Menu.setApplicationMenu(null);
 }
-var moduleController = new ModuleController_1.ModuleController();
+// const moduleController: ModuleController = new ModuleController();
 electron_1.app.whenReady().then(function () {
-    init();
-    moduleController.start();
+    nexusStart();
     electron_1.app.on("activate", function () {
         if (electron_1.BrowserWindow.getAllWindows().length === 0) {
-            init();
-            moduleController.start();
+            nexusStart();
         }
     });
 });
@@ -102,30 +61,109 @@ electron_1.app.on("window-all-closed", function () {
         electron_1.app.quit();
     }
 });
-function init() {
+function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
-        var internalArguments, _i, internalArguments_1, arg, loadedModules;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: 
-                // Create all directories
-                return [4 /*yield*/, (0, InitDirectoryCreator_1.createAllDirectories)()];
+        var processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    processReady = false;
+                    rendererReady = false;
+                    context = {
+                        moduleMap: undefined,
+                        window: undefined,
+                        settingModule: undefined,
+                        ipcCallback: undefined,
+                        displayedModule: undefined,
+                        mainIPCSource: {
+                            getIPCSource: function () {
+                                return "built_ins.Main";
+                            }
+                        },
+                        setProcessReady: function () {
+                            processReady = true;
+                            if (processReady && rendererReady) {
+                                onProcessAndRendererReady(context);
+                            }
+                        },
+                        setRendererReady: function () {
+                            rendererReady = true;
+                            if (processReady && rendererReady) {
+                                onProcessAndRendererReady(context);
+                            }
+                        }
+                    };
+                    // Create all directories
+                    return [4 /*yield*/, (0, init_directory_creator_1.createAllDirectories)()];
                 case 1:
                     // Create all directories
-                    _a.sent();
-                    return [4 /*yield*/, (0, InternalHandler_1.getInternalArguments)()];
+                    _c.sent();
+                    return [4 /*yield*/, (0, internal_args_1.getInternalArguments)()];
                 case 2:
-                    internalArguments = _a.sent();
+                    internalArguments = _c.sent();
                     for (_i = 0, internalArguments_1 = internalArguments; _i < internalArguments_1.length; _i++) {
                         arg = internalArguments_1[_i];
                         process.argv.push(arg);
                     }
-                    return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(undefined, internalArguments.includes("--force-reload"))];
+                    // Load modules
+                    _a = context;
+                    return [4 /*yield*/, (0, module_loader_1.loadModules)(context)];
                 case 3:
-                    loadedModules = _a.sent();
+                    // Load modules
+                    _a.moduleMap = _c.sent();
+                    context.settingModule = context.moduleMap.get("built_ins.Settings");
+                    context.setProcessReady();
+                    // Create window
+                    _b = context;
+                    return [4 /*yield*/, (0, window_creator_1.createBrowserWindow)(context)];
+                case 4:
+                    // Create window
+                    _b.window = _c.sent();
+                    // Register IPC Callback
+                    context.ipcCallback = (0, global_event_handler_1.getIPCCallback)(context);
+                    (0, global_event_handler_1.attachEventHandlerForMain)(context);
+                    (0, window_creator_1.showWindow)(context);
                     return [2 /*return*/];
             }
         });
+    });
+}
+function onProcessAndRendererReady(context) {
+    context.displayedModule = undefined;
+    var data = [];
+    context.moduleMap.forEach(function (module) {
+        var _a, _b;
+        data.push({
+            moduleName: module.getName(),
+            moduleID: module.getIPCSource(),
+            htmlPath: module.getHTMLPath(),
+            iconPath: module.getIconPath(),
+            url: (_b = (_a = module.getURL) === null || _a === void 0 ? void 0 : _a.call(module)) === null || _b === void 0 ? void 0 : _b.toString()
+        });
+    });
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
+    var startupModuleID = "built_ins.Home";
+    var openLastModule = context.settingModule
+        .getSettings()
+        .findSetting("startup_should_open_last_closed")
+        .getValue();
+    if (openLastModule) {
+        startupModuleID = context.settingModule
+            .getSettings()
+            .findSetting("startup_last_open_id")
+            .getValue();
+    }
+    else {
+        startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue();
+    }
+    if (!context.moduleMap.has(startupModuleID)) {
+        startupModuleID = "built_ins.Home";
+    }
+    (0, global_event_handler_1.swapVisibleModule)(context, startupModuleID);
+    context.moduleMap.forEach(function (module) {
+        if (module.getHTMLPath() === undefined) {
+            module.initialize();
+        }
     });
 }
 //# sourceMappingURL=main.js.map

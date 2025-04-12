@@ -1,15 +1,12 @@
-import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import { ModuleController } from "./ModuleController";
-import * as os from "os";
-import * as fs from "fs";
-import { getInternalArguments } from "./init/InternalHandler";
+import { app, BrowserWindow, Menu } from "electron";
+import { getInternalArguments } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
-import { ModuleCompiler } from "./compiler/ModuleCompiler";
-import { createAllDirectories } from "./init/InitDirectoryCreator";
-import { createBrowserWindow } from "./init/Window";
-import { getIPCCallback } from "./init/ModuleCommunication";
-
-
+import { createAllDirectories } from "./init/init-directory-creator";
+import { createBrowserWindow, showWindow } from "./init/window-creator";
+import { InitContext } from "./constants/types";
+import { loadModules } from "./init/module-loader";
+import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
+import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 
 if (process.argv.includes("--dev")) {
 
@@ -17,15 +14,13 @@ if (process.argv.includes("--dev")) {
     Menu.setApplicationMenu(null);
 }
 
-const moduleController: ModuleController = new ModuleController();
+// const moduleController: ModuleController = new ModuleController();
 app.whenReady().then(() => {
-    init();
+    nexusStart();
 
-    moduleController.start();
     app.on("activate", () => { // MacOS stuff
         if (BrowserWindow.getAllWindows().length === 0) {
-            init();
-            moduleController.start();
+            nexusStart();
         }
     });
 });
@@ -38,7 +33,35 @@ app.on("window-all-closed", () => {
 });
 
 
-async function init() {
+async function nexusStart() {
+    let processReady: boolean = false;
+    let rendererReady: boolean = false;
+
+    const context: InitContext = {
+        moduleMap: undefined,
+        window: undefined,
+        settingModule: undefined,
+        ipcCallback: undefined,
+        displayedModule: undefined,
+        mainIPCSource: {
+            getIPCSource() {
+                return "built_ins.Main"
+            },
+        },
+        setProcessReady: () => {
+            processReady = true;
+            if (processReady && rendererReady) {
+                onProcessAndRendererReady(context);
+            }
+        },
+        setRendererReady: () => {
+            rendererReady = true;
+            if (processReady && rendererReady) {
+                onProcessAndRendererReady(context);
+            }
+        },
+    }
+
     // Create all directories
     await createAllDirectories();
 
@@ -48,77 +71,70 @@ async function init() {
         process.argv.push(arg);
     }
 
-    const loadedModules: Process[] = await ModuleCompiler.load(internalArguments.includes("--force-reload"));
-    const moduleMap: Map<string, Process> = new Map();
-    const window: BrowserWindow = await createBrowserWindow();
+    // Load modules
+    context.moduleMap = await loadModules(context);
+    context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+    context.setProcessReady();
 
-    for (const module of loadedModules) {
-        module.setIPC(getIPCCallback(window));
-        registerModule(moduleMap, module);
+    // Run module preload
+    for (const module of Array.from(context.moduleMap.values())) {
+        await module.beforeWindowCreated?.();
     }
+
+
+    // Create window
+    context.window = await createBrowserWindow(context);
+
+    // Register IPC Callback
+    context.ipcCallback = getIPCCallback(context);
+
+    attachEventHandlerForMain(context);
+
+    showWindow(context);
 }
 
+function onProcessAndRendererReady(context: InitContext): void {
+    context.displayedModule = undefined;
 
-function registerModule(map: Map<string, Process>, module: Process) {
-    const moduleID: string = module.getIPCSource();
-
-    const existingIPCProcess: Process = map.get(moduleID);
-    if (existingIPCProcess !== undefined) {
-        console.error("WARNING: Modules with duplicate IDs have been found.");
-        console.error(`ID: ${moduleID} | Registered Module: ${existingIPCProcess.getName()} | New Module: ${module.getName()}`);
-        map.delete(moduleID);
-        return;
-    }
-    map.set(moduleID, module);
-    console.log("\tRegistering " + moduleID);
-
-    ipcMain.handle(moduleID, (_, eventType: string, data: any = []) => {
-        return module.handleEvent(eventType, data);
+    const data: any[] = [];
+    context.moduleMap.forEach((module: Process) => {
+        data.push({
+            moduleName: module.getName(),
+            moduleID: module.getIPCSource(),
+            htmlPath: module.getHTMLPath(),
+            iconPath: module.getIconPath(),
+            url: module.getURL?.()?.toString()
+        });
     });
-}
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
 
-function handleMainEvents() {
-    ipcMain.handle(getIPCSource(), (_, eventType: string, data: any[]) => {
-        switch (eventType) {
-            case "renderer-init": {
-                if (this.processReady) {
-                    // this.init();
-                } else {
-                    this.rendererReady = true;
-                }
-                break;
-            }
-            case "swap-modules": {
-                this.swapVisibleModule(data[0]);
-                break;
-            }
-            case "module-order": {
-                this.settingsModule.handleEvent("module-order", data);
-                break;
-            }
+    let startupModuleID: string = "built_ins.Home";
 
+    const openLastModule: boolean = context.settingModule
+        .getSettings()
+        .findSetting("startup_should_open_last_closed")
+        .getValue() as boolean;
+
+    if (openLastModule) {
+        startupModuleID = context.settingModule
+            .getSettings()
+            .findSetting("startup_last_open_id")
+            .getValue() as string;
+    } else {
+        startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue() as string;
+    }
+    if (!context.moduleMap.has(startupModuleID)) {
+        startupModuleID = "built_ins.Home";
+    }
+
+    swapVisibleModule(context, startupModuleID);
+
+    context.moduleMap.forEach((module: Process) => {
+        if (module.getHTMLPath() === undefined) {
+            module.initialize();
         }
-
     });
 }
-
-function getIPCSource(): string {
-    return "built_ins.Main";
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
