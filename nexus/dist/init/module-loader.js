@@ -48,7 +48,7 @@ exports.__esModule = true;
 exports.loadModules = void 0;
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var electron_1 = require("electron");
-var ModuleCompiler_1 = require("../compiler/ModuleCompiler");
+var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
 var HomeProcess_1 = require("../built_ins/home_module/HomeProcess");
 var SettingsProcess_1 = require("../built_ins/settings_module/process/SettingsProcess");
@@ -57,7 +57,7 @@ function loadModules(context) {
         var loadedModules, _a, homeProcess, settingProcess, moduleMap, _i, _b, module_1, _c, _d, module_2, _e, _f, moduleOrder, reorderedModules, orderedMap, _g, _h, module_3;
         return __generator(this, function (_j) {
             switch (_j.label) {
-                case 0: return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
+                case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
                     loadedModules = _j.sent();
                     _a = [new HomeProcess_1.HomeProcess(), new SettingsProcess_1.SettingsProcess()], homeProcess = _a[0], settingProcess = _a[1];

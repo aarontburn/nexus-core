@@ -72,7 +72,7 @@ var path = __importStar(require("path"));
 var yauzl = __importStar(require("yauzl-promise"));
 var promises_1 = require("stream/promises");
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
-var CompilerUtils_1 = require("./CompilerUtils");
+var compiler_utils_1 = require("./compiler-utils");
 var ModuleCompiler = /** @class */ (function () {
     function ModuleCompiler() {
     }
@@ -137,7 +137,7 @@ var ModuleCompiler = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, CompilerUtils_1.IO_OPTIONS)];
+                    case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
                     case 1:
                         files = _a.sent();
                         return [4 /*yield*/, fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true })];
@@ -273,7 +273,7 @@ var ModuleCompiler = /** @class */ (function () {
                         _b.label = 3;
                     case 3:
                         _b.trys.push([3, 6, , 7]);
-                        return [4 /*yield*/, fs.promises.readdir(this.TEMP_ARCHIVE_PATH, CompilerUtils_1.IO_OPTIONS)];
+                        return [4 /*yield*/, fs.promises.readdir(this.TEMP_ARCHIVE_PATH, compiler_utils_1.IO_OPTIONS)];
                     case 4:
                         files = _b.sent();
                         return [4 /*yield*/, Promise.allSettled(files.map(function (tempFolders) { return __awaiter(_this, void 0, void 0, function () {
@@ -288,7 +288,7 @@ var ModuleCompiler = /** @class */ (function () {
                                             modulePathInTempDir = "".concat(tempFolders.path).concat(tempFolders.name);
                                             _a = process.argv.includes("--last_exported_id:".concat(tempFolders.name));
                                             if (_a) return [3 /*break*/, 2];
-                                            return [4 /*yield*/, (0, CompilerUtils_1.shouldRecompileModule)(modulePathInTempDir, builtDirectory)];
+                                            return [4 /*yield*/, (0, compiler_utils_1.shouldRecompileModule)(modulePathInTempDir, builtDirectory)];
                                         case 1:
                                             _a = (_b.sent());
                                             _b.label = 2;
@@ -305,7 +305,7 @@ var ModuleCompiler = /** @class */ (function () {
                                             _b.label = 4;
                                         case 4:
                                             _b.trys.push([4, 6, , 7]);
-                                            return [4 /*yield*/, (0, CompilerUtils_1.compileAndCopyDirectory)(modulePathInTempDir, builtDirectory)];
+                                            return [4 /*yield*/, (0, compiler_utils_1.compileAndCopyDirectory)(modulePathInTempDir, builtDirectory)];
                                         case 5:
                                             _b.sent();
                                             return [3 /*break*/, 7];
@@ -315,11 +315,11 @@ var ModuleCompiler = /** @class */ (function () {
                                             return [3 /*break*/, 7];
                                         case 7:
                                             if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 9];
-                                            return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                            return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                                         case 8:
                                             _b.sent();
                                             return [3 /*break*/, 11];
-                                        case 9: return [4 /*yield*/, (0, CompilerUtils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                        case 9: return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
                                         case 10:
                                             _b.sent();
                                             _b.label = 11;
@@ -362,7 +362,7 @@ var ModuleCompiler = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH, CompilerUtils_1.IO_OPTIONS)];
+                        return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
                     case 2:
                         folders = _a.sent();
                         return [4 /*yield*/, Promise.allSettled(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
@@ -397,7 +397,7 @@ var ModuleCompiler = /** @class */ (function () {
                                                 console.error(buildConfig);
                                                 return [2 /*return*/];
                                             }
-                                            return [4 /*yield*/, (0, CompilerUtils_1.readModuleInfo)(moduleFolderPath + "/module-info.json")];
+                                            return [4 /*yield*/, (0, compiler_utils_1.readModuleInfo)(moduleFolderPath + "/module-info.json")];
                                         case 1:
                                             moduleInfo = _a.sent();
                                             module = require(moduleFolderPath + "/" + buildConfig["process"]);
@@ -430,4 +430,4 @@ var ModuleCompiler = /** @class */ (function () {
     return ModuleCompiler;
 }());
 exports.ModuleCompiler = ModuleCompiler;
-//# sourceMappingURL=ModuleCompiler.js.map
+//# sourceMappingURL=module-compiler.js.map

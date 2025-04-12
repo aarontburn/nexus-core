@@ -7,6 +7,8 @@ import { InitContext } from "./utils/types";
 import { loadModules } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
+import { DIRECTORIES, FILE_NAMES } from "./utils/nexus-paths";
+import * as fs from 'fs';
 
 if (process.argv.includes("--dev")) {
 
@@ -70,6 +72,15 @@ async function nexusStart() {
     for (const arg of internalArguments) {
         process.argv.push(arg);
     }
+    await fs.promises.writeFile(
+        DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON,
+        JSON.stringify(
+            {
+                args: internalArguments.length === 0
+                    ? ''
+                    : internalArguments.filter(arg => !arg.startsWith('--last_exported_id')).join(' ')
+            }, undefined, 4)
+    );
 
     // Load modules
     context.moduleMap = await loadModules(context);

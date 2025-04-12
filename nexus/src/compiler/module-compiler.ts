@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
 import { IPCCallback, Process, StorageHandler, ModuleInfo } from "@nexus/nexus-module-builder";
-import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './CompilerUtils';
+import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
 import Stream from 'stream';
 
 
