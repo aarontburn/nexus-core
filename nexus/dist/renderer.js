@@ -52,6 +52,10 @@
                 webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
                 webView.setAttribute("partition", "persist:".concat(moduleID));
                 webView.id = moduleID;
+                webView.addEventListener("new-window", function (event) {
+                    event.preventDefault();
+                    console.log(event);
+                });
                 moduleFrameHTML.insertAdjacentElement("beforeend", webView);
                 return;
             }
