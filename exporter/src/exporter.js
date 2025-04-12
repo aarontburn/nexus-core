@@ -273,7 +273,7 @@ async function changeLastExported() {
         devJSON = JSON.parse(devJSON)
     }
     devJSON['args'] = `--last_imported_id:${BUILD_CONFIG["id"]}`
-    await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4));
+    await fs.promises.writeFile(devPath + "/internal.json", JSON.stringify(devJSON, undefined, 4));
 }
 
 
