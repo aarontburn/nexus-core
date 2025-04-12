@@ -2,7 +2,7 @@ import { session, BrowserWindow } from "electron";
 import * as path from "path";
 import { InitContext } from "../constants/types";
 import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";
-import { WINDOW_DIMENSION } from "../constants/constants";
+import { WINDOW_DIMENSION } from "../constants/Constants";
 
 export async function createBrowserWindow(context: InitContext): Promise<BrowserWindow> {
     session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
