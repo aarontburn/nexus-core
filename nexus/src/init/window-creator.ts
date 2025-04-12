@@ -35,7 +35,17 @@ export async function createBrowserWindow(context: InitContext): Promise<Browser
         }
     })
 
-    window.loadFile(path.join(__dirname, "../view/index.html"))
+    window.loadFile(path.join(__dirname, "../view/index.html"));
+
+    window.webContents.on("did-attach-webview", (_, contents) => {
+        console.log(contents)
+
+        contents.setWindowOpenHandler((details) => {
+            console.log(details)
+            window.webContents.send('open-url', details.url);
+            return { action: 'deny' }
+        })
+    })
     return window;
 }
 

@@ -60,16 +60,12 @@
 
         const createAndInsertIFrame = (moduleID: string, htmlPath: string, url?: string) => {
             if (url) {
-                const webView: HTMLElement = document.createElement("webview");
+                const webView: any = document.createElement("webview");
                 webView.setAttribute("src", url);
                 webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
                 webView.setAttribute("partition", `persist:${moduleID}`);
 
                 webView.id = moduleID
-                webView.addEventListener("new-window", (event) => {
-                    event.preventDefault()
-                    console.log(event)
-                })
 
                 moduleFrameHTML.insertAdjacentElement("beforeend", webView);
                 return;

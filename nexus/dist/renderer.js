@@ -52,10 +52,16 @@
                 webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
                 webView.setAttribute("partition", "persist:".concat(moduleID));
                 webView.id = moduleID;
-                webView.addEventListener("new-window", function (event) {
-                    event.preventDefault();
-                    console.log(event);
-                });
+                for (var key in webView) {
+                    if (key.search('on') === 0) {
+                        console.log(key.slice(2));
+                        webView.addEventListener(key.slice(2), console.log);
+                    }
+                }
+                // webView.addEventListener("will-navigate", (event) => {
+                //     event.preventDefault()
+                //     console.log(event)
+                // })
                 moduleFrameHTML.insertAdjacentElement("beforeend", webView);
                 return;
             }

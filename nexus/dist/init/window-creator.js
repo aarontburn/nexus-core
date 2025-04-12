@@ -110,6 +110,14 @@ function createBrowserWindow(context) {
                 });
             }); });
             window.loadFile(path.join(__dirname, "../view/index.html"));
+            window.webContents.on("did-attach-webview", function (_, contents) {
+                console.log(contents);
+                contents.setWindowOpenHandler(function (details) {
+                    console.log(details);
+                    window.webContents.send('open-url', details.url);
+                    return { action: 'deny' };
+                });
+            });
             return [2 /*return*/, window];
         });
     });
