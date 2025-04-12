@@ -20,7 +20,7 @@ const missingObjectKeys = (obj, keys) => {
 } 
 
 const defaultDevJSON = {
-    last_exported_id: null
+    args: ''
 }
 
 module.exports = {

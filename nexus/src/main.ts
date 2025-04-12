@@ -1,37 +1,26 @@
 import { app, BrowserWindow, Menu } from "electron";
-import { ModuleController } from "./ModuleController";
-import * as os from "os";
-import * as fs from "fs";
-
-const checkLastCompiledModule = () => {
-    const DEV_PATH: string = os.homedir() + "/.nexus_dev/dev.json";
-    try {
-        const devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
-        if (devJSON["last_exported_id"]) {
-            process.argv.push(`--last_exported_id:${devJSON["last_exported_id"]}`);
-        }
-        fs.rmSync(DEV_PATH);
-    } catch (_) {
-    }
-}
+import { getInternalArguments } from "./init/internal-args";
+import { Process } from "@nexus/nexus-module-builder";
+import { createAllDirectories } from "./init/init-directory-creator";
+import { createBrowserWindow, showWindow } from "./init/window-creator";
+import { InitContext } from "./constants/types";
+import { loadModules } from "./init/module-loader";
+import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
+import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 
 if (process.argv.includes("--dev")) {
-    checkLastCompiledModule();
-    
+
 } else {
     Menu.setApplicationMenu(null);
 }
 
-
-
-const moduleController: ModuleController = new ModuleController();
-
+// const moduleController: ModuleController = new ModuleController();
 app.whenReady().then(() => {
-    
-    moduleController.start();
+    nexusStart();
+
     app.on("activate", () => { // MacOS stuff
         if (BrowserWindow.getAllWindows().length === 0) {
-            moduleController.start();
+            nexusStart();
         }
     });
 });
@@ -44,12 +33,108 @@ app.on("window-all-closed", () => {
 });
 
 
+async function nexusStart() {
+    let processReady: boolean = false;
+    let rendererReady: boolean = false;
+
+    const context: InitContext = {
+        moduleMap: undefined,
+        window: undefined,
+        settingModule: undefined,
+        ipcCallback: undefined,
+        displayedModule: undefined,
+        mainIPCSource: {
+            getIPCSource() {
+                return "built_ins.Main"
+            },
+        },
+        setProcessReady: () => {
+            processReady = true;
+            if (processReady && rendererReady) {
+                onProcessAndRendererReady(context);
+            }
+        },
+        setRendererReady: () => {
+            rendererReady = true;
+            if (processReady && rendererReady) {
+                onProcessAndRendererReady(context);
+            }
+        },
+    }
+
+    // Create all directories
+    await createAllDirectories();
+
+    // Get internal command line from file and append to process.argv
+    const internalArguments: string[] = await getInternalArguments();
+    for (const arg of internalArguments) {
+        process.argv.push(arg);
+    }
+
+    // Load modules
+    context.moduleMap = await loadModules(context);
+    context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+    context.setProcessReady();
+
+    // Run module preload
+    for (const module of Array.from(context.moduleMap.values())) {
+        await module.beforeWindowCreated?.();
+    }
 
 
+    // Create window
+    context.window = await createBrowserWindow(context);
 
+    // Register IPC Callback
+    context.ipcCallback = getIPCCallback(context);
 
+    attachEventHandlerForMain(context);
 
+    showWindow(context);
+}
 
+function onProcessAndRendererReady(context: InitContext): void {
+    context.displayedModule = undefined;
+
+    const data: any[] = [];
+    context.moduleMap.forEach((module: Process) => {
+        data.push({
+            moduleName: module.getName(),
+            moduleID: module.getIPCSource(),
+            htmlPath: module.getHTMLPath(),
+            iconPath: module.getIconPath(),
+            url: module.getURL?.()?.toString()
+        });
+    });
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
+
+    let startupModuleID: string = "built_ins.Home";
+
+    const openLastModule: boolean = context.settingModule
+        .getSettings()
+        .findSetting("startup_should_open_last_closed")
+        .getValue() as boolean;
+
+    if (openLastModule) {
+        startupModuleID = context.settingModule
+            .getSettings()
+            .findSetting("startup_last_open_id")
+            .getValue() as string;
+    } else {
+        startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue() as string;
+    }
+    if (!context.moduleMap.has(startupModuleID)) {
+        startupModuleID = "built_ins.Home";
+    }
+
+    swapVisibleModule(context, startupModuleID);
+
+    context.moduleMap.forEach((module: Process) => {
+        if (module.getHTMLPath() === undefined) {
+            module.initialize();
+        }
+    });
+}
 
 
 

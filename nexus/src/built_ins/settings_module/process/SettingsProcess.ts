@@ -15,15 +15,13 @@ const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");
 export class SettingsProcess extends Process {
 
     private readonly moduleSettingsList: Map<string, ModuleSettings> = new Map();
-    private readonly window: BrowserWindow;
 
     private readonly deletedModules: string[] = [];
     private readonly devModeSubscribers: ((isDev: boolean) => void)[] = [];
 
 
-    public constructor(window: BrowserWindow) {
+    public constructor() {
         super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
-        this.window = window;
 
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({
@@ -76,9 +74,11 @@ export class SettingsProcess extends Process {
     }
 
     public async onExit(): Promise<void> {
+        const window: BrowserWindow = BrowserWindow.getAllWindows()[0];
+
         // Save window dimensions
-        const isWindowMaximized: boolean = this.window.isMaximized();
-        const bounds: { width: number, height: number, x: number, y: number } = this.window.getBounds();
+        const isWindowMaximized: boolean = window.isMaximized();
+        const bounds: { width: number, height: number, x: number, y: number } = window.getBounds();
 
 
         await Promise.allSettled([
@@ -99,7 +99,7 @@ export class SettingsProcess extends Process {
     public refreshSettings(modifiedSetting?: Setting<unknown>): void {
         if (modifiedSetting?.getAccessID() === 'zoom') {
             const zoom: number = modifiedSetting.getValue() as number;
-            this.window.webContents.setZoomFactor(zoom / 100);
+            BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(zoom / 100);
 
         } else if (modifiedSetting?.getAccessID() === 'accent_color') {
             this.sendToRenderer("refresh-settings", modifiedSetting.getValue());

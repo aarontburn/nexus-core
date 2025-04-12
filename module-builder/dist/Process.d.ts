@@ -142,6 +142,12 @@ export declare abstract class Process implements IPCSource {
     /**
      *  @private
      *
+     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
+     */
+    beforeWindowCreated(): void;
+    /**
+     *  @private
+     *
      *  Lifecycle function that is called whenever the module is shown.
      */
     onGUIShown(): void;

@@ -1,0 +1,6 @@
+1. Create all directories, if not already created
+2. Read startup arguments in <home>/.nexus/internal/args.json
+3. Read all modules and run constructor
+4. Execute modules preload function
+5. Create window
+6. Add modules to view

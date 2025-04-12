@@ -193,6 +193,14 @@ var Process = /** @class */ (function () {
     /**
      *  @private
      *
+     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
+     */
+    Process.prototype.beforeWindowCreated = function () {
+        // Do nothing by default
+    };
+    /**
+     *  @private
+     *
      *  Lifecycle function that is called whenever the module is shown.
      */
     Process.prototype.onGUIShown = function () {

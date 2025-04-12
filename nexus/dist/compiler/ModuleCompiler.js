@@ -76,7 +76,7 @@ var CompilerUtils_1 = require("./CompilerUtils");
 var ModuleCompiler = /** @class */ (function () {
     function ModuleCompiler() {
     }
-    ModuleCompiler.load = function (ipcCallback, forceReload) {
+    ModuleCompiler.load = function (forceReload) {
         if (forceReload === void 0) { forceReload = false; }
         return __awaiter(this, void 0, void 0, function () {
             var err_1, err_2, modules, err_3;
@@ -115,7 +115,7 @@ var ModuleCompiler = /** @class */ (function () {
                         _a.label = 9;
                     case 9:
                         _a.trys.push([9, 11, , 12]);
-                        return [4 /*yield*/, this.loadModulesFromBuiltStorage(ipcCallback)];
+                        return [4 /*yield*/, this.loadModulesFromBuiltStorage()];
                     case 10:
                         modules = _a.sent();
                         return [3 /*break*/, 12];
@@ -350,7 +350,7 @@ var ModuleCompiler = /** @class */ (function () {
             });
         });
     };
-    ModuleCompiler.loadModulesFromBuiltStorage = function (ipcCallback) {
+    ModuleCompiler.loadModulesFromBuiltStorage = function () {
         return __awaiter(this, void 0, void 0, function () {
             var externalModules, folders, err_5;
             var _this = this;
@@ -406,7 +406,6 @@ var ModuleCompiler = /** @class */ (function () {
                                                 return [2 /*return*/];
                                             }
                                             m = new module["default"]();
-                                            m.setIPC(ipcCallback);
                                             m.setModuleInfo(moduleInfo);
                                             externalModules.push(m);
                                             return [2 /*return*/];

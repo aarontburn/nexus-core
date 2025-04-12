@@ -87,12 +87,11 @@ var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
 var ICON_PATH = path.join(__dirname, "../static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
-    function SettingsProcess(window) {
+    function SettingsProcess() {
         var _this = _super.call(this, MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH) || this;
         _this.moduleSettingsList = new Map();
         _this.deletedModules = [];
         _this.devModeSubscribers = [];
-        _this.window = window;
         _this.getSettings().setDisplayName("General");
         _this.setModuleInfo({
             name: "General",
@@ -133,12 +132,13 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.onExit = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var isWindowMaximized, bounds, _a, _b, _c, _d, _e;
+            var window, isWindowMaximized, bounds, _a, _b, _c, _d, _e;
             return __generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
-                        isWindowMaximized = this.window.isMaximized();
-                        bounds = this.window.getBounds();
+                        window = electron_1.BrowserWindow.getAllWindows()[0];
+                        isWindowMaximized = window.isMaximized();
+                        bounds = window.getBounds();
                         _b = (_a = Promise).allSettled;
                         _c = [this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
                             this.getSettings().findSetting('window_width').setValue(bounds.width),
@@ -163,7 +163,7 @@ var SettingsProcess = /** @class */ (function (_super) {
     SettingsProcess.prototype.refreshSettings = function (modifiedSetting) {
         if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'zoom') {
             var zoom = modifiedSetting.getValue();
-            this.window.webContents.setZoomFactor(zoom / 100);
+            electron_1.BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(zoom / 100);
         }
         else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'accent_color') {
             this.sendToRenderer("refresh-settings", modifiedSetting.getValue());

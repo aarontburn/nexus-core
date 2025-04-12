@@ -234,6 +234,14 @@ export abstract class Process implements IPCSource {
         }
     }
 
+    /**
+     *  @private
+     * 
+     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
+     */
+    public beforeWindowCreated() {
+        // Do nothing by default
+    }
 
     /**
      *  @private
