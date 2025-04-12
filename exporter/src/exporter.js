@@ -264,15 +264,15 @@ async function changeLastExported() {
         return;
     }
 
-    const devPath = path.normalize(os.homedir() + '/.nexus_dev/');
+    const devPath = path.normalize(os.homedir() + '/.nexus_dev/internal/');
     await fs.promises.mkdir(devPath, { recursive: true });
-    let devJSON = await tryOrUndefinedAsync(async () => await fs.promises.readFile(devPath + "/dev.json", "utf-8"));
+    let devJSON = await tryOrUndefinedAsync(async () => await fs.promises.readFile(devPath + "/internal.json", "utf-8"));
     if (devJSON === undefined) {
         devJSON = defaultDevJSON;
     } else {
         devJSON = JSON.parse(devJSON)
     }
-    devJSON["last_exported_id"] = BUILD_CONFIG["id"];
+    devJSON['args'] = `--last_imported_id:${BUILD_CONFIG["id"]}`
     await fs.promises.writeFile(devPath + "/dev.json", JSON.stringify(devJSON, undefined, 4));
 }
 

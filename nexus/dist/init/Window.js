@@ -59,73 +59,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+exports.createBrowserWindow = void 0;
 var electron_1 = require("electron");
-var ModuleController_1 = require("./ModuleController");
-var os = __importStar(require("os"));
-var fs = __importStar(require("fs"));
-var InternalHandler_1 = require("./init/InternalHandler");
-var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
-var InitDirectoryCreator_1 = require("./init/InitDirectoryCreator");
-console.log(electron_1.ipcMain);
-var checkLastCompiledModule = function () {
-    var DEV_PATH = os.homedir() + "/.nexus_dev/dev.json";
-    try {
-        var devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
-        if (devJSON["last_exported_id"]) {
-            process.argv.push("--last_exported_id:".concat(devJSON["last_exported_id"]));
-        }
-        fs.rmSync(DEV_PATH);
-    }
-    catch (_) {
-    }
-};
-if (process.argv.includes("--dev")) {
-    (0, InternalHandler_1.getInternalArguments)().then(console.log);
-    checkLastCompiledModule();
-}
-else {
-    electron_1.Menu.setApplicationMenu(null);
-}
-var moduleController = new ModuleController_1.ModuleController();
-electron_1.app.whenReady().then(function () {
-    init();
-    moduleController.start();
-    electron_1.app.on("activate", function () {
-        if (electron_1.BrowserWindow.getAllWindows().length === 0) {
-            init();
-            moduleController.start();
-        }
-    });
-});
-electron_1.app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") {
-        electron_1.app.quit();
-    }
-});
-function init() {
+var Constants_1 = require("../constants/Constants");
+var path = __importStar(require("path"));
+function createBrowserWindow() {
     return __awaiter(this, void 0, void 0, function () {
-        var internalArguments, _i, internalArguments_1, arg, loadedModules;
+        var window;
+        var _this = this;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: 
-                // Create all directories
-                return [4 /*yield*/, (0, InitDirectoryCreator_1.createAllDirectories)()];
-                case 1:
-                    // Create all directories
-                    _a.sent();
-                    return [4 /*yield*/, (0, InternalHandler_1.getInternalArguments)()];
-                case 2:
-                    internalArguments = _a.sent();
-                    for (_i = 0, internalArguments_1 = internalArguments; _i < internalArguments_1.length; _i++) {
-                        arg = internalArguments_1[_i];
-                        process.argv.push(arg);
+            electron_1.session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
+            window = new electron_1.BrowserWindow({
+                show: false,
+                height: Constants_1.WINDOW_DIMENSION.height,
+                width: Constants_1.WINDOW_DIMENSION.width,
+                webPreferences: {
+                    webviewTag: true,
+                    additionalArguments: process.argv,
+                    backgroundThrottling: false,
+                    preload: path.join(__dirname, "../preload.js")
+                },
+                autoHideMenuBar: true
+            });
+            window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
+                var error_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            event.preventDefault();
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, this.stop()];
+                        case 2:
+                            _a.sent();
+                            this.window.destroy();
+                            return [3 /*break*/, 4];
+                        case 3:
+                            error_1 = _a.sent();
+                            console.error("Error during cleanup:", error_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
-                    return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(undefined, internalArguments.includes("--force-reload"))];
-                case 3:
-                    loadedModules = _a.sent();
-                    return [2 /*return*/];
-            }
+                });
+            }); });
+            window.loadFile(path.join(__dirname, "../view/index.html")).then(function () {
+                window.webContents.on("did-finish-load", function () {
+                    // this.init();
+                });
+            });
+            // this.ipcCallback = {
+            //     notifyRenderer: (target: IPCSource, eventType: string, ...data: any[]) => {
+            //         this.window.webContents.send(target.getIPCSource(), eventType, data);
+            //     },
+            //     requestExternalModule: this.handleInterModuleCommunication.bind(this) // Not sure if the binding is required
+            // }
+            return [2 /*return*/, window];
         });
     });
 }
-//# sourceMappingURL=main.js.map
+exports.createBrowserWindow = createBrowserWindow;
+//# sourceMappingURL=Window.js.map

@@ -1,13 +1,13 @@
-import { BrowserWindow, desktopCapturer, ipcMain, session } from "electron";
+import { BrowserWindow, ipcMain, session } from "electron";
 import * as path from "path";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { HomeProcess } from "./built_ins/home_module/HomeProcess";
 import { ModuleCompiler } from "./compiler/ModuleCompiler";
 import { IPCSource, Process, IPCCallback, ModuleSettings, StorageHandler, Setting, HTTPStatusCode, DataResponse } from "@nexus/nexus-module-builder";
 import { reorderModules } from "./utils/ModuleReorderer";
+import { WINDOW_DIMENSION } from "./constants/Constants";
 
 
-const WINDOW_DIMENSION: { width: number, height: number } = { width: 1920, height: 1080 } as const;
 
 export class ModuleController implements IPCSource {
 
@@ -65,13 +65,12 @@ export class ModuleController implements IPCSource {
     private init(): void {
         const data: any[] = [];
         this.modulesByIPCSource.forEach((module: Process) => {
-            console.log(module.getURL())
             data.push({
                 moduleName: module.getName(),
                 moduleID: module.getIPCSource(),
                 htmlPath: module.getHTMLPath(),
                 iconPath: module.getIconPath(),
-                url: module.getURL()?.toString()
+                url: module.getURL?.()?.toString()
             });
         });
         this.ipcCallback.notifyRenderer(this, 'load-modules', data);
@@ -298,12 +297,9 @@ export class ModuleController implements IPCSource {
 
     private async verifyModuleSettings(module: Process): Promise<Process> {
         const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
-
         const moduleSettings: ModuleSettings = module.getSettings();
 
-
         await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
-
             const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
             if (setting === undefined) {
                 console.log("WARNING: Invalid setting name: '" + settingName + "' found.");

@@ -10,7 +10,7 @@ import Stream from 'stream';
 export class ModuleCompiler {
     private static TEMP_ARCHIVE_PATH: string = StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
 
-    public static async load(ipcCallback: IPCCallback, forceReload: boolean = false): Promise<Process[]> {
+    public static async load(forceReload: boolean = false): Promise<Process[]> {
         console.time("Module Load Time");
         await StorageHandler._createDirectories();
 
@@ -31,7 +31,7 @@ export class ModuleCompiler {
 
         let modules: Process[] = [];
         try {
-            modules = await this.loadModulesFromBuiltStorage(ipcCallback)
+            modules = await this.loadModulesFromBuiltStorage()
         } catch (err) {
             console.error("Error loading modules files");
             console.error(err)
@@ -160,7 +160,7 @@ export class ModuleCompiler {
     }
 
 
-    private static async loadModulesFromBuiltStorage(ipcCallback: IPCCallback): Promise<Process[]> {
+    private static async loadModulesFromBuiltStorage(): Promise<Process[]> {
         console.time("loadModulesFromBuiltStorage")
 
 
@@ -207,7 +207,6 @@ export class ModuleCompiler {
                 }
 
                 const m: Process = new module["default"]();
-                m.setIPC(ipcCallback);
 
                 m.setModuleInfo(moduleInfo);
                 externalModules.push(m);

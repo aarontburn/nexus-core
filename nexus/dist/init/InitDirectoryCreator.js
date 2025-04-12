@@ -59,73 +59,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var electron_1 = require("electron");
-var ModuleController_1 = require("./ModuleController");
-var os = __importStar(require("os"));
+exports.createAllDirectories = void 0;
 var fs = __importStar(require("fs"));
-var InternalHandler_1 = require("./init/InternalHandler");
-var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
-var InitDirectoryCreator_1 = require("./init/InitDirectoryCreator");
-console.log(electron_1.ipcMain);
-var checkLastCompiledModule = function () {
-    var DEV_PATH = os.homedir() + "/.nexus_dev/dev.json";
-    try {
-        var devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
-        if (devJSON["last_exported_id"]) {
-            process.argv.push("--last_exported_id:".concat(devJSON["last_exported_id"]));
-        }
-        fs.rmSync(DEV_PATH);
-    }
-    catch (_) {
-    }
-};
-if (process.argv.includes("--dev")) {
-    (0, InternalHandler_1.getInternalArguments)().then(console.log);
-    checkLastCompiledModule();
-}
-else {
-    electron_1.Menu.setApplicationMenu(null);
-}
-var moduleController = new ModuleController_1.ModuleController();
-electron_1.app.whenReady().then(function () {
-    init();
-    moduleController.start();
-    electron_1.app.on("activate", function () {
-        if (electron_1.BrowserWindow.getAllWindows().length === 0) {
-            init();
-            moduleController.start();
-        }
-    });
-});
-electron_1.app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") {
-        electron_1.app.quit();
-    }
-});
-function init() {
+var NexusPaths_1 = require("../constants/NexusPaths");
+function createAllDirectories() {
     return __awaiter(this, void 0, void 0, function () {
-        var internalArguments, _i, internalArguments_1, arg, loadedModules;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: 
-                // Create all directories
-                return [4 /*yield*/, (0, InitDirectoryCreator_1.createAllDirectories)()];
+                case 0: return [4 /*yield*/, Promise.allSettled(Object.values(NexusPaths_1.DIRECTORIES).map(function (directory) {
+                        return fs.promises.mkdir(directory, { recursive: true });
+                    }))];
                 case 1:
-                    // Create all directories
                     _a.sent();
-                    return [4 /*yield*/, (0, InternalHandler_1.getInternalArguments)()];
-                case 2:
-                    internalArguments = _a.sent();
-                    for (_i = 0, internalArguments_1 = internalArguments; _i < internalArguments_1.length; _i++) {
-                        arg = internalArguments_1[_i];
-                        process.argv.push(arg);
-                    }
-                    return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(undefined, internalArguments.includes("--force-reload"))];
-                case 3:
-                    loadedModules = _a.sent();
                     return [2 /*return*/];
             }
         });
     });
 }
-//# sourceMappingURL=main.js.map
+exports.createAllDirectories = createAllDirectories;
+//# sourceMappingURL=InitDirectoryCreator.js.map

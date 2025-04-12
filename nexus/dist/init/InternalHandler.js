@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -59,73 +70,84 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var electron_1 = require("electron");
-var ModuleController_1 = require("./ModuleController");
-var os = __importStar(require("os"));
+exports.getInternalArguments = void 0;
 var fs = __importStar(require("fs"));
-var InternalHandler_1 = require("./init/InternalHandler");
-var ModuleCompiler_1 = require("./compiler/ModuleCompiler");
-var InitDirectoryCreator_1 = require("./init/InitDirectoryCreator");
-console.log(electron_1.ipcMain);
-var checkLastCompiledModule = function () {
-    var DEV_PATH = os.homedir() + "/.nexus_dev/dev.json";
-    try {
-        var devJSON = JSON.parse(fs.readFileSync(DEV_PATH, "utf-8"));
-        if (devJSON["last_exported_id"]) {
-            process.argv.push("--last_exported_id:".concat(devJSON["last_exported_id"]));
-        }
-        fs.rmSync(DEV_PATH);
-    }
-    catch (_) {
-    }
+var NexusPaths_1 = require("../constants/NexusPaths");
+var DEFAULT_INTERNAL_FILE = {
+    "args": ''
 };
-if (process.argv.includes("--dev")) {
-    (0, InternalHandler_1.getInternalArguments)().then(console.log);
-    checkLastCompiledModule();
-}
-else {
-    electron_1.Menu.setApplicationMenu(null);
-}
-var moduleController = new ModuleController_1.ModuleController();
-electron_1.app.whenReady().then(function () {
-    init();
-    moduleController.start();
-    electron_1.app.on("activate", function () {
-        if (electron_1.BrowserWindow.getAllWindows().length === 0) {
-            init();
-            moduleController.start();
-        }
-    });
-});
-electron_1.app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") {
-        electron_1.app.quit();
-    }
-});
-function init() {
+function getInternalArguments() {
     return __awaiter(this, void 0, void 0, function () {
-        var internalArguments, _i, internalArguments_1, arg, loadedModules;
+        var internal;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: 
-                // Create all directories
-                return [4 /*yield*/, (0, InitDirectoryCreator_1.createAllDirectories)()];
+                case 0: return [4 /*yield*/, readInternal()];
                 case 1:
-                    // Create all directories
-                    _a.sent();
-                    return [4 /*yield*/, (0, InternalHandler_1.getInternalArguments)()];
-                case 2:
-                    internalArguments = _a.sent();
-                    for (_i = 0, internalArguments_1 = internalArguments; _i < internalArguments_1.length; _i++) {
-                        arg = internalArguments_1[_i];
-                        process.argv.push(arg);
-                    }
-                    return [4 /*yield*/, ModuleCompiler_1.ModuleCompiler.load(undefined, internalArguments.includes("--force-reload"))];
-                case 3:
-                    loadedModules = _a.sent();
-                    return [2 /*return*/];
+                    internal = _a.sent();
+                    return [4 /*yield*/, parseInternalArgs(internal)];
+                case 2: return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
-//# sourceMappingURL=main.js.map
+exports.getInternalArguments = getInternalArguments;
+function readInternal() {
+    return __awaiter(this, void 0, void 0, function () {
+        var internalFilePath, parsedContents, contents, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    internalFilePath = NexusPaths_1.DIRECTORIES.INTERNAL_PATH + NexusPaths_1.FILE_NAMES.INTERNAL_JSON;
+                    parsedContents = __assign({}, DEFAULT_INTERNAL_FILE);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 5]);
+                    return [4 /*yield*/, fs.promises.readFile(internalFilePath, "utf8")];
+                case 2:
+                    contents = _a.sent();
+                    parsedContents = JSON.parse(contents);
+                    return [3 /*break*/, 5];
+                case 3:
+                    err_1 = _a.sent();
+                    console.warn("Failed to parse internal.json. Reverting to default. Error:", err_1);
+                    return [4 /*yield*/, fs.promises.writeFile(internalFilePath, JSON.stringify(parsedContents, undefined, 4))];
+                case 4:
+                    _a.sent();
+                    return [3 /*break*/, 5];
+                case 5: return [2 /*return*/, parsedContents];
+            }
+        });
+    });
+}
+function parseInternalArgs(internal) {
+    return __awaiter(this, void 0, void 0, function () {
+        var args, internalArgs, unparsedArgs, _i, unparsedArgs_1, arg;
+        return __generator(this, function (_a) {
+            args = [];
+            internalArgs = internal["args"];
+            if (internalArgs === undefined) {
+                console.warn("internal.json['args'] is undefined and will be ignored.");
+            }
+            else if (typeof internalArgs !== "string") {
+                console.warn("internal.json['args'] is a non-string and will be ignored.");
+            }
+            else if (internalArgs.trim() === '') {
+                // ignore, only whitespace
+            }
+            else {
+                unparsedArgs = internalArgs.split(" ");
+                for (_i = 0, unparsedArgs_1 = unparsedArgs; _i < unparsedArgs_1.length; _i++) {
+                    arg = unparsedArgs_1[_i];
+                    if (!arg.startsWith("--")) {
+                        console.warn("internal.json['args'] -> ".concat(arg, " is not prefixed with '--' and will be ignored."));
+                    }
+                    else {
+                        args.push(arg);
+                    }
+                }
+            }
+            return [2 /*return*/, args];
+        });
+    });
+}
+//# sourceMappingURL=InternalHandler.js.map
