@@ -2,7 +2,7 @@ import { app, BrowserWindow, Menu } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
-import { createBrowserWindow, showWindow } from "./init/window-creator";
+import { createBrowserWindow, createWebViews, showWindow } from "./init/window-creator";
 import { InitContext } from "./utils/types";
 import { loadModules } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
@@ -40,13 +40,14 @@ async function nexusStart() {
 
     const context: InitContext = {
         moduleMap: undefined,
+        moduleViewMap: new Map(),
         window: undefined,
         settingModule: undefined,
         ipcCallback: undefined,
         displayedModule: undefined,
         mainIPCSource: {
             getIPCSource() {
-                return "built_ins.Main"
+                return "built_ins.Main";
             },
         },
         setProcessReady: () => {
@@ -83,13 +84,15 @@ async function nexusStart() {
         Array.from(context.moduleMap.values()).map(module => {  module.beforeWindowCreated()})
     );
     
+    attachEventHandlerForMain(context);
+
     // Create window
     context.window = await createBrowserWindow(context);
+    await createWebViews(context);
 
     // Register IPC Callback
     context.ipcCallback = getIPCCallback(context);
 
-    attachEventHandlerForMain(context);
 
     showWindow(context);
 }

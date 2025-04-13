@@ -1,6 +1,6 @@
 import { DataResponse, HTTPStatusCode, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
 import { InitContext } from "../utils/types";
-import { ipcMain } from "electron";
+import { ipcMain, WebContentsView } from "electron";
 
 
 
@@ -35,9 +35,20 @@ export function attachEventHandlerForMain(context: InitContext): void | Promise<
 
 export function swapVisibleModule(context: InitContext, moduleID: string): void {
     const module: Process = context.moduleMap.get(moduleID);
+    const view: WebContentsView = context.moduleViewMap.get(moduleID);
     if (module === context.displayedModule) {
         return; // If the module is the same, don't swap
     }
+
+
+
+    for (const id of Array.from(context.moduleViewMap.keys())) {
+        if (id === context.mainIPCSource.getIPCSource()) continue;
+
+        context.moduleViewMap.get(id).setVisible(false);
+    }
+
+    view.setVisible(true);
 
     context.displayedModule?.onGUIHidden();
     module.onGUIShown();
@@ -67,7 +78,7 @@ export function handleExternalWrapper(context: InitContext) {
 
 const notifyRendererWrapper = (context: InitContext) => {
     return (target: IPCSource, eventType: string, ...data: any[]) => {
-        context.window.webContents.send(target.getIPCSource(), eventType, data);
+        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource(), eventType, data);
     }
 }
 

@@ -68,9 +68,17 @@ exports.attachEventHandlerForMain = attachEventHandlerForMain;
 function swapVisibleModule(context, moduleID) {
     var _a;
     var module = context.moduleMap.get(moduleID);
+    var view = context.moduleViewMap.get(moduleID);
     if (module === context.displayedModule) {
         return; // If the module is the same, don't swap
     }
+    for (var _i = 0, _b = Array.from(context.moduleViewMap.keys()); _i < _b.length; _i++) {
+        var id = _b[_i];
+        if (id === context.mainIPCSource.getIPCSource())
+            continue;
+        context.moduleViewMap.get(id).setVisible(false);
+    }
+    view.setVisible(true);
     (_a = context.displayedModule) === null || _a === void 0 ? void 0 : _a.onGUIHidden();
     module.onGUIShown();
     context.displayedModule = module;
@@ -108,7 +116,7 @@ var notifyRendererWrapper = function (context) {
         for (var _i = 2; _i < arguments.length; _i++) {
             data[_i - 2] = arguments[_i];
         }
-        context.window.webContents.send(target.getIPCSource(), eventType, data);
+        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource(), eventType, data);
     };
 };
 var requestExternalModuleWrapper = function (context) {

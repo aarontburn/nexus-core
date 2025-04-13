@@ -59,27 +59,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.showWindow = exports.createBrowserWindow = void 0;
+exports.showWindow = exports.createWebViews = exports.createBrowserWindow = void 0;
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
 var constants_1 = require("../utils/constants");
 function createBrowserWindow(context) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function () {
-        var window;
+        var window, view;
         var _this = this;
-        return __generator(this, function (_a) {
-            electron_1.session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
-            window = new electron_1.BrowserWindow({
+        return __generator(this, function (_c) {
+            window = new electron_1.BaseWindow({
                 show: false,
                 height: constants_1.WINDOW_DIMENSION.height,
                 width: constants_1.WINDOW_DIMENSION.width,
-                autoHideMenuBar: true,
-                webPreferences: {
-                    webviewTag: true,
-                    additionalArguments: process.argv,
-                    backgroundThrottling: false,
-                    preload: path.join(__dirname, "../preload.js")
-                }
+                autoHideMenuBar: true
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
                 var error_1;
@@ -109,20 +103,82 @@ function createBrowserWindow(context) {
                     }
                 });
             }); });
-            window.loadFile(path.join(__dirname, "../view/index.html"));
-            window.webContents.on("did-attach-webview", function (_, contents) {
-                console.log(contents);
-                contents.setWindowOpenHandler(function (details) {
-                    console.log(details);
-                    window.webContents.send('open-url', details.url);
-                    return { action: 'deny' };
+            view = new electron_1.WebContentsView({
+                webPreferences: {
+                    webviewTag: true,
+                    additionalArguments: process.argv,
+                    backgroundThrottling: false,
+                    preload: path.join(__dirname, "../preload.js")
+                }
+            });
+            window.contentView.addChildView(view);
+            view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
+            view.on('bounds-changed', function () {
+                if (!window || !view) {
+                    return;
+                }
+                var bounds = window.getBounds();
+                view.setBounds({
+                    x: 0,
+                    y: 0,
+                    width: 48,
+                    height: bounds.height
                 });
             });
+            view.setBounds({ x: 0, y: 0, width: 48, height: window.getBounds().height });
+            (_b = (_a = view.webContents).openDevTools) === null || _b === void 0 ? void 0 : _b.call(_a, {
+                mode: "detach"
+            });
+            context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
             return [2 /*return*/, window];
         });
     });
 }
 exports.createBrowserWindow = createBrowserWindow;
+function createWebViews(context) {
+    var _a;
+    var viewMap = new Map();
+    var _loop_1 = function (module_1) {
+        var view = new electron_1.WebContentsView({
+            webPreferences: {
+                webviewTag: true,
+                additionalArguments: process.argv,
+                backgroundThrottling: false,
+                preload: path.join(__dirname, "../preload.js")
+            }
+        });
+        context.window.contentView.addChildView(view);
+        if (module_1.getHTMLPath()) {
+            view.webContents.loadURL("file://" + module_1.getHTMLPath());
+        }
+        else if (module_1.getURL()) {
+            view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString());
+        }
+        context.moduleViewMap.set(module_1.getIPCSource(), view);
+        view.on('bounds-changed', function () {
+            if (!context.window || !view) {
+                return;
+            }
+            var bounds = context.window.getBounds();
+            view.setBounds({
+                x: 70,
+                y: 0,
+                width: bounds.width - 70,
+                height: bounds.height
+            });
+        });
+        view.setVisible(false);
+        view.webContents.openDevTools();
+        view.setBounds({ x: 70, y: 0, width: 0, height: 0 });
+        viewMap.set(module_1.getIPCSource(), view);
+    };
+    for (var _i = 0, _b = Array.from(context.moduleMap.values()); _i < _b.length; _i++) {
+        var module_1 = _b[_i];
+        _loop_1(module_1);
+    }
+    return viewMap;
+}
+exports.createWebViews = createWebViews;
 function showWindow(context) {
     var settings = context.settingModule.getSettings();
     context.window.setBounds({

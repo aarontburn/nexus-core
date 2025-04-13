@@ -1,4 +1,6 @@
 (() => {
+    (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Settings";
+
     interface ModuleInfo {
         moduleName: string,
         author: string,
@@ -28,10 +30,10 @@
     }
 
     const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
-        return window.parent.ipc.send(window, eventName, data);
+        return window.ipc.send(window, eventName, data);
     }
 
-    window.parent.ipc.on(window, (eventName: string, data: any[]) => {
+    window.ipc.on(window, (eventName: string, data: any[]) => {
         handleEvent(eventName, data);
     });
 

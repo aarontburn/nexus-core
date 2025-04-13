@@ -1,12 +1,13 @@
 (function () {
+    window["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Home";
     var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.parent.ipc.send(window, eventName, data);
+        return window.ipc.send(window, eventName, data);
     };
-    window.parent.ipc.on(window, function (eventName, data) {
+    window.ipc.on(window, function (eventName, data) {
         handleEvent(eventName, data);
     });
     sendToProcess("init");

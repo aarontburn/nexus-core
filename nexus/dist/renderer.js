@@ -14,7 +14,7 @@
                 break;
             }
             case "swap-modules": {
-                swapVisibleModule(data[0]);
+                // swapVisibleModule(data[0])
                 break;
             }
         }
@@ -30,37 +30,20 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
-        Array.from(document.getElementsByClassName("svg")).forEach(function (e) {
-            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
-        });
+        // Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
+        //     e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
+        // });
         sendToProcess("swap-modules", moduleID);
     };
-    function swapVisibleModule(moduleIDToSwapTo) {
-        var modules = document.getElementById("modules").getElementsByTagName("*");
-        for (var i = 0; i < modules.length; i++) {
-            modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
-        }
-        document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
-    }
+    // function swapVisibleModule(moduleIDToSwapTo: string): void {
+    //     const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
+    //     for (let i = 0; i < modules.length; i++) {
+    //         modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
+    //     }
+    //     document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
+    // }
     function loadModules(data) {
-        var moduleFrameHTML = document.getElementById("modules");
         var moduleIconsHTML = document.getElementById("header");
-        var createAndInsertIFrame = function (moduleID, htmlPath, url) {
-            if (url) {
-                var webView = document.createElement("webview");
-                webView.setAttribute("src", url);
-                webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
-                webView.setAttribute("partition", "persist:".concat(moduleID));
-                webView.id = moduleID;
-                moduleFrameHTML.insertAdjacentElement("beforeend", webView);
-                return;
-            }
-            var iframe = document.createElement("iframe");
-            iframe.id = moduleID;
-            iframe.setAttribute("src", htmlPath);
-            iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
-            moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
-        };
         var createAndInsertButton = function (moduleName, moduleID, iconPath) {
             var _a;
             var getAbbreviation = function () {
@@ -119,7 +102,6 @@
             if (htmlPath === undefined && url === undefined) { // internal module, ignore
                 continue;
             }
-            createAndInsertIFrame(moduleID, htmlPath, url);
             createAndInsertButton(moduleName, moduleID, iconPath);
         }
     }

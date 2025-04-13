@@ -11,7 +11,7 @@
                 break;
             }
             case "swap-modules": {
-                swapVisibleModule(data[0])
+                // swapVisibleModule(data[0])
                 break;
             }
         }
@@ -33,51 +33,27 @@
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
 
-        Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
-            e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
-        });
+        // Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
+        //     e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
+        // });
 
         sendToProcess("swap-modules", moduleID);
     }
 
 
 
-    function swapVisibleModule(moduleIDToSwapTo: string): void {
-        const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
-        for (let i = 0; i < modules.length; i++) {
-            modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
-        }
-        document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
-    }
+    // function swapVisibleModule(moduleIDToSwapTo: string): void {
+    //     const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
+    //     for (let i = 0; i < modules.length; i++) {
+    //         modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
+    //     }
+    //     document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
+    // }
 
 
 
     function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
-
-        const moduleFrameHTML: HTMLElement = document.getElementById("modules");
         const moduleIconsHTML: HTMLElement = document.getElementById("header");
-
-
-        const createAndInsertIFrame = (moduleID: string, htmlPath: string, url?: string) => {
-            if (url) {
-                const webView: any = document.createElement("webview");
-                webView.setAttribute("src", url);
-                webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
-                webView.setAttribute("partition", `persist:${moduleID}`);
-
-                webView.id = moduleID
-
-                moduleFrameHTML.insertAdjacentElement("beforeend", webView);
-                return;
-            }
-
-
-            const iframe: HTMLElement = document.createElement("iframe");
-            iframe.id = moduleID;
-            iframe.setAttribute("src", htmlPath);
-            iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
-            moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
-        }
 
         const createAndInsertButton = (moduleName: string, moduleID: string, iconPath: string | undefined) => {
             const getAbbreviation = () => {
@@ -139,7 +115,6 @@
 
         }
 
-
         for (const obj of data) {
             const { moduleName, moduleID, htmlPath, iconPath, url }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string, url?: string } = obj;
 
@@ -147,7 +122,6 @@
                 continue;
             }
 
-            createAndInsertIFrame(moduleID, htmlPath, url);
             createAndInsertButton(moduleName, moduleID, iconPath);
         }
 

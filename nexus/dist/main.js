@@ -72,6 +72,7 @@ function nexusStart() {
                     rendererReady = false;
                     context = {
                         moduleMap: undefined,
+                        moduleViewMap: new Map(),
                         window: undefined,
                         settingModule: undefined,
                         ipcCallback: undefined,
@@ -122,15 +123,18 @@ function nexusStart() {
                 case 5:
                     // Run module preload
                     _c.sent();
+                    (0, global_event_handler_1.attachEventHandlerForMain)(context);
                     // Create window
                     _b = context;
                     return [4 /*yield*/, (0, window_creator_1.createBrowserWindow)(context)];
                 case 6:
                     // Create window
                     _b.window = _c.sent();
+                    return [4 /*yield*/, (0, window_creator_1.createWebViews)(context)];
+                case 7:
+                    _c.sent();
                     // Register IPC Callback
                     context.ipcCallback = (0, global_event_handler_1.getIPCCallback)(context);
-                    (0, global_event_handler_1.attachEventHandlerForMain)(context);
                     (0, window_creator_1.showWindow)(context);
                     return [2 /*return*/];
             }

@@ -1,14 +1,15 @@
 import { Process, StorageHandler, ModuleSettings, Setting } from "@nexus/nexus-module-builder";
-import { ipcMain } from "electron";
+import { ipcMain, WebContentsView } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess } from "../built_ins/home_module/HomeProcess";
 import { SettingsProcess } from "../built_ins/settings_module/process/SettingsProcess";
+import path from "path";
 
 
 
-export async function loadModules(context: InitContext) {
+export async function loadModules(context: InitContext): Promise<Map<string, Process>> {
     // Load modules from storage
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
     const [homeProcess, settingProcess] = [new HomeProcess(), new SettingsProcess()]
@@ -39,11 +40,9 @@ export async function loadModules(context: InitContext) {
     await StorageHandler.writeModuleSettingsToStorage(settingProcess);
 
     const orderedMap: Map<string, Process> = new Map();
-
     for (const module of [homeProcess, settingProcess, ...reorderedModules]) {
         orderedMap.set(module.getIPCSource(), module);
     }
-
     return orderedMap;
 
 }
