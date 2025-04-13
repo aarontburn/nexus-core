@@ -42,6 +42,7 @@ var init_directory_creator_1 = require("./init/init-directory-creator");
 var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
+var external_module_interfacer_1 = require("./init/external-module-interfacer");
 if (process.argv.includes("--dev")) {
 }
 else {
@@ -173,5 +174,6 @@ function onProcessAndRendererReady(context) {
             module.initialize();
         }
     });
+    (0, external_module_interfacer_1.interactWithExternalModules)(context);
 }
 //# sourceMappingURL=main.js.map

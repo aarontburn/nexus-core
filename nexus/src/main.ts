@@ -7,8 +7,7 @@ import { InitContext } from "./utils/types";
 import { loadModules } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
-import { DIRECTORIES, FILE_NAMES } from "./utils/nexus-paths";
-import * as fs from 'fs';
+import { interactWithExternalModules } from "./init/external-module-interfacer";
 
 if (process.argv.includes("--dev")) {
 
@@ -136,6 +135,7 @@ function onProcessAndRendererReady(context: InitContext): void {
             module.initialize();
         }
     });
+    interactWithExternalModules(context);
 }
 
 
