@@ -7,14 +7,26 @@ import { Setting } from "./Setting";
 
 
 export interface ModuleInfo {
-    name: string,
-    author: string,
-    version?: string,
-    description: string,
-    buildVersion?: number,
-    platforms?: string[],
-    link?: string
+    name: string;
+    author: string;
+    version?: string;
+    description: string;
+    buildVersion?: number;
+    platforms?: string[];
+    link?: string;
 }
+
+export interface ProcessConstructorArguments {
+    moduleID: string;
+    moduleName: string;
+    paths?: {
+        htmlPath?: string;
+        urlPath?: string;
+        iconPath?: string;
+    }
+}
+
+
 
 /**
  *  Class to encapsulate module behavior.
@@ -72,7 +84,7 @@ export abstract class Process implements IPCSource {
 
     private readonly iconPath: string;
 
-    private readonly url: URL | undefined;
+    private readonly url: string;
 
     /**
      *  Entry point.
@@ -80,25 +92,26 @@ export abstract class Process implements IPCSource {
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
      */
-    public constructor(moduleID: string, moduleName: string, htmlPath: string | URL, iconPath?: string) {
-        this.moduleID = moduleID;
-        this.moduleName = moduleName;
+    public constructor(args: ProcessConstructorArguments) {
+        this.moduleID = args.moduleID;
+        this.moduleName = args.moduleName;
 
-        if (typeof htmlPath === "string") {
-            this.htmlPath = htmlPath;
-        } else {
-            this.url = htmlPath;
+
+        if (args.paths) {
+            this.htmlPath = args.paths.htmlPath;
+            this.url = args.paths.urlPath;
+            this.iconPath = args.paths.iconPath;
         }
 
-        this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings(this);
     }
+
 
     public getIconPath(): string {
         return this.iconPath;
     }
 
-    public getURL(): URL | undefined {
+    public getURL(): string {
         return this.url;
     }
 

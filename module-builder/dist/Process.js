@@ -61,20 +61,18 @@ var Process = /** @class */ (function () {
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
      */
-    function Process(moduleID, moduleName, htmlPath, iconPath) {
+    function Process(args) {
         /**
          *  Boolean indicating if this module has been initialized.
          */
         this.hasBeenInit = false;
-        this.moduleID = moduleID;
-        this.moduleName = moduleName;
-        if (typeof htmlPath === "string") {
-            this.htmlPath = htmlPath;
+        this.moduleID = args.moduleID;
+        this.moduleName = args.moduleName;
+        if (args.paths) {
+            this.htmlPath = args.paths.htmlPath;
+            this.url = args.paths.urlPath;
+            this.iconPath = args.paths.iconPath;
         }
-        else {
-            this.url = htmlPath;
-        }
-        this.iconPath = iconPath;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
     }
     Process.prototype.getIconPath = function () {

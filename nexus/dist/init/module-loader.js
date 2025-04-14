@@ -148,11 +148,7 @@ function verifyModuleSettings(module) {
                                         case 2:
                                             _b.sent();
                                             _b.label = 3;
-                                        case 3:
-                                            if (settingName === "Startup Module ID") {
-                                                console.log(setting.getValue());
-                                            }
-                                            return [2 /*return*/];
+                                        case 3: return [2 /*return*/];
                                     }
                                 });
                             });

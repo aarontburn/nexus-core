@@ -48,7 +48,6 @@ if (process.argv.includes("--dev")) {
 else {
     electron_1.Menu.setApplicationMenu(null);
 }
-// const moduleController: ModuleController = new ModuleController();
 electron_1.app.whenReady().then(function () {
     nexusStart();
     electron_1.app.on("activate", function () {

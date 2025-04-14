@@ -11,6 +11,15 @@ export interface ModuleInfo {
     platforms?: string[];
     link?: string;
 }
+export interface ProcessConstructorArguments {
+    moduleID: string;
+    moduleName: string;
+    paths?: {
+        htmlPath?: string;
+        urlPath?: string;
+        iconPath?: string;
+    };
+}
 /**
  *  Class to encapsulate module behavior.
  *
@@ -65,9 +74,9 @@ export declare abstract class Process implements IPCSource {
      *  @param moduleName   The name of the module,
      *  @param htmlPath     The path to the HTML frontend.
      */
-    constructor(moduleID: string, moduleName: string, htmlPath: string | URL, iconPath?: string);
+    constructor(args: ProcessConstructorArguments);
     getIconPath(): string;
-    getURL(): URL | undefined;
+    getURL(): string;
     setIPC(ipc: IPCCallback): void;
     /**
      *  @returns the ID of the module.

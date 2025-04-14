@@ -15,7 +15,6 @@ if (process.argv.includes("--dev")) {
     Menu.setApplicationMenu(null);
 }
 
-// const moduleController: ModuleController = new ModuleController();
 app.whenReady().then(() => {
     nexusStart();
 
