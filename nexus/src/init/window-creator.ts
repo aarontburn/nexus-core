@@ -5,8 +5,6 @@ import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";
 import { WINDOW_DIMENSION } from "../utils/constants";
 
 export async function createBrowserWindow(context: InitContext): Promise<BrowserWindow> {
-    session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
-
     const window = new BrowserWindow({
         show: false,
         height: WINDOW_DIMENSION.height,
@@ -35,17 +33,8 @@ export async function createBrowserWindow(context: InitContext): Promise<Browser
         }
     })
 
+
     window.loadFile(path.join(__dirname, "../view/index.html"));
-
-    window.webContents.on("did-attach-webview", (_, contents) => {
-        console.log(contents)
-
-        contents.setWindowOpenHandler((details) => {
-            console.log(details)
-            window.webContents.send('open-url', details.url);
-            return { action: 'deny' }
-        })
-    })
     return window;
 }
 

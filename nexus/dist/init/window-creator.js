@@ -68,7 +68,6 @@ function createBrowserWindow(context) {
         var window;
         var _this = this;
         return __generator(this, function (_a) {
-            electron_1.session.defaultSession.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
             window = new electron_1.BrowserWindow({
                 show: false,
                 height: constants_1.WINDOW_DIMENSION.height,
@@ -110,14 +109,6 @@ function createBrowserWindow(context) {
                 });
             }); });
             window.loadFile(path.join(__dirname, "../view/index.html"));
-            window.webContents.on("did-attach-webview", function (_, contents) {
-                console.log(contents);
-                contents.setWindowOpenHandler(function (details) {
-                    console.log(details);
-                    window.webContents.send('open-url', details.url);
-                    return { action: 'deny' };
-                });
-            });
             return [2 /*return*/, window];
         });
     });
