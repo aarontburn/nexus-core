@@ -36,7 +36,7 @@
         sendToProcess("swap-modules", moduleID);
     };
     function swapVisibleModule(moduleIDToSwapTo) {
-        var modules = document.getElementById("modules").getElementsByTagName("*");
+        var modules = document.getElementById("modules").getElementsByClassName("window");
         for (var i = 0; i < modules.length; i++) {
             modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
         }
@@ -46,20 +46,27 @@
         var moduleFrameHTML = document.getElementById("modules");
         var moduleIconsHTML = document.getElementById("header");
         var createAndInsertIFrame = function (moduleID, htmlPath, url) {
-            if (url) {
+            if (url !== undefined && htmlPath !== undefined) { // has both
+                var html = "\n                    <div class=\"embedded window\" id=\"".concat(moduleID, "\">\n                        <webview \n                            src=\"").concat(url, "\" \n                            partition:\"persist:").concat(moduleID, "\" \n                        \n                        >\n                        </webview>\n\n                        <iframe \n                            src=\"").concat(htmlPath, "\" \n                            id=\"").concat(moduleID, "\"\n                        \n                        >\n                        </iframe>\n                    </div>\n                ");
+                moduleFrameHTML.insertAdjacentHTML('beforeend', html);
+            }
+            else if (url !== undefined) { // has url but no html path, use webview but will not need an overlay iframe
                 var webView = document.createElement("webview");
                 webView.setAttribute("src", url);
+                webView.className = 'window';
                 webView.setAttribute("style", IFRAME_DEFAULT_STYLE);
                 webView.setAttribute("partition", "persist:".concat(moduleID));
                 webView.id = moduleID;
                 moduleFrameHTML.insertAdjacentElement("beforeend", webView);
-                return;
             }
-            var iframe = document.createElement("iframe");
-            iframe.id = moduleID;
-            iframe.setAttribute("src", htmlPath);
-            iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
-            moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
+            else if (htmlPath !== undefined) { // has html path but no url, embed in iframe as usual
+                var iframe = document.createElement("iframe");
+                iframe.id = moduleID;
+                iframe.className = "window";
+                iframe.setAttribute("src", htmlPath);
+                iframe.setAttribute("style", IFRAME_DEFAULT_STYLE);
+                moduleFrameHTML.insertAdjacentElement("beforeend", iframe);
+            }
         };
         var createAndInsertButton = function (moduleName, moduleID, iconPath) {
             var _a;

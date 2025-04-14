@@ -84,3 +84,21 @@ body {
   /* Set the mask image on the div */
   /* mask-image: url(...) */
 }
+
+.embedded>iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+}
+
+.embedded>webview {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border: none;
+}
