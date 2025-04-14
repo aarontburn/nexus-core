@@ -30,7 +30,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
     const view = new WebContentsView({
         webPreferences: {
             webviewTag: true,
-            additionalArguments: process.argv,
+            additionalArguments: [...process.argv, `--module-ID:${context.mainIPCSource.getIPCSource()}`],
             backgroundThrottling: false,
             preload: path.join(__dirname, "../preload.js"),
         }
@@ -74,7 +74,7 @@ export function createWebViews(context: InitContext) {
         const view = new WebContentsView({
             webPreferences: {
                 webviewTag: true,
-                additionalArguments: process.argv,
+                additionalArguments: [...process.argv, `--module-ID:${module.getID()}`],
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
             }
@@ -85,8 +85,6 @@ export function createWebViews(context: InitContext) {
             view.webContents.loadURL("file://" + module.getHTMLPath());
         } else if (module.getURL()) {
             view.webContents.loadURL(module.getURL?.().toString());
-
-
         }
         context.moduleViewMap.set(module.getIPCSource(), view);
 

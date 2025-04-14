@@ -47,7 +47,7 @@ var getIPCCallback = function (context) {
 };
 exports.getIPCCallback = getIPCCallback;
 function attachEventHandlerForMain(context) {
-    electron_1.ipcMain.handle(context.mainIPCSource.getIPCSource(), function (_, eventType, data) {
+    electron_1.ipcMain.handle(context.mainIPCSource.getIPCSource().toLowerCase(), function (_, eventType, data) {
         switch (eventType) {
             case "renderer-init": {
                 context.setRendererReady();
@@ -116,7 +116,7 @@ var notifyRendererWrapper = function (context) {
         for (var _i = 2; _i < arguments.length; _i++) {
             data[_i - 2] = arguments[_i];
         }
-        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource(), eventType, data);
+        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource().toLowerCase(), eventType, data);
     };
 };
 var requestExternalModuleWrapper = function (context) {

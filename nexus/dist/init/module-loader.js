@@ -118,7 +118,7 @@ function registerModule(map, module) {
     }
     map.set(moduleID, module);
     console.log("\tRegistering " + moduleID);
-    electron_1.ipcMain.handle(moduleID, function (_, eventType, data) {
+    electron_1.ipcMain.handle(moduleID.toLowerCase(), function (_, eventType, data) {
         if (data === void 0) { data = []; }
         return module.handleEvent(eventType, data);
     });

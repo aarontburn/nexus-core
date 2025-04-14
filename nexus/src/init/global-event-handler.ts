@@ -13,7 +13,7 @@ export const getIPCCallback = (context: InitContext): IPCCallback => {
 
 
 export function attachEventHandlerForMain(context: InitContext): void | Promise<any> {
-    ipcMain.handle(context.mainIPCSource.getIPCSource(), (_, eventType: string, data: any[]) => {
+    ipcMain.handle(context.mainIPCSource.getIPCSource().toLowerCase(), (_, eventType: string, data: any[]) => {
         switch (eventType) {
             case "renderer-init": {
                 context.setRendererReady();
@@ -78,7 +78,7 @@ export function handleExternalWrapper(context: InitContext) {
 
 const notifyRendererWrapper = (context: InitContext) => {
     return (target: IPCSource, eventType: string, ...data: any[]) => {
-        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource(), eventType, data);
+        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource().toLowerCase(), eventType, data);
     }
 }
 

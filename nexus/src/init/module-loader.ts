@@ -62,7 +62,7 @@ function registerModule(map: Map<string, Process>, module: Process) {
     map.set(moduleID, module);
     console.log("\tRegistering " + moduleID);
 
-    ipcMain.handle(moduleID, (_, eventType: string, data: any = []) => {
+    ipcMain.handle(moduleID.toLowerCase(), (_, eventType: string, data: any = []) => {
         return module.handleEvent(eventType, data);
     });
 }

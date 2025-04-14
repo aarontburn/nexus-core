@@ -1,5 +1,5 @@
 (() => {
-    (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main";
+    console.log(window)
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
         return window.ipc.send(window, eventName, data);
     }

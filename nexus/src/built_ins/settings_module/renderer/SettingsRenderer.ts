@@ -1,5 +1,6 @@
 (() => {
     (window as any)["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Settings";
+    console.log(window.common.args)
 
     interface ModuleInfo {
         moduleName: string,

@@ -1,5 +1,5 @@
 (function () {
-    window["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Main";
+    console.log(window);
     var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
