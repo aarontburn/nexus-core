@@ -93,18 +93,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 break;
             }
             case "refresh-settings": {
-                var newAccentColor = data[0];
-                var root = window.parent.document.querySelector(':root');
-                root.style.setProperty('--accent-color', newAccentColor);
-                var contentChildren = window.parent.document.body.querySelector(".content").children;
-                for (var i = 0; i < contentChildren.length; i++) {
-                    var child = contentChildren.item(i);
-                    if (contentChildren.item(i).tagName.toLowerCase() === "iframe") {
-                        child.contentWindow
-                            .document.querySelector(":root")
-                            .style.setProperty('--accent-color', newAccentColor);
-                    }
-                }
+                // const newAccentColor: string = data[0];
+                // const root: any = window.parent.document.querySelector(':root');
+                // root.style.setProperty('--accent-color', newAccentColor);
+                // const contentChildren: HTMLCollection = window.parent.document.body.querySelector(".content").children;
+                // for (let i = 0; i < contentChildren.length; i++) {
+                //     const child: any = contentChildren.item(i);
+                //     if (contentChildren.item(i).tagName.toLowerCase() === "iframe") {
+                //         child.contentWindow
+                //             .document.querySelector(":root")
+                //             .style.setProperty('--accent-color', newAccentColor)
+                //     }
+                // }
                 break;
             }
         }

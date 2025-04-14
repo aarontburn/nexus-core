@@ -28,7 +28,14 @@ export class HomeProcess extends Process {
 	private clockTimeout: NodeJS.Timeout;
 
 	public constructor() {
-		super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
+        super({
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        });
 
 		this.setModuleInfo({
 			name: "Home",

@@ -1,10 +1,9 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BrowserWindow, app, shell } from 'electron';
+import { BaseWindow, BrowserWindow, WebContents, WebContentsView, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
-import { DIRECTORIES, FILE_NAMES } from "../../../utils/nexus-paths";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
 
 const MODULE_NAME: string = "Settings";
@@ -23,7 +22,14 @@ export class SettingsProcess extends Process {
 
 
     public constructor() {
-        super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
+        super({
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        });
 
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({
@@ -99,34 +105,55 @@ export class SettingsProcess extends Process {
 
 
     public refreshSettings(modifiedSetting?: Setting<unknown>): void {
-        if (modifiedSetting?.getAccessID() === 'zoom') {
-            const zoom: number = modifiedSetting.getValue() as number;
-            BrowserWindow.getAllWindows()[0]?.webContents.setZoomFactor(zoom / 100);
-
-        } else if (modifiedSetting?.getAccessID() === 'accent_color') {
-            this.sendToRenderer("refresh-settings", modifiedSetting.getValue());
-
-        } else if (modifiedSetting?.getAccessID() === 'dev_mode') {
-            this.sendToRenderer("is-dev", modifiedSetting.getValue());
-            this.devModeSubscribers.forEach((callback) => {
-                callback(modifiedSetting.getValue() as boolean);
-            })
-        } else if (modifiedSetting?.getAccessID() === "force_reload") {
-            const shouldForceReload: boolean = modifiedSetting.getValue() as boolean;
-
-            readInternal().then(parseInternalArgs).then(args => { 
-                if (shouldForceReload) {
-                    if (!args.includes("--force-reload")) {
-                        args.push("--force-reload");
-                    }
-                } else {
-                    args = args.filter(arg => arg !== "--force-reload");
-                }
-
-                return writeInternal(args);
-            })
-
+        if (modifiedSetting === undefined) {
+            return;
         }
+        switch (modifiedSetting.getAccessID()) {
+            case "zoom": {
+                const zoom: number = modifiedSetting.getValue() as number;
+
+                BaseWindow.getAllWindows()[0].contentView.children.forEach(
+                    (view: WebContentsView) => {
+                        view.webContents.setZoomFactor(zoom / 100);
+                        view.emit("bounds-changed");
+                    });
+
+                break;
+            }
+            case "accent_color": {
+                BaseWindow.getAllWindows()[0].contentView.children.forEach(
+                    (view: WebContentsView) => {
+                        view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
+                    });
+                break;
+            }
+            case "dev_mode": {
+                this.sendToRenderer("is-dev", modifiedSetting.getValue());
+                this.devModeSubscribers.forEach((callback) => {
+                    callback(modifiedSetting.getValue() as boolean);
+                })
+                break;
+            }
+
+            case "force_reload": {
+                const shouldForceReload: boolean = modifiedSetting.getValue() as boolean;
+
+                readInternal().then(parseInternalArgs).then(args => {
+                    if (shouldForceReload) {
+                        if (!args.includes("--force-reload")) {
+                            args.push("--force-reload");
+                        }
+                    } else {
+                        args = args.filter(arg => arg !== "--force-reload");
+                    }
+
+                    return writeInternal(args);
+                })
+                break;
+
+            }
+        }
+
     }
 
 

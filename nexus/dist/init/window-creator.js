@@ -111,6 +111,11 @@ function createBrowserWindow(context) {
                     preload: path.join(__dirname, "../preload.js")
                 }
             });
+            window.on('resize', function () {
+                context.moduleViewMap.forEach(function (moduleView) {
+                    moduleView.emit("bounds-changed");
+                });
+            });
             window.contentView.addChildView(view);
             view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
             view.on('bounds-changed', function () {
@@ -121,11 +126,11 @@ function createBrowserWindow(context) {
                 view.setBounds({
                     x: 0,
                     y: 0,
-                    width: 48,
+                    width: 70 * view.webContents.zoomFactor,
                     height: bounds.height
                 });
             });
-            view.setBounds({ x: 0, y: 0, width: 48, height: window.getBounds().height });
+            view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
             (_b = (_a = view.webContents).openDevTools) === null || _b === void 0 ? void 0 : _b.call(_a, {
                 mode: "detach"
             });
@@ -161,15 +166,15 @@ function createWebViews(context) {
             }
             var bounds = context.window.getBounds();
             view.setBounds({
-                x: 70,
+                x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
                 y: 0,
-                width: bounds.width - 70,
+                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor) - 16,
                 height: bounds.height
             });
         });
         view.setVisible(false);
         view.webContents.openDevTools();
-        view.setBounds({ x: 70, y: 0, width: 0, height: 0 });
+        view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
         viewMap.set(module_1.getIPCSource(), view);
     };
     for (var _i = 0, _b = Array.from(context.moduleMap.values()); _i < _b.length; _i++) {

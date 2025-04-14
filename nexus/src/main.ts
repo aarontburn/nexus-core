@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
@@ -9,11 +9,8 @@ import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 
-if (process.argv.includes("--dev")) {
 
-} else {
-    Menu.setApplicationMenu(null);
-}
+Menu.setApplicationMenu(null);
 
 // const moduleController: ModuleController = new ModuleController();
 app.whenReady().then(() => {
@@ -77,6 +74,7 @@ async function nexusStart() {
     // Load modules
     context.moduleMap = await loadModules(context);
     context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+
     context.setProcessReady();
 
     // Run module preload
@@ -98,6 +96,10 @@ async function nexusStart() {
 }
 
 function onProcessAndRendererReady(context: InitContext): void {
+    context.moduleViewMap.forEach((moduleView: WebContentsView) => {
+        moduleView.emit("bounds-changed");
+    })
+    
     context.displayedModule = undefined;
 
     const data: any[] = [];

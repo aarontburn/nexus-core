@@ -43,11 +43,7 @@ var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
-if (process.argv.includes("--dev")) {
-}
-else {
-    electron_1.Menu.setApplicationMenu(null);
-}
+electron_1.Menu.setApplicationMenu(null);
 // const moduleController: ModuleController = new ModuleController();
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -142,6 +138,9 @@ function nexusStart() {
     });
 }
 function onProcessAndRendererReady(context) {
+    context.moduleViewMap.forEach(function (moduleView) {
+        moduleView.emit("bounds-changed");
+    });
     context.displayedModule = undefined;
     var data = [];
     context.moduleMap.forEach(function (module) {
