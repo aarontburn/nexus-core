@@ -4,7 +4,6 @@ import { BrowserWindow, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
-import { DIRECTORIES, FILE_NAMES } from "../../../utils/nexus-paths";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
 
 const MODULE_NAME: string = "Settings";
@@ -23,7 +22,14 @@ export class SettingsProcess extends Process {
 
 
     public constructor() {
-        super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
+		super({
+			moduleID: MODULE_ID,
+			moduleName: MODULE_NAME,
+			paths: {
+				htmlPath: HTML_PATH,
+				iconPath: ICON_PATH
+			}
+		});
 
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({

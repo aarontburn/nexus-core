@@ -85,7 +85,14 @@ var ICON_PATH = path.join(__dirname, "./static/logo.svg");
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
     function HomeProcess() {
-        var _this = _super.call(this, MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH) || this;
+        var _this = _super.call(this, {
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        }) || this;
         _this.setModuleInfo({
             name: "Home",
             author: "aarontburn",

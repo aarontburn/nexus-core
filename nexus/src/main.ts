@@ -103,7 +103,7 @@ function onProcessAndRendererReady(context: InitContext): void {
             moduleID: module.getIPCSource(),
             htmlPath: module.getHTMLPath(),
             iconPath: module.getIconPath(),
-            url: module.getURL?.()?.toString()
+            url: module.getURL()
         });
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);

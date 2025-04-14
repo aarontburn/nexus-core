@@ -89,7 +89,14 @@ var ICON_PATH = path.join(__dirname, "../static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
     function SettingsProcess() {
-        var _this = _super.call(this, MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH) || this;
+        var _this = _super.call(this, {
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        }) || this;
         _this.moduleSettingsList = new Map();
         _this.deletedModules = [];
         _this.devModeSubscribers = [];
