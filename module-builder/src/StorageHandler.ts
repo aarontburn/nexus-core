@@ -108,9 +108,9 @@ export class StorageHandler {
             return settingMap;
         }
 
+
         try {
             const json: any = JSON.parse(contents);
-            console.log(json)
             for (const settingName in json) {
                 settingMap.set(settingName, json[settingName]);
             }

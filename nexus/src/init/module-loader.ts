@@ -33,7 +33,6 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
         .getSettings()
         .findSetting('module_order')
         .setValue(loadedModules.map(module => module.getID()).join("|"));
-    await StorageHandler.writeModuleSettingsToStorage(settingProcess);
 
     const orderedMap: Map<string, Process> = new Map();
     for (const module of [homeProcess, settingProcess, ...reorderedModules]) {
@@ -76,23 +75,13 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
     const moduleSettings: ModuleSettings = module.getSettings();
 
     const result = await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
-        if (settingName === "Startup Module ID") {
-            console.log("initial: " + settingValue)
-        }
-
-
         const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
         if (setting === undefined) {
             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
         } else {
             await setting.setValue(settingValue);
         }
-
-        if (settingName === "Startup Module ID") {
-            console.log("after: " + setting.getValue())
-        }
     }))
-    console.log(result)
     await StorageHandler.writeModuleSettingsToStorage(module);
     return module;
 }

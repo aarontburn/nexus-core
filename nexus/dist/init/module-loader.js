@@ -79,9 +79,6 @@ function loadModules(context) {
                 case 2:
                     // Write new order
                     _e.sent();
-                    return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(settingProcess)];
-                case 3:
-                    _e.sent();
                     orderedMap = new Map();
                     for (_c = 0, _d = __spreadArray([homeProcess, settingProcess], reorderedModules, true); _c < _d.length; _c++) {
                         module_2 = _d[_c];

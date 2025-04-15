@@ -38,9 +38,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
                 if (installedModules.includes(input)) {
                     return input;
                 }
-                return null
-
-
+                return null;
             }),
 
         "Developer",
