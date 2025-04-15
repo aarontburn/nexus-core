@@ -44,7 +44,6 @@ var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
 electron_1.Menu.setApplicationMenu(null);
-// const moduleController: ModuleController = new ModuleController();
 electron_1.app.whenReady().then(function () {
     nexusStart();
     electron_1.app.on("activate", function () {
@@ -144,13 +143,12 @@ function onProcessAndRendererReady(context) {
     context.displayedModule = undefined;
     var data = [];
     context.moduleMap.forEach(function (module) {
-        var _a, _b;
         data.push({
             moduleName: module.getName(),
             moduleID: module.getIPCSource(),
             htmlPath: module.getHTMLPath(),
             iconPath: module.getIconPath(),
-            url: (_b = (_a = module.getURL) === null || _a === void 0 ? void 0 : _a.call(module)) === null || _b === void 0 ? void 0 : _b.toString()
+            url: module.getURL()
         });
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
