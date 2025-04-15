@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, WebContentsView } from "electron";
+import { app, BrowserWindow, Menu, WebContents, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";

@@ -73,11 +73,10 @@ var electron_1 = require("electron");
 var path = __importStar(require("path"));
 var constants_1 = require("../utils/constants");
 function createBrowserWindow(context) {
-    var _a, _b;
     return __awaiter(this, void 0, void 0, function () {
         var window, view;
         var _this = this;
-        return __generator(this, function (_c) {
+        return __generator(this, function (_a) {
             window = new electron_1.BaseWindow({
                 show: false,
                 height: constants_1.WINDOW_DIMENSION.height,
@@ -143,9 +142,7 @@ function createBrowserWindow(context) {
                 });
             });
             view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
-            (_b = (_a = view.webContents).openDevTools) === null || _b === void 0 ? void 0 : _b.call(_a, {
-                mode: "detach"
-            });
+            view.webContents.openDevTools({ mode: 'detach' });
             context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
             return [2 /*return*/, window];
         });
@@ -168,11 +165,12 @@ function createWebViews(context) {
         context.window.contentView.addChildView(view);
         if (module_1.getHTMLPath()) {
             view.webContents.loadURL("file://" + module_1.getHTMLPath());
+            context.moduleViewMap.set(module_1.getIPCSource(), view);
         }
         else if (module_1.getURL()) {
             view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString());
+            context.moduleViewMap.set(module_1.getIPCSource(), view);
         }
-        context.moduleViewMap.set(module_1.getIPCSource(), view);
         view.on('bounds-changed', function () {
             if (!context.window || !view) {
                 return;
@@ -186,7 +184,6 @@ function createWebViews(context) {
             });
         });
         view.setVisible(false);
-        view.webContents.openDevTools();
         view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
         viewMap.set(module_1.getIPCSource(), view);
     };

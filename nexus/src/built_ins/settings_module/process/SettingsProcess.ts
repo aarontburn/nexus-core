@@ -1,10 +1,11 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BaseWindow, BrowserWindow, WebContents, WebContentsView, app, shell } from 'electron';
+import { BaseWindow, BrowserWindow, WebContentsView, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
+
 
 const MODULE_NAME: string = "Settings";
 const MODULE_ID: string = 'built_ins.Settings';
@@ -121,7 +122,7 @@ export class SettingsProcess extends Process {
                 break;
             }
             case "accent_color": {
-                BaseWindow.getAllWindows()[0].contentView.children.forEach(
+                BaseWindow.getFocusedWindow().contentView.children.forEach(
                     (view: WebContentsView) => {
                         view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
                     });

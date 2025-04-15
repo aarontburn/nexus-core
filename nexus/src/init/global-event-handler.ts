@@ -1,6 +1,6 @@
 import { DataResponse, HTTPStatusCode, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
 import { InitContext } from "../utils/types";
-import { ipcMain, WebContentsView } from "electron";
+import { ipcMain, OpenDevToolsOptions, WebContentsView } from "electron";
 
 
 
@@ -40,8 +40,6 @@ export function swapVisibleModule(context: InitContext, moduleID: string): void 
         return; // If the module is the same, don't swap
     }
 
-
-
     for (const id of Array.from(context.moduleViewMap.keys())) {
         if (id === context.mainIPCSource.getIPCSource()) continue;
 
@@ -58,13 +56,42 @@ export function swapVisibleModule(context: InitContext, moduleID: string): void 
 
 
 export function handleExternalWrapper(context: InitContext) {
-    return async function handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse> {
+    return async function handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
             case "get-module-IDs": {
                 return { body: Array.from(context.moduleMap.keys()), code: HTTPStatusCode.OK };
             }
             case "get-current-module-id": {
                 return { body: context.displayedModule.getID(), code: HTTPStatusCode.OK };
+            }
+            case "open-dev-tools": {
+
+                // Only allow aarontburn.Debug_Console to open devtools for other modules
+                const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+
+                const POSSIBLE_MODES: string[] = ['left', 'right', 'bottom', 'detach'];
+                const mode: string = data[1] ?? "right"; // load on right by default
+                if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
+                    return {
+                        body: `Invalid devtool mode passed ('${mode}'); Possible values are: ${JSON.stringify(POSSIBLE_MODES)}`,
+                        code: HTTPStatusCode.NOT_ACCEPTABLE
+                    }
+                }
+
+                if (!context.moduleViewMap.has(target)) {
+                    return {
+                        body: new Error(`Could not open devtools for ${target}; either module doesn't exist or module is an internal module.`),
+                        code: HTTPStatusCode.NOT_FOUND
+                    };
+                }
+
+                const view: WebContentsView = context.moduleViewMap.get(target);
+                if (view.webContents.isDevToolsOpened()) {
+                    view.webContents.closeDevTools();
+                }
+                view.webContents.openDevTools({ mode: mode as any });
+                return { body: "Success: Opened devtools for " + target, code: HTTPStatusCode.OK };
+
             }
             default: {
                 return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
