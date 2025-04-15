@@ -93,7 +93,7 @@ function createBrowserWindow(context) {
                             event.preventDefault();
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 3, 4, 5]);
                             return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, module.onExit()];
@@ -102,13 +102,15 @@ function createBrowserWindow(context) {
                                 }); }); }))];
                         case 2:
                             _a.sent();
-                            window.destroy();
-                            return [3 /*break*/, 4];
+                            return [3 /*break*/, 5];
                         case 3:
                             error_1 = _a.sent();
                             console.error("Error during cleanup:", error_1);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
+                            return [3 /*break*/, 5];
+                        case 4:
+                            window.destroy();
+                            return [7 /*endfinally*/];
+                        case 5: return [2 /*return*/];
                     }
                 });
             }); });
@@ -117,7 +119,8 @@ function createBrowserWindow(context) {
                     webviewTag: true,
                     additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(context.mainIPCSource.getIPCSource())], false),
                     backgroundThrottling: false,
-                    preload: path.join(__dirname, "../preload.js")
+                    preload: path.join(__dirname, "../preload.js"),
+                    partition: context.mainIPCSource.getIPCSource()
                 }
             });
             window.on('resize', function () {
@@ -131,7 +134,7 @@ function createBrowserWindow(context) {
                 if (!window || !view) {
                     return;
                 }
-                var bounds = window.getBounds();
+                var bounds = window.getContentBounds();
                 view.setBounds({
                     x: 0,
                     y: 0,
@@ -158,7 +161,8 @@ function createWebViews(context) {
                 webviewTag: true,
                 additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(module_1.getID())], false),
                 backgroundThrottling: false,
-                preload: path.join(__dirname, "../preload.js")
+                preload: path.join(__dirname, "../preload.js"),
+                partition: module_1.getID()
             }
         });
         context.window.contentView.addChildView(view);
@@ -173,11 +177,11 @@ function createWebViews(context) {
             if (!context.window || !view) {
                 return;
             }
-            var bounds = context.window.getBounds();
+            var bounds = context.window.getContentBounds();
             view.setBounds({
                 x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
                 y: 0,
-                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor) - 16,
+                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
                 height: bounds.height
             });
         });

@@ -1,5 +1,4 @@
 (() => {
-    console.log(window)
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
         return window.ipc.send(window, eventName, data);
     }

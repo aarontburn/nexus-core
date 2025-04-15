@@ -79,10 +79,6 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
         } else {
             await setting.setValue(settingValue);
         }
-
-        if (settingName === "Startup Module ID") {
-            console.log(setting.getValue())
-        }
     }))
     await StorageHandler.writeModuleSettingsToStorage(module);
     return module;

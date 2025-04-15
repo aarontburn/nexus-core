@@ -1,5 +1,4 @@
 (function () {
-    console.log(window);
     var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {

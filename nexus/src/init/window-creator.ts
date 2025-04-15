@@ -12,7 +12,6 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         autoHideMenuBar: true,
     });
 
-
     window.on('close', async (event) => {
         event.preventDefault();
         try {
@@ -21,18 +20,20 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
                     async module => await module.onExit()
                 )
             );
-            window.destroy();
         } catch (error) {
             console.error("Error during cleanup:", error);
+        } finally {
+            window.destroy();
         }
     })
 
-    const view = new WebContentsView({
+    const view: WebContentsView = new WebContentsView({
         webPreferences: {
             webviewTag: true,
             additionalArguments: [...process.argv, `--module-ID:${context.mainIPCSource.getIPCSource()}`],
             backgroundThrottling: false,
             preload: path.join(__dirname, "../preload.js"),
+            partition: context.mainIPCSource.getIPCSource()
         }
     });
 
@@ -50,7 +51,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         if (!window || !view) {
             return;
         }
-        const bounds: Rectangle = window.getBounds();
+        const bounds: Rectangle = window.getContentBounds();
         view.setBounds({
             x: 0,
             y: 0,
@@ -77,8 +78,10 @@ export function createWebViews(context: InitContext) {
                 additionalArguments: [...process.argv, `--module-ID:${module.getID()}`],
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
+                partition: module.getID()
+
             }
-        })
+        });
         context.window.contentView.addChildView(view);
 
         if (module.getHTMLPath()) {
@@ -92,13 +95,13 @@ export function createWebViews(context: InitContext) {
             if (!context.window || !view) {
                 return;
             }
-            const bounds = context.window.getBounds();
+            const bounds = context.window.getContentBounds();
 
             view.setBounds({
                 x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
                 y: 0,
-                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor) - 16,
-                height: bounds.height,
+                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
+                height: bounds.height
             });
         });
 

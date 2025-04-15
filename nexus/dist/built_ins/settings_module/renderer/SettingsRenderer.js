@@ -35,8 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 (function () {
-    window["INTERNAL_ID_DO_NOT_USE"] = "built_ins.Settings";
-    console.log(window.common.args);
     var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
