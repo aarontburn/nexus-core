@@ -2,13 +2,19 @@ const { ipcRenderer, contextBridge, } = require('electron')
 
 contextBridge.exposeInMainWorld('ipc', {
 	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
-		const id = rendererWindow.frameElement?.id ?? (rendererWindow as any)["INTERNAL_ID_DO_NOT_USE"];
-		return ipcRenderer.invoke(id, eventType, data)
+		for (const arg of rendererWindow.common.args) {
+			if (arg.startsWith("--module-id")) {
+				return ipcRenderer.invoke(arg.split(":").at(-1), eventType, data)
+			}
+		}
 	},
 
 	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
-		const id = rendererWindow.frameElement?.id ?? (rendererWindow as any)["INTERNAL_ID_DO_NOT_USE"];
-		return ipcRenderer.on(id, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+		for (const arg of rendererWindow.common.args) {
+			if (arg.startsWith("--module-id")) {
+				return ipcRenderer.on(arg.split(":").at(-1), (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+			}
+		}
 	},
 
 

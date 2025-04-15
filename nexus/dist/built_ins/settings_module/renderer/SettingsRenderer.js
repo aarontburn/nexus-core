@@ -40,9 +40,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.parent.ipc.send(window, eventName, data);
+        return window.ipc.send(window, eventName, data);
     };
-    window.parent.ipc.on(window, function (eventName, data) {
+    window.ipc.on(window, function (eventName, data) {
         handleEvent(eventName, data);
     });
     sendToProcess("settings-init");
@@ -88,21 +88,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var group = event_1[_i];
                     var element = document.getElementById(group.id);
                     element[group.attribute] = group.value;
-                }
-                break;
-            }
-            case "refresh-settings": {
-                var newAccentColor = data[0];
-                var root = window.parent.document.querySelector(':root');
-                root.style.setProperty('--accent-color', newAccentColor);
-                var contentChildren = window.parent.document.body.querySelector(".content").children;
-                for (var i = 0; i < contentChildren.length; i++) {
-                    var child = contentChildren.item(i);
-                    if (contentChildren.item(i).tagName.toLowerCase() === "iframe") {
-                        child.contentWindow
-                            .document.querySelector(":root")
-                            .style.setProperty('--accent-color', newAccentColor);
-                    }
                 }
                 break;
             }

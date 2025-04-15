@@ -58,27 +58,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 exports.__esModule = true;
-exports.showWindow = exports.createBrowserWindow = void 0;
+exports.showWindow = exports.createWebViews = exports.createBrowserWindow = void 0;
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
 var constants_1 = require("../utils/constants");
 function createBrowserWindow(context) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function () {
-        var window;
+        var window, view;
         var _this = this;
-        return __generator(this, function (_a) {
-            window = new electron_1.BrowserWindow({
+        return __generator(this, function (_c) {
+            window = new electron_1.BaseWindow({
                 show: false,
                 height: constants_1.WINDOW_DIMENSION.height,
                 width: constants_1.WINDOW_DIMENSION.width,
-                autoHideMenuBar: true,
-                webPreferences: {
-                    webviewTag: true,
-                    additionalArguments: process.argv,
-                    backgroundThrottling: false,
-                    preload: path.join(__dirname, "../preload.js")
-                }
+                autoHideMenuBar: true
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
                 var error_1;
@@ -89,7 +93,7 @@ function createBrowserWindow(context) {
                             event.preventDefault();
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 3, 4, 5]);
                             return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, module.onExit()];
@@ -98,22 +102,101 @@ function createBrowserWindow(context) {
                                 }); }); }))];
                         case 2:
                             _a.sent();
-                            window.destroy();
-                            return [3 /*break*/, 4];
+                            return [3 /*break*/, 5];
                         case 3:
                             error_1 = _a.sent();
                             console.error("Error during cleanup:", error_1);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
+                            return [3 /*break*/, 5];
+                        case 4:
+                            window.destroy();
+                            return [7 /*endfinally*/];
+                        case 5: return [2 /*return*/];
                     }
                 });
             }); });
-            window.loadFile(path.join(__dirname, "../view/index.html"));
+            view = new electron_1.WebContentsView({
+                webPreferences: {
+                    webviewTag: true,
+                    additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(context.mainIPCSource.getIPCSource())], false),
+                    backgroundThrottling: false,
+                    preload: path.join(__dirname, "../preload.js"),
+                    partition: context.mainIPCSource.getIPCSource()
+                }
+            });
+            window.on('resize', function () {
+                context.moduleViewMap.forEach(function (moduleView) {
+                    moduleView.emit("bounds-changed");
+                });
+            });
+            window.contentView.addChildView(view);
+            view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
+            view.on('bounds-changed', function () {
+                if (!window || !view) {
+                    return;
+                }
+                var bounds = window.getContentBounds();
+                view.setBounds({
+                    x: 0,
+                    y: 0,
+                    width: 70 * view.webContents.zoomFactor,
+                    height: bounds.height
+                });
+            });
+            view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
+            (_b = (_a = view.webContents).openDevTools) === null || _b === void 0 ? void 0 : _b.call(_a, {
+                mode: "detach"
+            });
+            context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
             return [2 /*return*/, window];
         });
     });
 }
 exports.createBrowserWindow = createBrowserWindow;
+function createWebViews(context) {
+    var _a;
+    var viewMap = new Map();
+    var _loop_1 = function (module_1) {
+        var view = new electron_1.WebContentsView({
+            webPreferences: {
+                webviewTag: true,
+                additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(module_1.getID())], false),
+                backgroundThrottling: false,
+                preload: path.join(__dirname, "../preload.js"),
+                partition: module_1.getID()
+            }
+        });
+        context.window.contentView.addChildView(view);
+        if (module_1.getHTMLPath()) {
+            view.webContents.loadURL("file://" + module_1.getHTMLPath());
+        }
+        else if (module_1.getURL()) {
+            view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString());
+        }
+        context.moduleViewMap.set(module_1.getIPCSource(), view);
+        view.on('bounds-changed', function () {
+            if (!context.window || !view) {
+                return;
+            }
+            var bounds = context.window.getContentBounds();
+            view.setBounds({
+                x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
+                y: 0,
+                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
+                height: bounds.height
+            });
+        });
+        view.setVisible(false);
+        view.webContents.openDevTools();
+        view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
+        viewMap.set(module_1.getIPCSource(), view);
+    };
+    for (var _i = 0, _b = Array.from(context.moduleMap.values()); _i < _b.length; _i++) {
+        var module_1 = _b[_i];
+        _loop_1(module_1);
+    }
+    return viewMap;
+}
+exports.createWebViews = createWebViews;
 function showWindow(context) {
     var settings = context.settingModule.getSettings();
     context.window.setBounds({

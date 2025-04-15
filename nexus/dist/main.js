@@ -43,11 +43,8 @@ var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
-if (process.argv.includes("--dev")) {
-}
-else {
-    electron_1.Menu.setApplicationMenu(null);
-}
+electron_1.Menu.setApplicationMenu(null);
+// const moduleController: ModuleController = new ModuleController();
 electron_1.app.whenReady().then(function () {
     nexusStart();
     electron_1.app.on("activate", function () {
@@ -71,6 +68,7 @@ function nexusStart() {
                     rendererReady = false;
                     context = {
                         moduleMap: undefined,
+                        moduleViewMap: new Map(),
                         window: undefined,
                         settingModule: undefined,
                         ipcCallback: undefined,
@@ -121,15 +119,18 @@ function nexusStart() {
                 case 5:
                     // Run module preload
                     _c.sent();
+                    (0, global_event_handler_1.attachEventHandlerForMain)(context);
                     // Create window
                     _b = context;
                     return [4 /*yield*/, (0, window_creator_1.createBrowserWindow)(context)];
                 case 6:
                     // Create window
                     _b.window = _c.sent();
+                    return [4 /*yield*/, (0, window_creator_1.createWebViews)(context)];
+                case 7:
+                    _c.sent();
                     // Register IPC Callback
                     context.ipcCallback = (0, global_event_handler_1.getIPCCallback)(context);
-                    (0, global_event_handler_1.attachEventHandlerForMain)(context);
                     (0, window_creator_1.showWindow)(context);
                     return [2 /*return*/];
             }
@@ -137,15 +138,19 @@ function nexusStart() {
     });
 }
 function onProcessAndRendererReady(context) {
+    context.moduleViewMap.forEach(function (moduleView) {
+        moduleView.emit("bounds-changed");
+    });
     context.displayedModule = undefined;
     var data = [];
     context.moduleMap.forEach(function (module) {
+        var _a, _b;
         data.push({
             moduleName: module.getName(),
             moduleID: module.getIPCSource(),
             htmlPath: module.getHTMLPath(),
             iconPath: module.getIconPath(),
-            url: module.getURL()
+            url: (_b = (_a = module.getURL) === null || _a === void 0 ? void 0 : _a.call(module)) === null || _b === void 0 ? void 0 : _b.toString()
         });
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);

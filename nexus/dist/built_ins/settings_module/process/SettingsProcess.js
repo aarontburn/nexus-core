@@ -169,33 +169,46 @@ var SettingsProcess = /** @class */ (function (_super) {
         });
     };
     SettingsProcess.prototype.refreshSettings = function (modifiedSetting) {
-        var _a;
-        if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'zoom') {
-            var zoom = modifiedSetting.getValue();
-            (_a = electron_1.BrowserWindow.getAllWindows()[0]) === null || _a === void 0 ? void 0 : _a.webContents.setZoomFactor(zoom / 100);
+        if (modifiedSetting === undefined) {
+            return;
         }
-        else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'accent_color') {
-            this.sendToRenderer("refresh-settings", modifiedSetting.getValue());
-        }
-        else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'dev_mode') {
-            this.sendToRenderer("is-dev", modifiedSetting.getValue());
-            this.devModeSubscribers.forEach(function (callback) {
-                callback(modifiedSetting.getValue());
-            });
-        }
-        else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === "force_reload") {
-            var shouldForceReload_1 = modifiedSetting.getValue();
-            (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
-                if (shouldForceReload_1) {
-                    if (!args.includes("--force-reload")) {
-                        args.push("--force-reload");
+        switch (modifiedSetting.getAccessID()) {
+            case "zoom": {
+                var zoom_1 = modifiedSetting.getValue();
+                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                    view.webContents.setZoomFactor(zoom_1 / 100);
+                    view.emit("bounds-changed");
+                });
+                break;
+            }
+            case "accent_color": {
+                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                    view.webContents.insertCSS(":root { --accent-color: ".concat(modifiedSetting.getValue(), " !important;"), { cssOrigin: "user" });
+                });
+                break;
+            }
+            case "dev_mode": {
+                this.sendToRenderer("is-dev", modifiedSetting.getValue());
+                this.devModeSubscribers.forEach(function (callback) {
+                    callback(modifiedSetting.getValue());
+                });
+                break;
+            }
+            case "force_reload": {
+                var shouldForceReload_1 = modifiedSetting.getValue();
+                (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                    if (shouldForceReload_1) {
+                        if (!args.includes("--force-reload")) {
+                            args.push("--force-reload");
+                        }
                     }
-                }
-                else {
-                    args = args.filter(function (arg) { return arg !== "--force-reload"; });
-                }
-                return (0, internal_args_1.writeInternal)(args);
-            });
+                    else {
+                        args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                    }
+                    return (0, internal_args_1.writeInternal)(args);
+                });
+                break;
+            }
         }
     };
     SettingsProcess.prototype.handleExternal = function (source, eventType, data) {

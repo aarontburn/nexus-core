@@ -1,19 +1,16 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
-import { createBrowserWindow, showWindow } from "./init/window-creator";
+import { createBrowserWindow, createWebViews, showWindow } from "./init/window-creator";
 import { InitContext } from "./utils/types";
 import { loadModules } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 
-if (process.argv.includes("--dev")) {
 
-} else {
-    Menu.setApplicationMenu(null);
-}
+Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {
     nexusStart();
@@ -39,13 +36,14 @@ async function nexusStart() {
 
     const context: InitContext = {
         moduleMap: undefined,
+        moduleViewMap: new Map(),
         window: undefined,
         settingModule: undefined,
         ipcCallback: undefined,
         displayedModule: undefined,
         mainIPCSource: {
             getIPCSource() {
-                return "built_ins.Main"
+                return "built_ins.Main";
             },
         },
         setProcessReady: () => {
@@ -75,6 +73,7 @@ async function nexusStart() {
     // Load modules
     context.moduleMap = await loadModules(context);
     context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+
     context.setProcessReady();
 
     // Run module preload
@@ -82,18 +81,24 @@ async function nexusStart() {
         Array.from(context.moduleMap.values()).map(module => {  module.beforeWindowCreated()})
     );
     
+    attachEventHandlerForMain(context);
+
     // Create window
     context.window = await createBrowserWindow(context);
+    await createWebViews(context);
 
     // Register IPC Callback
     context.ipcCallback = getIPCCallback(context);
 
-    attachEventHandlerForMain(context);
 
     showWindow(context);
 }
 
 function onProcessAndRendererReady(context: InitContext): void {
+    context.moduleViewMap.forEach((moduleView: WebContentsView) => {
+        moduleView.emit("bounds-changed");
+    })
+    
     context.displayedModule = undefined;
 
     const data: any[] = [];
