@@ -63,13 +63,13 @@ var getSettings = function (module) {
             .setAccessID('startup_should_open_last_closed'),
         new types_1.StringSetting(module)
             .setName("Startup Module ID")
-            .setDefault('built_ins.Home')
+            .setDefault('nexus.Home')
             .setAccessID('startup_module_id')
             .setValidator(function (input) { return __awaiter(void 0, void 0, void 0, function () {
             var installedModules;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, module.requestExternal("built_ins.Main", "get-module-IDs")];
+                    case 0: return [4 /*yield*/, module.requestExternal("nexus.Main", "get-module-IDs")];
                     case 1:
                         installedModules = (_a.sent()).body;
                         if (installedModules.includes(input)) {
@@ -120,7 +120,7 @@ var getInternalSettings = function (module) {
             .setAccessID('module_order'),
         new types_1.StringSetting(module)
             .setName('Last Opened Module')
-            .setDefault('built_ins.Home')
+            .setDefault('nexus.Home')
             .setAccessID('startup_last_open_id'),
     ];
 };

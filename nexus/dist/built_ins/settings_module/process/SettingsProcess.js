@@ -83,7 +83,7 @@ var ModuleImporter_1 = require("./ModuleImporter");
 var settings_1 = require("./settings");
 var internal_args_1 = require("../../../init/internal-args");
 var MODULE_NAME = "Settings";
-var MODULE_ID = 'built_ins.Settings';
+var MODULE_ID = 'nexus.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
 var ICON_PATH = path.join(__dirname, "../static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
@@ -154,7 +154,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                             this.getSettings().findSetting('window_x').setValue(bounds.x),
                             this.getSettings().findSetting('window_y').setValue(bounds.y)];
                         _e = (_d = this.getSettings().findSetting('startup_last_open_id')).setValue;
-                        return [4 /*yield*/, this.requestExternal("built_ins.Main", "get-current-module-id")];
+                        return [4 /*yield*/, this.requestExternal("nexus.Main", "get-current-module-id")];
                     case 1: return [4 /*yield*/, _b.apply(_a, [_c.concat([
                                 _e.apply(_d, [(_f.sent()).body])
                             ])])];

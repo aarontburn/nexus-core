@@ -10,9 +10,6 @@ import { SettingsProcess } from "./built_ins/settings_module/process/SettingsPro
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 
 
-app.commandLine.appendSwitch('widevine-cdm-path', 'C:\\Program Files\\Google\\Chrome\\Application\\135.0.7049.85\\WidevineCdm\\_platform_specific\\win_x64');
-
-
 Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {
@@ -46,7 +43,7 @@ async function nexusStart() {
         displayedModule: undefined,
         mainIPCSource: {
             getIPCSource() {
-                return "built_ins.Main";
+                return "nexus.Main";
             },
         },
         setProcessReady: () => {
@@ -75,7 +72,7 @@ async function nexusStart() {
 
     // Load modules
     context.moduleMap = await loadModules(context);
-    context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+    context.settingModule = context.moduleMap.get("nexus.Settings") as SettingsProcess;
 
     await verifyAllModuleSettings(context);
 
@@ -118,7 +115,7 @@ function onProcessAndRendererReady(context: InitContext): void {
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
 
-    let startupModuleID: string = "built_ins.Home";
+    let startupModuleID: string = "Nexus.Home";
 
     const openLastModule: boolean = context.settingModule
         .getSettings()
@@ -135,7 +132,7 @@ function onProcessAndRendererReady(context: InitContext): void {
     }
 
     if (!context.moduleMap.has(startupModuleID)) {
-        startupModuleID = "built_ins.Home";
+        startupModuleID = "nexus.Home";
     }
 
     swapVisibleModule(context, startupModuleID);

@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BaseWindow, BrowserWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
+import { BaseWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
@@ -8,7 +8,7 @@ import { parseInternalArgs, readInternal, writeInternal } from "../../../init/in
 
 
 const MODULE_NAME: string = "Settings";
-const MODULE_ID: string = 'built_ins.Settings';
+const MODULE_ID: string = 'nexus.Settings';
 
 const HTML_PATH: string = path.join(__dirname, "../static/SettingsHTML.html");
 const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");
@@ -95,7 +95,7 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('window_height').setValue(bounds.height),
             this.getSettings().findSetting('window_x').setValue(bounds.x),
             this.getSettings().findSetting('window_y').setValue(bounds.y),
-            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("built_ins.Main", "get-current-module-id")).body),
+            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("nexus.Main", "get-current-module-id")).body),
         ])
         await StorageHandler.writeModuleSettingsToStorage(this);
 

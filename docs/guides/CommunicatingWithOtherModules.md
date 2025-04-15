@@ -91,7 +91,7 @@ export default SampleProcess extends Process {
         this.refreshAllSettings();
         // Request the accent color from the built-in 'Settings' 
         // module and send it to the renderer.
-        this.requestExternal("built_ins.Settings", "getAccentColor").then(value => {
+        this.requestExternal("nexus.Settings", "getAccentColor").then(value => {
             this.sendToRenderer("accent-color-changed", value)
         });
     }
@@ -102,7 +102,7 @@ export default SampleProcess extends Process {
 You can find the ID from within the Settings tab, or requesting it from the main process.
 
 ```typescript
-const installedModules: string[] = await this.requestExternal("built_ins.Main", "get-module-IDs")
+const installedModules: string[] = await this.requestExternal("nexus.Main", "get-module-IDs")
 console.log(installedModules.body)
 ```
 

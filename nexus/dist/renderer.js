@@ -86,7 +86,7 @@
             button.addEventListener("click", function () {
                 handleButtonClick(moduleID, button);
             });
-            var builtIns = ["built_ins.Home", "built_ins.Settings"];
+            var builtIns = ["nexus.Home", "nexus.Settings"];
             if (builtIns.includes(moduleID)) {
                 button.draggable = false;
                 document.getElementById('built-ins').insertAdjacentElement("beforeend", button);

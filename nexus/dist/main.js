@@ -43,7 +43,6 @@ var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
-electron_1.app.commandLine.appendSwitch('widevine-cdm-path', 'C:\\Program Files\\Google\\Chrome\\Application\\135.0.7049.85\\WidevineCdm\\_platform_specific\\win_x64');
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -75,7 +74,7 @@ function nexusStart() {
                         displayedModule: undefined,
                         mainIPCSource: {
                             getIPCSource: function () {
-                                return "built_ins.Main";
+                                return "nexus.Main";
                             }
                         },
                         setProcessReady: function () {
@@ -112,7 +111,7 @@ function nexusStart() {
                 case 4:
                     // Load modules
                     _a.moduleMap = _c.sent();
-                    context.settingModule = context.moduleMap.get("built_ins.Settings");
+                    context.settingModule = context.moduleMap.get("nexus.Settings");
                     return [4 /*yield*/, (0, module_loader_1.verifyAllModuleSettings)(context)];
                 case 5:
                     _c.sent();
@@ -156,7 +155,7 @@ function onProcessAndRendererReady(context) {
         });
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
-    var startupModuleID = "built_ins.Home";
+    var startupModuleID = "Nexus.Home";
     var openLastModule = context.settingModule
         .getSettings()
         .findSetting("startup_should_open_last_closed")
@@ -171,7 +170,7 @@ function onProcessAndRendererReady(context) {
         startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue();
     }
     if (!context.moduleMap.has(startupModuleID)) {
-        startupModuleID = "built_ins.Home";
+        startupModuleID = "nexus.Home";
     }
     (0, global_event_handler_1.swapVisibleModule)(context, startupModuleID);
     context.moduleMap.forEach(function (module) {

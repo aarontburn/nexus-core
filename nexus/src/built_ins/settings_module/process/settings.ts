@@ -31,10 +31,10 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
 
         new StringSetting(module)
             .setName("Startup Module ID")
-            .setDefault('built_ins.Home')
+            .setDefault('nexus.Home')
             .setAccessID('startup_module_id')
             .setValidator(async (input: any) => {
-                const installedModules: string[] = (await module.requestExternal("built_ins.Main", "get-module-IDs")).body;
+                const installedModules: string[] = (await module.requestExternal("nexus.Main", "get-module-IDs")).body;
                 
                 if (installedModules.includes(input)) {
                     return input;
@@ -90,7 +90,7 @@ export const getInternalSettings = (module: Process): Setting<unknown>[] => {
 
         new StringSetting(module)
             .setName('Last Opened Module')
-            .setDefault('built_ins.Home')
+            .setDefault('nexus.Home')
             .setAccessID('startup_last_open_id'),
     ];
 }

@@ -102,7 +102,7 @@
 
 
 
-            const builtIns: string[] = ["built_ins.Home", "built_ins.Settings"];
+            const builtIns: string[] = ["nexus.Home", "nexus.Settings"];
             if (builtIns.includes(moduleID)) {
                 button.draggable = false;
 

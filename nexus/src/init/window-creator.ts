@@ -39,7 +39,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
             additionalArguments: [...process.argv, `--module-ID:${context.mainIPCSource.getIPCSource()}`],
             backgroundThrottling: false,
             preload: path.join(__dirname, "../preload.js"),
-            partition: context.mainIPCSource.getIPCSource()
+            partition: context.mainIPCSource.getIPCSource(),
         }
     });
 
@@ -75,13 +75,14 @@ export function createWebViews(context: InitContext) {
     for (const module of Array.from(context.moduleMap.values())) {
 
         const view: WebContentsView = new WebContentsView({
-            
+
             webPreferences: {
                 webviewTag: true,
                 additionalArguments: [...process.argv, `--module-ID:${module.getID()}`],
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
                 partition: module.getID(),
+
             }
         });
 
@@ -93,7 +94,7 @@ export function createWebViews(context: InitContext) {
             view.webContents.loadURL("file://" + module.getHTMLPath());
             context.moduleViewMap.set(module.getIPCSource(), view);
         } else if (module.getURL()) {
-            view.webContents.loadURL(module.getURL?.().toString(), {userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.179 Safari/537.36"});
+            view.webContents.loadURL(module.getURL?.().toString(), { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.179 Safari/537.36" });
             context.moduleViewMap.set(module.getIPCSource(), view);
         }
 

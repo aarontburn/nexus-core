@@ -74,7 +74,7 @@ Internal settings are accessible the same way normal settings are.
 > **Returns**:  
 >   An array of internal settings
 
-Example: `built_ins.Settings`
+Example: `nexus.Settings`
 ```typescript
 public registerInternalSettings(): Setting<unknown>[] {
   return [

@@ -5,7 +5,7 @@ import * as path from "path";
 
 
 const MODULE_NAME: string = "Home";
-const MODULE_ID: string = 'built_ins.Home';
+const MODULE_ID: string = 'nexus.Home';
 const HTML_PATH: string = path.join(__dirname, "./static/HomeHTML.html");
 const ICON_PATH: string = path.join(__dirname, "./static/logo.svg");
 
