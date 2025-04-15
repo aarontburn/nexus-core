@@ -10,6 +10,9 @@ import { SettingsProcess } from "./built_ins/settings_module/process/SettingsPro
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 
 
+app.commandLine.appendSwitch('widevine-cdm-path', 'C:\\Program Files\\Google\\Chrome\\Application\\135.0.7049.85\\WidevineCdm\\_platform_specific\\win_x64');
+
+
 Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {

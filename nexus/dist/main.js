@@ -43,6 +43,7 @@ var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
+electron_1.app.commandLine.appendSwitch('widevine-cdm-path', 'C:\\Program Files\\Google\\Chrome\\Application\\135.0.7049.85\\WidevineCdm\\_platform_specific\\win_x64');
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();

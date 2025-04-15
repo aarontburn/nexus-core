@@ -166,7 +166,7 @@ function createWebViews(context) {
             context.moduleViewMap.set(module_1.getIPCSource(), view);
         }
         else if (module_1.getURL()) {
-            view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString());
+            view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString(), { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.179 Safari/537.36" });
             context.moduleViewMap.set(module_1.getIPCSource(), view);
         }
         view.on('bounds-changed', function () {
