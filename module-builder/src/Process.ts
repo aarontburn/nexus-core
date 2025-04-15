@@ -23,7 +23,13 @@ export interface ProcessConstructorArguments {
         htmlPath?: string;
         urlPath?: string;
         iconPath?: string;
-    }
+    },
+    httpOptions?: HTTPOptions;
+}
+
+export interface HTTPOptions {
+    userAgent?: string;
+    partition?: string;
 }
 
 
@@ -86,6 +92,8 @@ export abstract class Process implements IPCSource {
 
     private readonly url: string;
 
+    private readonly httpOptions: HTTPOptions;
+
     /**
      *  Entry point.
      * 
@@ -96,12 +104,13 @@ export abstract class Process implements IPCSource {
         this.moduleID = args.moduleID;
         this.moduleName = args.moduleName;
 
-
         if (args.paths) {
             this.htmlPath = args.paths.htmlPath;
             this.url = args.paths.urlPath;
             this.iconPath = args.paths.iconPath;
         }
+
+        this.httpOptions = args.httpOptions;
 
         this.moduleSettings = new ModuleSettings(this);
     }
@@ -113,6 +122,10 @@ export abstract class Process implements IPCSource {
 
     public getURL(): string {
         return this.url;
+    }
+
+    public getHTTPOptions(): HTTPOptions {
+        return this.httpOptions;
     }
 
 

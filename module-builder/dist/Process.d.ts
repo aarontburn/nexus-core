@@ -19,6 +19,11 @@ export interface ProcessConstructorArguments {
         urlPath?: string;
         iconPath?: string;
     };
+    httpOptions?: HTTPOptions;
+}
+export interface HTTPOptions {
+    userAgent?: string;
+    partition?: string;
 }
 /**
  *  Class to encapsulate module behavior.
@@ -68,6 +73,7 @@ export declare abstract class Process implements IPCSource {
     private readonly moduleID;
     private readonly iconPath;
     private readonly url;
+    private readonly httpOptions;
     /**
      *  Entry point.
      *
@@ -77,6 +83,7 @@ export declare abstract class Process implements IPCSource {
     constructor(args: ProcessConstructorArguments);
     getIconPath(): string;
     getURL(): string;
+    getHTTPOptions(): HTTPOptions;
     setIPC(ipc: IPCCallback): void;
     /**
      *  @returns the ID of the module.

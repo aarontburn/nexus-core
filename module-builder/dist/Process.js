@@ -73,6 +73,7 @@ var Process = /** @class */ (function () {
             this.url = args.paths.urlPath;
             this.iconPath = args.paths.iconPath;
         }
+        this.httpOptions = args.httpOptions;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
     }
     Process.prototype.getIconPath = function () {
@@ -80,6 +81,9 @@ var Process = /** @class */ (function () {
     };
     Process.prototype.getURL = function () {
         return this.url;
+    };
+    Process.prototype.getHTTPOptions = function () {
+        return this.httpOptions;
     };
     Process.prototype.setIPC = function (ipc) {
         if (this.ipcCallback !== undefined) {

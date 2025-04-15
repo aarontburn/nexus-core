@@ -81,8 +81,7 @@ export function createWebViews(context: InitContext) {
                 additionalArguments: [...process.argv, `--module-ID:${module.getID()}`],
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
-                partition: module.getID(),
-
+                partition: `persist:${module.getID()}`,
             }
         });
 
