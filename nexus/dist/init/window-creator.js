@@ -148,7 +148,7 @@ function createBrowserWindow(context) {
 }
 exports.createBrowserWindow = createBrowserWindow;
 function createWebViews(context) {
-    var _a;
+    var _a, _b, _c;
     var viewMap = new Map();
     var _loop_1 = function (module_1) {
         var view = new electron_1.WebContentsView({
@@ -157,17 +157,18 @@ function createWebViews(context) {
                 additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(module_1.getID())], false),
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
-                partition: module_1.getID()
+                partition: (_a = module_1.getHTTPOptions()) === null || _a === void 0 ? void 0 : _a.partition
             }
         });
         context.window.contentView.addChildView(view);
-        if (module_1.getHTMLPath()) {
-            view.webContents.loadURL("file://" + module_1.getHTMLPath());
+        if (module_1.getHTMLPath() || module_1.getURL()) {
             context.moduleViewMap.set(module_1.getIPCSource(), view);
-        }
-        else if (module_1.getURL()) {
-            view.webContents.loadURL((_a = module_1.getURL) === null || _a === void 0 ? void 0 : _a.call(module_1).toString(), { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.179 Safari/537.36" });
-            context.moduleViewMap.set(module_1.getIPCSource(), view);
+            if (module_1.getHTMLPath()) {
+                view.webContents.loadURL("file://" + module_1.getHTMLPath());
+            }
+            else if (module_1.getURL()) {
+                view.webContents.loadURL((_b = module_1.getURL) === null || _b === void 0 ? void 0 : _b.call(module_1).toString(), { userAgent: (_c = module_1.getHTTPOptions()) === null || _c === void 0 ? void 0 : _c.userAgent });
+            }
         }
         view.on('bounds-changed', function () {
             if (!context.window || !view) {
@@ -185,8 +186,8 @@ function createWebViews(context) {
         view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
         viewMap.set(module_1.getIPCSource(), view);
     };
-    for (var _i = 0, _b = Array.from(context.moduleMap.values()); _i < _b.length; _i++) {
-        var module_1 = _b[_i];
+    for (var _i = 0, _d = Array.from(context.moduleMap.values()); _i < _d.length; _i++) {
+        var module_1 = _d[_i];
         _loop_1(module_1);
     }
     return viewMap;

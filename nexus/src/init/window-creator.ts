@@ -75,26 +75,26 @@ export function createWebViews(context: InitContext) {
     for (const module of Array.from(context.moduleMap.values())) {
 
         const view: WebContentsView = new WebContentsView({
-
             webPreferences: {
                 webviewTag: true,
                 additionalArguments: [...process.argv, `--module-ID:${module.getID()}`],
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
-                partition: `persist:${module.getID()}`,
+                partition: module.getHTTPOptions()?.partition,
             }
         });
 
         context.window.contentView.addChildView(view);
 
 
+        if (module.getHTMLPath() || module.getURL()) {
+            context.moduleViewMap.set(module.getIPCSource(), view);
 
-        if (module.getHTMLPath()) {
-            view.webContents.loadURL("file://" + module.getHTMLPath());
-            context.moduleViewMap.set(module.getIPCSource(), view);
-        } else if (module.getURL()) {
-            view.webContents.loadURL(module.getURL?.().toString(), { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.179 Safari/537.36" });
-            context.moduleViewMap.set(module.getIPCSource(), view);
+            if (module.getHTMLPath()) {
+                view.webContents.loadURL("file://" + module.getHTMLPath());
+            } else if (module.getURL()) {
+                view.webContents.loadURL(module.getURL?.().toString(), { userAgent: module.getHTTPOptions()?.userAgent });
+            }
         }
 
         view.on('bounds-changed', () => {
@@ -110,7 +110,6 @@ export function createWebViews(context: InitContext) {
                 height: bounds.height
             });
         });
-
 
         view.setVisible(false);
         view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
