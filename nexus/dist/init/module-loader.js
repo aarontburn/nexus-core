@@ -133,7 +133,7 @@ function verifyAllModuleSettings(context) {
 exports.verifyAllModuleSettings = verifyAllModuleSettings;
 function verifyModuleSettings(module) {
     return __awaiter(this, void 0, void 0, function () {
-        var settingsMap, moduleSettings, result;
+        var settingsMap, moduleSettings;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -148,9 +148,6 @@ function verifyModuleSettings(module) {
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
-                                            if (settingName === "Startup Module ID") {
-                                                console.log("initial: " + settingValue);
-                                            }
                                             setting = moduleSettings.findSetting(settingName);
                                             if (!(setting === undefined)) return [3 /*break*/, 1];
                                             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
@@ -159,18 +156,13 @@ function verifyModuleSettings(module) {
                                         case 2:
                                             _b.sent();
                                             _b.label = 3;
-                                        case 3:
-                                            if (settingName === "Startup Module ID") {
-                                                console.log("after: " + setting.getValue());
-                                            }
-                                            return [2 /*return*/];
+                                        case 3: return [2 /*return*/];
                                     }
                                 });
                             });
                         }))];
                 case 2:
-                    result = _a.sent();
-                    console.log(result);
+                    _a.sent();
                     return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
                 case 3:
                     _a.sent();

@@ -5,9 +5,10 @@ import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSe
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
     return [
         "Display",
-        new BooleanSetting(module)
+        new ChoiceSetting(module)
+            .addOptions("Dark", "Light", "System")
             .setName("Dark Mode")
-            .setDefault(true)
+            .setDefault("Dark")
             .setAccessID('dark_mode'),
 
         new HexColorSetting(module)

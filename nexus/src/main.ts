@@ -74,15 +74,15 @@ async function nexusStart() {
     context.moduleMap = await loadModules(context);
     context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
 
-    verifyAllModuleSettings(context)
+    await verifyAllModuleSettings(context);
 
     context.setProcessReady();
 
     // Run module preload
     await Promise.allSettled(
-        Array.from(context.moduleMap.values()).map(module => {  module.beforeWindowCreated()})
+        Array.from(context.moduleMap.values()).map(module => { module.beforeWindowCreated() })
     );
-    
+
     attachEventHandlerForMain(context);
 
     // Create window
@@ -100,7 +100,7 @@ function onProcessAndRendererReady(context: InitContext): void {
     context.moduleViewMap.forEach((moduleView: WebContentsView) => {
         moduleView.emit("bounds-changed");
     })
-    
+
     context.displayedModule = undefined;
 
     const data: any[] = [];
@@ -130,6 +130,7 @@ function onProcessAndRendererReady(context: InitContext): void {
     } else {
         startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue() as string;
     }
+
     if (!context.moduleMap.has(startupModuleID)) {
         startupModuleID = "built_ins.Home";
     }

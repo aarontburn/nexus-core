@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BaseWindow, BrowserWindow, WebContentsView, app, shell } from 'electron';
+import { BaseWindow, BrowserWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
 import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
@@ -83,12 +83,11 @@ export class SettingsProcess extends Process {
     }
 
     public async onExit(): Promise<void> {
-        const window: BrowserWindow = BrowserWindow.getAllWindows()[0];
+        const window: BaseWindow = BaseWindow.getAllWindows()[0];
 
         // Save window dimensions
         const isWindowMaximized: boolean = window.isMaximized();
         const bounds: { width: number, height: number, x: number, y: number } = window.getBounds();
-
 
         await Promise.allSettled([
             this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
@@ -122,7 +121,7 @@ export class SettingsProcess extends Process {
                 break;
             }
             case "accent_color": {
-                BaseWindow.getFocusedWindow().contentView.children.forEach(
+                BaseWindow.getAllWindows()[0].contentView.children.forEach(
                     (view: WebContentsView) => {
                         view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
                     });
@@ -152,6 +151,12 @@ export class SettingsProcess extends Process {
                 })
                 break;
 
+            }
+            case "dark_mode": {
+                // System, Dark, Light
+                const mode: string = modifiedSetting.getValue() as string;
+                nativeTheme.themeSource = mode.toLowerCase() as any;
+                break;
             }
         }
 

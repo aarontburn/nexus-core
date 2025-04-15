@@ -74,7 +74,7 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
     const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
     const moduleSettings: ModuleSettings = module.getSettings();
 
-    const result = await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
+    await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
         const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
         if (setting === undefined) {
             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");

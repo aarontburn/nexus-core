@@ -11,21 +11,26 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         height: WINDOW_DIMENSION.height,
         width: WINDOW_DIMENSION.width,
         autoHideMenuBar: true,
+        title: "Nexus",
     });
 
     window.on('close', async (event) => {
         event.preventDefault();
-        try {
-            await Promise.allSettled(
-                Array.from(context.moduleMap.values()).map(
-                    async module => await module.onExit()
-                )
-            );
-        } catch (error) {
-            console.error("Error during cleanup:", error);
-        } finally {
-            window.destroy();
+        let result: PromiseSettledResult<void>[] = await Promise.allSettled(
+            Array.from(context.moduleMap.values()).map(
+                async module => await module.onExit()
+            )
+        );
+        result = result.filter(p => p.status === 'rejected');
+
+        if (result.length > 0) {
+            console.error("Errors occurred during close.");
+            for (const error of result) {
+                console.error(error);
+            }
         }
+
+        window.destroy();
     })
 
     const view: WebContentsView = new WebContentsView({
@@ -69,7 +74,6 @@ export function createWebViews(context: InitContext) {
     const viewMap: Map<string, WebContentsView> = new Map();
     for (const module of Array.from(context.moduleMap.values())) {
 
-
         const view: WebContentsView = new WebContentsView({
             webPreferences: {
                 webviewTag: true,
@@ -83,7 +87,7 @@ export function createWebViews(context: InitContext) {
         context.window.contentView.addChildView(view);
 
 
-        
+
         if (module.getHTMLPath()) {
             view.webContents.loadURL("file://" + module.getHTMLPath());
             context.moduleViewMap.set(module.getIPCSource(), view);

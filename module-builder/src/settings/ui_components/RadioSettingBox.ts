@@ -98,7 +98,7 @@ export class RadioSettingBox extends SettingBox<string> {
                 width: 15px;
                 height: 15px;
                 border-radius: 15px;
-                top: 3px;
+                top: 7px;
                 left: -1px;
                 position: relative;
                 background-color: #6a6a6a;

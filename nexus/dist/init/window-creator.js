@@ -81,35 +81,34 @@ function createBrowserWindow(context) {
                 show: false,
                 height: constants_1.WINDOW_DIMENSION.height,
                 width: constants_1.WINDOW_DIMENSION.width,
-                autoHideMenuBar: true
+                autoHideMenuBar: true,
+                title: "Nexus"
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
-                var error_1;
+                var result, _i, result_1, error;
                 var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             event.preventDefault();
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 3, 4, 5]);
                             return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, module.onExit()];
                                         case 1: return [2 /*return*/, _a.sent()];
                                     }
                                 }); }); }))];
-                        case 2:
-                            _a.sent();
-                            return [3 /*break*/, 5];
-                        case 3:
-                            error_1 = _a.sent();
-                            console.error("Error during cleanup:", error_1);
-                            return [3 /*break*/, 5];
-                        case 4:
+                        case 1:
+                            result = _a.sent();
+                            result = result.filter(function (p) { return p.status === 'rejected'; });
+                            if (result.length > 0) {
+                                console.error("Errors occurred during close.");
+                                for (_i = 0, result_1 = result; _i < result_1.length; _i++) {
+                                    error = result_1[_i];
+                                    console.error(error);
+                                }
+                            }
                             window.destroy();
-                            return [7 /*endfinally*/];
-                        case 5: return [2 /*return*/];
+                            return [2 /*return*/];
                     }
                 });
             }); });

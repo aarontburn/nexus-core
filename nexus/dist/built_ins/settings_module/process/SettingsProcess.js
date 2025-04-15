@@ -144,7 +144,7 @@ var SettingsProcess = /** @class */ (function (_super) {
             return __generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
-                        window = electron_1.BrowserWindow.getAllWindows()[0];
+                        window = electron_1.BaseWindow.getAllWindows()[0];
                         isWindowMaximized = window.isMaximized();
                         bounds = window.getBounds();
                         _b = (_a = Promise).allSettled;
@@ -182,7 +182,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                 break;
             }
             case "accent_color": {
-                electron_1.BaseWindow.getFocusedWindow().contentView.children.forEach(function (view) {
+                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
                     view.webContents.insertCSS(":root { --accent-color: ".concat(modifiedSetting.getValue(), " !important;"), { cssOrigin: "user" });
                 });
                 break;
@@ -207,6 +207,12 @@ var SettingsProcess = /** @class */ (function (_super) {
                     }
                     return (0, internal_args_1.writeInternal)(args);
                 });
+                break;
+            }
+            case "dark_mode": {
+                // System, Dark, Light
+                var mode = modifiedSetting.getValue();
+                electron_1.nativeTheme.themeSource = mode.toLowerCase();
                 break;
             }
         }

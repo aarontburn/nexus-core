@@ -112,22 +112,24 @@ function nexusStart() {
                     // Load modules
                     _a.moduleMap = _c.sent();
                     context.settingModule = context.moduleMap.get("built_ins.Settings");
-                    (0, module_loader_1.verifyAllModuleSettings)(context);
+                    return [4 /*yield*/, (0, module_loader_1.verifyAllModuleSettings)(context)];
+                case 5:
+                    _c.sent();
                     context.setProcessReady();
                     // Run module preload
                     return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { module.beforeWindowCreated(); }))];
-                case 5:
+                case 6:
                     // Run module preload
                     _c.sent();
                     (0, global_event_handler_1.attachEventHandlerForMain)(context);
                     // Create window
                     _b = context;
                     return [4 /*yield*/, (0, window_creator_1.createBrowserWindow)(context)];
-                case 6:
+                case 7:
                     // Create window
                     _b.window = _c.sent();
                     return [4 /*yield*/, (0, window_creator_1.createWebViews)(context)];
-                case 7:
+                case 8:
                     _c.sent();
                     // Register IPC Callback
                     context.ipcCallback = (0, global_event_handler_1.getIPCCallback)(context);
