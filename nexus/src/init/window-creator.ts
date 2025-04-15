@@ -1,4 +1,4 @@
-import { BaseWindow, Rectangle, WebContentsView } from "electron";
+import { BaseWindow, Rectangle, shell, WebContentsView } from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
 import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";
@@ -108,6 +108,19 @@ export function createWebViews(context: InitContext) {
                 y: 0,
                 width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
                 height: bounds.height
+            });
+        });
+
+
+        view.webContents.setWindowOpenHandler((details) => {
+            shell.openExternal(details.url);
+            return { action: 'deny' };
+        });
+
+        view.webContents.on("did-attach-webview", (_, contents) => {
+            contents.setWindowOpenHandler((details) => {
+                shell.openExternal(details.url);
+                return { action: 'deny' };
             });
         });
 

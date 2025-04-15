@@ -19,7 +19,6 @@
         }
     });
     sendToProcess("renderer-init");
-    var IFRAME_DEFAULT_STYLE = "height: 100%; width: 100%;";
     var selectedTab = undefined;
     var handleButtonClick = function (moduleID, buttonElement) {
         if (selectedTab !== undefined) {
@@ -29,40 +28,35 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
-        // Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
-        //     e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
-        // });
         sendToProcess("swap-modules", moduleID);
     };
-    // function swapVisibleModule(moduleIDToSwapTo: string): void {
-    //     const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
-    //     for (let i = 0; i < modules.length; i++) {
-    //         modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
-    //     }
-    //     document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
-    // }
     function loadModules(data) {
+        var _a;
         var moduleIconsHTML = document.getElementById("header");
-        var createAndInsertButton = function (moduleName, moduleID, iconPath) {
-            var _a;
-            var getAbbreviation = function () {
-                var ABBREVIATION_LENGTH = 3;
-                var abbreviation = moduleName.split(" ").map(function (s) { return s[0]; });
-                var out = [];
-                for (var i = 0; i < ABBREVIATION_LENGTH; i++) {
-                    if (i >= abbreviation.length) {
-                        break;
-                    }
-                    out.push(abbreviation[i]);
+        var getAbbreviation = function (moduleName) {
+            var ABBREVIATION_LENGTH = 3;
+            var abbreviation = moduleName.split(" ").map(function (s) { return s[0]; });
+            var out = [];
+            for (var i = 0; i < ABBREVIATION_LENGTH; i++) {
+                if (i >= abbreviation.length) {
+                    break;
                 }
-                return out.join("");
-            };
+                out.push(abbreviation[i]);
+            }
+            return out.join("");
+        };
+        var _loop_1 = function (obj) {
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath, url = obj.url;
+            if (htmlPath === undefined && url === undefined) { // internal module, ignore
+                return "continue";
+            }
             var button = document.createElement("button");
             button.id = moduleID + "-header-button";
             button.className = "header-button drag-item";
             button.draggable = true;
+            button.title = moduleName;
             if (iconPath === undefined) {
-                button.textContent = getAbbreviation();
+                button.textContent = getAbbreviation(moduleName);
             }
             else {
                 switch (((_a = iconPath.split(".").at(-1)) !== null && _a !== void 0 ? _a : '').toLowerCase()) {
@@ -78,7 +72,7 @@
                     }
                     default: {
                         console.log("Unsupported icon for ".concat(moduleID, ": ") + iconPath);
-                        button.textContent = getAbbreviation();
+                        button.textContent = getAbbreviation(moduleName);
                         break;
                     }
                 }
@@ -97,11 +91,7 @@
         };
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var obj = data_1[_i];
-            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath, url = obj.url;
-            if (htmlPath === undefined && url === undefined) { // internal module, ignore
-                continue;
-            }
-            createAndInsertButton(moduleName, moduleID, iconPath);
+            _loop_1(obj);
         }
     }
     var dragList = document.getElementById('drag-list');

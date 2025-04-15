@@ -4,10 +4,10 @@ import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSe
 
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
     return [
-        "Display",
+        "Appearance",
         new ChoiceSetting(module)
             .addOptions("Dark", "Light", "System")
-            .setName("Dark Mode")
+            .setName("Theme")
             .setDefault("Dark")
             .setAccessID('dark_mode'),
 
@@ -23,7 +23,8 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setName("Zoom Level (%)")
             .setDefault(100)
             .setAccessID('zoom'),
-
+            
+        "Startup",
         new BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
             .setDefault(false)
@@ -35,7 +36,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setAccessID('startup_module_id')
             .setValidator(async (input: any) => {
                 const installedModules: string[] = (await module.requestExternal("nexus.Main", "get-module-IDs")).body;
-                
+
                 if (installedModules.includes(input)) {
                     return input;
                 }

@@ -65,7 +65,6 @@ export function handleExternalWrapper(context: InitContext) {
                 return { body: context.displayedModule.getID(), code: HTTPStatusCode.OK };
             }
             case "open-dev-tools": {
-
                 // Only allow aarontburn.Debug_Console to open devtools for other modules
                 const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
 
@@ -91,7 +90,25 @@ export function handleExternalWrapper(context: InitContext) {
                 }
                 view.webContents.openDevTools({ mode: mode as any });
                 return { body: "Success: Opened devtools for " + target, code: HTTPStatusCode.OK };
+            }
+            case "reload": {
+                // Only allow aarontburn.Debug_Console to reload other modules
+                const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+                if (!context.moduleViewMap.has(target)) {
+                    return {
+                        body: new Error(`Could not refresh for ${target}; either module doesn't exist or module is an internal module.`),
+                        code: HTTPStatusCode.NOT_FOUND
+                    };
+                }
 
+                const view: WebContentsView = context.moduleViewMap.get(target);
+                if (data.includes("--force")) {
+                    view.webContents.reloadIgnoringCache();
+                } else {
+                    view.webContents.reload();
+                }
+
+                return { body: "Success: Refreshed page for " + target, code: HTTPStatusCode.OK };
             }
             default: {
                 return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };

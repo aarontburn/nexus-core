@@ -17,11 +17,8 @@
     });
 
     sendToProcess("renderer-init");
-    const IFRAME_DEFAULT_STYLE: string = "height: 100%; width: 100%;";
 
     let selectedTab: HTMLElement = undefined;
-
-
 
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {
         if (selectedTab !== undefined) {
@@ -31,51 +28,44 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
-
-        // Array.from(document.getElementsByClassName("svg")).forEach((e: HTMLElement) => {
-        //     e.style.backgroundColor = e.parentElement.id === (moduleID + "-header-button") ? 'var(--accent-color)' : 'var(--off-white)';
-        // });
-
         sendToProcess("swap-modules", moduleID);
     }
-
-
-
-    // function swapVisibleModule(moduleIDToSwapTo: string): void {
-    //     const modules: HTMLCollection = document.getElementById("modules").getElementsByTagName("*");
-    //     for (let i = 0; i < modules.length; i++) {
-    //         modules[i].setAttribute("style", IFRAME_DEFAULT_STYLE + "display: none;");
-    //     }
-    //     document.getElementById(moduleIDToSwapTo).setAttribute("style", IFRAME_DEFAULT_STYLE);
-    // }
 
 
 
     function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
         const moduleIconsHTML: HTMLElement = document.getElementById("header");
 
-        const createAndInsertButton = (moduleName: string, moduleID: string, iconPath: string | undefined) => {
-            const getAbbreviation = () => {
-                const ABBREVIATION_LENGTH: number = 3;
-                const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
-                const out: string[] = [];
+        const getAbbreviation = (moduleName: string) => {
+            const ABBREVIATION_LENGTH: number = 3;
+            const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
+            const out: string[] = [];
 
-                for (let i = 0; i < ABBREVIATION_LENGTH; i++) {
-                    if (i >= abbreviation.length) {
-                        break;
-                    }
-                    out.push(abbreviation[i]);
+            for (let i = 0; i < ABBREVIATION_LENGTH; i++) {
+                if (i >= abbreviation.length) {
+                    break;
                 }
-                return out.join("");
+                out.push(abbreviation[i]);
+            }
+            return out.join("");
+        }
+
+
+        for (const obj of data) {
+            const { moduleName, moduleID, htmlPath, iconPath, url }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string, url?: string } = obj;
+
+            if (htmlPath === undefined && url === undefined) { // internal module, ignore
+                continue;
             }
 
             const button: HTMLElement = document.createElement("button");
             button.id = moduleID + "-header-button";
             button.className = "header-button drag-item";
             button.draggable = true;
+            button.title = moduleName
 
             if (iconPath === undefined) {
-                button.textContent = getAbbreviation();
+                button.textContent = getAbbreviation(moduleName);
             } else {
                 switch ((iconPath.split(".").at(-1) ?? '').toLowerCase()) {
                     case "svg": {
@@ -91,7 +81,7 @@
 
                     default: {
                         console.log(`Unsupported icon for ${moduleID}: ` + iconPath);
-                        button.textContent = getAbbreviation();
+                        button.textContent = getAbbreviation(moduleName);
                         break;
                     }
                 }
@@ -100,8 +90,6 @@
                 handleButtonClick(moduleID, button);
             });
 
-
-
             const builtIns: string[] = ["nexus.Home", "nexus.Settings"];
             if (builtIns.includes(moduleID)) {
                 button.draggable = false;
@@ -109,21 +97,8 @@
                 document.getElementById('built-ins').insertAdjacentElement("beforeend", button);
             } else {
                 moduleIconsHTML.insertAdjacentElement("beforeend", button);
-
             }
-
         }
-
-        for (const obj of data) {
-            const { moduleName, moduleID, htmlPath, iconPath, url }: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string, url?: string } = obj;
-
-            if (htmlPath === undefined && url === undefined) { // internal module, ignore
-                continue;
-            }
-
-            createAndInsertButton(moduleName, moduleID, iconPath);
-        }
-
     }
 
 

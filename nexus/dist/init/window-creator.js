@@ -182,6 +182,16 @@ function createWebViews(context) {
                 height: bounds.height
             });
         });
+        view.webContents.setWindowOpenHandler(function (details) {
+            electron_1.shell.openExternal(details.url);
+            return { action: 'deny' };
+        });
+        view.webContents.on("did-attach-webview", function (_, contents) {
+            contents.setWindowOpenHandler(function (details) {
+                electron_1.shell.openExternal(details.url);
+                return { action: 'deny' };
+            });
+        });
         view.setVisible(false);
         view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
         viewMap.set(module_1.getIPCSource(), view);

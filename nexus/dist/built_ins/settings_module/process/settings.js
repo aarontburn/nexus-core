@@ -40,10 +40,10 @@ exports.getInternalSettings = exports.getSettings = void 0;
 var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var getSettings = function (module) {
     return [
-        "Display",
+        "Appearance",
         new types_1.ChoiceSetting(module)
             .addOptions("Dark", "Light", "System")
-            .setName("Dark Mode")
+            .setName("Theme")
             .setDefault("Dark")
             .setAccessID('dark_mode'),
         new types_1.HexColorSetting(module)
@@ -57,6 +57,7 @@ var getSettings = function (module) {
             .setName("Zoom Level (%)")
             .setDefault(100)
             .setAccessID('zoom'),
+        "Startup",
         new types_1.BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
             .setDefault(false)

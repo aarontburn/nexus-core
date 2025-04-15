@@ -89,7 +89,7 @@ function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var target, POSSIBLE_MODES, mode, view;
+            var target, POSSIBLE_MODES, mode, view, target, view;
             return __generator(this, function (_b) {
                 switch (eventType) {
                     case "get-module-IDs": {
@@ -120,6 +120,23 @@ function handleExternalWrapper(context) {
                         }
                         view.webContents.openDevTools({ mode: mode });
                         return [2 /*return*/, { body: "Success: Opened devtools for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                    }
+                    case "reload": {
+                        target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+                        if (!context.moduleViewMap.has(target)) {
+                            return [2 /*return*/, {
+                                    body: new Error("Could not refresh for ".concat(target, "; either module doesn't exist or module is an internal module.")),
+                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
+                                }];
+                        }
+                        view = context.moduleViewMap.get(target);
+                        if (data.includes("--force")) {
+                            view.webContents.reloadIgnoringCache();
+                        }
+                        else {
+                            view.webContents.reload();
+                        }
+                        return [2 /*return*/, { body: "Success: Refreshed page for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     default: {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];
