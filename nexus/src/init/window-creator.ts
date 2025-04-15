@@ -61,7 +61,6 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         });
     });
     view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
-    view.webContents.openDevTools({ mode: 'detach' })
     context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
     return window;
 }

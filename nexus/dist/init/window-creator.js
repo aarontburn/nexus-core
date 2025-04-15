@@ -142,7 +142,6 @@ function createBrowserWindow(context) {
                 });
             });
             view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
-            view.webContents.openDevTools({ mode: 'detach' });
             context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
             return [2 /*return*/, window];
         });

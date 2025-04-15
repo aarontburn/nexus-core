@@ -87,9 +87,10 @@ function swapVisibleModule(context, moduleID) {
 exports.swapVisibleModule = swapVisibleModule;
 function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var mode, possibleModes, target;
-            return __generator(this, function (_a) {
+            var target, POSSIBLE_MODES, mode, view;
+            return __generator(this, function (_b) {
                 switch (eventType) {
                     case "get-module-IDs": {
                         return [2 /*return*/, { body: Array.from(context.moduleMap.keys()), code: nexus_module_builder_1.HTTPStatusCode.OK }];
@@ -98,22 +99,26 @@ function handleExternalWrapper(context) {
                         return [2 /*return*/, { body: context.displayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     case "open-dev-tools": {
-                        mode = data[1];
-                        possibleModes = ['left', 'right', 'bottom', 'undocked', 'detach'];
-                        if (mode !== undefined && !possibleModes.includes(mode)) {
+                        target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+                        POSSIBLE_MODES = ['left', 'right', 'bottom', 'detach'];
+                        mode = (_a = data[1]) !== null && _a !== void 0 ? _a : "right";
+                        if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
                             return [2 /*return*/, {
-                                    body: "Invalid devtool mode passed ('".concat(mode, "'); Possible values are: ").concat(JSON.stringify(possibleModes)),
+                                    body: "Invalid devtool mode passed ('".concat(mode, "'); Possible values are: ").concat(JSON.stringify(POSSIBLE_MODES)),
                                     code: nexus_module_builder_1.HTTPStatusCode.NOT_ACCEPTABLE
                                 }];
                         }
-                        target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {
                                     body: new Error("Could not open devtools for ".concat(target, "; either module doesn't exist or module is an internal module.")),
                                     code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
                                 }];
                         }
-                        context.moduleViewMap.get(target).webContents.openDevTools({ mode: mode });
+                        view = context.moduleViewMap.get(target);
+                        if (view.webContents.isDevToolsOpened()) {
+                            view.webContents.closeDevTools();
+                        }
+                        view.webContents.openDevTools({ mode: mode });
                         return [2 /*return*/, { body: "Success: Opened devtools for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
                     }
                     default: {
