@@ -31,7 +31,17 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
         new StringSetting(module)
             .setName("Startup Module ID")
             .setDefault('built_ins.Home')
-            .setAccessID('startup_module_id'),
+            .setAccessID('startup_module_id')
+            .setValidator(async (input: any) => {
+                const installedModules: string[] = (await module.requestExternal("built_ins.Main", "get-module-IDs")).body;
+                
+                if (installedModules.includes(input)) {
+                    return input;
+                }
+                return null
+
+
+            }),
 
         "Developer",
         new BooleanSetting(module)

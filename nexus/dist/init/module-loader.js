@@ -45,7 +45,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 exports.__esModule = true;
-exports.loadModules = void 0;
+exports.verifyAllModuleSettings = exports.loadModules = void 0;
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
@@ -54,12 +54,12 @@ var HomeProcess_1 = require("../built_ins/home_module/HomeProcess");
 var SettingsProcess_1 = require("../built_ins/settings_module/process/SettingsProcess");
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var loadedModules, _a, homeProcess, settingProcess, moduleMap, _i, _b, module_1, _c, _d, module_2, _e, _f, moduleOrder, reorderedModules, orderedMap, _g, _h, module_3;
-        return __generator(this, function (_j) {
-            switch (_j.label) {
+        var loadedModules, _a, homeProcess, settingProcess, moduleMap, _i, _b, module_1, moduleOrder, reorderedModules, orderedMap, _c, _d, module_2;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
-                    loadedModules = _j.sent();
+                    loadedModules = _e.sent();
                     _a = [new HomeProcess_1.HomeProcess(), new SettingsProcess_1.SettingsProcess()], homeProcess = _a[0], settingProcess = _a[1];
                     moduleMap = new Map();
                     for (_i = 0, _b = __spreadArray([homeProcess, settingProcess], loadedModules, true); _i < _b.length; _i++) {
@@ -67,20 +67,6 @@ function loadModules(context) {
                         module_1.setIPC((0, global_event_handler_1.getIPCCallback)(context));
                         registerModule(moduleMap, module_1);
                     }
-                    _c = 0, _d = Array.from(moduleMap.values());
-                    _j.label = 2;
-                case 2:
-                    if (!(_c < _d.length)) return [3 /*break*/, 5];
-                    module_2 = _d[_c];
-                    _f = (_e = settingProcess).addModuleSetting;
-                    return [4 /*yield*/, verifyModuleSettings(module_2)];
-                case 3:
-                    _f.apply(_e, [_j.sent()]);
-                    _j.label = 4;
-                case 4:
-                    _c++;
-                    return [3 /*break*/, 2];
-                case 5:
                     moduleOrder = settingProcess.getSettings()
                         .findSetting("module_order")
                         .getValue();
@@ -90,16 +76,16 @@ function loadModules(context) {
                             .getSettings()
                             .findSetting('module_order')
                             .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"))];
-                case 6:
+                case 2:
                     // Write new order
-                    _j.sent();
+                    _e.sent();
                     return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(settingProcess)];
-                case 7:
-                    _j.sent();
+                case 3:
+                    _e.sent();
                     orderedMap = new Map();
-                    for (_g = 0, _h = __spreadArray([homeProcess, settingProcess], reorderedModules, true); _g < _h.length; _g++) {
-                        module_3 = _h[_g];
-                        orderedMap.set(module_3.getIPCSource(), module_3);
+                    for (_c = 0, _d = __spreadArray([homeProcess, settingProcess], reorderedModules, true); _c < _d.length; _c++) {
+                        module_2 = _d[_c];
+                        orderedMap.set(module_2.getIPCSource(), module_2);
                     }
                     return [2 /*return*/, orderedMap];
             }
@@ -123,9 +109,34 @@ function registerModule(map, module) {
         return module.handleEvent(eventType, data);
     });
 }
+function verifyAllModuleSettings(context) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, _a, module_3, _b, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    _i = 0, _a = Array.from(context.moduleMap.values());
+                    _d.label = 1;
+                case 1:
+                    if (!(_i < _a.length)) return [3 /*break*/, 4];
+                    module_3 = _a[_i];
+                    _c = (_b = context.settingModule).addModuleSetting;
+                    return [4 /*yield*/, verifyModuleSettings(module_3)];
+                case 2:
+                    _c.apply(_b, [_d.sent()]);
+                    _d.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.verifyAllModuleSettings = verifyAllModuleSettings;
 function verifyModuleSettings(module) {
     return __awaiter(this, void 0, void 0, function () {
-        var settingsMap, moduleSettings;
+        var settingsMap, moduleSettings, result;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -140,6 +151,9 @@ function verifyModuleSettings(module) {
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
+                                            if (settingName === "Startup Module ID") {
+                                                console.log("initial: " + settingValue);
+                                            }
                                             setting = moduleSettings.findSetting(settingName);
                                             if (!(setting === undefined)) return [3 /*break*/, 1];
                                             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
@@ -148,13 +162,18 @@ function verifyModuleSettings(module) {
                                         case 2:
                                             _b.sent();
                                             _b.label = 3;
-                                        case 3: return [2 /*return*/];
+                                        case 3:
+                                            if (settingName === "Startup Module ID") {
+                                                console.log("after: " + setting.getValue());
+                                            }
+                                            return [2 /*return*/];
                                     }
                                 });
                             });
                         }))];
                 case 2:
-                    _a.sent();
+                    result = _a.sent();
+                    console.log(result);
                     return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
                 case 3:
                     _a.sent();

@@ -4,7 +4,7 @@ import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
 import { createBrowserWindow, createWebViews, showWindow } from "./init/window-creator";
 import { InitContext } from "./utils/types";
-import { loadModules } from "./init/module-loader";
+import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
@@ -73,6 +73,8 @@ async function nexusStart() {
     // Load modules
     context.moduleMap = await loadModules(context);
     context.settingModule = context.moduleMap.get("built_ins.Settings") as SettingsProcess;
+
+    verifyAllModuleSettings(context)
 
     context.setProcessReady();
 

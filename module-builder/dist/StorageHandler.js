@@ -181,6 +181,7 @@ var StorageHandler = /** @class */ (function () {
                     case 4:
                         try {
                             json = JSON.parse(contents);
+                            console.log(json);
                             for (settingName in json) {
                                 settingMap.set(settingName, json[settingName]);
                             }

@@ -21,10 +21,7 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
         registerModule(moduleMap, module);
     }
 
-    // Register all settings
-    for (const module of Array.from(moduleMap.values())) {
-        settingProcess.addModuleSetting(await verifyModuleSettings(module));
-    }
+
 
     const moduleOrder: string = settingProcess.getSettings()
         .findSetting("module_order")
@@ -66,19 +63,36 @@ function registerModule(map: Map<string, Process>, module: Process) {
     });
 }
 
+export async function verifyAllModuleSettings(context: InitContext) {
+    // Register all settings
+    for (const module of Array.from(context.moduleMap.values())) {
+        context.settingModule.addModuleSetting(await verifyModuleSettings(module));
+    }
+}
+
 
 async function verifyModuleSettings(module: Process): Promise<Process> {
     const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
     const moduleSettings: ModuleSettings = module.getSettings();
 
-    await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
+    const result = await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
+        if (settingName === "Startup Module ID") {
+            console.log("initial: " + settingValue)
+        }
+
+
         const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
         if (setting === undefined) {
             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
         } else {
             await setting.setValue(settingValue);
         }
+
+        if (settingName === "Startup Module ID") {
+            console.log("after: " + setting.getValue())
+        }
     }))
+    console.log(result)
     await StorageHandler.writeModuleSettingsToStorage(module);
     return module;
 }

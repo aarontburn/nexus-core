@@ -112,6 +112,7 @@ function nexusStart() {
                     // Load modules
                     _a.moduleMap = _c.sent();
                     context.settingModule = context.moduleMap.get("built_ins.Settings");
+                    (0, module_loader_1.verifyAllModuleSettings)(context);
                     context.setProcessReady();
                     // Run module preload
                     return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { module.beforeWindowCreated(); }))];
