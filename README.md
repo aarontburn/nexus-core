@@ -3,7 +3,7 @@
 <img src="./icons/256x256.png" alt="Nexus Logo" width="200" />
 
 ## What is Nexus?
-Nexus is an application environment and loader. Developers can create applications, or **modules**, that can be loaded into the Nexus environment, keeping everything in one place. 
+Nexus is an cross-platform application environment and loader. Developers can create applications, or **modules**, that can be loaded into the Nexus environment, keeping everything in one place. 
 
 Think of Nexus as a customizable toolbox — one app that can do anything that you (or the community) build into it.
 
