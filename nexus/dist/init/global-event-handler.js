@@ -73,13 +73,15 @@ function swapVisibleModule(context, moduleID) {
     }
     for (var _i = 0, _b = Array.from(context.moduleViewMap.keys()); _i < _b.length; _i++) {
         var id = _b[_i];
-        if (id === context.mainIPCSource.getIPCSource())
+        if (id === context.mainIPCSource.getIPCSource() || id === moduleID) {
             continue;
+        }
+        ;
         context.moduleViewMap.get(id).setVisible(false);
     }
     (_a = context.displayedModule) === null || _a === void 0 ? void 0 : _a.onGUIHidden();
-    context.moduleViewMap.get(moduleID).setVisible(true);
     module.onGUIShown();
+    context.moduleViewMap.get(moduleID).setVisible(true);
     context.displayedModule = module;
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
     return true;

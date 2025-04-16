@@ -72,6 +72,34 @@ exports.showWindow = exports.createWebViews = exports.createBrowserWindow = void
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
 var constants_1 = require("../utils/constants");
+function close(context, window) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result, _i, result_1, error;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, module.onExit()];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    }); }); }))];
+                case 1:
+                    result = _a.sent();
+                    result = result.filter(function (p) { return p.status === 'rejected'; });
+                    if (result.length > 0) {
+                        console.error("Errors occurred during close.");
+                        for (_i = 0, result_1 = result; _i < result_1.length; _i++) {
+                            error = result_1[_i];
+                            console.error(error);
+                        }
+                    }
+                    window.destroy();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 function createBrowserWindow(context) {
     return __awaiter(this, void 0, void 0, function () {
         var window, view;
@@ -85,31 +113,10 @@ function createBrowserWindow(context) {
                 title: "Nexus"
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
-                var result, _i, result_1, error;
-                var _this = this;
                 return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            event.preventDefault();
-                            return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, module.onExit()];
-                                        case 1: return [2 /*return*/, _a.sent()];
-                                    }
-                                }); }); }))];
-                        case 1:
-                            result = _a.sent();
-                            result = result.filter(function (p) { return p.status === 'rejected'; });
-                            if (result.length > 0) {
-                                console.error("Errors occurred during close.");
-                                for (_i = 0, result_1 = result; _i < result_1.length; _i++) {
-                                    error = result_1[_i];
-                                    console.error(error);
-                                }
-                            }
-                            window.destroy();
-                            return [2 /*return*/];
-                    }
+                    event.preventDefault();
+                    close(context, window);
+                    return [2 /*return*/];
                 });
             }); });
             view = new electron_1.WebContentsView({

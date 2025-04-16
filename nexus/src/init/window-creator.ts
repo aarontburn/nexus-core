@@ -5,6 +5,23 @@ import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";
 import { WINDOW_DIMENSION } from "../utils/constants";
 
 
+async function close(context: InitContext, window: BaseWindow) {
+    let result: PromiseSettledResult<void>[] = await Promise.allSettled(
+        Array.from(context.moduleMap.values()).map(
+            async module => await module.onExit()
+        )
+    );
+    result = result.filter(p => p.status === 'rejected');
+
+    if (result.length > 0) {
+        console.error("Errors occurred during close.");
+        for (const error of result) {
+            console.error(error);
+        }
+    }
+    window.destroy();
+}
+
 export async function createBrowserWindow(context: InitContext): Promise<BaseWindow> {
     const window = new BaseWindow({
         show: false,
@@ -14,23 +31,10 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         title: "Nexus"
     });
 
+
     window.on('close', async (event) => {
         event.preventDefault();
-        let result: PromiseSettledResult<void>[] = await Promise.allSettled(
-            Array.from(context.moduleMap.values()).map(
-                async module => await module.onExit()
-            )
-        );
-        result = result.filter(p => p.status === 'rejected');
-
-        if (result.length > 0) {
-            console.error("Errors occurred during close.");
-            for (const error of result) {
-                console.error(error);
-            }
-        }
-
-        window.destroy();
+        close(context, window);
     })
 
     const view: WebContentsView = new WebContentsView({

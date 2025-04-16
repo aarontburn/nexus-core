@@ -40,12 +40,18 @@ export function swapVisibleModule(context: InitContext, moduleID: string): boole
     }
 
     for (const id of Array.from(context.moduleViewMap.keys())) {
-        if (id === context.mainIPCSource.getIPCSource()) continue;
+        if (id === context.mainIPCSource.getIPCSource() || id === moduleID) {
+            continue;
+        };
         context.moduleViewMap.get(id).setVisible(false);
     }
     context.displayedModule?.onGUIHidden();
-    context.moduleViewMap.get(moduleID).setVisible(true);
+
     module.onGUIShown();
+    context.moduleViewMap.get(moduleID).setVisible(true);
+
+
+
     context.displayedModule = module;
 
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
@@ -109,7 +115,7 @@ export function handleExternalWrapper(context: InitContext) {
                 return { body: "Success: Refreshed page for " + target, code: HTTPStatusCode.OK };
             }
             case "swap-to-module": {
-                const target: string = source.getIPCSource() ;
+                const target: string = source.getIPCSource();
                 if (!context.moduleViewMap.has(target)) {
                     return {
                         body: new Error(`Could not swap to ${target}; either module doesn't exist or module is an internal module.`),
