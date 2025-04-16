@@ -78,11 +78,10 @@ function swapVisibleModule(context, moduleID) {
             continue;
         context.moduleViewMap.get(id).setVisible(false);
     }
-    view.setVisible(true);
     (_a = context.displayedModule) === null || _a === void 0 ? void 0 : _a.onGUIHidden();
+    view.setVisible(true);
     module.onGUIShown();
     context.displayedModule = module;
-    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swap-modules', moduleID);
 }
 exports.swapVisibleModule = swapVisibleModule;
 function handleExternalWrapper(context) {

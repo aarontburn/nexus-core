@@ -45,13 +45,11 @@ export function swapVisibleModule(context: InitContext, moduleID: string): void 
 
         context.moduleViewMap.get(id).setVisible(false);
     }
-
+    context.displayedModule?.onGUIHidden();
     view.setVisible(true);
 
-    context.displayedModule?.onGUIHidden();
     module.onGUIShown();
     context.displayedModule = module;
-    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swap-modules', moduleID);
 }
 
 

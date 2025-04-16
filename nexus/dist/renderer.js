@@ -12,10 +12,6 @@
                 loadModules(data[0]);
                 break;
             }
-            case "swap-modules": {
-                // swapVisibleModule(data[0])
-                break;
-            }
         }
     });
     sendToProcess("renderer-init");
