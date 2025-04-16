@@ -27,9 +27,6 @@ export class HomeProcess extends Process {
 
 	private clockTimeout: NodeJS.Timeout;
 
-beforeWindowCreated(): void {
-	
-}
 
 	public constructor() {
 		super({
@@ -52,12 +49,11 @@ beforeWindowCreated(): void {
 		});
 	}
 
-	public initialize(): void {
-		super.initialize();
+	public async initialize(): Promise<void> {
+		await super.initialize();
 
 		// Start clock
 		this.updateDateAndTime(false);
-
 
 		this.clockTimeout = setTimeout(() => this.updateDateAndTime(true), 1000 - new Date().getMilliseconds());
 
@@ -151,7 +147,7 @@ beforeWindowCreated(): void {
 	private static DATE_TIME_IDS: string[] = ['full_date_fs', 'abbr_date_fs', 'standard_time_fs', 'military_time_fs'];
 
 
-	public refreshSettings(modifiedSetting?: Setting<unknown>): void {
+	public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
 		if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting?.getAccessID())) {
 			const sizes: object = {
 				fullDate: this.getSettings().findSetting('full_date_fs').getValue(),

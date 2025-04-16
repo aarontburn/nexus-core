@@ -105,11 +105,20 @@ var HomeProcess = /** @class */ (function (_super) {
         return _this;
     }
     HomeProcess.prototype.initialize = function () {
-        var _this = this;
-        _super.prototype.initialize.call(this);
-        // Start clock
-        this.updateDateAndTime(false);
-        this.clockTimeout = setTimeout(function () { return _this.updateDateAndTime(true); }, 1000 - new Date().getMilliseconds());
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                    case 1:
+                        _a.sent();
+                        // Start clock
+                        this.updateDateAndTime(false);
+                        this.clockTimeout = setTimeout(function () { return _this.updateDateAndTime(true); }, 1000 - new Date().getMilliseconds());
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     HomeProcess.prototype.onExit = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -181,20 +190,26 @@ var HomeProcess = /** @class */ (function (_super) {
             }),
         ];
     };
-    HomeProcess.prototype.refreshSettings = function (modifiedSetting) {
-        if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID())) {
-            var sizes = {
-                fullDate: this.getSettings().findSetting('full_date_fs').getValue(),
-                abbrDate: this.getSettings().findSetting('abbr_date_fs').getValue(),
-                standardTime: this.getSettings().findSetting('standard_time_fs').getValue(),
-                militaryTime: this.getSettings().findSetting('military_time_fs').getValue()
-            };
-            this.sendToRenderer('font-sizes', sizes);
-        }
-        else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'display_order') {
-            var order = this.getSettings().findSetting("display_order").getValue();
-            this.sendToRenderer('display-order', order);
-        }
+    HomeProcess.prototype.onSettingModified = function (modifiedSetting) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sizes, order;
+            return __generator(this, function (_a) {
+                if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID())) {
+                    sizes = {
+                        fullDate: this.getSettings().findSetting('full_date_fs').getValue(),
+                        abbrDate: this.getSettings().findSetting('abbr_date_fs').getValue(),
+                        standardTime: this.getSettings().findSetting('standard_time_fs').getValue(),
+                        militaryTime: this.getSettings().findSetting('military_time_fs').getValue()
+                    };
+                    this.sendToRenderer('font-sizes', sizes);
+                }
+                else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'display_order') {
+                    order = this.getSettings().findSetting("display_order").getValue();
+                    this.sendToRenderer('display-order', order);
+                }
+                return [2 /*return*/];
+            });
+        });
     };
     HomeProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {

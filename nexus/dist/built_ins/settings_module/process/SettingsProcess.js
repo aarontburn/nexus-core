@@ -109,28 +109,34 @@ var SettingsProcess = /** @class */ (function (_super) {
         return _this;
     }
     SettingsProcess.prototype.initialize = function () {
-        _super.prototype.initialize.call(this);
-        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
-        var settings = [];
-        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
-            var moduleSettings = _a[_i];
-            var moduleName = moduleSettings.getDisplayName();
-            var list = {
-                module: moduleName,
-                moduleInfo: moduleSettings.getProcess().getModuleInfo()
-            };
-            if (moduleSettings.allToArray().length !== 0) {
-                settings.push(list);
-            }
-            moduleSettings.getProcess().refreshAllSettings();
-        }
-        // Swap settings and home module so it appears at the top
-        if (settings[0].module === "Home") {
-            var temp = settings[0];
-            settings[0] = settings[1];
-            settings[1] = temp;
-        }
-        this.sendToRenderer("populate-settings-list", settings);
+        return __awaiter(this, void 0, void 0, function () {
+            var settings, _i, _a, moduleSettings, moduleName, list, temp;
+            return __generator(this, function (_b) {
+                _super.prototype.initialize.call(this);
+                this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
+                settings = [];
+                for (_i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
+                    moduleSettings = _a[_i];
+                    moduleName = moduleSettings.getDisplayName();
+                    list = {
+                        module: moduleName,
+                        moduleInfo: moduleSettings.getProcess().getModuleInfo()
+                    };
+                    if (moduleSettings.allToArray().length !== 0) {
+                        settings.push(list);
+                    }
+                    moduleSettings.getProcess().refreshAllSettings();
+                }
+                // Swap settings and home module so it appears at the top
+                if (settings[0].module === "Home") {
+                    temp = settings[0];
+                    settings[0] = settings[1];
+                    settings[1] = temp;
+                }
+                this.sendToRenderer("populate-settings-list", settings);
+                return [2 /*return*/];
+            });
+        });
     };
     SettingsProcess.prototype.registerSettings = function () {
         return (0, settings_1.getSettings)(this);
@@ -168,54 +174,59 @@ var SettingsProcess = /** @class */ (function (_super) {
             });
         });
     };
-    SettingsProcess.prototype.refreshSettings = function (modifiedSetting) {
-        if (modifiedSetting === undefined) {
-            return;
-        }
-        switch (modifiedSetting.getAccessID()) {
-            case "zoom": {
-                var zoom_1 = modifiedSetting.getValue();
-                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                    view.webContents.setZoomFactor(zoom_1 / 100);
-                    view.emit("bounds-changed");
-                });
-                break;
-            }
-            case "accent_color": {
-                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                    view.webContents.insertCSS(":root { --accent-color: ".concat(modifiedSetting.getValue(), " !important;"), { cssOrigin: "user" });
-                });
-                break;
-            }
-            case "dev_mode": {
-                this.sendToRenderer("is-dev", modifiedSetting.getValue());
-                this.devModeSubscribers.forEach(function (callback) {
-                    callback(modifiedSetting.getValue());
-                });
-                break;
-            }
-            case "force_reload": {
-                var shouldForceReload_1 = modifiedSetting.getValue();
-                (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
-                    if (shouldForceReload_1) {
-                        if (!args.includes("--force-reload")) {
-                            args.push("--force-reload");
-                        }
+    SettingsProcess.prototype.onSettingModified = function (modifiedSetting) {
+        return __awaiter(this, void 0, void 0, function () {
+            var zoom_1, shouldForceReload_1, mode;
+            return __generator(this, function (_a) {
+                if (modifiedSetting === undefined) {
+                    return [2 /*return*/];
+                }
+                switch (modifiedSetting.getAccessID()) {
+                    case "zoom": {
+                        zoom_1 = modifiedSetting.getValue();
+                        electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                            view.webContents.setZoomFactor(zoom_1 / 100);
+                            view.emit("bounds-changed");
+                        });
+                        break;
                     }
-                    else {
-                        args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                    case "accent_color": {
+                        electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                            view.webContents.insertCSS(":root { --accent-color: ".concat(modifiedSetting.getValue(), " !important;"), { cssOrigin: "user" });
+                        });
+                        break;
                     }
-                    return (0, internal_args_1.writeInternal)(args);
-                });
-                break;
-            }
-            case "dark_mode": {
-                // System, Dark, Light
-                var mode = modifiedSetting.getValue();
-                electron_1.nativeTheme.themeSource = mode.toLowerCase();
-                break;
-            }
-        }
+                    case "dev_mode": {
+                        this.sendToRenderer("is-dev", modifiedSetting.getValue());
+                        this.devModeSubscribers.forEach(function (callback) {
+                            callback(modifiedSetting.getValue());
+                        });
+                        break;
+                    }
+                    case "force_reload": {
+                        shouldForceReload_1 = modifiedSetting.getValue();
+                        (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                            if (shouldForceReload_1) {
+                                if (!args.includes("--force-reload")) {
+                                    args.push("--force-reload");
+                                }
+                            }
+                            else {
+                                args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                            }
+                            return (0, internal_args_1.writeInternal)(args);
+                        });
+                        break;
+                    }
+                    case "dark_mode": {
+                        mode = modifiedSetting.getValue();
+                        electron_1.nativeTheme.themeSource = mode.toLowerCase();
+                        break;
+                    }
+                }
+                return [2 /*return*/];
+            });
+        });
     };
     SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
@@ -279,7 +290,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _e.sent();
                         _e.label = 7;
                     case 7:
-                        setting.getParentModule().refreshSettings(setting);
+                        setting.getParentModule().onSettingModified(setting);
                         console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);

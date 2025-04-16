@@ -41,7 +41,7 @@ export class SettingsProcess extends Process {
 
     }
 
-    public initialize(): void {
+    public async initialize(): Promise<void> {
         super.initialize();
         this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
@@ -104,7 +104,7 @@ export class SettingsProcess extends Process {
 
 
 
-    public refreshSettings(modifiedSetting?: Setting<unknown>): void {
+    public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
         if (modifiedSetting === undefined) {
             return;
         }
@@ -205,7 +205,7 @@ export class SettingsProcess extends Process {
                             await setting.setValue(newValue);
                         }
 
-                        setting.getParentModule().refreshSettings(setting);
+                        setting.getParentModule().onSettingModified(setting);
                         console.info(`SETTING CHANGED: '${setting.getName()}' | ${oldValue} => ${setting.getValue()} ${newValue === undefined ? '[RESET TO DEFAULT]' : ''}`);
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
