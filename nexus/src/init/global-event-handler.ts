@@ -50,10 +50,7 @@ export function swapVisibleModule(context: InitContext, moduleID: string): boole
     module.onGUIShown();
     context.moduleViewMap.get(moduleID).setVisible(true);
 
-
-
     context.displayedModule = module;
-
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
     return true;
 }

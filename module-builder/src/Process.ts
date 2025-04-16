@@ -185,7 +185,7 @@ export abstract class Process implements IPCSource {
      *  Child classes MUST do super.initialize() to properly
      *      set @see hasBeenInit, if the module depends on it.
      */
-    public initialize(): void {
+    public async initialize(): Promise<void> {
         this.hasBeenInit = true;
         // Override this, and do a super.initialize() after initializing module..
     }
@@ -243,21 +243,19 @@ export abstract class Process implements IPCSource {
      * 
      *  For an example on how to use this, see {@link HomeProcess}
      */
-    public refreshSettings(modifiedSetting: Setting<unknown>): void {
+    public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
         console.warn(`Uncaught setting change: ${this.getName()} has no handler for setting modification.`);
     }
 
 
     /**
-     *  Refreshes all settings by passing them into {@link refreshSettings}
+     *  Refreshes all settings by passing them into {@link onSettingModified}
      * 
-     *  If the implementation of your {@link refreshSettings} refreshes ALL settings,
+     *  If the implementation of your {@link onSettingModified} refreshes ALL settings,
      *      this may result in many frontend updates. Use cautiously.
      */
-    public refreshAllSettings(): void {
-        for (const setting of this.getSettings().allToArray()) {
-            this.refreshSettings(setting);
-        }
+    public async refreshAllSettings(): Promise<void> {
+        await Promise.allSettled(this.getSettings().allToArray().map(setting => this.onSettingModified(setting)));
     }
 
     /**
@@ -265,7 +263,7 @@ export abstract class Process implements IPCSource {
      * 
      *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
      */
-    public beforeWindowCreated() {
+    public async beforeWindowCreated() {
         // Do nothing by default
     }
 
@@ -274,7 +272,7 @@ export abstract class Process implements IPCSource {
      * 
      *  Lifecycle function that is called whenever the module is shown.
      */
-    public onGUIShown() {
+    public async onGUIShown() {
         // Do nothing by default.
     }
 
@@ -284,7 +282,7 @@ export abstract class Process implements IPCSource {
      * 
      *  Lifecycle function that is called whenever the module is hidden.
      */
-    public onGUIHidden() {
+    public async onGUIHidden() {
         // Do nothing by default. 
     }
 

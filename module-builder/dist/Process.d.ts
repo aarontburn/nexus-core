@@ -113,7 +113,7 @@ export declare abstract class Process implements IPCSource {
      *  Child classes MUST do super.initialize() to properly
      *      set @see hasBeenInit, if the module depends on it.
      */
-    initialize(): void;
+    initialize(): Promise<void>;
     /**
      *  @returns the info for this module.
      *  @see ModuleInfo
@@ -147,32 +147,32 @@ export declare abstract class Process implements IPCSource {
      *
      *  For an example on how to use this, see {@link HomeProcess}
      */
-    refreshSettings(modifiedSetting: Setting<unknown>): void;
+    onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void>;
     /**
-     *  Refreshes all settings by passing them into {@link refreshSettings}
+     *  Refreshes all settings by passing them into {@link onSettingModified}
      *
-     *  If the implementation of your {@link refreshSettings} refreshes ALL settings,
+     *  If the implementation of your {@link onSettingModified} refreshes ALL settings,
      *      this may result in many frontend updates. Use cautiously.
      */
-    refreshAllSettings(): void;
+    refreshAllSettings(): Promise<void>;
     /**
      *  @private
      *
      *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
      */
-    beforeWindowCreated(): void;
+    beforeWindowCreated(): Promise<void>;
     /**
      *  @private
      *
      *  Lifecycle function that is called whenever the module is shown.
      */
-    onGUIShown(): void;
+    onGUIShown(): Promise<void>;
     /**
      *  @private
      *
      *  Lifecycle function that is called whenever the module is hidden.
      */
-    onGUIHidden(): void;
+    onGUIHidden(): Promise<void>;
     /**
      *  @private
      *

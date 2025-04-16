@@ -130,8 +130,12 @@ var Process = /** @class */ (function () {
      *      set @see hasBeenInit, if the module depends on it.
      */
     Process.prototype.initialize = function () {
-        this.hasBeenInit = true;
-        // Override this, and do a super.initialize() after initializing module..
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.hasBeenInit = true;
+                return [2 /*return*/];
+            });
+        });
     };
     /**
      *  @returns the info for this module.
@@ -177,20 +181,32 @@ var Process = /** @class */ (function () {
      *
      *  For an example on how to use this, see {@link HomeProcess}
      */
-    Process.prototype.refreshSettings = function (modifiedSetting) {
-        console.warn("Uncaught setting change: ".concat(this.getName(), " has no handler for setting modification."));
+    Process.prototype.onSettingModified = function (modifiedSetting) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                console.warn("Uncaught setting change: ".concat(this.getName(), " has no handler for setting modification."));
+                return [2 /*return*/];
+            });
+        });
     };
     /**
-     *  Refreshes all settings by passing them into {@link refreshSettings}
+     *  Refreshes all settings by passing them into {@link onSettingModified}
      *
-     *  If the implementation of your {@link refreshSettings} refreshes ALL settings,
+     *  If the implementation of your {@link onSettingModified} refreshes ALL settings,
      *      this may result in many frontend updates. Use cautiously.
      */
     Process.prototype.refreshAllSettings = function () {
-        for (var _i = 0, _a = this.getSettings().allToArray(); _i < _a.length; _i++) {
-            var setting = _a[_i];
-            this.refreshSettings(setting);
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Promise.allSettled(this.getSettings().allToArray().map(function (setting) { return _this.onSettingModified(setting); }))];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     /**
      *  @private
@@ -198,7 +214,11 @@ var Process = /** @class */ (function () {
      *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
      */
     Process.prototype.beforeWindowCreated = function () {
-        // Do nothing by default
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
     };
     /**
      *  @private
@@ -206,7 +226,11 @@ var Process = /** @class */ (function () {
      *  Lifecycle function that is called whenever the module is shown.
      */
     Process.prototype.onGUIShown = function () {
-        // Do nothing by default.
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
     };
     /**
      *  @private
@@ -214,7 +238,11 @@ var Process = /** @class */ (function () {
      *  Lifecycle function that is called whenever the module is hidden.
      */
     Process.prototype.onGUIHidden = function () {
-        // Do nothing by default. 
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
     };
     /**
      *  @private

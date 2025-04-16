@@ -12,16 +12,44 @@ While the `constructor` is the entry point to your module, it takes time for the
 ```typescript
 export default class SampleProcess extends Process {
     public constructor() {
-        super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
+        super({
+          moduleID: MODULE_ID,
+          moduleName: MODULE_NAME,
+          paths: {
+            htmlPath: HTML_PATH,
+            iconPath: ICON_PATH
+          }
+        });
     }
 }
 ```
-The `super()` constructor takes 4 parameters.
-> **Parameters**  
-> `moduleID: string` → the ID of your module.  
-> `moduleName: string` → the display name of your module.  
-> `htmlPath: string` → A relative path to the renderers `index.html`. If this is `undefined`, your module will be treated as an internal module.  
-> `iconPath: string?` → A relative path to the icon of your module. The icon can be an `svg`, `jpg`, `png`, or `jpeg` and will be displayed as a 36px by 36px icon. If this is `undefined`, your icon will be the an acronym of your module (max three characters).
+The `super()` constructor takes a single parameter of an `ProcessConstructorArguments` object.
+
+```typescript
+export interface ProcessConstructorArguments {
+    moduleID: string;
+    moduleName: string;
+    paths?: {
+        htmlPath?: string;
+        urlPath?: string;
+        iconPath?: string;
+    },
+    httpOptions?: HTTPOptions;
+}
+
+export interface HTTPOptions {
+    userAgent?: string;
+    partition?: string;
+}
+```
+
+> `moduleID: string` → The ID of your module.  
+> `moduleName: string` → The display name of your module.  
+> `paths: object` → An object containing relative paths to assets of your module, if applicable.  
+> `[paths].htmlPath: string` → A relative path to the renderers `index.html`. If this is `undefined`, your module will be treated as an internal module.  
+> `[paths].urlPath: string` → A web URL to display. (For more control, use the `<webview>` tag in your `index.html`)   
+> `[paths].iconPath: string?` → A relative path to the icon of your module. The icon can be an `svg`, `jpg`, `png`, or `jpeg` and will be displayed as a 36px by 36px icon. If this is `undefined`, your icon will be the an acronym of your module (max three characters).
+> `httpOptions: HTTPOptions` → If your module requires a specific partition and user agent, they can be defined here.
 
 
 
@@ -32,12 +60,18 @@ You must do a call to `super.initialize()`
 
 By default, this is called when the renderer is initialized and is now listening to events sent from the process.
 
+---
+
+### `beforeWindowCreated(): void`
+This function is called after the modules are loaded but BEFORE the window is created.
 
 
 ---
 
 ### `registerSettings(): (Setting<unknown> | string)[]`
 This function is registers any settings your module may use.
+
+This function is called after ALL modules are loaded from storage.
 
 > **Returns**:  
 > An array of both `Settings` or strings.

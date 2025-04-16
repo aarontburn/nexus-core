@@ -27,6 +27,10 @@ export class HomeProcess extends Process {
 
 	private clockTimeout: NodeJS.Timeout;
 
+beforeWindowCreated(): void {
+	
+}
+
 	public constructor() {
 		super({
 			moduleID: MODULE_ID,
