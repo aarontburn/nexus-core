@@ -12,11 +12,19 @@
                 loadModules(data[0]);
                 break;
             }
+            case "swapped-modules-to": {
+                setSelectedTab(document.getElementById(data[0]));
+                break;
+            }
         }
     });
     sendToProcess("renderer-init");
     var selectedTab = undefined;
     var handleButtonClick = function (moduleID, buttonElement) {
+        setSelectedTab(buttonElement);
+        sendToProcess("swap-modules", moduleID);
+    };
+    var setSelectedTab = function (buttonElement) {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";
             selectedTab.style.outlineColor = "";
@@ -24,7 +32,6 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
-        sendToProcess("swap-modules", moduleID);
     };
     function loadModules(data) {
         var _a;
@@ -47,7 +54,7 @@
                 return "continue";
             }
             var button = document.createElement("button");
-            button.id = moduleID + "-header-button";
+            button.id = moduleID;
             button.className = "header-button drag-item";
             button.draggable = true;
             button.title = moduleName;
@@ -141,7 +148,7 @@
         removeOldLineAndCreateLine();
         var order = Array.from(importedModulesList.childNodes)
             .filter(function (node) { return node.nodeName === "BUTTON"; })
-            .map(function (node) { return node.id.replace("-header-button", ''); });
+            .map(function (node) { return node.id; });
         sendToProcess("module-order", order);
     }
     function removeOldLineAndCreateLine() {

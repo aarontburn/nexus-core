@@ -68,9 +68,8 @@ exports.attachEventHandlerForMain = attachEventHandlerForMain;
 function swapVisibleModule(context, moduleID) {
     var _a;
     var module = context.moduleMap.get(moduleID);
-    var view = context.moduleViewMap.get(moduleID);
     if (module === context.displayedModule) {
-        return; // If the module is the same, don't swap
+        return false; // If the module is the same, don't swap
     }
     for (var _i = 0, _b = Array.from(context.moduleViewMap.keys()); _i < _b.length; _i++) {
         var id = _b[_i];
@@ -79,16 +78,18 @@ function swapVisibleModule(context, moduleID) {
         context.moduleViewMap.get(id).setVisible(false);
     }
     (_a = context.displayedModule) === null || _a === void 0 ? void 0 : _a.onGUIHidden();
-    view.setVisible(true);
+    context.moduleViewMap.get(moduleID).setVisible(true);
     module.onGUIShown();
     context.displayedModule = module;
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
+    return true;
 }
 exports.swapVisibleModule = swapVisibleModule;
 function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var target, POSSIBLE_MODES, mode, view, target, view;
+            var target, POSSIBLE_MODES, mode, view, target, view, target, didSwap;
             return __generator(this, function (_b) {
                 switch (eventType) {
                     case "get-module-IDs": {
@@ -136,6 +137,22 @@ function handleExternalWrapper(context) {
                             view.webContents.reload();
                         }
                         return [2 /*return*/, { body: "Success: Refreshed page for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                    }
+                    case "swap-to-module": {
+                        target = source.getIPCSource();
+                        if (!context.moduleViewMap.has(target)) {
+                            return [2 /*return*/, {
+                                    body: new Error("Could not swap to ".concat(target, "; either module doesn't exist or module is an internal module.")),
+                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
+                                }];
+                        }
+                        didSwap = swapVisibleModule(context, target);
+                        if (didSwap) {
+                            return [2 /*return*/, { body: "Success: Swapped visible module to ".concat(target), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                        }
+                        else {
+                            return [2 /*return*/, { body: "Success: ".concat(target, " is already visible."), code: nexus_module_builder_1.HTTPStatusCode.ALREADY_REPORTED }];
+                        }
                     }
                     default: {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];

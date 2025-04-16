@@ -33,23 +33,23 @@ export function attachEventHandlerForMain(context: InitContext): void | Promise<
     });
 }
 
-export function swapVisibleModule(context: InitContext, moduleID: string): void {
+export function swapVisibleModule(context: InitContext, moduleID: string): boolean {
     const module: Process = context.moduleMap.get(moduleID);
-    const view: WebContentsView = context.moduleViewMap.get(moduleID);
     if (module === context.displayedModule) {
-        return; // If the module is the same, don't swap
+        return false; // If the module is the same, don't swap
     }
 
     for (const id of Array.from(context.moduleViewMap.keys())) {
         if (id === context.mainIPCSource.getIPCSource()) continue;
-
         context.moduleViewMap.get(id).setVisible(false);
     }
     context.displayedModule?.onGUIHidden();
-    view.setVisible(true);
-
+    context.moduleViewMap.get(moduleID).setVisible(true);
     module.onGUIShown();
     context.displayedModule = module;
+
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
+    return true;
 }
 
 
@@ -107,6 +107,21 @@ export function handleExternalWrapper(context: InitContext) {
                 }
 
                 return { body: "Success: Refreshed page for " + target, code: HTTPStatusCode.OK };
+            }
+            case "swap-to-module": {
+                const target: string = source.getIPCSource() ;
+                if (!context.moduleViewMap.has(target)) {
+                    return {
+                        body: new Error(`Could not swap to ${target}; either module doesn't exist or module is an internal module.`),
+                        code: HTTPStatusCode.NOT_FOUND
+                    };
+                }
+                const didSwap: boolean = swapVisibleModule(context, target);
+                if (didSwap) {
+                    return { body: `Success: Swapped visible module to ${target}`, code: HTTPStatusCode.OK };
+                } else {
+                    return { body: `Success: ${target} is already visible.`, code: HTTPStatusCode.ALREADY_REPORTED };
+                }
             }
             default: {
                 return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };

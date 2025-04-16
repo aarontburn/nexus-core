@@ -9,6 +9,10 @@
                 loadModules(data[0]);
                 break;
             }
+            case "swapped-modules-to": {
+                setSelectedTab(document.getElementById(data[0]));
+                break;
+            }
 
         }
     });
@@ -18,6 +22,11 @@
     let selectedTab: HTMLElement = undefined;
 
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {
+        setSelectedTab(buttonElement);
+        sendToProcess("swap-modules", moduleID);
+    }
+
+    const setSelectedTab = (buttonElement: HTMLElement) => {
         if (selectedTab !== undefined) {
             selectedTab.style.color = "";
             selectedTab.style.outlineColor = "";
@@ -25,7 +34,6 @@
         }
         selectedTab = buttonElement;
         selectedTab.setAttribute("style", "color: var(--accent-color); outline-color: var(--accent-color); outline-width: 3px;");
-        sendToProcess("swap-modules", moduleID);
     }
 
 
@@ -56,7 +64,7 @@
             }
 
             const button: HTMLElement = document.createElement("button");
-            button.id = moduleID + "-header-button";
+            button.id = moduleID;
             button.className = "header-button drag-item";
             button.draggable = true;
             button.title = moduleName
@@ -167,7 +175,7 @@
 
         const order = Array.from(importedModulesList.childNodes)
             .filter(node => node.nodeName === "BUTTON")
-            .map(node => (node as HTMLElement).id.replace("-header-button", ''));
+            .map(node => (node as HTMLElement).id);
 
         sendToProcess("module-order", order);
 
