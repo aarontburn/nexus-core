@@ -81,7 +81,7 @@ var path = __importStar(require("path"));
 var MODULE_NAME = "Home";
 var MODULE_ID = 'nexus.Home';
 var HTML_PATH = path.join(__dirname, "./static/HomeHTML.html");
-var ICON_PATH = path.join(__dirname, "./static/logo.svg");
+var ICON_PATH = path.join(__dirname, "../../view/assets/nexus-icon.svg");
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
     function HomeProcess() {

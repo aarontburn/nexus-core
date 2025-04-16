@@ -1,4 +1,6 @@
-# Nexus
+# Nexus 
+
+<img src="./icons/256x256.png" alt="Nexus Logo" width="200" />
 
 ## What is Nexus?
 Nexus is an application environment and loader. Developers can create applications, or **modules**, that can be loaded into the Nexus environment, keeping everything in one place. 

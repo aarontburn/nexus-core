@@ -30,6 +30,7 @@
       "allowToChangeInstallationDirectory": true,
       "oneClick": false
     },
+		"icon": "./dist/view/assets/icon.ico",
     "appId": "com.aarontburn.Nexus",
     "asar": true,
     "files": [

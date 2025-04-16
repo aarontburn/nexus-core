@@ -28,7 +28,8 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         height: WINDOW_DIMENSION.height,
         width: WINDOW_DIMENSION.width,
         autoHideMenuBar: true,
-        title: "Nexus"
+        title: "Nexus",
+        icon: path.join(__dirname, "../view/assets/icon.ico")
     });
 
 

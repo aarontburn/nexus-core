@@ -7,7 +7,7 @@ import * as path from "path";
 const MODULE_NAME: string = "Home";
 const MODULE_ID: string = 'nexus.Home';
 const HTML_PATH: string = path.join(__dirname, "./static/HomeHTML.html");
-const ICON_PATH: string = path.join(__dirname, "./static/logo.svg");
+const ICON_PATH: string = path.join(__dirname, "../../view/assets/logo-no-background.svg");
 
 
 export class HomeProcess extends Process {
