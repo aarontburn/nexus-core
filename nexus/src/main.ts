@@ -78,9 +78,6 @@ async function nexusStart() {
 
     context.setProcessReady();
 
-    if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
-        startAutoUpdater();
-    }
 
 
     // Run module preload
@@ -102,6 +99,11 @@ async function nexusStart() {
 }
 
 function onProcessAndRendererReady(context: InitContext): void {
+    if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
+        startAutoUpdater();
+    }
+
+
     context.moduleViewMap.forEach((moduleView: WebContentsView) => {
         moduleView.emit("bounds-changed");
     })
@@ -120,7 +122,7 @@ function onProcessAndRendererReady(context: InitContext): void {
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
 
-    let startupModuleID: string = "Nexus.Home";
+    let startupModuleID: string = "nexus.Home";
 
     const openLastModule: boolean = context.settingModule
         .getSettings()

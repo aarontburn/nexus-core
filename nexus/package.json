@@ -1,6 +1,6 @@
 {
     "name": "nexus",
-    "version": "0.0.2",
+    "version": "0.0.1",
     "description": "A cross-platform application loader, designed for productivity and organization.",
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",

@@ -27,7 +27,12 @@ exports.startAutoUpdater = void 0;
 var electron_1 = require("electron");
 var electron_updater_1 = require("electron-updater");
 var path = __importStar(require("path"));
+var started = false;
 function startAutoUpdater() {
+    if (started) {
+        return;
+    }
+    started = true;
     console.info("[Nexus Auto Updater] Current Nexus Version: " + electron_1.app.getVersion());
     console.info("[Nexus Auto Updater] Starting auto updater.");
     var TEN_MIN = 10 * 60 * 1000;
@@ -58,15 +63,15 @@ function startAutoUpdater() {
         clearInterval(interval);
     });
     electron_updater_1.autoUpdater.on('update-downloaded', function (event) {
-        console.info("[Nexus Auto Updater]: Release ".concat(event.version, " downloaded. This will be installed on next launch."));
+        console.info("[Nexus Auto Updater] Release ".concat(event.version, " downloaded. This will be installed on next launch."));
         clearInterval(interval);
     });
     electron_updater_1.autoUpdater.on('update-cancelled', function (event) {
-        console.info("[Nexus Auto Updater]: Update cancelled.");
+        console.info("[Nexus Auto Updater] Update cancelled.");
         clearInterval(interval);
     });
     electron_updater_1.autoUpdater.on('error', function (err) {
-        console.error("[Nexus Auto Updater]: An error occurred while checking for updates: " + err.message);
+        console.error("[Nexus Auto Updater] An error occurred while checking for updates: " + err.message);
         clearInterval(interval);
     });
     electron_updater_1.autoUpdater.checkForUpdates()["catch"](function () { }); // Ignore errors since this will be handled by the code above, i think?

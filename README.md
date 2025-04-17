@@ -1,6 +1,8 @@
-# Nexus 
+<h1 align="center">Nexus</h1>
 
-<img src="./icons/256x256.png" alt="Nexus Logo" width="200" />
+<p align="center">
+    <img src="./icons/256x256.png" alt="Nexus Logo" width="200" />
+</p>
 
 ## What is Nexus?
 Nexus is an cross-platform application environment and loader. Developers can create applications, or **modules**, that can be loaded into the Nexus environment, keeping everything in one place. 

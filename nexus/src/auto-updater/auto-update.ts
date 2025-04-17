@@ -2,7 +2,15 @@ import { app } from "electron";
 import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater"
 import * as path from "path";
 
+
+let started = false;
+
 export function startAutoUpdater() {
+    if (started) {
+        return;
+    }
+    started = true;
+
     console.info("[Nexus Auto Updater] Current Nexus Version: " + app.getVersion());
     console.info("[Nexus Auto Updater] Starting auto updater.");
 
@@ -45,17 +53,17 @@ export function startAutoUpdater() {
     });
 
     autoUpdater.on('update-downloaded', (event: UpdateDownloadedEvent) => {
-        console.info(`[Nexus Auto Updater]: Release ${event.version} downloaded. This will be installed on next launch.`);
+        console.info(`[Nexus Auto Updater] Release ${event.version} downloaded. This will be installed on next launch.`);
         clearInterval(interval);
     });
 
     autoUpdater.on('update-cancelled', (event: UpdateInfo) => {
-        console.info(`[Nexus Auto Updater]: Update cancelled.`);
+        console.info(`[Nexus Auto Updater] Update cancelled.`);
         clearInterval(interval);
     });
 
     autoUpdater.on('error', (err: Error) => {
-        console.error("[Nexus Auto Updater]: An error occurred while checking for updates: " + err.message);
+        console.error("[Nexus Auto Updater] An error occurred while checking for updates: " + err.message);
         clearInterval(interval);
     });
 

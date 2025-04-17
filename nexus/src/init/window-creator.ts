@@ -1,4 +1,4 @@
-import { BaseWindow, Rectangle, shell, WebContentsView } from "electron";
+import { BaseWindow, Rectangle, session, shell, WebContentsView } from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
 import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";

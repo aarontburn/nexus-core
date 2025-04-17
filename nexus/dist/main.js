@@ -117,9 +117,6 @@ function nexusStart() {
                 case 5:
                     _c.sent();
                     context.setProcessReady();
-                    if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
-                        (0, auto_update_1.startAutoUpdater)();
-                    }
                     // Run module preload
                     return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { module.beforeWindowCreated(); }))];
                 case 6:
@@ -144,6 +141,9 @@ function nexusStart() {
     });
 }
 function onProcessAndRendererReady(context) {
+    if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
+        (0, auto_update_1.startAutoUpdater)();
+    }
     context.moduleViewMap.forEach(function (moduleView) {
         moduleView.emit("bounds-changed");
     });
@@ -159,7 +159,7 @@ function onProcessAndRendererReady(context) {
         });
     });
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
-    var startupModuleID = "Nexus.Home";
+    var startupModuleID = "nexus.Home";
     var openLastModule = context.settingModule
         .getSettings()
         .findSetting("startup_should_open_last_closed")

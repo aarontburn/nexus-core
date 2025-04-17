@@ -104,7 +104,6 @@ export class StorageHandler {
                 throw err;
             }
 
-            console.error("WARNING: directory not found.");
             return settingMap;
         }
 
