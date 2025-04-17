@@ -19,6 +19,7 @@
     "@nexus/nexus-exporter": "https://gitpkg.vercel.app/aarontburn/nexus-core/exporter/dist?main",
     "@nexus/nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
     "typescript": "^4.8.3",
-    "yauzl-promise": "^4.0.0"
+    "yauzl-promise": "^4.0.0",
+    "electron-updater": "^6.6.2"
   }
 }
