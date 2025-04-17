@@ -23,7 +23,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setName("Zoom Level (%)")
             .setDefault(100)
             .setAccessID('zoom'),
-            
+
         "Startup",
         new BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
@@ -54,6 +54,12 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setDescription("Always recompile modules at launch. Will result in a slower boot.")
             .setAccessID("force_reload")
             .setDefault(false),
+
+        new BooleanSetting(module)
+            .setName("Automatically Install Updates")
+            .setDescription("Always download Nexus updates and install before closing.")
+            .setAccessID("always_update")
+            .setDefault(true),
     ];
 }
 

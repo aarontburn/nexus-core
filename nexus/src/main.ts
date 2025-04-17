@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, WebContents, WebContentsView } from "electron";
+import { app, BrowserWindow, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
@@ -8,7 +8,7 @@ import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
-
+import { startAutoUpdater } from "./auto-updater/auto-update";
 
 Menu.setApplicationMenu(null);
 
@@ -77,6 +77,11 @@ async function nexusStart() {
     await verifyAllModuleSettings(context);
 
     context.setProcessReady();
+
+    if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
+        startAutoUpdater();
+    }
+
 
     // Run module preload
     await Promise.allSettled(

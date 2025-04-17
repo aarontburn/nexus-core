@@ -1,43 +1,50 @@
 {
-  "name": "nexus",
-  "version": "1.0.0",
-  "description": "Micro-app platform.",
-  "scripts": {
-    "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
-    "watch": "tsc -w",
-    "start": "npm run build && electron --trace-warnings ./dist/main.js --dev --in-core ",
-    "package": "npm run build && npx electron-builder build",
-    "update-nexus": "npm update @nexus/nexus-exporter && npm update @nexus/nexus-module-builder",
-    "package:test": "npm run build && electron-builder --dir"
-  },
-  "main": "./dist/main.js",
-  "author": "aarontburn",
-  "devDependencies": {
-    "@types/yauzl-promise": "^4.0.1",
-    "electron": "^35.1.5",
-    "electron-builder": "^24.13.3",
-    "typescript": "^4.8.3"
-  },
-  "dependencies": {
-    "@nexus/nexus-exporter": "https://gitpkg.vercel.app/aarontburn/nexus-core/exporter/dist?main",
-    "@nexus/nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
-    "typescript": "^4.8.3",
-    "yauzl-promise": "^4.0.0"
-  },
-  "productName": "Nexus",
-  "build": {
-    "nsis": {
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
+    "name": "nexus",
+    "version": "0.0.2",
+    "description": "A cross-platform application loader, designed for productivity and organization.",
+    "scripts": {
+        "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
+        "watch": "tsc -w",
+        "start": "npm run build && electron --trace-warnings . --dev --in-core ",
+        "package": "npm run build && npx electron-builder build",
+        "update-nexus": "npm update @nexus/nexus-exporter && npm update @nexus/nexus-module-builder",
+        "package:test": "npm run build && electron-builder --dir"
     },
-    "icon": "./dist/view/assets/icon.ico",
-    "appId": "com.aarontburn.Nexus",
-    "asar": true,
-    "files": [
-      "./dist/**/*"
-    ],
-    "directories": {
-      "output": "package"
+    "main": "./dist/main.js",
+    "author": "aarontburn",
+    "devDependencies": {
+        "@types/semver": "^7.7.0",
+        "@types/yauzl-promise": "^4.0.1",
+        "electron": "^35.1.5",
+        "electron-builder": "^24.13.3",
+        "typescript": "^4.8.3"
+    },
+    "dependencies": {
+        "@nexus/nexus-exporter": "https://gitpkg.vercel.app/aarontburn/nexus-core/exporter/dist?main",
+        "@nexus/nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
+        "electron-updater": "^6.6.2",
+        "typescript": "^4.8.3",
+        "yauzl-promise": "^4.0.0"
+    },
+    "productName": "Nexus",
+    "build": {
+        "nsis": {
+            "allowToChangeInstallationDirectory": true,
+            "oneClick": false
+        },
+        "icon": "./dist/view/assets/icon.ico",
+        "appId": "com.aarontburn.Nexus",
+        "asar": true,
+        "files": [
+            "./dist/**/*"
+        ],
+        "directories": {
+            "output": "package"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "aarontburn",
+            "repo": "nexus-core"
+        }
     }
-  }
 }

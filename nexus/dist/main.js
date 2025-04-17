@@ -43,6 +43,7 @@ var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
+var auto_update_1 = require("./auto-updater/auto-update");
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -116,6 +117,9 @@ function nexusStart() {
                 case 5:
                     _c.sent();
                     context.setProcessReady();
+                    if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
+                        (0, auto_update_1.startAutoUpdater)();
+                    }
                     // Run module preload
                     return [4 /*yield*/, Promise.allSettled(Array.from(context.moduleMap.values()).map(function (module) { module.beforeWindowCreated(); }))];
                 case 6:

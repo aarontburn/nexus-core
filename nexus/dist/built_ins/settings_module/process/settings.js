@@ -90,6 +90,11 @@ var getSettings = function (module) {
             .setDescription("Always recompile modules at launch. Will result in a slower boot.")
             .setAccessID("force_reload")
             .setDefault(false),
+        new types_1.BooleanSetting(module)
+            .setName("Automatically Install Updates")
+            .setDescription("Always download Nexus updates and install before closing.")
+            .setAccessID("always_update")
+            .setDefault(true),
     ];
 };
 exports.getSettings = getSettings;
