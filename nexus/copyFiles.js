@@ -26,8 +26,8 @@ const SRC = path.join(__dirname, 'src');
 // These are all the files to copy into the "dist" folder
 const pathsToCopy = [
     SRC + "/view",
-    SRC + "/built_ins/settings_module/static",
-    SRC + "/built_ins/home_module/static",
+    SRC + "/internal-modules/settings/static",
+    SRC + "/internal-modules/home/static",
 ];
 
 pathsToCopy.forEach(file => {

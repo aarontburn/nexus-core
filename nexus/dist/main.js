@@ -42,8 +42,9 @@ var init_directory_creator_1 = require("./init/init-directory-creator");
 var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
+var SettingsProcess_1 = require("./internal-modules/settings/process/SettingsProcess");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
-var auto_update_1 = require("./auto-updater/auto-update");
+var updater_process_1 = require("./internal-modules/auto-updater/updater-process");
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -112,7 +113,7 @@ function nexusStart() {
                 case 4:
                     // Load modules
                     _a.moduleMap = _c.sent();
-                    context.settingModule = context.moduleMap.get("nexus.Settings");
+                    context.settingModule = context.moduleMap.get(SettingsProcess_1.MODULE_ID);
                     return [4 /*yield*/, (0, module_loader_1.verifyAllModuleSettings)(context)];
                 case 5:
                     _c.sent();
@@ -142,7 +143,7 @@ function nexusStart() {
 }
 function onProcessAndRendererReady(context) {
     if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
-        (0, auto_update_1.startAutoUpdater)();
+        context.moduleMap.get(updater_process_1.MODULE_ID).startAutoUpdater();
     }
     context.moduleViewMap.forEach(function (moduleView) {
         moduleView.emit("bounds-changed");

@@ -6,9 +6,9 @@ import { createBrowserWindow, createWebViews, showWindow } from "./init/window-c
 import { InitContext } from "./utils/types";
 import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
-import { SettingsProcess } from "./built_ins/settings_module/process/SettingsProcess";
+import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
-import { startAutoUpdater } from "./auto-updater/auto-update";
+import { AutoUpdaterProcess, MODULE_ID as UPDATER_PROCESS_ID} from "./internal-modules/auto-updater/updater-process";
 
 Menu.setApplicationMenu(null);
 
@@ -72,7 +72,7 @@ async function nexusStart() {
 
     // Load modules
     context.moduleMap = await loadModules(context);
-    context.settingModule = context.moduleMap.get("nexus.Settings") as SettingsProcess;
+    context.settingModule = context.moduleMap.get(SETTINGS_ID) as SettingsProcess;
 
     await verifyAllModuleSettings(context);
 
@@ -100,7 +100,7 @@ async function nexusStart() {
 
 function onProcessAndRendererReady(context: InitContext): void {
     if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
-        startAutoUpdater();
+        (context.moduleMap.get(UPDATER_PROCESS_ID) as AutoUpdaterProcess).startAutoUpdater();
     }
 
 

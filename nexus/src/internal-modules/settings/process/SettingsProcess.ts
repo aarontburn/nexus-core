@@ -8,7 +8,7 @@ import { parseInternalArgs, readInternal, writeInternal } from "../../../init/in
 
 
 const MODULE_NAME: string = "Settings";
-const MODULE_ID: string = 'nexus.Settings';
+export const MODULE_ID: string = 'nexus.Settings';
 
 const HTML_PATH: string = path.join(__dirname, "../static/SettingsHTML.html");
 const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");

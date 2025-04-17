@@ -3,20 +3,22 @@ import { ipcMain } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
-import { HomeProcess } from "../built_ins/home_module/HomeProcess";
-import { SettingsProcess } from "../built_ins/settings_module/process/SettingsProcess";
+import { HomeProcess } from "../internal-modules/home/HomeProcess";
+import { SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
+import { AutoUpdaterProcess } from "../internal-modules/auto-updater/updater-process";
 
 
 
 export async function loadModules(context: InitContext): Promise<Map<string, Process>> {
     // Load modules from storage
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
-    const [homeProcess, settingProcess] = [new HomeProcess(), new SettingsProcess()]
 
+    const settingProcess: SettingsProcess = new SettingsProcess();
+    const internalModules: Process[] = [new HomeProcess(), settingProcess, new AutoUpdaterProcess()];
 
     // Register all modules
     const moduleMap: Map<string, Process> = new Map();
-    for (const module of [homeProcess, settingProcess, ...loadedModules]) {
+    for (const module of [...internalModules, ...loadedModules]) {
         module.setIPC(getIPCCallback(context));
         registerModule(moduleMap, module);
     }
@@ -35,7 +37,7 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
         .setValue(loadedModules.map(module => module.getID()).join("|"));
 
     const orderedMap: Map<string, Process> = new Map();
-    for (const module of [homeProcess, settingProcess, ...reorderedModules]) {
+    for (const module of [...internalModules, ...reorderedModules]) {
         orderedMap.set(module.getIPCSource(), module);
     }
     return orderedMap;

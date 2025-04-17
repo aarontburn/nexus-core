@@ -50,20 +50,22 @@ var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
-var HomeProcess_1 = require("../built_ins/home_module/HomeProcess");
-var SettingsProcess_1 = require("../built_ins/settings_module/process/SettingsProcess");
+var HomeProcess_1 = require("../internal-modules/home/HomeProcess");
+var SettingsProcess_1 = require("../internal-modules/settings/process/SettingsProcess");
+var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var loadedModules, _a, homeProcess, settingProcess, moduleMap, _i, _b, module_1, moduleOrder, reorderedModules, orderedMap, _c, _d, module_2;
-        return __generator(this, function (_e) {
-            switch (_e.label) {
+        var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1, moduleOrder, reorderedModules, orderedMap, _b, _c, module_2;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
-                    loadedModules = _e.sent();
-                    _a = [new HomeProcess_1.HomeProcess(), new SettingsProcess_1.SettingsProcess()], homeProcess = _a[0], settingProcess = _a[1];
+                    loadedModules = _d.sent();
+                    settingProcess = new SettingsProcess_1.SettingsProcess();
+                    internalModules = [new HomeProcess_1.HomeProcess(), settingProcess, new updater_process_1.AutoUpdaterProcess()];
                     moduleMap = new Map();
-                    for (_i = 0, _b = __spreadArray([homeProcess, settingProcess], loadedModules, true); _i < _b.length; _i++) {
-                        module_1 = _b[_i];
+                    for (_i = 0, _a = __spreadArray(__spreadArray([], internalModules, true), loadedModules, true); _i < _a.length; _i++) {
+                        module_1 = _a[_i];
                         module_1.setIPC((0, global_event_handler_1.getIPCCallback)(context));
                         registerModule(moduleMap, module_1);
                     }
@@ -78,10 +80,10 @@ function loadModules(context) {
                             .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"))];
                 case 2:
                     // Write new order
-                    _e.sent();
+                    _d.sent();
                     orderedMap = new Map();
-                    for (_c = 0, _d = __spreadArray([homeProcess, settingProcess], reorderedModules, true); _c < _d.length; _c++) {
-                        module_2 = _d[_c];
+                    for (_b = 0, _c = __spreadArray(__spreadArray([], internalModules, true), reorderedModules, true); _b < _c.length; _b++) {
+                        module_2 = _c[_b];
                         orderedMap.set(module_2.getIPCSource(), module_2);
                     }
                     return [2 /*return*/, orderedMap];

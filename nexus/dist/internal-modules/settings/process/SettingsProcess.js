@@ -74,7 +74,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.SettingsProcess = void 0;
+exports.SettingsProcess = exports.MODULE_ID = void 0;
 var path = __importStar(require("path"));
 var fs = __importStar(require("fs"));
 var electron_1 = require("electron");
@@ -83,14 +83,14 @@ var ModuleImporter_1 = require("./ModuleImporter");
 var settings_1 = require("./settings");
 var internal_args_1 = require("../../../init/internal-args");
 var MODULE_NAME = "Settings";
-var MODULE_ID = 'nexus.Settings';
+exports.MODULE_ID = 'nexus.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
 var ICON_PATH = path.join(__dirname, "../static/setting.svg");
 var SettingsProcess = /** @class */ (function (_super) {
     __extends(SettingsProcess, _super);
     function SettingsProcess() {
         var _this = _super.call(this, {
-            moduleID: MODULE_ID,
+            moduleID: exports.MODULE_ID,
             moduleName: MODULE_NAME,
             paths: {
                 htmlPath: HTML_PATH,
