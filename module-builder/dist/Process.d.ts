@@ -2,6 +2,7 @@ import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
 import { DataResponse } from "./DataResponse";
 import { Setting } from "./Setting";
+import FileManger from "./process-helpers/FileManager";
 export interface ModuleInfo {
     name: string;
     author: string;
@@ -74,6 +75,7 @@ export declare abstract class Process implements IPCSource {
     private readonly iconPath;
     private readonly url;
     private readonly httpOptions;
+    protected readonly fileManager: FileManger;
     /**
      *  Entry point.
      *

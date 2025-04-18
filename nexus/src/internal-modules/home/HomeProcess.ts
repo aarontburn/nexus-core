@@ -49,7 +49,6 @@ export class HomeProcess extends Process {
 		});
 	}
 
-	def
 
 	public async initialize(): Promise<void> {
 		await super.initialize();

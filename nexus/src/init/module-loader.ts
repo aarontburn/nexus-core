@@ -1,4 +1,4 @@
-import { Process, StorageHandler, ModuleSettings, Setting } from "@nexus/nexus-module-builder";
+import { Process, ModuleSettings, Setting } from "@nexus/nexus-module-builder";
 import { ipcMain } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
@@ -6,6 +6,9 @@ import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess } from "../internal-modules/home/HomeProcess";
 import { SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
 import { AutoUpdaterProcess } from "../internal-modules/auto-updater/updater-process";
+import * as fs from "fs";
+import * as path from "path";
+import { DIRECTORIES } from "../utils/nexus-paths";
 
 
 
@@ -73,7 +76,7 @@ export async function verifyAllModuleSettings(context: InitContext) {
 
 
 async function verifyModuleSettings(module: Process): Promise<Process> {
-    const settingsMap: Map<string, any> = await StorageHandler.readSettingsFromModuleStorage(module);
+    const settingsMap: Map<string, any> = await readSettingsFromModuleStorage(module);
     const moduleSettings: ModuleSettings = module.getSettings();
 
     await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
@@ -84,8 +87,64 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
             await setting.setValue(settingValue);
         }
     }))
-    await StorageHandler.writeModuleSettingsToStorage(module);
+    await writeModuleSettingsToStorage(module);
     return module;
+}
+
+async function writeModuleSettingsToStorage(module: Process): Promise<void> {
+    const settingMap: Map<string, any> = new Map();
+
+    module.getSettings().allToArray().forEach((setting: Setting<unknown>) => {
+        settingMap.set(setting.getName(), setting.getValue());
+    });
+
+    const folderName: string = path.join(
+        DIRECTORIES.MODULE_STORAGE_PATH,
+        module.getIPCSource(),
+        "/",
+    )
+    const filePath: string = folderName + getModuleSettingsName(module);
+
+    await fs.promises.mkdir(folderName, { recursive: true });
+    await fs.promises.writeFile(filePath, JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
+}
+
+
+async function readSettingsFromModuleStorage(module: Process): Promise<Map<string, any>> {
+    const settingMap: Map<string, any> = new Map();
+
+    const folderName: string = path.join(
+        DIRECTORIES.MODULE_STORAGE_PATH,
+        module.getIPCSource(),
+        "/",
+        getModuleSettingsName(module)
+    )
+
+    let contents: string;
+    try {
+        contents = await fs.promises.readFile(folderName, 'utf-8');
+    } catch (err) {
+        if (err.code !== 'ENOENT') {
+            throw err;
+        }
+        return settingMap;
+    }
+
+    try {
+        const json: any = JSON.parse(contents);
+        for (const settingName in json) {
+            settingMap.set(settingName, json[settingName]);
+        }
+    } catch (err) {
+        console.error("Error parsing JSON for setting: " + module.getName())
+    }
+
+    return settingMap;
+}
+
+
+function getModuleSettingsName(module: Process): string {
+    return module.getName().toLowerCase() + "_settings.json";
 }
 
 function reorderModules(idOrderUnparsed: string, moduleList: Process[]): Process[] {

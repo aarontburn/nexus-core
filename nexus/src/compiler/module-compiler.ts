@@ -2,17 +2,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import { IPCCallback, Process, StorageHandler, ModuleInfo } from "@nexus/nexus-module-builder";
+import {  Process, ModuleInfo } from "@nexus/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
 import Stream from 'stream';
+import { DIRECTORIES } from '../utils/nexus-paths';
 
 
 export class ModuleCompiler {
-    private static TEMP_ARCHIVE_PATH: string = StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
+    private static TEMP_ARCHIVE_PATH: string = DIRECTORIES.EXTERNAL_MODULES_PATH + '/temp/';
 
     public static async load(forceReload: boolean = false): Promise<Process[]> {
         console.time("Module Load Time");
-        await StorageHandler._createDirectories();
 
         try {
             await this.unarchiveFromTemp();
@@ -41,7 +41,7 @@ export class ModuleCompiler {
     }
 
     private static async unarchiveFromTemp() {
-        const files: fs.Dirent[] = await fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH, IO_OPTIONS);
+        const files: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH, IO_OPTIONS);
         await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
 
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
@@ -85,8 +85,8 @@ export class ModuleCompiler {
         console.time("compileAndCopy")
         // Read all files within the built directory and external modules directory
         let [builtModules, externalModules]: string[][] = await Promise.all([
-            fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH),
-            fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH)
+            fs.promises.readdir(DIRECTORIES.COMPILED_MODULES_PATH),
+            fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH)
         ]);
 
         externalModules = externalModules.map(file => file.split('.').slice(0, -1).join('.')).filter(f => f && f !== 'temp');
@@ -98,7 +98,7 @@ export class ModuleCompiler {
 
         await Promise.all(
             foldersToRemove.map(folderName => {
-                const folderPath: string = StorageHandler.COMPILED_MODULES_PATH + "/" + folderName;
+                const folderPath: string = DIRECTORIES.COMPILED_MODULES_PATH + "/" + folderName;
                 console.log(`Removing '${folderPath}'`);
                 return fs.promises.rm(folderPath, { force: true, recursive: true });
             })
@@ -109,7 +109,7 @@ export class ModuleCompiler {
             const files: fs.Dirent[] = await fs.promises.readdir(this.TEMP_ARCHIVE_PATH, IO_OPTIONS);
 
             await Promise.allSettled(files.map(async tempFolders => {
-                const builtDirectory: string = StorageHandler.COMPILED_MODULES_PATH + tempFolders.name; // folder.name is also the module ID
+                const builtDirectory: string = DIRECTORIES.COMPILED_MODULES_PATH + tempFolders.name; // folder.name is also the module ID
                 if (!tempFolders.isDirectory()) {
                     return;
                 }
@@ -167,7 +167,7 @@ export class ModuleCompiler {
         const externalModules: Process[] = [];
 
         try {
-            const folders: fs.Dirent[] = await fs.promises.readdir(StorageHandler.COMPILED_MODULES_PATH, IO_OPTIONS);
+            const folders: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.COMPILED_MODULES_PATH, IO_OPTIONS);
 
             await Promise.allSettled(folders.map(async folder => {
                 if (!folder.isDirectory()) { // only read folders

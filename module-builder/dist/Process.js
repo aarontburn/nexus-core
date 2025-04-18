@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Process = void 0;
 var HTTPStatusCodes_1 = require("./HTTPStatusCodes");
 var ModuleSettings_1 = require("./ModuleSettings");
+var FileManager_1 = require("./process-helpers/FileManager");
 /**
  *  Class to encapsulate module behavior.
  *
@@ -66,6 +67,7 @@ var Process = /** @class */ (function () {
          *  Boolean indicating if this module has been initialized.
          */
         this.hasBeenInit = false;
+        this.fileManager = new FileManager_1.default(this);
         this.moduleID = args.moduleID;
         this.moduleName = args.moduleName;
         if (args.paths) {

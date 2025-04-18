@@ -19,6 +19,5 @@ __exportStar(require("./ModuleSettings"), exports);
 __exportStar(require("./Process"), exports);
 __exportStar(require("./Setting"), exports);
 __exportStar(require("./SettingBox"), exports);
-__exportStar(require("./StorageHandler"), exports);
 __exportStar(require("./HTTPStatusCodes"), exports);
 __exportStar(require("./DataResponse"), exports);

@@ -1,8 +1,8 @@
 
-import { StorageHandler } from '@nexus/nexus-module-builder';
 import { OpenDialogOptions, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from "path";
+import { DIRECTORIES } from '../../../utils/nexus-paths';
 
 
 
@@ -30,7 +30,7 @@ export async function importModuleArchive(): Promise<boolean> {
 async function importPluginArchive(filePath: string): Promise<boolean> {
     const folderName: string = filePath.split("\\").at(-1);
     try {
-        await fs.promises.copyFile(filePath, `${StorageHandler.EXTERNAL_MODULES_PATH}/${folderName}`);
+        await fs.promises.copyFile(filePath, `${DIRECTORIES.EXTERNAL_MODULES_PATH}/${folderName}`);
         return true;
     } catch (err) {
         console.error(err);
@@ -39,7 +39,7 @@ async function importPluginArchive(filePath: string): Promise<boolean> {
 }
 
 export async function getImportedModules(deletedModules: string[]): Promise<{ name: string, deleted: boolean }[]> {
-    const files: fs.Dirent[] = await fs.promises.readdir(StorageHandler.EXTERNAL_MODULES_PATH, { withFileTypes: true });
+    const files: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH, { withFileTypes: true });
 
     const map: Map<string, boolean> = new Map();
 
