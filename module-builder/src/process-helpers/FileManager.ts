@@ -16,7 +16,7 @@ export default class FileManger {
         );
     }
 
-    private async readFromStorage(fileName: string, encoding: BufferEncoding = 'utf-8'): Promise<string | null> {
+    public async readFromStorage(fileName: string, encoding: BufferEncoding = 'utf-8'): Promise<string | null> {
         const filePath: string = path.join(this.storagePath, fileName);
 
         try {
@@ -31,7 +31,7 @@ export default class FileManger {
         return null;
     }
 
-    private async writeToStorage(fileName: string, contents: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
+    public async writeToStorage(fileName: string, contents: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
         const filePath: string = path.join(this.storagePath, fileName);
 
         await fs.promises.mkdir(this.storagePath, { recursive: true });

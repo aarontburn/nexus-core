@@ -210,7 +210,7 @@ export class SettingsProcess extends Process {
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
-                        await StorageHandler.writeModuleSettingsToStorage(setting.getParentModule());
+                        await this.fileManager(setting.getParentModule());
                         return;
                     }
                 }
