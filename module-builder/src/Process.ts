@@ -6,7 +6,6 @@ import { Setting } from "./Setting";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { ProcessLifecycle } from "./process-helpers/ProcessLifecycle";
 
 
 
@@ -98,13 +97,6 @@ export abstract class Process implements IPCSource {
 
     private readonly httpOptions: HTTPOptions;
 
-    public lifecycle: ProcessLifecycle;
-    private readonly defaultLifecycle: ProcessLifecycle = {
-        initialize: async () => {
-            this.hasBeenInit = true;
-        }
-    };
-
     /**
      *  Entry point.
      * 
@@ -123,24 +115,6 @@ export abstract class Process implements IPCSource {
 
         this.httpOptions = args.httpOptions;
         this.moduleSettings = new ModuleSettings(this);
-
-        const definedLifecycle: ProcessLifecycle = this.defineLifecycle();
-        for (const functionName in definedLifecycle) {
-            const originalFunction: () => Promise<void> = (this.lifecycle as any)[functionName];
-            (this.lifecycle as any)[functionName] = async () => {
-                await (this.defaultLifecycle as any)[functionName]();
-                return originalFunction()
-            }
-        }
-    }
-
-    public defineLifecycle(): ProcessLifecycle {
-        return {
-            initialize: async () => {
-                this.defaultLifecycle
-                this.hasBeenInit = true;
-            },
-        }
     }
 
 
@@ -284,6 +258,44 @@ export abstract class Process implements IPCSource {
      */
     public async refreshAllSettings(): Promise<void> {
         await Promise.allSettled(this.getSettings().allToArray().map(setting => this.onSettingModified(setting)));
+    }
+
+    /**
+     *  @private
+     * 
+     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
+     */
+    public async beforeWindowCreated() {
+        // Do nothing by default
+    }
+
+    /**
+     *  @private
+     * 
+     *  Lifecycle function that is called whenever the module is shown.
+     */
+    public async onGUIShown() {
+        // Do nothing by default.
+    }
+
+
+    /**
+     *  @private 
+     * 
+     *  Lifecycle function that is called whenever the module is hidden.
+     */
+    public async onGUIHidden() {
+        // Do nothing by default. 
+    }
+
+
+    /**
+     *  @private
+     * 
+     *  Lifecycle function that is called before the application exits.
+     */
+    public async onExit(): Promise<void> {
+        // Do nothing by default.
     }
 
 

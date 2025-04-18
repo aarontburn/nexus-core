@@ -1,6 +1,6 @@
-import { DataResponse, HTTPStatusCode, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
+import { DataResponse, HTTPStatusCodes, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
 import { InitContext } from "../utils/types";
-import { ipcMain, OpenDevToolsOptions, WebContentsView } from "electron";
+import { ipcMain, WebContentsView } from "electron";
 
 
 
@@ -60,10 +60,10 @@ export function handleExternalWrapper(context: InitContext) {
     return async function handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
             case "get-module-IDs": {
-                return { body: Array.from(context.moduleMap.keys()), code: HTTPStatusCode.OK };
+                return { body: Array.from(context.moduleMap.keys()), code: HTTPStatusCodes.OK };
             }
             case "get-current-module-id": {
-                return { body: context.displayedModule.getID(), code: HTTPStatusCode.OK };
+                return { body: context.displayedModule.getID(), code: HTTPStatusCodes.OK };
             }
             case "open-dev-tools": {
                 // Only allow aarontburn.Debug_Console to open devtools for other modules
@@ -74,14 +74,14 @@ export function handleExternalWrapper(context: InitContext) {
                 if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
                     return {
                         body: `Invalid devtool mode passed ('${mode}'); Possible values are: ${JSON.stringify(POSSIBLE_MODES)}`,
-                        code: HTTPStatusCode.NOT_ACCEPTABLE
+                        code: HTTPStatusCodes.NOT_ACCEPTABLE
                     }
                 }
 
                 if (!context.moduleViewMap.has(target)) {
                     return {
                         body: new Error(`Could not open devtools for ${target}; either module doesn't exist or module is an internal module.`),
-                        code: HTTPStatusCode.NOT_FOUND
+                        code: HTTPStatusCodes.NOT_FOUND
                     };
                 }
 
@@ -90,7 +90,7 @@ export function handleExternalWrapper(context: InitContext) {
                     view.webContents.closeDevTools();
                 }
                 view.webContents.openDevTools({ mode: mode as any });
-                return { body: "Success: Opened devtools for " + target, code: HTTPStatusCode.OK };
+                return { body: "Success: Opened devtools for " + target, code: HTTPStatusCodes.OK };
             }
             case "reload": {
                 // Only allow aarontburn.Debug_Console to reload other modules
@@ -98,7 +98,7 @@ export function handleExternalWrapper(context: InitContext) {
                 if (!context.moduleViewMap.has(target)) {
                     return {
                         body: new Error(`Could not refresh for ${target}; either module doesn't exist or module is an internal module.`),
-                        code: HTTPStatusCode.NOT_FOUND
+                        code: HTTPStatusCodes.NOT_FOUND
                     };
                 }
 
@@ -109,25 +109,25 @@ export function handleExternalWrapper(context: InitContext) {
                     view.webContents.reload();
                 }
 
-                return { body: "Success: Refreshed page for " + target, code: HTTPStatusCode.OK };
+                return { body: "Success: Refreshed page for " + target, code: HTTPStatusCodes.OK };
             }
             case "swap-to-module": {
                 const target: string = source.getIPCSource();
                 if (!context.moduleViewMap.has(target)) {
                     return {
                         body: new Error(`Could not swap to ${target}; either module doesn't exist or module is an internal module.`),
-                        code: HTTPStatusCode.NOT_FOUND
+                        code: HTTPStatusCodes.NOT_FOUND
                     };
                 }
                 const didSwap: boolean = swapVisibleModule(context, target);
                 if (didSwap) {
-                    return { body: `Success: Swapped visible module to ${target}`, code: HTTPStatusCode.OK };
+                    return { body: `Success: Swapped visible module to ${target}`, code: HTTPStatusCodes.OK };
                 } else {
-                    return { body: `Success: ${target} is already visible.`, code: HTTPStatusCode.ALREADY_REPORTED };
+                    return { body: `Success: ${target} is already visible.`, code: HTTPStatusCodes.ALREADY_REPORTED };
                 }
             }
             default: {
-                return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
+                return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
             }
 
         }
@@ -151,7 +151,7 @@ const requestExternalModuleWrapper = (context: InitContext) => {
 
         const targetModule: Process = context.moduleMap.get(targetModuleID);
         if (targetModule === undefined) {
-            return { body: `No module with ID of ${source.getIPCSource()} found.`, code: HTTPStatusCode.NOT_FOUND };
+            return { body: `No module with ID of ${source.getIPCSource()} found.`, code: HTTPStatusCodes.NOT_FOUND };
         }
 
         const response: DataResponse = await targetModule.handleExternal(source, eventType, data)

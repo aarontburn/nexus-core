@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
 import { BaseWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
-import { ChangeEvent, DataResponse, HTTPStatusCode, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
+import { ChangeEvent, DataResponse, HTTPStatusCodes, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox, StorageHandler } from "@nexus/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
@@ -166,20 +166,20 @@ export class SettingsProcess extends Process {
     public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
             case 'is-developer-mode': {
-                return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCode.OK };
+                return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
             }
             case 'on-developer-mode-changed': {
                 const callback: (isDev: boolean) => void = data[0];
                 this.devModeSubscribers.push(callback);
                 callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
 
-                return { body: undefined, code: HTTPStatusCode.OK };
+                return { body: undefined, code: HTTPStatusCodes.OK };
             }
             case "get-accent-color": {
-                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCode.OK };
+                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCodes.OK };
             }
             default: {
-                return { body: undefined, code: HTTPStatusCode.NOT_IMPLEMENTED };
+                return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
             }
 
         }
