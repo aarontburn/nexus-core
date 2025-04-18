@@ -156,7 +156,7 @@ function createBrowserWindow(context) {
 }
 exports.createBrowserWindow = createBrowserWindow;
 function createWebViews(context) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     var viewMap = new Map();
     var _loop_1 = function (module_1) {
         var view = new electron_1.WebContentsView({
@@ -172,10 +172,10 @@ function createWebViews(context) {
         if (module_1.getHTMLPath() || module_1.getURL()) {
             context.moduleViewMap.set(module_1.getIPCSource(), view);
             if (module_1.getHTMLPath()) {
-                view.webContents.loadURL("file://" + module_1.getHTMLPath());
+                view.webContents.loadURL("file://" + module_1.getHTMLPath(), { userAgent: (_b = module_1.getHTTPOptions()) === null || _b === void 0 ? void 0 : _b.userAgent });
             }
             else if (module_1.getURL()) {
-                view.webContents.loadURL((_b = module_1.getURL) === null || _b === void 0 ? void 0 : _b.call(module_1).toString(), { userAgent: (_c = module_1.getHTTPOptions()) === null || _c === void 0 ? void 0 : _c.userAgent });
+                view.webContents.loadURL((_c = module_1.getURL) === null || _c === void 0 ? void 0 : _c.call(module_1).toString(), { userAgent: (_d = module_1.getHTTPOptions()) === null || _d === void 0 ? void 0 : _d.userAgent });
             }
         }
         view.on('bounds-changed', function () {
@@ -204,8 +204,8 @@ function createWebViews(context) {
         view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
         viewMap.set(module_1.getIPCSource(), view);
     };
-    for (var _i = 0, _d = Array.from(context.moduleMap.values()); _i < _d.length; _i++) {
-        var module_1 = _d[_i];
+    for (var _i = 0, _e = Array.from(context.moduleMap.values()); _i < _e.length; _i++) {
+        var module_1 = _e[_i];
         _loop_1(module_1);
     }
     return viewMap;

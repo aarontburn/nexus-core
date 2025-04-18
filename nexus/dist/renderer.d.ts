@@ -5,7 +5,7 @@ export interface IIPC {
 }
 
 export interface ICommon {
-    args: string[]
+    args: readonly string[]
 }
 
 declare global {

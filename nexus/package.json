@@ -5,7 +5,7 @@
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
-        "start": "npm run build && electron --trace-warnings ./dist/main.js --dev --in-core ",
+        "start": "npm run build && electron --trace-warnings . --dev --in-core ",
         "package": "npm run build && npx electron-builder build",
         "update-nexus": "npm update @nexus/nexus-exporter && npm update @nexus/nexus-module-builder",
         "package:test": "npm run build && electron-builder --dir"

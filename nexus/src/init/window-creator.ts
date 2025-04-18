@@ -29,7 +29,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         width: WINDOW_DIMENSION.width,
         autoHideMenuBar: true,
         title: "Nexus",
-        icon: path.join(__dirname, "../view/assets/icon.ico")
+        icon: path.join(__dirname, "../view/assets/icon.ico"),
     });
 
 
@@ -86,6 +86,7 @@ export function createWebViews(context: InitContext) {
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
                 partition: module.getHTTPOptions()?.partition,
+                
             }
         });
 
@@ -96,7 +97,7 @@ export function createWebViews(context: InitContext) {
             context.moduleViewMap.set(module.getIPCSource(), view);
 
             if (module.getHTMLPath()) {
-                view.webContents.loadURL("file://" + module.getHTMLPath());
+                view.webContents.loadURL("file://" + module.getHTMLPath(), { userAgent: module.getHTTPOptions()?.userAgent });
             } else if (module.getURL()) {
                 view.webContents.loadURL(module.getURL?.().toString(), { userAgent: module.getHTTPOptions()?.userAgent });
             }

@@ -1,11 +1,9 @@
 {
   "name": "@nexus/nexus-client",
-  "version": "1.0.0",
-  "description": "Micro-app platform.",
+  "version": "0.0.1",
+  "description": "A cross-platform application loader, designed for productivity and organization.",
   "scripts": {
-    "build": "node builder.js && tsc && node copyFiles.js",
-    "watch": "tsc -w",
-    "start": "npm run build && electron ./dist/main.js --dev"
+    "start": "electron . --dev"
   },
   "main": "./main.js",
   "author": "aarontburn",

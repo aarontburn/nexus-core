@@ -59,8 +59,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             version: "1.0.0",
             description: "A home screen that displays time and date.",
             buildVersion: 1,
-            platforms: [],
-            link: 'https://github.com/aarontburn/modules'
+            platforms: ['win32', 'darwin']
         });
         return _this;
     }

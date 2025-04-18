@@ -21,8 +21,7 @@ export class AutoUpdaterProcess extends Process {
 			version: "1.0.0",
 			description: "A home screen that displays time and date.",
 			buildVersion: 1,
-			platforms: [],
-			link: 'https://github.com/aarontburn/modules'
+			platforms: ['win32', 'darwin'],
 		});
 	}
 
