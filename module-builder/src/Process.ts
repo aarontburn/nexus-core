@@ -187,7 +187,7 @@ export abstract class Process implements IPCSource {
      */
     public async initialize(): Promise<void> {
         this.hasBeenInit = true;
-        // Override this, and do a super.initialize() after initializing module..
+        // Override this, and do a super.initialize() after initializing module.
     }
 
 

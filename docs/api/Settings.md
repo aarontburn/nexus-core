@@ -84,10 +84,10 @@ Sets the description of the setting. Cannot be reassigned once set.
 
 ---
 
-### `setValidator(inputValidator: (input: any) => T | null): Setting<T>`
+### `setValidator(inputValidator: (input: any) => Promise<T | null> | T | null): Setting<T>`
 Sets an input validator for the setting. This cannot be reassigned once set. For an example of how to use this, visit the [`StringSetting` Usage Information](./setting_types/StringSetting.md#usage-information) for an example.
 > **Parameters**  
-> `inputValidator: (input: any) => T | null` → An input validator function that checks and sanitizes the input. If it returns null, the value is rejected.  
+> `inputValidator: (input: any) => Promise<T | null> | T | null` → An input validator function that checks and sanitizes the input. If it returns null, the value is rejected. This function **can** be async if your setting requires an async call to validate the value.  
 > **Returns**  
 > The instance of itself.
 
@@ -119,22 +119,28 @@ Sets an input validator for the setting. This cannot be reassigned once set. For
 
 --- 
 
-### `setValue(value: any): void`
-Sets the value of the setting. `value` is first parsed into `T` before assigning it to the setting. If `value` isn't a valid type of `T` (either by different type or failing the validator's tests), this will not modify the current value.
+### `[async] setValue(value: any): Promise<void>`
+Sets the value of the setting. `value` is first parsed into `T` before assigning it to the setting. If `value` isn't a valid type of `T` (either by different type or failing the validator's tests), this will not modify the current value. 
+
+This function is async because the validation process could be async.
 
 > **Parameters**  
-> `value: any` → The value to set the setting to.
+> `value: any` → The value to set the setting to.   
+> **Returns**  
+> A `Promise` that resolves to `void` when the setting finishes setting the value.   
 
 --- 
 
-### `resetToDefault(): void`
+### `[async] resetToDefault(): Promise<void>`
 Resets the value of the setting back to its default value specified from `.setDefault()`. 
 
+> **Returns**  
+> A `Promise` that resolves to `void` when the resetting process finishes.   
 
 
 
 
-## Functions used Internally (do not use)
+## Functions Used Internally (do not use)
 
 ### `getID(): string`
 Retrieves the ID of the setting. This is only used internally. The ID is randomly generated during each boot of Nexus and should not be used elsewhere.
