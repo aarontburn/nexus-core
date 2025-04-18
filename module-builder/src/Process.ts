@@ -134,7 +134,7 @@ export abstract class Process implements IPCSource {
         }
     }
 
-    private defineLifecycle(): ProcessLifecycle {
+    public defineLifecycle(): ProcessLifecycle {
         return {
             initialize: async () => {
                 this.defaultLifecycle

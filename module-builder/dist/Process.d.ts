@@ -84,7 +84,7 @@ export declare abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      */
     constructor(args: ProcessConstructorArguments);
-    private defineLifecycle;
+    defineLifecycle(): ProcessLifecycle;
     getIconPath(): string;
     getURL(): string;
     getHTTPOptions(): HTTPOptions;
