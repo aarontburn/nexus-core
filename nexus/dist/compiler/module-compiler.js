@@ -71,8 +71,8 @@ var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var yauzl = __importStar(require("yauzl-promise"));
 var promises_1 = require("stream/promises");
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var compiler_utils_1 = require("./compiler-utils");
+var nexus_paths_1 = require("../utils/nexus-paths");
 var ModuleCompiler = /** @class */ (function () {
     function ModuleCompiler() {
     }
@@ -84,47 +84,44 @@ var ModuleCompiler = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         console.time("Module Load Time");
-                        return [4 /*yield*/, nexus_module_builder_1.StorageHandler._createDirectories()];
+                        _a.label = 1;
                     case 1:
-                        _a.sent();
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
+                        _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, this.unarchiveFromTemp()];
-                    case 3:
+                    case 2:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
+                        return [3 /*break*/, 4];
+                    case 3:
                         err_1 = _a.sent();
                         console.error("Error unarchiving files");
                         console.error(err_1);
-                        return [3 /*break*/, 5];
-                    case 5:
-                        _a.trys.push([5, 7, , 8]);
+                        return [3 /*break*/, 4];
+                    case 4:
+                        _a.trys.push([4, 6, , 7]);
                         return [4 /*yield*/, this.compileAndCopy(forceReload)];
-                    case 6:
+                    case 5:
                         _a.sent();
-                        return [3 /*break*/, 8];
-                    case 7:
+                        return [3 /*break*/, 7];
+                    case 6:
                         err_2 = _a.sent();
                         console.error("Error compiling files");
                         console.error(err_2);
-                        return [3 /*break*/, 8];
-                    case 8:
+                        return [3 /*break*/, 7];
+                    case 7:
                         modules = [];
-                        _a.label = 9;
-                    case 9:
-                        _a.trys.push([9, 11, , 12]);
+                        _a.label = 8;
+                    case 8:
+                        _a.trys.push([8, 10, , 11]);
                         return [4 /*yield*/, this.loadModulesFromBuiltStorage()];
-                    case 10:
+                    case 9:
                         modules = _a.sent();
-                        return [3 /*break*/, 12];
-                    case 11:
+                        return [3 /*break*/, 11];
+                    case 10:
                         err_3 = _a.sent();
                         console.error("Error loading modules files");
                         console.error(err_3);
-                        return [3 /*break*/, 12];
-                    case 12:
+                        return [3 /*break*/, 11];
+                    case 11:
                         console.timeEnd("Module Load Time");
                         return [2 /*return*/, modules];
                 }
@@ -137,7 +134,7 @@ var ModuleCompiler = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
+                    case 0: return [4 /*yield*/, fs.promises.readdir(nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
                     case 1:
                         files = _a.sent();
                         return [4 /*yield*/, fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true })];
@@ -254,8 +251,8 @@ var ModuleCompiler = /** @class */ (function () {
                     case 0:
                         console.time("compileAndCopy");
                         return [4 /*yield*/, Promise.all([
-                                fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH),
-                                fs.promises.readdir(nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH)
+                                fs.promises.readdir(nexus_paths_1.DIRECTORIES.COMPILED_MODULES_PATH),
+                                fs.promises.readdir(nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH)
                             ])];
                     case 1:
                         _a = _b.sent(), builtModules = _a[0], externalModules = _a[1];
@@ -264,7 +261,7 @@ var ModuleCompiler = /** @class */ (function () {
                             ? builtModules
                             : builtModules.filter(function (value) { return !externalModules.includes(value); });
                         return [4 /*yield*/, Promise.all(foldersToRemove.map(function (folderName) {
-                                var folderPath = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + "/" + folderName;
+                                var folderPath = nexus_paths_1.DIRECTORIES.COMPILED_MODULES_PATH + "/" + folderName;
                                 console.log("Removing '".concat(folderPath, "'"));
                                 return fs.promises.rm(folderPath, { force: true, recursive: true });
                             }))];
@@ -281,7 +278,7 @@ var ModuleCompiler = /** @class */ (function () {
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0:
-                                            builtDirectory = nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH + tempFolders.name;
+                                            builtDirectory = nexus_paths_1.DIRECTORIES.COMPILED_MODULES_PATH + tempFolders.name;
                                             if (!tempFolders.isDirectory()) {
                                                 return [2 /*return*/];
                                             }
@@ -362,7 +359,7 @@ var ModuleCompiler = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.StorageHandler.COMPILED_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
+                        return [4 /*yield*/, fs.promises.readdir(nexus_paths_1.DIRECTORIES.COMPILED_MODULES_PATH, compiler_utils_1.IO_OPTIONS)];
                     case 2:
                         folders = _a.sent();
                         return [4 /*yield*/, Promise.allSettled(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
@@ -426,7 +423,7 @@ var ModuleCompiler = /** @class */ (function () {
             });
         });
     };
-    ModuleCompiler.TEMP_ARCHIVE_PATH = nexus_module_builder_1.StorageHandler.EXTERNAL_MODULES_PATH + '/temp/';
+    ModuleCompiler.TEMP_ARCHIVE_PATH = nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH + '/temp/';
     return ModuleCompiler;
 }());
 exports.ModuleCompiler = ModuleCompiler;

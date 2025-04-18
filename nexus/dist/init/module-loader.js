@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,14 +68,16 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 exports.__esModule = true;
-exports.verifyAllModuleSettings = exports.loadModules = void 0;
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+exports.writeModuleSettingsToStorage = exports.verifyAllModuleSettings = exports.loadModules = void 0;
 var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
 var HomeProcess_1 = require("../internal-modules/home/HomeProcess");
 var SettingsProcess_1 = require("../internal-modules/settings/process/SettingsProcess");
 var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
+var fs = __importStar(require("fs"));
+var path = __importStar(require("path"));
+var nexus_paths_1 = require("../utils/nexus-paths");
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
         var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1, moduleOrder, reorderedModules, orderedMap, _b, _c, module_2;
@@ -139,7 +164,7 @@ function verifyModuleSettings(module) {
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, nexus_module_builder_1.StorageHandler.readSettingsFromModuleStorage(module)];
+                case 0: return [4 /*yield*/, readSettingsFromModuleStorage(module)];
                 case 1:
                     settingsMap = _a.sent();
                     moduleSettings = module.getSettings();
@@ -165,13 +190,76 @@ function verifyModuleSettings(module) {
                         }))];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, nexus_module_builder_1.StorageHandler.writeModuleSettingsToStorage(module)];
+                    return [4 /*yield*/, writeModuleSettingsToStorage(module)];
                 case 3:
                     _a.sent();
                     return [2 /*return*/, module];
             }
         });
     });
+}
+function writeModuleSettingsToStorage(module) {
+    return __awaiter(this, void 0, void 0, function () {
+        var settingMap, folderName, filePath;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    settingMap = new Map();
+                    module.getSettings().allToArray().forEach(function (setting) {
+                        settingMap.set(setting.getName(), setting.getValue());
+                    });
+                    folderName = path.join(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/");
+                    filePath = folderName + getModuleSettingsName(module);
+                    return [4 /*yield*/, fs.promises.mkdir(folderName, { recursive: true })];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, fs.promises.writeFile(filePath, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.writeModuleSettingsToStorage = writeModuleSettingsToStorage;
+function readSettingsFromModuleStorage(module) {
+    return __awaiter(this, void 0, void 0, function () {
+        var settingMap, folderName, contents, err_1, json, settingName;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    settingMap = new Map();
+                    folderName = path.join(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/", getModuleSettingsName(module));
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, fs.promises.readFile(folderName, 'utf-8')];
+                case 2:
+                    contents = _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_1 = _a.sent();
+                    if (err_1.code !== 'ENOENT') {
+                        throw err_1;
+                    }
+                    return [2 /*return*/, settingMap];
+                case 4:
+                    try {
+                        json = JSON.parse(contents);
+                        for (settingName in json) {
+                            settingMap.set(settingName, json[settingName]);
+                        }
+                    }
+                    catch (err) {
+                        console.error("Error parsing JSON for setting: " + module.getName());
+                    }
+                    return [2 /*return*/, settingMap];
+            }
+        });
+    });
+}
+function getModuleSettingsName(module) {
+    return module.getName().toLowerCase() + "_settings.json";
 }
 function reorderModules(idOrderUnparsed, moduleList) {
     if (idOrderUnparsed === '') { // no order set, return the original list

@@ -87,11 +87,13 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
             await setting.setValue(settingValue);
         }
     }))
+
+
     await writeModuleSettingsToStorage(module);
     return module;
 }
 
-async function writeModuleSettingsToStorage(module: Process): Promise<void> {
+export async function writeModuleSettingsToStorage(module: Process): Promise<void> {
     const settingMap: Map<string, any> = new Map();
 
     module.getSettings().allToArray().forEach((setting: Setting<unknown>) => {

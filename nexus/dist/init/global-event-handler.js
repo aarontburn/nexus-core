@@ -95,10 +95,10 @@ function handleExternalWrapper(context) {
             return __generator(this, function (_b) {
                 switch (eventType) {
                     case "get-module-IDs": {
-                        return [2 /*return*/, { body: Array.from(context.moduleMap.keys()), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                        return [2 /*return*/, { body: Array.from(context.moduleMap.keys()), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "get-current-module-id": {
-                        return [2 /*return*/, { body: context.displayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                        return [2 /*return*/, { body: context.displayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "open-dev-tools": {
                         target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
@@ -107,13 +107,13 @@ function handleExternalWrapper(context) {
                         if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
                             return [2 /*return*/, {
                                     body: "Invalid devtool mode passed ('".concat(mode, "'); Possible values are: ").concat(JSON.stringify(POSSIBLE_MODES)),
-                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_ACCEPTABLE
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_ACCEPTABLE
                                 }];
                         }
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {
                                     body: new Error("Could not open devtools for ".concat(target, "; either module doesn't exist or module is an internal module.")),
-                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND
                                 }];
                         }
                         view = context.moduleViewMap.get(target);
@@ -121,14 +121,14 @@ function handleExternalWrapper(context) {
                             view.webContents.closeDevTools();
                         }
                         view.webContents.openDevTools({ mode: mode });
-                        return [2 /*return*/, { body: "Success: Opened devtools for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                        return [2 /*return*/, { body: "Success: Opened devtools for " + target, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "reload": {
                         target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {
                                     body: new Error("Could not refresh for ".concat(target, "; either module doesn't exist or module is an internal module.")),
-                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND
                                 }];
                         }
                         view = context.moduleViewMap.get(target);
@@ -138,26 +138,26 @@ function handleExternalWrapper(context) {
                         else {
                             view.webContents.reload();
                         }
-                        return [2 /*return*/, { body: "Success: Refreshed page for " + target, code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                        return [2 /*return*/, { body: "Success: Refreshed page for " + target, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "swap-to-module": {
                         target = source.getIPCSource();
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {
                                     body: new Error("Could not swap to ".concat(target, "; either module doesn't exist or module is an internal module.")),
-                                    code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND
                                 }];
                         }
                         didSwap = swapVisibleModule(context, target);
                         if (didSwap) {
-                            return [2 /*return*/, { body: "Success: Swapped visible module to ".concat(target), code: nexus_module_builder_1.HTTPStatusCode.OK }];
+                            return [2 /*return*/, { body: "Success: Swapped visible module to ".concat(target), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                         }
                         else {
-                            return [2 /*return*/, { body: "Success: ".concat(target, " is already visible."), code: nexus_module_builder_1.HTTPStatusCode.ALREADY_REPORTED }];
+                            return [2 /*return*/, { body: "Success: ".concat(target, " is already visible."), code: nexus_module_builder_1.HTTPStatusCodes.ALREADY_REPORTED }];
                         }
                     }
                     default: {
-                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCode.NOT_IMPLEMENTED }];
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
                     }
                 }
                 return [2 /*return*/];
@@ -192,7 +192,7 @@ var requestExternalModuleWrapper = function (context) {
                     case 2:
                         targetModule = context.moduleMap.get(targetModuleID);
                         if (targetModule === undefined) {
-                            return [2 /*return*/, { body: "No module with ID of ".concat(source.getIPCSource(), " found."), code: nexus_module_builder_1.HTTPStatusCode.NOT_FOUND }];
+                            return [2 /*return*/, { body: "No module with ID of ".concat(source.getIPCSource(), " found."), code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND }];
                         }
                         return [4 /*yield*/, targetModule.handleExternal(source, eventType, data)];
                     case 3:

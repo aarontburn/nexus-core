@@ -67,7 +67,6 @@ var Process = /** @class */ (function () {
          *  Boolean indicating if this module has been initialized.
          */
         this.hasBeenInit = false;
-        this.fileManager = new FileManager_1.default(this);
         this.moduleID = args.moduleID;
         this.moduleName = args.moduleName;
         if (args.paths) {
@@ -77,6 +76,7 @@ var Process = /** @class */ (function () {
         }
         this.httpOptions = args.httpOptions;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
+        this.fileManager = new FileManager_1.default(this);
     }
     Process.prototype.getIconPath = function () {
         return this.iconPath;

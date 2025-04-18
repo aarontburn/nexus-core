@@ -95,7 +95,7 @@ export abstract class Process implements IPCSource {
 
     private readonly httpOptions: HTTPOptions;
 
-    protected readonly fileManager: FileManger = new FileManger(this);
+    protected readonly fileManager: FileManger;
 
     /**
      *  Entry point.
@@ -104,6 +104,7 @@ export abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      */
     public constructor(args: ProcessConstructorArguments) {
+
         this.moduleID = args.moduleID;
         this.moduleName = args.moduleName;
 
@@ -115,6 +116,7 @@ export abstract class Process implements IPCSource {
 
         this.httpOptions = args.httpOptions;
         this.moduleSettings = new ModuleSettings(this);
+        this.fileManager = new FileManger(this)
     }
 
 

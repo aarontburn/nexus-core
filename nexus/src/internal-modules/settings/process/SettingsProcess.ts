@@ -5,6 +5,8 @@ import { ChangeEvent, DataResponse, HTTPStatusCodes, IPCSource, ModuleInfo, Modu
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
+import { writeModuleSettingsToStorage } from "../../../init/module-loader";
+import { DIRECTORIES } from "../../../utils/nexus-paths";
 
 
 const MODULE_NAME: string = "Settings";
@@ -97,7 +99,7 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('window_y').setValue(bounds.y),
             this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("nexus.Main", "get-current-module-id")).body),
         ])
-        await StorageHandler.writeModuleSettingsToStorage(this);
+        await writeModuleSettingsToStorage(this);
 
 
     }
@@ -210,7 +212,7 @@ export class SettingsProcess extends Process {
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
-                        await this.fileManager(setting.getParentModule());
+                        await writeModuleSettingsToStorage(setting.getParentModule());
                         return;
                     }
                 }
@@ -272,9 +274,9 @@ export class SettingsProcess extends Process {
 
             case 'open-module-folder': {
                 const moduleID: string = data[0];
-                shell.openPath(path.normalize(StorageHandler.STORAGE_PATH + moduleID)).then(result => {
+                shell.openPath(path.normalize(DIRECTORIES.MODULE_STORAGE_PATH + moduleID)).then(result => {
                     if (result !== '') {
-                        throw new Error('Could not find folder: ' + path.normalize(StorageHandler.STORAGE_PATH + moduleID));
+                        throw new Error('Could not find folder: ' + path.normalize(DIRECTORIES.MODULE_STORAGE_PATH + moduleID));
                     }
                 });
 
@@ -290,7 +292,7 @@ export class SettingsProcess extends Process {
             case 'remove-module': {
                 const fileName: string = data[0];
 
-                const result = await fs.promises.rm(`${StorageHandler.EXTERNAL_MODULES_PATH}/${fileName}`);
+                const result = await fs.promises.rm(`${DIRECTORIES.EXTERNAL_MODULES_PATH}/${fileName}`);
                 console.log("Removing " + fileName);
                 if (result === undefined) {
                     this.deletedModules.push(fileName);
@@ -332,7 +334,7 @@ export class SettingsProcess extends Process {
             case "module-order": {
                 const moduleOrder: string[] = data[0];
                 await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
-                await StorageHandler.writeModuleSettingsToStorage(this);
+                await writeModuleSettingsToStorage(this);
                 break;
             }
         }
