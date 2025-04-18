@@ -1,8 +1,12 @@
-import { HTTPStatusCode } from "./HTTPStatusCodes";
+import { HTTPStatusCodes } from "./HTTPStatusCodes";
 import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
 import { DataResponse } from "./DataResponse";
 import { Setting } from "./Setting";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
+import { ProcessLifecycle } from "./process-helpers/ProcessLifecycle";
 
 
 
@@ -48,7 +52,7 @@ export abstract class Process implements IPCSource {
      *  Object to store this module's settings.
      *  This should not be directly accessed.
      */
-    private readonly moduleSettings;
+    private readonly moduleSettings: ModuleSettings;
 
     /**
      *  IPC callback function.
@@ -94,6 +98,13 @@ export abstract class Process implements IPCSource {
 
     private readonly httpOptions: HTTPOptions;
 
+    public lifecycle: ProcessLifecycle;
+    private readonly defaultLifecycle: ProcessLifecycle = {
+        initialize: async () => {
+            this.hasBeenInit = true;
+        }
+    };
+
     /**
      *  Entry point.
      * 
@@ -111,8 +122,25 @@ export abstract class Process implements IPCSource {
         }
 
         this.httpOptions = args.httpOptions;
-
         this.moduleSettings = new ModuleSettings(this);
+
+        const definedLifecycle: ProcessLifecycle = this.defineLifecycle();
+        for (const functionName in definedLifecycle) {
+            const originalFunction: () => Promise<void> = (this.lifecycle as any)[functionName];
+            (this.lifecycle as any)[functionName] = async () => {
+                await (this.defaultLifecycle as any)[functionName]();
+                return originalFunction()
+            }
+        }
+    }
+
+    private defineLifecycle(): ProcessLifecycle {
+        return {
+            initialize: async () => {
+                this.defaultLifecycle
+                this.hasBeenInit = true;
+            },
+        }
     }
 
 
@@ -258,44 +286,6 @@ export abstract class Process implements IPCSource {
         await Promise.allSettled(this.getSettings().allToArray().map(setting => this.onSettingModified(setting)));
     }
 
-    /**
-     *  @private
-     * 
-     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
-     */
-    public async beforeWindowCreated() {
-        // Do nothing by default
-    }
-
-    /**
-     *  @private
-     * 
-     *  Lifecycle function that is called whenever the module is shown.
-     */
-    public async onGUIShown() {
-        // Do nothing by default.
-    }
-
-
-    /**
-     *  @private 
-     * 
-     *  Lifecycle function that is called whenever the module is hidden.
-     */
-    public async onGUIHidden() {
-        // Do nothing by default. 
-    }
-
-
-    /**
-     *  @private
-     * 
-     *  Lifecycle function that is called before the application exits.
-     */
-    public async onExit(): Promise<void> {
-        // Do nothing by default.
-    }
-
 
     /**
      *  @returns the path to the HTML file associated with this module. 
@@ -341,7 +331,7 @@ export abstract class Process implements IPCSource {
      *  @returns            A Promise of the data to return.
      */
     public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse> {
-        return { code: HTTPStatusCode.NOT_IMPLEMENTED, body: undefined };
+        return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };
     }
 
 
@@ -356,6 +346,5 @@ export abstract class Process implements IPCSource {
     public async requestExternal(target: string, eventType: string, ...data: any[]): Promise<DataResponse> {
         return await this.ipcCallback.requestExternalModule(this, target, eventType, ...data);
     }
-
 
 }

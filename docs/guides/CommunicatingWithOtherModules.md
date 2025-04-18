@@ -40,13 +40,13 @@ For example, this is the `handleExternal` of the Settings module.
 ```typescript
 public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
     switch (eventType) {
-        case 'isDeveloperMode': {
+        case 'is-developer-mode': {
             return { 
                 body: this.getSettings().findSetting('dev_mode').getValue() as boolean, 
                 code: HTTPStatusCode.OK 
             };
         }
-        case 'listenToDevMode': {
+        case 'on-developer-mode-changed': {
             const callback: (isDev: boolean) => void = data[0];
             this.devModeSubscribers.push(callback);
             callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
@@ -56,7 +56,7 @@ public async handleExternal(source: IPCSource, eventType: string, data: any[]): 
                 code: HTTPStatusCode.OK 
             };
         }
-        case "getAccentColor": {
+        case "get-accent-color": {
             return { 
                 body: this.getSettings().findSetting("accent_color").getValue(), 
                 code: HTTPStatusCode.OK 

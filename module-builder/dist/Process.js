@@ -62,10 +62,19 @@ var Process = /** @class */ (function () {
      *  @param htmlPath     The path to the HTML frontend.
      */
     function Process(args) {
+        var _this = this;
         /**
          *  Boolean indicating if this module has been initialized.
          */
         this.hasBeenInit = false;
+        this.defaultLifecycle = {
+            initialize: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    this.hasBeenInit = true;
+                    return [2 /*return*/];
+                });
+            }); }
+        };
         this.moduleID = args.moduleID;
         this.moduleName = args.moduleName;
         if (args.paths) {
@@ -75,7 +84,37 @@ var Process = /** @class */ (function () {
         }
         this.httpOptions = args.httpOptions;
         this.moduleSettings = new ModuleSettings_1.ModuleSettings(this);
+        var definedLifecycle = this.defineLifecycle();
+        var _loop_1 = function (functionName) {
+            var originalFunction = this_1.lifecycle[functionName];
+            this_1.lifecycle[functionName] = function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, this.defaultLifecycle[functionName]()];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/, originalFunction()];
+                    }
+                });
+            }); };
+        };
+        var this_1 = this;
+        for (var functionName in definedLifecycle) {
+            _loop_1(functionName);
+        }
     }
+    Process.prototype.defineLifecycle = function () {
+        var _this = this;
+        return {
+            initialize: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    this.defaultLifecycle;
+                    this.hasBeenInit = true;
+                    return [2 /*return*/];
+                });
+            }); },
+        };
+    };
     Process.prototype.getIconPath = function () {
         return this.iconPath;
     };
@@ -209,54 +248,6 @@ var Process = /** @class */ (function () {
         });
     };
     /**
-     *  @private
-     *
-     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
-     */
-    Process.prototype.beforeWindowCreated = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/];
-            });
-        });
-    };
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called whenever the module is shown.
-     */
-    Process.prototype.onGUIShown = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/];
-            });
-        });
-    };
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called whenever the module is hidden.
-     */
-    Process.prototype.onGUIHidden = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/];
-            });
-        });
-    };
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called before the application exits.
-     */
-    Process.prototype.onExit = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/];
-            });
-        });
-    };
-    /**
      *  @returns the path to the HTML file associated with this module.
      */
     Process.prototype.getHTMLPath = function () {
@@ -309,7 +300,7 @@ var Process = /** @class */ (function () {
         }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, { code: HTTPStatusCodes_1.HTTPStatusCode.NOT_IMPLEMENTED, body: undefined }];
+                return [2 /*return*/, { code: HTTPStatusCodes_1.HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined }];
             });
         });
     };

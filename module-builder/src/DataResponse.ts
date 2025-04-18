@@ -1,6 +1,6 @@
-import { HTTPStatusCode } from "./HTTPStatusCodes";
+import { HTTPStatusCodes } from "./HTTPStatusCodes";
 
 export interface DataResponse {
-    code: HTTPStatusCode,
+    code: HTTPStatusCodes,
     body: any
 }

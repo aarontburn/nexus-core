@@ -11,7 +11,7 @@ export interface DataResponse {
 }
 ```
 > **Parameters**  
-> `code: HTTPStatusCode` → An [HTTP response status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status) code about the completion status of the call. See the [`HTTPStatusCode`](./HTTPStatusCodes.md) enum.  
+> `code: HTTPStatusCode` → An [HTTP response status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status) code about the completion status of the call. See the [`HTTPStatusCodes`](./HTTPStatusCodes.md) enum.  
 > `body: any` → The result body.
 
 

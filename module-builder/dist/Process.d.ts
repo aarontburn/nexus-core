@@ -2,6 +2,7 @@ import { IPCCallback, IPCSource } from "./IPCObjects";
 import { ModuleSettings } from "./ModuleSettings";
 import { DataResponse } from "./DataResponse";
 import { Setting } from "./Setting";
+import { ProcessLifecycle } from "./process-helpers/ProcessLifecycle";
 export interface ModuleInfo {
     name: string;
     author: string;
@@ -74,6 +75,8 @@ export declare abstract class Process implements IPCSource {
     private readonly iconPath;
     private readonly url;
     private readonly httpOptions;
+    lifecycle: ProcessLifecycle;
+    private readonly defaultLifecycle;
     /**
      *  Entry point.
      *
@@ -81,6 +84,7 @@ export declare abstract class Process implements IPCSource {
      *  @param htmlPath     The path to the HTML frontend.
      */
     constructor(args: ProcessConstructorArguments);
+    private defineLifecycle;
     getIconPath(): string;
     getURL(): string;
     getHTTPOptions(): HTTPOptions;
@@ -155,30 +159,6 @@ export declare abstract class Process implements IPCSource {
      *      this may result in many frontend updates. Use cautiously.
      */
     refreshAllSettings(): Promise<void>;
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is after ALL MODULES ARE LOADED, but before the window is shown.
-     */
-    beforeWindowCreated(): Promise<void>;
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called whenever the module is shown.
-     */
-    onGUIShown(): Promise<void>;
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called whenever the module is hidden.
-     */
-    onGUIHidden(): Promise<void>;
-    /**
-     *  @private
-     *
-     *  Lifecycle function that is called before the application exits.
-     */
-    onExit(): Promise<void>;
     /**
      *  @returns the path to the HTML file associated with this module.
      */

@@ -176,7 +176,6 @@ var StorageHandler = /** @class */ (function () {
                         if (err_1.code !== 'ENOENT') {
                             throw err_1;
                         }
-                        console.error("WARNING: directory not found.");
                         return [2 /*return*/, settingMap];
                     case 4:
                         try {
