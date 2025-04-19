@@ -1,28 +1,27 @@
-(() => {
-    const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
+(function () {
+    var sendToProcess = function (eventName) {
+        var data = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            data[_i - 1] = arguments[_i];
+        }
         return window.ipc.send(window, eventName, data);
-    }
-
-
-    window.ipc.on(window, (eventName: string, data: any[]) => {
+    };
+    window.ipc.on(window, function (eventName, data) {
         handleEvent(eventName, data);
     });
-
-
     sendToProcess("init");
-
-
-    const displayContainer: HTMLElement = document.getElementById('center');
-
-    const fullDate: HTMLElement = document.getElementById("full-date");
-    const abbreviatedDate: HTMLElement = document.getElementById("abbreviated-date");
-    const standardTime: HTMLElement = document.getElementById("standard-time");
-    const militaryTime: HTMLElement = document.getElementById("military-time");
-
-    let currentOrder: string = undefined;
-    
-    const handleEvent = (eventType: string, data: any[]) => {
+    var displayContainer = document.getElementById('center');
+    var fullDate = document.getElementById("full-date");
+    var abbreviatedDate = document.getElementById("abbreviated-date");
+    var standardTime = document.getElementById("standard-time");
+    var militaryTime = document.getElementById("military-time");
+    var currentOrder = undefined;
+    var handleEvent = function (eventType, data) {
         switch (eventType) {
+            case "is-first-launch": {
+                window.location.href = "../first-boot/html/1welcome.html";
+                break;
+            }
             case "update-clock": {
                 fullDate.innerHTML = data[0];
                 abbreviatedDate.innerHTML = data[1];
@@ -38,25 +37,21 @@
                 break;
             }
             case 'display-order': {
-                const order: string = data[0];
-
+                var order = data[0];
                 if (currentOrder === undefined || currentOrder !== order) {
                     changeDisplayOrder(order);
                 }
                 break;
             }
         }
-    }
-
-    function changeDisplayOrder(newOrder: string): void {
+    };
+    function changeDisplayOrder(newOrder) {
         currentOrder = newOrder;
-
         while (displayContainer.firstChild) {
             displayContainer.removeChild(displayContainer.lastChild);
         }
-
-
-        for (const char of newOrder.split('')) {
+        for (var _i = 0, _a = newOrder.split(''); _i < _a.length; _i++) {
+            var char = _a[_i];
             switch (char) {
                 case '1': {
                     displayContainer.insertAdjacentElement("beforeend", fullDate);
@@ -70,7 +65,6 @@
                     displayContainer.insertAdjacentElement("beforeend", standardTime);
                     break;
                 }
-
                 case '4': {
                     displayContainer.insertAdjacentElement("beforeend", militaryTime);
                     break;
@@ -84,18 +78,7 @@
                     throw new Error("Invalid order: " + newOrder);
                 }
             }
-
-
         }
-
-
-
-
-
-
-
     }
 })();
-
-
-
+//# sourceMappingURL=index-renderer.js.map

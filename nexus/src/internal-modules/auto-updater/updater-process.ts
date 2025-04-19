@@ -33,8 +33,6 @@ export class AutoUpdaterProcess extends Process {
 		}
 		this.autoUpdaterStarted = true;
 	
-		if (process.argv.includes("--dev"))
-	
 		console.info("[Nexus Auto Updater] Current Nexus Version: " + (process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion()));
 		console.info("[Nexus Auto Updater] Starting auto updater.");
 	

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, WebContentsView } from "electron";
+import { app, BrowserWindow, globalShortcut, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { Process } from "@nexus/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
@@ -8,7 +8,7 @@ import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/SettingsProcess";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
-import { AutoUpdaterProcess, MODULE_ID as UPDATER_PROCESS_ID} from "./internal-modules/auto-updater/updater-process";
+import { AutoUpdaterProcess, MODULE_ID as UPDATER_PROCESS_ID } from "./internal-modules/auto-updater/updater-process";
 
 Menu.setApplicationMenu(null);
 
@@ -101,6 +101,17 @@ async function nexusStart() {
 function onProcessAndRendererReady(context: InitContext): void {
     if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
         (context.moduleMap.get(UPDATER_PROCESS_ID) as AutoUpdaterProcess).startAutoUpdater();
+    }
+
+    if (process.argv.includes("--dev")) {
+        globalShortcut.register('Shift+CommandOrControl+I', () => {
+            const displayedModuleID: string = context.displayedModule.getID();
+            context.moduleViewMap.get(displayedModuleID).webContents.openDevTools();
+        })
+        globalShortcut.register('CommandOrControl+R', () => {
+            const displayedModuleID: string = context.displayedModule.getID();
+            context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
+        })
     }
 
 

@@ -1,0 +1,96 @@
+h1,
+h2,
+h3,
+h4,
+p {
+    margin: 0;
+    padding: 0;
+
+}
+
+
+.fade1 {
+    animation: 1s ease 0s normal forwards 1 fadein;
+}
+
+.fade3 {
+    animation: 3s ease 0s normal forwards 1 fadein;
+}
+
+.fade5 {
+    animation: 5s ease 0s normal forwards 1 fadein;
+}
+
+.fade-out {
+    animation: 0.25s ease forwards fadeout;
+}
+
+
+
+
+
+#center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 5em;
+}
+
+h2 {
+    text-align: center;
+}
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--text-color);
+    cursor: pointer;
+    transition: border-color 0.25s;
+    color: var(--background-color);
+}
+
+
+.nexus {
+    mask-size: cover;
+    mask-image: url("../../../../view/assets/logo-no-background.svg");
+    mask-position: center;
+    background-color: var(--accent-color);
+
+    height: 10em;
+    width: 10em;
+
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadein {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    66% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -91,7 +91,7 @@ export default SampleProcess extends Process {
         this.refreshAllSettings();
         // Request the accent color from the built-in 'Settings' 
         // module and send it to the renderer.
-        this.requestExternal("nexus.Settings", "getAccentColor").then(value => {
+        this.requestExternal("nexus.Settings", "get-accent-color").then(value => {
             this.sendToRenderer("accent-color-changed", value)
         });
     }

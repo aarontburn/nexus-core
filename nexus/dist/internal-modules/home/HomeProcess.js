@@ -78,9 +78,10 @@ exports.HomeProcess = void 0;
 var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var types_1 = require("@nexus/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
+var time_formats_1 = require("./utils/time-formats");
 var MODULE_NAME = "Home";
 var MODULE_ID = 'nexus.Home';
-var HTML_PATH = path.join(__dirname, "./static/HomeHTML.html");
+var HTML_PATH = path.join(__dirname, "./static/index.html");
 var ICON_PATH = path.join(__dirname, "../../view/assets/logo-no-background.svg");
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
@@ -100,7 +101,7 @@ var HomeProcess = /** @class */ (function (_super) {
             description: "A home screen that displays time and date.",
             buildVersion: 1,
             platforms: [],
-            link: 'https://github.com/aarontburn/modules'
+            link: 'https://github.com/aarontburn/nexus-core'
         });
         return _this;
     }
@@ -112,6 +113,9 @@ var HomeProcess = /** @class */ (function (_super) {
                     case 0: return [4 /*yield*/, _super.prototype.initialize.call(this)];
                     case 1:
                         _a.sent();
+                        if (this.getSettings().findSetting("is_first_launch").getValue()) {
+                            this.sendToRenderer("is-first-launch");
+                        }
                         // Start clock
                         this.updateDateAndTime(false);
                         this.clockTimeout = setTimeout(function () { return _this.updateDateAndTime(true); }, 1000 - new Date().getMilliseconds());
@@ -135,10 +139,10 @@ var HomeProcess = /** @class */ (function (_super) {
     HomeProcess.prototype.updateDateAndTime = function (repeat) {
         var _this = this;
         var date = new Date();
-        var standardTime = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.STANDARD_TIME_FORMAT);
-        var militaryTime = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.MILITARY_TIME_FORMAT);
-        var fullDate = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.FULL_DATE_FORMAT);
-        var abbreviatedDate = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.ABBREVIATED_DATE_FORMAT);
+        var standardTime = date.toLocaleString(time_formats_1.LOCALE, time_formats_1.STANDARD_TIME_FORMAT);
+        var militaryTime = date.toLocaleString(time_formats_1.LOCALE, time_formats_1.MILITARY_TIME_FORMAT);
+        var fullDate = date.toLocaleString(time_formats_1.LOCALE, time_formats_1.FULL_DATE_FORMAT);
+        var abbreviatedDate = date.toLocaleString(time_formats_1.LOCALE, time_formats_1.ABBREVIATED_DATE_FORMAT);
         var formattedStandardTime = standardTime.replace(/:/g, this.createSpan(":"));
         var formattedAbbreviatedDate = abbreviatedDate.replace(/\//g, this.createSpan('.'));
         var formattedFullDate = fullDate.replace(/,/g, this.createSpan(','));
@@ -190,6 +194,14 @@ var HomeProcess = /** @class */ (function (_super) {
             }),
         ];
     };
+    HomeProcess.prototype.registerInternalSettings = function () {
+        return [
+            new types_1.BooleanSetting(this)
+                .setName("First Launch")
+                .setAccessID("is_first_launch")
+                .setDefault(true)
+        ];
+    };
     HomeProcess.prototype.onSettingModified = function (modifiedSetting) {
         return __awaiter(this, void 0, void 0, function () {
             var sizes, order;
@@ -224,11 +236,6 @@ var HomeProcess = /** @class */ (function (_super) {
             });
         });
     };
-    HomeProcess.LOCALE = "en-US";
-    HomeProcess.STANDARD_TIME_FORMAT = { hour: "numeric", minute: "numeric", second: "numeric", hour12: true };
-    HomeProcess.MILITARY_TIME_FORMAT = { hour: "numeric", minute: "numeric", second: "numeric", hour12: false };
-    HomeProcess.FULL_DATE_FORMAT = { weekday: "long", month: "long", day: "numeric", year: "numeric" };
-    HomeProcess.ABBREVIATED_DATE_FORMAT = { month: "numeric", day: "numeric", year: "numeric" };
     HomeProcess.DATE_TIME_IDS = ['full_date_fs', 'abbr_date_fs', 'standard_time_fs', 'military_time_fs'];
     return HomeProcess;
 }(nexus_module_builder_1.Process));

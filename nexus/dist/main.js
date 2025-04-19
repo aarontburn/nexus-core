@@ -145,6 +145,16 @@ function onProcessAndRendererReady(context) {
     if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
         context.moduleMap.get(updater_process_1.MODULE_ID).startAutoUpdater();
     }
+    if (process.argv.includes("--dev")) {
+        electron_1.globalShortcut.register('Shift+CommandOrControl+I', function () {
+            var displayedModuleID = context.displayedModule.getID();
+            context.moduleViewMap.get(displayedModuleID).webContents.openDevTools();
+        });
+        electron_1.globalShortcut.register('CommandOrControl+R', function () {
+            var displayedModuleID = context.displayedModule.getID();
+            context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
+        });
+    }
     context.moduleViewMap.forEach(function (moduleView) {
         moduleView.emit("bounds-changed");
     });

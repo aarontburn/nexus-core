@@ -1,29 +1,18 @@
 import { Process, Setting } from "@nexus/nexus-module-builder";
-import { NumberSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
+import { BooleanSetting, NumberSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
 
 import * as path from "path";
+import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
 
 
 const MODULE_NAME: string = "Home";
 const MODULE_ID: string = 'nexus.Home';
-const HTML_PATH: string = path.join(__dirname, "./static/HomeHTML.html");
+const HTML_PATH: string = path.join(__dirname, "./static/index.html");
 const ICON_PATH: string = path.join(__dirname, "../../view/assets/logo-no-background.svg");
 
 
 export class HomeProcess extends Process {
 
-	private static readonly LOCALE: string = "en-US";
-	private static readonly STANDARD_TIME_FORMAT: Intl.DateTimeFormatOptions =
-		{ hour: "numeric", minute: "numeric", second: "numeric", hour12: true, };
-
-	private static readonly MILITARY_TIME_FORMAT: Intl.DateTimeFormatOptions =
-		{ hour: "numeric", minute: "numeric", second: "numeric", hour12: false, };
-
-	private static readonly FULL_DATE_FORMAT: Intl.DateTimeFormatOptions =
-		{ weekday: "long", month: "long", day: "numeric", year: "numeric", };
-
-	private static readonly ABBREVIATED_DATE_FORMAT: Intl.DateTimeFormatOptions =
-		{ month: "numeric", day: "numeric", year: "numeric", };
 
 	private clockTimeout: NodeJS.Timeout;
 
@@ -45,13 +34,17 @@ export class HomeProcess extends Process {
 			description: "A home screen that displays time and date.",
 			buildVersion: 1,
 			platforms: [],
-			link: 'https://github.com/aarontburn/modules'
+			link: 'https://github.com/aarontburn/nexus-core'
 		});
 	}
 
 
 	public async initialize(): Promise<void> {
 		await super.initialize();
+
+		if (this.getSettings().findSetting("is_first_launch").getValue()) {
+			this.sendToRenderer("is-first-launch");
+		}
 
 		// Start clock
 		this.updateDateAndTime(false);
@@ -71,10 +64,10 @@ export class HomeProcess extends Process {
 
 	public updateDateAndTime(repeat: boolean): void {
 		const date: Date = new Date();
-		const standardTime: string = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.STANDARD_TIME_FORMAT);
-		const militaryTime: string = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.MILITARY_TIME_FORMAT);
-		const fullDate: string = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.FULL_DATE_FORMAT);
-		const abbreviatedDate: string = date.toLocaleString(HomeProcess.LOCALE, HomeProcess.ABBREVIATED_DATE_FORMAT);
+		const standardTime: string = date.toLocaleString(LOCALE, STANDARD_TIME_FORMAT);
+		const militaryTime: string = date.toLocaleString(LOCALE, MILITARY_TIME_FORMAT);
+		const fullDate: string = date.toLocaleString(LOCALE, FULL_DATE_FORMAT);
+		const abbreviatedDate: string = date.toLocaleString(LOCALE, ABBREVIATED_DATE_FORMAT);
 
 		const formattedStandardTime: string = standardTime.replace(/:/g, this.createSpan(":"));
 		const formattedAbbreviatedDate: string = abbreviatedDate.replace(/\//g, this.createSpan('.'));
@@ -96,9 +89,7 @@ export class HomeProcess extends Process {
 				.setStep(5)
 				.setMin(0)
 				.setName("Full Date Font Size (1)")
-				.setDescription(
-					"Adjusts the font size of the full date display (e.g. Sunday, January 1st, 2023)."
-				)
+				.setDescription("Adjusts the font size of the full date display (e.g. Sunday, January 1st, 2023).")
 				.setAccessID("full_date_fs")
 				.setDefault(40.0),
 
@@ -106,9 +97,7 @@ export class HomeProcess extends Process {
 				.setStep(5)
 				.setMin(0)
 				.setName("Abbreviated Date Font Size (2)")
-				.setDescription(
-					"Adjusts the font size of the abbreviated date display (e.g. 1/01/2023)."
-				)
+				.setDescription("Adjusts the font size of the abbreviated date display (e.g. 1/01/2023).")
 				.setAccessID("abbr_date_fs")
 				.setDefault(30.0),
 
@@ -116,9 +105,7 @@ export class HomeProcess extends Process {
 				.setStep(5)
 				.setMin(0)
 				.setName("Standard Time Font Size (3)")
-				.setDescription(
-					"Adjusts the font size of the standard time display (e.g. 11:59:59 PM)."
-				)
+				.setDescription("Adjusts the font size of the standard time display (e.g. 11:59:59 PM).")
 				.setAccessID('standard_time_fs')
 				.setDefault(90.0),
 
@@ -126,9 +113,7 @@ export class HomeProcess extends Process {
 				.setStep(5)
 				.setMin(0)
 				.setName("Military Time Font Size (4)")
-				.setDescription(
-					"Adjusts the font size of the military time display (e.g. 23:59:49)."
-				)
+				.setDescription("Adjusts the font size of the military time display (e.g. 23:59:49).")
 				.setAccessID('military_time_fs')
 				.setDefault(30.0),
 
@@ -142,6 +127,15 @@ export class HomeProcess extends Process {
 					return s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null;
 				}),
 		];
+	}
+
+	public registerInternalSettings(): Setting<unknown>[] {
+		return [
+			new BooleanSetting(this)
+				.setName("First Launch")
+				.setAccessID("is_first_launch")
+				.setDefault(true)
+		]
 	}
 
 

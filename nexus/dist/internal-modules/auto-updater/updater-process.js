@@ -68,8 +68,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             return;
         }
         this.autoUpdaterStarted = true;
-        if (process.argv.includes("--dev"))
-            console.info("[Nexus Auto Updater] Current Nexus Version: " + (process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion()));
+        console.info("[Nexus Auto Updater] Current Nexus Version: " + (process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion()));
         console.info("[Nexus Auto Updater] Starting auto updater.");
         var TEN_MIN = 10 * 60 * 1000;
         if (process.argv.includes("--dev")) {
