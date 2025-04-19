@@ -1,5 +1,5 @@
+import { DIRECTORIES, FILE_NAMES } from "@nexus/nexus-module-builder";
 import * as fs from "fs";
-import { DIRECTORIES, FILE_NAMES } from "../utils/nexus-paths";
 
 const DEFAULT_INTERNAL_FILE = {
     "args": '',

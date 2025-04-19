@@ -69,6 +69,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 exports.__esModule = true;
 exports.writeModuleSettingsToStorage = exports.verifyAllModuleSettings = exports.loadModules = void 0;
+var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
@@ -77,7 +78,6 @@ var SettingsProcess_1 = require("../internal-modules/settings/process/SettingsPr
 var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
-var nexus_paths_1 = require("../utils/nexus-paths");
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
         var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1, moduleOrder, reorderedModules, orderedMap, _b, _c, module_2;
@@ -208,7 +208,7 @@ function writeModuleSettingsToStorage(module) {
                     module.getSettings().allToArray().forEach(function (setting) {
                         settingMap.set(setting.getName(), setting.getValue());
                     });
-                    folderName = path.join(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/");
+                    folderName = path.join(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/");
                     filePath = folderName + getModuleSettingsName(module);
                     return [4 /*yield*/, fs.promises.mkdir(folderName, { recursive: true })];
                 case 1:
@@ -229,7 +229,7 @@ function readSettingsFromModuleStorage(module) {
             switch (_a.label) {
                 case 0:
                     settingMap = new Map();
-                    folderName = path.join(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/", getModuleSettingsName(module));
+                    folderName = path.join(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH, module.getIPCSource(), "/", getModuleSettingsName(module));
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);

@@ -1,5 +1,5 @@
+import { DIRECTORIES } from "@nexus/nexus-module-builder";
 import * as fs from "fs";
-import { DIRECTORIES } from "../utils/nexus-paths";
 
 
 export async function createAllDirectories() {

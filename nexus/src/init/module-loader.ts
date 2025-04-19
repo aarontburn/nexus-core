@@ -1,4 +1,4 @@
-import { Process, ModuleSettings, Setting } from "@nexus/nexus-module-builder";
+import { Process, ModuleSettings, Setting, DIRECTORIES } from "@nexus/nexus-module-builder";
 import { ipcMain } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
@@ -8,7 +8,6 @@ import { SettingsProcess } from "../internal-modules/settings/process/SettingsPr
 import { AutoUpdaterProcess } from "../internal-modules/auto-updater/updater-process";
 import * as fs from "fs";
 import * as path from "path";
-import { DIRECTORIES } from "../utils/nexus-paths";
 
 
 

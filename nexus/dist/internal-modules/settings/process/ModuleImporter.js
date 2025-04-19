@@ -60,10 +60,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.getImportedModules = exports.importModuleArchive = void 0;
+var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var electron_1 = require("electron");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
-var nexus_paths_1 = require("../../../utils/nexus-paths");
 function importModuleArchive() {
     return __awaiter(this, void 0, void 0, function () {
         var options, response, filePath, successful;
@@ -105,7 +105,7 @@ function importPluginArchive(filePath) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fs.promises.copyFile(filePath, "".concat(nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(folderName))];
+                    return [4 /*yield*/, fs.promises.copyFile(filePath, "".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(folderName))];
                 case 2:
                     _a.sent();
                     return [2 /*return*/, true];
@@ -123,7 +123,7 @@ function getImportedModules(deletedModules) {
         var files, map, out;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fs.promises.readdir(nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH, { withFileTypes: true })];
+                case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, { withFileTypes: true })];
                 case 1:
                     files = _a.sent();
                     map = new Map();

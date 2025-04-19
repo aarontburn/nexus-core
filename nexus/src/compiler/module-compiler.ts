@@ -2,10 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import {  Process, ModuleInfo } from "@nexus/nexus-module-builder";
+import {  Process, ModuleInfo, DIRECTORIES } from "@nexus/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
 import Stream from 'stream';
-import { DIRECTORIES } from '../utils/nexus-paths';
 
 
 export class ModuleCompiler {

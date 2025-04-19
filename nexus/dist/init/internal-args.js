@@ -71,8 +71,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.parseInternalArgs = exports.writeInternal = exports.readInternal = exports.getInternalArguments = void 0;
+var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var fs = __importStar(require("fs"));
-var nexus_paths_1 = require("../utils/nexus-paths");
 var DEFAULT_INTERNAL_FILE = {
     "args": ''
 };
@@ -97,7 +97,7 @@ function readInternal() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    internalFilePath = nexus_paths_1.DIRECTORIES.INTERNAL_PATH + nexus_paths_1.FILE_NAMES.INTERNAL_JSON;
+                    internalFilePath = nexus_module_builder_1.DIRECTORIES.INTERNAL_PATH + nexus_module_builder_1.FILE_NAMES.INTERNAL_JSON;
                     parsedContents = __assign({}, DEFAULT_INTERNAL_FILE);
                     _a.label = 1;
                 case 1:
@@ -124,7 +124,7 @@ function writeInternal(args) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fs.promises.writeFile(nexus_paths_1.DIRECTORIES.INTERNAL_PATH + nexus_paths_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
+                case 0: return [4 /*yield*/, fs.promises.writeFile(nexus_module_builder_1.DIRECTORIES.INTERNAL_PATH + nexus_module_builder_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
                         args: args.length === 0
                             ? ''
                             : args.filter(function (arg) { return !arg.startsWith('--last_exported_id'); }).join(' ')

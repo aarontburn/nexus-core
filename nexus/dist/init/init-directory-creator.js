@@ -60,13 +60,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.createAllDirectories = void 0;
+var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
 var fs = __importStar(require("fs"));
-var nexus_paths_1 = require("../utils/nexus-paths");
 function createAllDirectories() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Promise.allSettled(Object.values(nexus_paths_1.DIRECTORIES).map(function (directory) {
+                case 0: return [4 /*yield*/, Promise.allSettled(Object.values(nexus_module_builder_1.DIRECTORIES).map(function (directory) {
                         return fs.promises.mkdir(directory, { recursive: true });
                     }))];
                 case 1:

@@ -83,7 +83,6 @@ var ModuleImporter_1 = require("./ModuleImporter");
 var settings_1 = require("./settings");
 var internal_args_1 = require("../../../init/internal-args");
 var module_loader_1 = require("../../../init/module-loader");
-var nexus_paths_1 = require("../../../utils/nexus-paths");
 var MODULE_NAME = "Settings";
 exports.MODULE_ID = 'nexus.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
@@ -377,9 +376,9 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 2:
                         {
                             moduleID_1 = data[0];
-                            electron_1.shell.openPath(path.normalize(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1)).then(function (result) {
+                            electron_1.shell.openPath(path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1)).then(function (result) {
                                 if (result !== '') {
-                                    throw new Error('Could not find folder: ' + path.normalize(nexus_paths_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1));
+                                    throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1));
                                 }
                             });
                             return [3 /*break*/, 15];
@@ -397,7 +396,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _b.label = 5;
                     case 5:
                         fileName = data[0];
-                        return [4 /*yield*/, fs.promises.rm("".concat(nexus_paths_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
+                        return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
                     case 6:
                         result = _b.sent();
                         console.log("Removing " + fileName);
