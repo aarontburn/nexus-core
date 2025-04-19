@@ -42,9 +42,10 @@ export class ModuleCompiler {
 
     private static async unarchiveFromTemp() {
         const files: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH, IO_OPTIONS);
-        await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
 
+        await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
+
         await Promise.all(
             files.map(async (folder) => {
                 const unarchiveDirectory: string = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
@@ -169,7 +170,7 @@ export class ModuleCompiler {
         try {
             const folders: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.COMPILED_MODULES_PATH, IO_OPTIONS);
 
-            await Promise.allSettled(folders.map(async folder => {
+            const loadResult: PromiseSettledResult<void>[] = await Promise.allSettled(folders.map(async folder => {
                 if (!folder.isDirectory()) { // only read folders
                     return;
                 }
@@ -210,7 +211,13 @@ export class ModuleCompiler {
 
                 m.setModuleInfo(moduleInfo);
                 externalModules.push(m);
-            }))
+            }));
+            
+            const rejected = loadResult.filter(result => result.status === 'rejected');
+            if (rejected.length > 0) {
+                console.error("Errors occurred during module loading.");
+                console.error(rejected)
+            }
 
         } catch (err) {
             console.error(err);

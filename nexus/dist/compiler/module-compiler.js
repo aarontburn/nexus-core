@@ -349,7 +349,7 @@ var ModuleCompiler = /** @class */ (function () {
     };
     ModuleCompiler.loadModulesFromBuiltStorage = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var externalModules, folders, err_5;
+            var externalModules, folders, loadResult, rejected, err_5;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -410,7 +410,12 @@ var ModuleCompiler = /** @class */ (function () {
                                 });
                             }); }))];
                     case 3:
-                        _a.sent();
+                        loadResult = _a.sent();
+                        rejected = loadResult.filter(function (result) { return result.status === 'rejected'; });
+                        if (rejected.length > 0) {
+                            console.error("Errors occurred during module loading.");
+                            console.error(rejected);
+                        }
                         return [3 /*break*/, 5];
                     case 4:
                         err_5 = _a.sent();
