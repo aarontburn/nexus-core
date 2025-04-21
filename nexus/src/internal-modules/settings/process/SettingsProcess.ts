@@ -98,7 +98,7 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('window_y').setValue(bounds.y),
             this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("nexus.Main", "get-current-module-id")).body),
         ])
-        await writeModuleSettingsToStorage(this);
+        await this.fileManager.writeSettingsToStorage();
 
 
     }
@@ -333,7 +333,7 @@ export class SettingsProcess extends Process {
             case "module-order": {
                 const moduleOrder: string[] = data[0];
                 await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
-                await writeModuleSettingsToStorage(this);
+                await this.fileManager.writeSettingsToStorage()
                 break;
             }
         }

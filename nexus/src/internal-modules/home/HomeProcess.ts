@@ -44,7 +44,7 @@ export class HomeProcess extends Process {
 		if (this.getSettings().findSetting("is_first_launch").getValue()) {
 			this.sendToRenderer("is-first-launch");
 			await this.getSettings().findSetting("is_first_launch").setValue(false);
-			await writeModuleSettingsToStorage(this);
+			await this.fileManager.writeSettingsToStorage();
 			
 			return;
 		}

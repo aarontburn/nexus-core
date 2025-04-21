@@ -111,14 +111,17 @@ var HomeProcess = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.getSettings().findSetting("is_first_launch").getValue()) return [3 /*break*/, 2];
+                        if (!this.getSettings().findSetting("is_first_launch").getValue()) return [3 /*break*/, 3];
                         this.sendToRenderer("is-first-launch");
                         return [4 /*yield*/, this.getSettings().findSetting("is_first_launch").setValue(false)];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/];
-                    case 2: return [4 /*yield*/, _super.prototype.initialize.call(this)];
-                    case 3:
+                    case 3: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                    case 4:
                         _a.sent();
                         // Start clock
                         this.updateDateAndTime(false);

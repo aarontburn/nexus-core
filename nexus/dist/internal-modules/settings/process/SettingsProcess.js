@@ -167,7 +167,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                             ])])];
                     case 2:
                         _f.sent();
-                        return [4 /*yield*/, (0, module_loader_1.writeModuleSettingsToStorage)(this)];
+                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
                     case 3:
                         _f.sent();
                         return [2 /*return*/];
@@ -444,7 +444,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"))];
                     case 13:
                         _b.sent();
-                        return [4 /*yield*/, (0, module_loader_1.writeModuleSettingsToStorage)(this)];
+                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
                     case 14:
                         _b.sent();
                         return [3 /*break*/, 15];
