@@ -30,6 +30,7 @@ const pathsToCopy = [
     SRC + "/internal-modules/home/static",
     SRC + "/internal-modules/home/first-boot/css",
     SRC + "/internal-modules/home/first-boot/html",
+    SRC + "/internal-modules/home/first-boot/assets",
 ];
 
 pathsToCopy.forEach(file => {

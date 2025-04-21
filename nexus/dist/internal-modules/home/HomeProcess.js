@@ -110,12 +110,16 @@ var HomeProcess = /** @class */ (function (_super) {
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                    case 0:
+                        if (!this.getSettings().findSetting("is_first_launch").getValue()) return [3 /*break*/, 2];
+                        this.sendToRenderer("is-first-launch");
+                        return [4 /*yield*/, this.getSettings().findSetting("is_first_launch").setValue(false)];
                     case 1:
                         _a.sent();
-                        if (this.getSettings().findSetting("is_first_launch").getValue()) {
-                            this.sendToRenderer("is-first-launch");
-                        }
+                        return [2 /*return*/];
+                    case 2: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                    case 3:
+                        _a.sent();
                         // Start clock
                         this.updateDateAndTime(false);
                         this.clockTimeout = setTimeout(function () { return _this.updateDateAndTime(true); }, 1000 - new Date().getMilliseconds());

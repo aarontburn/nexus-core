@@ -2,13 +2,20 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { Process } from "../Process";
+import { Setting } from "../Setting";
 
 
 export default class FileManger {
 
     private readonly storagePath: string;
+    private readonly settingsFileName: string;
+    private readonly module: Process;
+
 
     public constructor(module: Process) {
+        this.module = module;
+        this.settingsFileName = module.getName().toLowerCase() + "_settings.json";
+
         this.storagePath = path.join(
             os.homedir(),
             process.argv.includes('--dev') ? '/.nexus_dev/' : "/.nexus/",
@@ -37,4 +44,44 @@ export default class FileManger {
         await fs.promises.mkdir(this.storagePath, { recursive: true });
         await fs.promises.writeFile(filePath, contents, { encoding: encoding });
     }
+
+
+
+    public async readSettingsFromStorage(): Promise<Map<string, any>> {
+        const settingMap: Map<string, any> = new Map();
+
+        let contents: string | null | undefined;
+        try {
+            contents = await this.readFromStorage(this.settingsFileName);
+        } finally {
+            if (!contents) {
+                return settingMap;
+            }
+        }
+    
+        try {
+            const json: any = JSON.parse(contents);
+            for (const settingName in json) {
+                settingMap.set(settingName, json[settingName]);
+            }
+        } catch (err) {
+            console.error("Could not parse JSON at " + this.settingsFileName);
+        }
+    
+        return settingMap;
+    }
+
+
+    public async writeSettingsToStorage(): Promise<void> {
+        const settingMap: Map<string, any> = new Map();
+    
+        this.module.getSettings().allToArray().forEach((setting: Setting<unknown>) => {
+            settingMap.set(setting.getName(), setting.getValue());
+        });
+
+        this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))
+    }
+    
+
+    
 }

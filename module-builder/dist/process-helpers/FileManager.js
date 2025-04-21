@@ -41,6 +41,8 @@ var os = require("os");
 var path = require("path");
 var FileManger = /** @class */ (function () {
     function FileManger(module) {
+        this.module = module;
+        this.settingsFileName = module.getName().toLowerCase() + "_settings.json";
         this.storagePath = path.join(os.homedir(), process.argv.includes('--dev') ? '/.nexus_dev/' : "/.nexus/", "/storage/", module.getIPCSource(), "/");
     }
     FileManger.prototype.readFromStorage = function (fileName_1) {
@@ -85,6 +87,53 @@ var FileManger = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/];
                 }
+            });
+        });
+    };
+    FileManger.prototype.readSettingsFromStorage = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var settingMap, contents, json, settingName;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        settingMap = new Map();
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, , 3, 4]);
+                        return [4 /*yield*/, this.readFromStorage(this.settingsFileName)];
+                    case 2:
+                        contents = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        if (!contents) {
+                            return [2 /*return*/, settingMap];
+                        }
+                        return [7 /*endfinally*/];
+                    case 4:
+                        try {
+                            json = JSON.parse(contents);
+                            for (settingName in json) {
+                                settingMap.set(settingName, json[settingName]);
+                            }
+                        }
+                        catch (err) {
+                            console.error("Could not parse JSON at " + this.settingsFileName);
+                        }
+                        return [2 /*return*/, settingMap];
+                }
+            });
+        });
+    };
+    FileManger.prototype.writeSettingsToStorage = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var settingMap;
+            return __generator(this, function (_a) {
+                settingMap = new Map();
+                this.module.getSettings().allToArray().forEach(function (setting) {
+                    settingMap.set(setting.getName(), setting.getValue());
+                });
+                this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
+                return [2 /*return*/];
             });
         });
     };

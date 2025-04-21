@@ -1,3 +1,7 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
 h1,
 h2,
 h3,
@@ -5,51 +9,6 @@ h4,
 p {
     margin: 0;
     padding: 0;
-
-}
-
-.accent {
-    color: var(--accent-color);
-}
-
-
-.fade1 {
-    animation: 1s ease 0s normal forwards 1 fadein;
-}
-
-.fade3 {
-    animation: 3s ease 0s normal forwards 1 fadein;
-}
-
-.fade5 {
-    transform: translateY(-100%);
-    opacity: 0;
-    animation: 1s ease 5s normal forwards 1 fadein;
-}
-
-.fade-out {
-    animation: 0.25s ease forwards fadeout;
-}
-
-
-#about {
-    opacity: 0;
-    height: 0;
-    animation: 0.25s ease 3s forwards expandheight;
-    min-width: 50%;
-    max-width: 75%;
-    text-align: center;
-
-}
-
-
-
-
-#center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 
 h1 {
@@ -58,6 +17,19 @@ h1 {
 
 h2 {
     text-align: center;
+}
+
+a {
+    text-decoration: none;
+    color: unset;
+}
+
+
+#center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 button {
@@ -74,27 +46,17 @@ button {
 }
 
 
-.nexus {
-    mask-size: cover;
-    mask-image: url("../../../view/assets/logo-no-background.svg");
-    mask-position: center;
-    background-color: var(--accent-color);
-
-    height: 10em;
-    width: 10em;
-
+.accent {
+    color: var(--accent-color);
 }
 
-@keyframes fadeout {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+#what-is-nexus {
+    font-size: 2em;
+    opacity: 0;
+    animation: 1s ease 0s normal forwards 1 win;
 }
 
-@keyframes fadein {
+@keyframes win {
     0% {
         transform: translateY(-100%);
         opacity: 0;
@@ -111,18 +73,124 @@ button {
     }
 }
 
+#nexus-description-1 {
+    /* Animation Properties */
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
 
-@keyframes expandheight {
+    font-size: 1.5em;
+    height: fit-content;
+    min-width: 50%;
+    max-width: 75%;
+    text-align: center;
+}
+
+.transition {
+    animation: 3s cubic-bezier(0, .34, .24, 1) 3s forwards nd1;
+}
+
+@keyframes nd1 {
     0% {
-        height: 0;
         opacity: 0;
+        max-height: 0;
+        margin-top: 0;
     }
 
-
+    40% {
+        opacity: 0;
+        max-height: 40em;
+        margin-top: 1em;
+    }
 
     100% {
-        height: 5em;
         opacity: 1;
+        max-height: 40em;
+        margin-top: 1em;
+    }
+}
 
+
+
+
+#nexus-description-2 {
+    opacity: 0;
+    height: fit-content;
+    max-height: 0;
+
+
+    text-align: center;
+    max-width: 75%;
+    font-size: 1.25em;
+}
+
+
+
+
+
+#example-text {
+    opacity: 0;
+    height: fit-content;
+    max-height: 0;
+
+    font-size: 2em;
+}
+
+
+
+
+
+#example-box {
+    opacity: 0;
+    height: fit-content;
+    max-height: 0;
+
+
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+
+
+
+
+
+.example {
+    width: 100%;
+    margin: 1em;
+    border: 1px solid var(--text-color);
+    border-radius: 15px;
+    text-align: center;
+    height: fit-content;
+}
+
+.example>h2 {
+    color: var(--accent-color);
+    margin-top: 0.5em;
+}
+
+.example img {
+    width: 100%;
+    padding: 1em;
+}
+
+#next-button {
+    opacity: 0;
+}
+
+
+
+.fade-out {
+    animation: 0.25s ease forwards fadeout;
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
     }
 }

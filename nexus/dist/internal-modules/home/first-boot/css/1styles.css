@@ -10,19 +10,19 @@ p {
 
 
 .fade1 {
-    animation: 1s ease 0s normal forwards 1 fadein;
+    animation: 1s ease 0s normal forwards 1 fade-in;
 }
 
 .fade3 {
-    animation: 3s ease 0s normal forwards 1 fadein;
+    animation: 3s ease 0s normal forwards 1 fade-in;
 }
 
 .fade5 {
-    animation: 5s ease 0s normal forwards 1 fadein;
+    animation: 5s ease 0s normal forwards 1 fade-in;
 }
 
 .fade-out {
-    animation: 0.25s ease forwards fadeout;
+    animation: 0.25s ease forwards fade-out;
 }
 
 
@@ -69,7 +69,7 @@ button {
 
 }
 
-@keyframes fadeout {
+@keyframes fade-out {
     from {
         opacity: 1;
     }
@@ -78,7 +78,7 @@ button {
     }
 }
 
-@keyframes fadein {
+@keyframes fade-in {
     0% {
         transform: translateY(-100%);
         opacity: 0;

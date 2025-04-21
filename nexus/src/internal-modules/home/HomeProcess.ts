@@ -3,6 +3,7 @@ import { BooleanSetting, NumberSetting, StringSetting } from "@nexus/nexus-modul
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
+import { writeModuleSettingsToStorage } from "../../init/module-loader";
 
 
 const MODULE_NAME: string = "Home";
@@ -40,11 +41,16 @@ export class HomeProcess extends Process {
 
 
 	public async initialize(): Promise<void> {
-		await super.initialize();
-
 		if (this.getSettings().findSetting("is_first_launch").getValue()) {
 			this.sendToRenderer("is-first-launch");
+			await this.getSettings().findSetting("is_first_launch").setValue(false);
+			await writeModuleSettingsToStorage(this);
+			
+			return;
 		}
+		await super.initialize();
+
+
 
 		// Start clock
 		this.updateDateAndTime(false);
