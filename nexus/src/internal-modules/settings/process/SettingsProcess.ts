@@ -207,7 +207,7 @@ export class SettingsProcess extends Process {
                         }
 
                         setting.getParentModule().onSettingModified(setting);
-                        console.info(`SETTING CHANGED: '${setting.getName()}' | ${oldValue} => ${setting.getValue()} ${newValue === undefined ? '[RESET TO DEFAULT]' : ''}`);
+                        console.info(`[Nexus Settings] Setting changed: '${setting.getName()}' | ${oldValue} => ${setting.getValue()} ${newValue === undefined ? '[RESET TO DEFAULT]' : ''}`);
 
                         const update: ChangeEvent[] = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
@@ -292,12 +292,12 @@ export class SettingsProcess extends Process {
                 const fileName: string = data[0];
 
                 const result = await fs.promises.rm(`${DIRECTORIES.EXTERNAL_MODULES_PATH}/${fileName}`);
-                console.log("Removing " + fileName);
+                console.info("[Nexus Settings] Removing " + fileName);
                 if (result === undefined) {
                     this.deletedModules.push(fileName);
-                    return Promise.resolve(true);
+                    return true;
                 }
-                return Promise.resolve(false);
+                return false;
             }
 
             case 'restart-now': {

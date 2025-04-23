@@ -1,4 +1,4 @@
-# Nexus: Internal Template Terminal Commands
+# Nexus: Webpage Template Terminal Commands
 
 This section is to help you understand some of the commands defined within the `package.json`.
 

@@ -1,7 +1,7 @@
 # Nexus: Webpage Template Setup
 
 ## Overview
-This template helps you create module embedding an existing website. Your module can either embed the site directly or use the `<webview>` tag to embed the website within a HTML document.
+This template helps you create module embedding an existing website. 
 
 ## Installation
 
@@ -18,8 +18,6 @@ npm start
 to install the required packages.
 
 
-
-
 ## Project Structure
 After downloading the template and running `npm install`, your project should look something like this:
 
@@ -29,6 +27,11 @@ root/
 +-- src/
     +-- process/
         +-- main.ts
+
+    +-- renderer/
+        +-- index.html
+        +-- renderer.ts
+        +-- styles.css
 
     +-- export-config.js
     +-- module-info.json
@@ -54,7 +57,7 @@ Starting with root files and directories that are self-explanatory, unchanged fr
 - `README.md`: Standard [README.md](https://docs.github.com/en/repositories/.managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes). Change this to show off your module.
 - `electron.ts`: This file is used to let your editor know that Electron is being used. This file is ignored and should not be modified.   
 - `tsconfig.json`: Standard [tsconfig.json](https://www.typescriptlang.org/tsconfig/).
-- `package.json`: Standard [package.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-json). However, this does list many commands you may be using throughout development. See the [Commands](./4%20InternalCommands.md) section for more information.
+- `package.json`: Standard [package.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-json). However, this does list many commands you may be using throughout development. See the [Commands](./4%20WebpageCommands.md) section for more information.
 
 ### Key Project Files
 The file structure can be modified, however, all files used by your module **need to stay within the `src/` directory.**
@@ -64,6 +67,11 @@ root/
 +-- src/
     +-- process/
         +-- main.ts
+    
+    +-- renderer/
+        +-- index.html
+        +-- renderer.ts
+        +-- styles.css
 
     +-- export-config.js
     +-- module-info.json
@@ -72,9 +80,13 @@ root/
 - `src/export-config.js`: A file containing export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/module-info.json`: A file containing details about your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/process/`: The directory containing all code and assets for the process (backend).
-- `src/process/main.ts`: The entry point to your module and the main [Process](./2%20InternalProcess.md). If you move or rename this file, ensure your changes are also reflected in `export-config.js` (read about [export-config.js](../../../api/export-config.js.md)).  
+  -  `/process/main.ts`: The entry point to your module and the main [Process](./2%20WebpageProcess.md). If you move or rename this file, ensure your changes are also reflected in `export-config.js` (read about [export-config.js](../../../api/export-config.js.md)).
+- `src/renderer/`: The directory containing all code and assets for the renderer (frontend).
+  - `renderer/index.html`: The default UI for your module.
+  - `renderer/renderer.ts`: The main logic file for the renderer. It listens for messages from the process and interacts with the DOM accordingly.
+  - `renderer/styles.css`: The styling for `index.html`.
 
 
 ---
 ### Next Steps:
-Now that you've understood how the project is laid out, visit the [Internal Process](./2%20InternalProcess.md) guide to learn how it works.
+Now that you've understood how the project is laid out, visit the [Webpage Process](./2%20WebpageProcess.md) guide to learn how it works.

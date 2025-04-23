@@ -28,3 +28,5 @@ This template utilizes HTML + CSS + TypeScript.
 ### [Nexus Internal Template](./internal/1%20InternalSetup.md)
 This is to create modules with no GUI, useful for monitoring, adding additional settings, or interfacing with other modules.
 
+### [Nexus Webpage Template](./webpage/1%20WebpageSetup.md)
+This is to quickly embed websites as a module.

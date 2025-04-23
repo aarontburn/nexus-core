@@ -20,10 +20,10 @@ export async function importModuleArchive(): Promise<boolean> {
     const successful: boolean = await importPluginArchive(filePath);
 
     if (successful) {
-        console.log("Successfully copied " + filePath + ". Restart required.");
+        console.info("[Nexus Settings] Successfully copied " + filePath + ". Restart required.");
         return true;
     }
-    console.log("Error copying " + filePath + ".");
+    console.error("[Nexus Settings] Error copying " + filePath + ".");
     return false;
 }
 

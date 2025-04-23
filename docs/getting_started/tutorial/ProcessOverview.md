@@ -213,6 +213,7 @@ There are many more functions in the parent `Process` class that you can overrid
 ## Next Steps
 Learn about the renderer for your respective template.
 
-### [Nexus: React Template](./react/1%20ReactSetup.md)  
+### [Nexus: React Template](./react/2%20ReactRenderer.md)  
 ### [Nexus: Vanilla TS Template](./vanilla/2%20VanillaRenderer.md)
 ### [Nexus: Internal Template](./internal/3%20InternalRenderer.md)
+### [Nexus: Webpage Template](./webpage/3%20WebpageRenderer.md)

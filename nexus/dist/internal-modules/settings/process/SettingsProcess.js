@@ -292,7 +292,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _e.label = 7;
                     case 7:
                         setting.getParentModule().onSettingModified(setting);
-                        console.info("SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
+                        console.info("[Nexus Settings Handler] SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
                         return [4 /*yield*/, (0, module_loader_1.writeModuleSettingsToStorage)(setting.getParentModule())];
@@ -399,7 +399,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
                     case 6:
                         result = _b.sent();
-                        console.log("Removing " + fileName);
+                        console.info("[Nexus Settings Handler] Removing " + fileName);
                         if (result === undefined) {
                             this.deletedModules.push(fileName);
                             return [2 /*return*/, Promise.resolve(true)];
