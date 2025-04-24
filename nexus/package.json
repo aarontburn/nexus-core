@@ -6,7 +6,7 @@
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
         "start": "npm run build && electron --trace-warnings . --dev --in-core ",
-        "package": "npm run build && npx electron-builder build",
+        "package": "npm run build && npx electron-builder build --win",
         "update-nexus": "npm update @nexus/nexus-exporter && npm update @nexus/nexus-module-builder",
         "package:test": "npm run build && electron-builder --dir"
     },
@@ -32,7 +32,7 @@
             "allowToChangeInstallationDirectory": true,
             "oneClick": false
         },
-        "icon": "./dist/view/assets/icon.ico",
+        "icon": "./dist/view/assets/icon",
         "appId": "com.aarontburn.Nexus",
         "asar": true,
         "files": [
@@ -47,4 +47,5 @@
             "repo": "nexus-core"
         }
     }
+
 }

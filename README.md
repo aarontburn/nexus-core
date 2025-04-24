@@ -28,7 +28,11 @@ The benefit of developing with Nexus is that any module you install can be loade
 **Export and Distribution**: Nexus comes pre-configured to export your module into an archive file for easy distribution without much (or any) configuration.
 
 ## Installing Nexus
-TODO
+Currently, Nexus is **Windows only**, but support for Linux and MacOS is being worked on.
+
+Download the latest release for your platform and run the installer.
+
+### [Nexus: Latest Release](https://github.com/aarontburn/nexus-core/releases/latest)
 
 
 ## Developing for Nexus
