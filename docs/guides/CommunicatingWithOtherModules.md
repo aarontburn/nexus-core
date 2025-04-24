@@ -4,7 +4,7 @@
 In the Nexus environment, you can expose an API for other modules to communicate with, as well as communicate with other modules.
 
 ## `DataResponse`
-Inside` @nexus/nexus-module-builder`, you'll find two key tools for module communication: the `DataResponse` object (similar to an HTTP Response), and the `HTTPStatusCode` enum, which provides all standard HTTP status codes.
+Inside `@nexus/nexus-module-builder`, you'll find two key tools for module communication: the `DataResponse` object (similar to an HTTP Response), and the `HTTPStatusCode` enum, which provides all standard HTTP status codes.
 
 ```typescript
 interface DataResponse {
@@ -73,7 +73,7 @@ public async handleExternal(source: IPCSource, eventType: string, data: any[]): 
 ## Accessing other modules' API
 Within your process, you can use the function `this.requestExternal()` to make requests to other modules.
 
-`requestExternal(target: string, eventType: string, ...data: any[])`
+`[async] requestExternal(target: string, eventType: string, ...data: any[]): Promise<any>`
 - `target`: The ID of the target module.
 - `eventType`: The request type.
 - `data`: Any data associated with the request.
@@ -108,5 +108,6 @@ console.log(installedModules.body)
 
 ## Best Practices
 
-- **Never** send a direct reference of your process (like `this`) to any module that requests it. This can lead to unintended side effects or security issues
+- **Never** send a direct reference of your process (such as `this`) to any module that requests it. This can lead to unintended side effects or security issues.
 - When returning arrays or objects, use the spread operator (`[...arr]` or `{...obj}`) to ensure you're sending a copy, not a reference. This prevents external modules from mutating your internal state.
+

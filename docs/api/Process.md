@@ -2,7 +2,9 @@
 ## Overview
 The process is the backend of your module. It has no access to the DOM, and sends/receives data from the renderer process. Inside the parent `Process` class are many functions that can be utilized to control the state of the module at various times.
 
-
+## Attributes
+### `fileManager: FileManager`
+Handles all file IO from this module. See the [FileManager](./helpers/FileManager.md) class for more details.
 
 ## Main Functions
 
@@ -193,10 +195,10 @@ This function is called when other modules attempt to access the API
 
 
 
-## Information Getters/Setters
+## Getters/Setters
 ### `isInitialized(): boolean`
 > **Returns**  
-> True if the module has been initialized, false otherwise.
+> `true` if the module has been initialized, `false` otherwise.
 
 
 ### `getName(): string`
@@ -221,6 +223,12 @@ In most cases, this is synonymous to [`getID`](#getid-string).
 ### `getHTMLPath(): string | undefined`
 > **Returns**  
 > The relative path to the associated `index.html` in the renderer. If this is `undefined`, the module is an internal module.
+
+---
+
+### `getURL(): string | undefined`
+> **Returns**  
+> The web URL of this module. This will ONLY be accessed if `getHTMLPath` returns `undefined`.
 
 ---
 

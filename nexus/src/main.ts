@@ -105,10 +105,18 @@ function onProcessAndRendererReady(context: InitContext): void {
 
     if (process.argv.includes("--dev")) {
         globalShortcut.register('Shift+CommandOrControl+I', () => {
+            if (!context.window.isFocused()) {
+                return;
+            }
+
             const displayedModuleID: string = context.displayedModule.getID();
             context.moduleViewMap.get(displayedModuleID).webContents.openDevTools();
         })
         globalShortcut.register('CommandOrControl+R', () => {
+            if (!context.window.isFocused()) {
+                return;
+            }
+            
             const displayedModuleID: string = context.displayedModule.getID();
             context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
         })

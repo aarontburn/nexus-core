@@ -239,6 +239,9 @@ var SettingsProcess = /** @class */ (function (_super) {
                     }
                     case 'on-developer-mode-changed': {
                         callback = data[0];
+                        if (typeof callback !== "function") {
+                            return [2 /*return*/, { body: new Error("Callback is invalid."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
                         this.devModeSubscribers.push(callback);
                         callback(this.getSettings().findSetting('dev_mode').getValue());
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
@@ -292,7 +295,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _e.label = 7;
                     case 7:
                         setting.getParentModule().onSettingModified(setting);
-                        console.info("[Nexus Settings Handler] SETTING CHANGED: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
+                        console.info("[Nexus Settings] Setting changed: '".concat(setting.getName(), "' | ").concat(oldValue, " => ").concat(setting.getValue(), " ").concat(newValue === undefined ? '[RESET TO DEFAULT]' : ''));
                         update = settingBox.onChange(setting.getValue());
                         this.sendToRenderer("setting-modified", update);
                         return [4 /*yield*/, (0, module_loader_1.writeModuleSettingsToStorage)(setting.getParentModule())];
@@ -399,12 +402,12 @@ var SettingsProcess = /** @class */ (function (_super) {
                         return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
                     case 6:
                         result = _b.sent();
-                        console.info("[Nexus Settings Handler] Removing " + fileName);
+                        console.info("[Nexus Settings] Removing " + fileName);
                         if (result === undefined) {
                             this.deletedModules.push(fileName);
-                            return [2 /*return*/, Promise.resolve(true)];
+                            return [2 /*return*/, true];
                         }
-                        return [2 /*return*/, Promise.resolve(false)];
+                        return [2 /*return*/, false];
                     case 7:
                         {
                             electron_1.app.relaunch();

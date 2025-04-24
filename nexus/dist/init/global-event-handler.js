@@ -101,14 +101,11 @@ function handleExternalWrapper(context) {
                         return [2 /*return*/, { body: context.displayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "open-dev-tools": {
-                        target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+                        target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[1] : source.getIPCSource();
                         POSSIBLE_MODES = ['left', 'right', 'bottom', 'detach'];
-                        mode = (_a = data[1]) !== null && _a !== void 0 ? _a : "right";
-                        if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
-                            return [2 /*return*/, {
-                                    body: "Invalid devtool mode passed ('".concat(mode, "'); Possible values are: ").concat(JSON.stringify(POSSIBLE_MODES)),
-                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_ACCEPTABLE
-                                }];
+                        mode = (_a = data[0]) !== null && _a !== void 0 ? _a : "right";
+                        if (!POSSIBLE_MODES.includes(mode)) { // if the mode is invalid, set to default
+                            mode = "right";
                         }
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {

@@ -67,15 +67,12 @@ export function handleExternalWrapper(context: InitContext) {
             }
             case "open-dev-tools": {
                 // Only allow aarontburn.Debug_Console to open devtools for other modules
-                const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[0] : source.getIPCSource();
+                const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[1] : source.getIPCSource();
 
                 const POSSIBLE_MODES: string[] = ['left', 'right', 'bottom', 'detach'];
-                const mode: string = data[1] ?? "right"; // load on right by default
-                if (mode !== undefined && !POSSIBLE_MODES.includes(mode)) {
-                    return {
-                        body: `Invalid devtool mode passed ('${mode}'); Possible values are: ${JSON.stringify(POSSIBLE_MODES)}`,
-                        code: HTTPStatusCodes.NOT_ACCEPTABLE
-                    }
+                let mode: string = data[0] ?? "right"; // load on right by default
+                if (!POSSIBLE_MODES.includes(mode)) { // if the mode is invalid, set to default
+                    mode = "right";
                 }
 
                 if (!context.moduleViewMap.has(target)) {

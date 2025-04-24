@@ -171,6 +171,11 @@ export class SettingsProcess extends Process {
             }
             case 'on-developer-mode-changed': {
                 const callback: (isDev: boolean) => void = data[0];
+
+                if (typeof callback !== "function") {
+                    return { body: new Error("Callback is invalid."), code: HTTPStatusCodes.BAD_REQUEST };
+                }
+
                 this.devModeSubscribers.push(callback);
                 callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
 

@@ -147,10 +147,16 @@ function onProcessAndRendererReady(context) {
     }
     if (process.argv.includes("--dev")) {
         electron_1.globalShortcut.register('Shift+CommandOrControl+I', function () {
+            if (!context.window.isFocused()) {
+                return;
+            }
             var displayedModuleID = context.displayedModule.getID();
             context.moduleViewMap.get(displayedModuleID).webContents.openDevTools();
         });
         electron_1.globalShortcut.register('CommandOrControl+R', function () {
+            if (!context.window.isFocused()) {
+                return;
+            }
             var displayedModuleID = context.displayedModule.getID();
             context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
         });

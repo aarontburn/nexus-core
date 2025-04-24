@@ -1,5 +1,6 @@
 # Nexus: Table of Contents
 
+
 ## Getting Started
 [**Introduction**](./getting_started/Introduction.md)  
 [**Tutorial and Templates**](./getting_started/tutorial/BuildingYourFirstModule.md)   
@@ -7,7 +8,6 @@
 ## Guides
 [**Communicating Between Modules**](./guides/CommunicatingWithOtherModules.md)  
 [**Creating a Custom Setting**](./guides/CreatingACustomSetting.md)
-[**Writing To Storage**](./guides/WritingToStorage.md)
 
 ## API
 [**Process**](./api/Process.md)  

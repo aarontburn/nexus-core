@@ -122,7 +122,9 @@ Sets an input validator for the setting. This cannot be reassigned once set. For
 ### `[async] setValue(value: any): Promise<void>`
 Sets the value of the setting. `value` is first parsed into `T` before assigning it to the setting. If `value` isn't a valid type of `T` (either by different type or failing the validator's tests), this will not modify the current value. 
 
-This function is async because the validation process could be async.
+This function is async because the validation process can be async.
+
+If this function is called manually within your process, you must do a call to `this.fileManager.writeSettingsToStorage()` to write your updated settings to storage. See the [FileManager](./helpers/FileManager.md) class for more details.
 
 > **Parameters**  
 > `value: any` → The value to set the setting to.   

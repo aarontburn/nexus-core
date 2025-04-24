@@ -85,10 +85,10 @@ function importModuleArchive() {
                 case 2:
                     successful = _a.sent();
                     if (successful) {
-                        console.info("[Nexus Settings Handler] Successfully copied " + filePath + ". Restart required.");
+                        console.info("[Nexus Settings] Successfully copied " + filePath + ". Restart required.");
                         return [2 /*return*/, true];
                     }
-                    console.error("[Nexus Settings Handler] Error copying " + filePath + ".");
+                    console.error("[Nexus Settings] Error copying " + filePath + ".");
                     return [2 /*return*/, false];
             }
         });

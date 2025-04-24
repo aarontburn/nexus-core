@@ -6,6 +6,5 @@ export default class FileManger {
     constructor(module: Process);
     readFromStorage(fileName: string, encoding?: BufferEncoding): Promise<string | null>;
     writeToStorage(fileName: string, contents: string, encoding?: BufferEncoding): Promise<void>;
-    readSettingsFromStorage(): Promise<Map<string, any>>;
     writeSettingsToStorage(): Promise<void>;
 }

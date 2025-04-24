@@ -47,31 +47,6 @@ export default class FileManger {
 
 
 
-    public async readSettingsFromStorage(): Promise<Map<string, any>> {
-        const settingMap: Map<string, any> = new Map();
-
-        let contents: string | null | undefined;
-        try {
-            contents = await this.readFromStorage(this.settingsFileName);
-        } finally {
-            if (!contents) {
-                return settingMap;
-            }
-        }
-    
-        try {
-            const json: any = JSON.parse(contents);
-            for (const settingName in json) {
-                settingMap.set(settingName, json[settingName]);
-            }
-        } catch (err) {
-            console.error("Could not parse JSON at " + this.settingsFileName);
-        }
-    
-        return settingMap;
-    }
-
-
     public async writeSettingsToStorage(): Promise<void> {
         const settingMap: Map<string, any> = new Map();
     
@@ -81,7 +56,5 @@ export default class FileManger {
 
         this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))
     }
-    
-
     
 }
