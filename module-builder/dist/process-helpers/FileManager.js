@@ -94,12 +94,17 @@ var FileManger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var settingMap;
             return __generator(this, function (_a) {
-                settingMap = new Map();
-                this.module.getSettings().allToArray().forEach(function (setting) {
-                    settingMap.set(setting.getName(), setting.getValue());
-                });
-                this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4));
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        settingMap = new Map();
+                        this.module.getSettings().allToArray().forEach(function (setting) {
+                            settingMap.set(setting.getName(), setting.getValue());
+                        });
+                        return [4 /*yield*/, this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };

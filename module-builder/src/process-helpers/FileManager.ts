@@ -54,7 +54,7 @@ export default class FileManger {
             settingMap.set(setting.getName(), setting.getValue());
         });
 
-        this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))
+        await this.writeToStorage(this.settingsFileName, JSON.stringify(Object.fromEntries(settingMap), undefined, 4))
     }
     
 }

@@ -115,9 +115,14 @@ function createBrowserWindow(context) {
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
-                    event.preventDefault();
-                    close(context, window);
-                    return [2 /*return*/];
+                    switch (_a.label) {
+                        case 0:
+                            event.preventDefault();
+                            return [4 /*yield*/, close(context, window)];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
                 });
             }); });
             view = new electron_1.WebContentsView({

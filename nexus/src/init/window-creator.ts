@@ -35,7 +35,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
 
     window.on('close', async (event) => {
         event.preventDefault();
-        close(context, window);
+        await close(context, window);
     })
 
     const view: WebContentsView = new WebContentsView({
