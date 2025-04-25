@@ -10,7 +10,7 @@ Nexus is an cross-platform application environment and loader. Developers can cr
 Think of Nexus as a customizable toolbox — one app that can do anything that you (or the community) build into it.
 
 
-![Nexus Image](./repo-assets/image.png)
+![Nexus Image](./repo-assets/sample-image.png)
 
 
 ## What is a module?
