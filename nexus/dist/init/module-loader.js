@@ -80,12 +80,12 @@ var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1, moduleOrder, reorderedModules, orderedMap, _b, _c, module_2;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
-                    loadedModules = _d.sent();
+                    loadedModules = _b.sent();
                     settingProcess = new SettingsProcess_1.SettingsProcess();
                     internalModules = [new HomeProcess_1.HomeProcess(), settingProcess, new updater_process_1.AutoUpdaterProcess()];
                     moduleMap = new Map();
@@ -94,24 +94,7 @@ function loadModules(context) {
                         module_1.setIPC((0, global_event_handler_1.getIPCCallback)(context));
                         registerModule(moduleMap, module_1);
                     }
-                    moduleOrder = settingProcess.getSettings()
-                        .findSetting("module_order")
-                        .getValue();
-                    reorderedModules = reorderModules(moduleOrder, loadedModules);
-                    // Write new order
-                    return [4 /*yield*/, settingProcess
-                            .getSettings()
-                            .findSetting('module_order')
-                            .setValue(loadedModules.map(function (module) { return module.getID(); }).join("|"))];
-                case 2:
-                    // Write new order
-                    _d.sent();
-                    orderedMap = new Map();
-                    for (_b = 0, _c = __spreadArray(__spreadArray([], internalModules, true), reorderedModules, true); _b < _c.length; _b++) {
-                        module_2 = _c[_b];
-                        orderedMap.set(module_2.getIPCSource(), module_2);
-                    }
-                    return [2 /*return*/, orderedMap];
+                    return [2 /*return*/, moduleMap];
             }
         });
     });
@@ -135,7 +118,7 @@ function registerModule(map, module) {
 }
 function verifyAllModuleSettings(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var _i, _a, module_3, _b, _c;
+        var _i, _a, module_2, _b, _c;
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
@@ -143,9 +126,9 @@ function verifyAllModuleSettings(context) {
                     _d.label = 1;
                 case 1:
                     if (!(_i < _a.length)) return [3 /*break*/, 4];
-                    module_3 = _a[_i];
+                    module_2 = _a[_i];
                     _c = (_b = context.settingModule).addModuleSetting;
-                    return [4 /*yield*/, verifyModuleSettings(module_3)];
+                    return [4 /*yield*/, verifyModuleSettings(module_2)];
                 case 2:
                     _c.apply(_b, [_d.sent()]);
                     _d.label = 3;
@@ -260,35 +243,5 @@ function readSettingsFromModuleStorage(module) {
 }
 function getModuleSettingsName(module) {
     return module.getName().toLowerCase() + "_settings.json";
-}
-function reorderModules(idOrderUnparsed, moduleList) {
-    if (idOrderUnparsed === '') { // no order set, return the original list
-        return moduleList;
-    }
-    var idOrder = idOrderUnparsed.split("|");
-    var reorderedModules = [];
-    var moduleMap = moduleList.reduce(function (map, module) {
-        if (map.has(module.getID())) { // duplicate module found, ignore both of them
-            console.error("WARNING: Modules with duplicate IDs have been found.");
-            console.error("ID: ".concat(module.getID(), " | Registered Module: ").concat(map.get(module.getID()).getName(), " | New Module: ").concat(module.getName()));
-            map["delete"](module.getID());
-        }
-        else {
-            map.set(module.getID(), module);
-        }
-        return map;
-    }, new Map());
-    for (var _i = 0, idOrder_1 = idOrder; _i < idOrder_1.length; _i++) {
-        var moduleID = idOrder_1[_i];
-        if (moduleMap.has(moduleID)) {
-            reorderedModules.push(moduleMap.get(moduleID));
-            moduleMap["delete"](moduleID);
-        }
-    }
-    for (var _a = 0, _b = Array.from(moduleMap.values()); _a < _b.length; _a++) {
-        var leftoverModule = _b[_a];
-        reorderedModules.push(leftoverModule);
-    }
-    return reorderedModules;
 }
 //# sourceMappingURL=module-loader.js.map

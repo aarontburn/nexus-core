@@ -3,29 +3,29 @@ body {
   height: 100%;
   margin: 0;
   overflow-x: hidden;
-  overflow-y: hidden;
   width: fit-content;
+}
+
+body {
+  box-shadow: -1px 0px 0px 0px var(--text-color) inset;
 }
 
 .box {
   display: flex;
   flex-flow: row;
-  height: 100vh;
+  min-height: 100%;
 }
 
 #built-ins {
   border-right: none;
   padding: 0;
-
 }
 
 .box .header {
   display: flex;
   flex: 0 1 auto;
   flex-direction: column;
-  overflow-y: auto;
   padding: 5px;
-  border-right: 1px solid var(--text-color);
   width: 70px;
 }
 
@@ -80,23 +80,5 @@ body {
   mask-position: center;
   /* Set the mask image on the div */
   /* mask-image: url(...) */
-}
-
-.embedded>iframe {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  background: transparent;
-  border: none;
-}
-
-.embedded>webview {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  border: none;
 }
 

@@ -1,3 +1,10 @@
+interface ModuleData {
+    moduleName: string;
+    moduleID: string;
+    htmlPath: string;
+    iconPath: string;
+}
+
 (() => {
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
         return window.ipc.send(window, eventName, data);
@@ -6,7 +13,9 @@
     window.ipc.on(window, (eventName: string, data: any[]) => {
         switch (eventName) {
             case "load-modules": {
-                loadModules(data[0]);
+                const { order, modules }: { order: string, modules: ModuleData[] } = data[0];
+                const reorderedModules = reorderModules(order, modules);
+                loadModules(reorderedModules);
                 break;
             }
             case "swapped-modules-to": {
@@ -16,6 +25,40 @@
 
         }
     });
+
+    function reorderModules(idOrderUnparsed: string, moduleList: ModuleData[]): ModuleData[] {
+        if (idOrderUnparsed === '') { // no order set, return the original list
+            return moduleList;
+        }
+
+        const idOrder: string[] = idOrderUnparsed.split("|");
+        const reorderedModules: ModuleData[] = [];
+        const moduleMap = moduleList.reduce((map: Map<string, ModuleData>, module: ModuleData) => {
+            if (map.has(module.moduleID)) { // duplicate module found, ignore both of them
+                console.error("WARNING: Modules with duplicate IDs have been found.");
+                console.error(`ID: ${module.moduleID} | Registered Module: ${map.get(module.moduleID).moduleName} | New Module: ${module.moduleName}`);
+                map.delete(module.moduleID);
+
+            } else {
+                map.set(module.moduleID, module);
+            }
+
+            return map;
+        }, new Map<string, ModuleData>());
+
+        for (const moduleID of idOrder) {
+            if (moduleMap.has(moduleID)) {
+                reorderedModules.push(moduleMap.get(moduleID));
+                moduleMap.delete(moduleID)
+            }
+        }
+
+        for (const leftoverModule of Array.from(moduleMap.values())) {
+            reorderedModules.push(leftoverModule);
+        }
+
+        return reorderedModules;
+    }
 
     sendToProcess("renderer-init");
 
@@ -38,7 +81,7 @@
 
 
 
-    function loadModules(data: { moduleName: string, moduleID: string, htmlPath: string, iconPath?: string }[]) {
+    function loadModules(data: ModuleData[]) {
         const moduleIconsHTML: HTMLElement = document.getElementById("header");
 
         const getAbbreviation = (moduleName: string) => {

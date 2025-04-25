@@ -129,6 +129,11 @@ function onProcessAndRendererReady(context: InitContext): void {
 
     context.displayedModule = undefined;
 
+
+    const moduleOrder: string = context.settingModule.getSettings()
+        .findSetting("module_order")
+        .getValue() as string;
+
     const data: any[] = [];
     context.moduleMap.forEach((module: Process) => {
         data.push({
@@ -139,7 +144,7 @@ function onProcessAndRendererReady(context: InitContext): void {
             url: module.getURL()
         });
     });
-    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', { order: moduleOrder, modules: data});
 
     let startupModuleID: string = "nexus.Home";
 

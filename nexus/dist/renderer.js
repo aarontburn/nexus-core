@@ -9,7 +9,9 @@
     window.ipc.on(window, function (eventName, data) {
         switch (eventName) {
             case "load-modules": {
-                loadModules(data[0]);
+                var _a = data[0], order = _a.order, modules = _a.modules;
+                var reorderedModules = reorderModules(order, modules);
+                loadModules(reorderedModules);
                 break;
             }
             case "swapped-modules-to": {
@@ -18,6 +20,36 @@
             }
         }
     });
+    function reorderModules(idOrderUnparsed, moduleList) {
+        if (idOrderUnparsed === '') { // no order set, return the original list
+            return moduleList;
+        }
+        var idOrder = idOrderUnparsed.split("|");
+        var reorderedModules = [];
+        var moduleMap = moduleList.reduce(function (map, module) {
+            if (map.has(module.moduleID)) { // duplicate module found, ignore both of them
+                console.error("WARNING: Modules with duplicate IDs have been found.");
+                console.error("ID: ".concat(module.moduleID, " | Registered Module: ").concat(map.get(module.moduleID).moduleName, " | New Module: ").concat(module.moduleName));
+                map["delete"](module.moduleID);
+            }
+            else {
+                map.set(module.moduleID, module);
+            }
+            return map;
+        }, new Map());
+        for (var _i = 0, idOrder_1 = idOrder; _i < idOrder_1.length; _i++) {
+            var moduleID = idOrder_1[_i];
+            if (moduleMap.has(moduleID)) {
+                reorderedModules.push(moduleMap.get(moduleID));
+                moduleMap["delete"](moduleID);
+            }
+        }
+        for (var _a = 0, _b = Array.from(moduleMap.values()); _a < _b.length; _a++) {
+            var leftoverModule = _b[_a];
+            reorderedModules.push(leftoverModule);
+        }
+        return reorderedModules;
+    }
     sendToProcess("renderer-init");
     var selectedTab = undefined;
     var handleButtonClick = function (moduleID, buttonElement) {

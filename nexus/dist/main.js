@@ -165,6 +165,9 @@ function onProcessAndRendererReady(context) {
         moduleView.emit("bounds-changed");
     });
     context.displayedModule = undefined;
+    var moduleOrder = context.settingModule.getSettings()
+        .findSetting("module_order")
+        .getValue();
     var data = [];
     context.moduleMap.forEach(function (module) {
         data.push({
@@ -175,7 +178,7 @@ function onProcessAndRendererReady(context) {
             url: module.getURL()
         });
     });
-    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', data);
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', { order: moduleOrder, modules: data });
     var startupModuleID = "nexus.Home";
     var openLastModule = context.settingModule
         .getSettings()
