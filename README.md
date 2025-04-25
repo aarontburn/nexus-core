@@ -9,6 +9,10 @@ Nexus is an cross-platform application environment and loader. Developers can cr
 
 Think of Nexus as a customizable toolbox — one app that can do anything that you (or the community) build into it.
 
+
+![Nexus Image](./repo-assets/image.png)
+
+
 ## What is a module?
 
 A **module** can be anything you can create in Node.js. From anything from a [system volume controller](https://github.com/aarontburn/nexus-volume-controller) to an [internal debug console](https://github.com/aarontburn/nexus-debug-console), there are no limits to what you can create. 
@@ -33,6 +37,20 @@ Currently, Nexus is **Windows only**, but support for Linux and MacOS is being w
 Download the latest release for your platform and run the installer.
 
 ### [Nexus: Latest Release](https://github.com/aarontburn/nexus-core/releases/latest)
+
+
+## Modules
+Check out some example modules to try out.
+
+### [Discord Monkey](https://github.com/aarontburn/nexus-discord-monkey)
+Many people have Discord open on their computer from startup to shutdown; why not free up some window clutter? Embed your Discord client as a Nexus module.
+
+
+### [ChatGPT](https://github.com/aarontburn/nexus-chatgpt)
+Use ChatGPT often? Embed ChatGPT as a Nexus module for quick access.
+
+### Emails: [Gmail](https://github.com/aarontburn/nexus-google-gmail) and [Outlook](https://github.com/aarontburn/nexus-microsoft-outlook)
+If you regularly check your email, embed them into Nexus.
 
 
 ## Developing for Nexus
