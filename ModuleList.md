@@ -5,7 +5,7 @@ Official modules developed and maintained by the Nexus team.
 ## Program Embeds
 These modules embed external applications for Nexus. No data, including login information, is collected.
 
-| Module | Description |
+| Name | Description |
 |--------|-------------|
 | [Discord Monkey](https://github.com/aarontburn/nexus-discord-monkey) | Embed your Discord client within Nexus. |
 | [Spotify Monkey](https://github.com/aarontburn/nexus-spotify-monkey) | Control and view your Spotify desktop client from within Nexus. |
@@ -15,7 +15,7 @@ These modules embed external applications for Nexus. No data, including login in
 ## Web Embeds
 These modules embed popular websites for Nexus. No data, including login information, is collected.
 
-| Module | Description |
+| Name | Description |
 |--------|-------------|
 | [ChatGPT](https://github.com/aarontburn/nexus-chatgpt) | Access ChatGPT directly inside Nexus for AI-assisted tasks and conversations. |
 | [Google Gmail](https://github.com/aarontburn/nexus-google-gmail) | Check and manage your Gmail inbox without leaving Nexus. |
@@ -28,8 +28,8 @@ These modules embed popular websites for Nexus. No data, including login informa
 ## Native Nexus Modules
 These modules have been developed specifically for Nexus.
 
-| Module | Description |
+| Name | Description |
 |--------|-------------|
 | [Debug Console](https://github.com/aarontburn/nexus-debug-console) | View Nexus logs and run internal commands. |
 | [Debug Console Extras](https://github.com/aarontburn/nexus-debug-console-extras) | Adds additional commands to the [Debug Console](https://github.com/aarontburn/nexus-debug-console) module. |
-| [Volume Controller](https://github.com/aarontburn/nexus-volume-controller) | Windows only. Control application volume, mute apps, or isolate sound. |
+| [Volume Controller](https://github.com/aarontburn/nexus-volume-controller) | **[Windows Only]** Control application volume, mute apps, or isolate sound. |
