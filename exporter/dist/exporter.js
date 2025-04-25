@@ -205,16 +205,9 @@ async function checkAndCopyDependencies() {
     const nodeModules = await fs.promises.readdir(SRC_NODE_MODULES);
 
     for (const dependencyName of dependencyNames) {
-
-        if (!nodeModules.includes(dependencyName)) {
-            console.info(dependencyName + " was not found in 'node_modules'. Skipping...")
-            continue;
-        }
-
         depSet.add(dependencyName);
         await checkDependencysDependencies(dependencyName, depSet);
     }
-
 
     await Promise.all(Array.from(depSet).map(async depName => {
         const dependencyPath = path.join(SRC_NODE_MODULES, depName);
