@@ -140,6 +140,7 @@ const notifyRendererWrapper = (context: InitContext) => {
 }
 
 const requestExternalModuleWrapper = (context: InitContext) => {
+
     return async (source: IPCSource, targetModuleID: string, eventType: string, ...data: any[]): Promise<DataResponse> => {
         if (targetModuleID === context.mainIPCSource.getIPCSource()) {
             return await handleExternalWrapper(context)(source, eventType, data);
@@ -148,11 +149,12 @@ const requestExternalModuleWrapper = (context: InitContext) => {
 
         const targetModule: Process = context.moduleMap.get(targetModuleID);
         if (targetModule === undefined) {
-            return { body: `No module with ID of ${source.getIPCSource()} found.`, code: HTTPStatusCodes.NOT_FOUND };
+            return { body: `No module with ID of ${targetModuleID} found.`, code: HTTPStatusCodes.NOT_FOUND };
         }
 
         const response: DataResponse = await targetModule.handleExternal(source, eventType, data)
         return response;
     }
+
 }
 
