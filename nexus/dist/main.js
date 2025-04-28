@@ -107,6 +107,7 @@ function nexusStart() {
                     return [4 /*yield*/, (0, internal_args_1.writeInternal)(internalArguments)];
                 case 3:
                     _c.sent();
+                    console.log(internalArguments);
                     // Load modules
                     _a = context;
                     return [4 /*yield*/, (0, module_loader_1.loadModules)(context)];

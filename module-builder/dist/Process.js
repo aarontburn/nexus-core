@@ -304,11 +304,7 @@ var Process = /** @class */ (function () {
      *  @param data         Any additional data supplied;
      *  @returns            A Promise of the data to return.
      */
-    Process.prototype.handleExternal = function (source, eventType) {
-        var data = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            data[_i - 2] = arguments[_i];
-        }
+    Process.prototype.handleExternal = function (source, eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, { code: HTTPStatusCodes_1.HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined }];

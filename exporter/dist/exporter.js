@@ -10,7 +10,7 @@ const archiver = require('archiver')('zip');
 
 
 if (!process.argv.includes("--verbose")) {
-    console.info = () => {}
+    console.info = () => { }
 }
 
 
@@ -263,9 +263,12 @@ async function changeLastExported() {
     if (devJSON === undefined) {
         devJSON = defaultDevJSON;
     } else {
-        devJSON = JSON.parse(devJSON)
+        devJSON = JSON.parse(devJSON);
     }
-    devJSON['args'] = `--last_exported_id:${BUILD_CONFIG["id"]}`
+
+    devJSON['args'] = devJSON['args'].replace(/(--last_exported_id:)[^\s]+/, '');
+    devJSON['args'] += ` --last_exported_id:${BUILD_CONFIG["id"]}`;
+
     await fs.promises.writeFile(devPath + "/internal.json", JSON.stringify(devJSON, undefined, 4));
 }
 

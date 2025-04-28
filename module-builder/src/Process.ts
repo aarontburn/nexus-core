@@ -344,7 +344,7 @@ export abstract class Process implements IPCSource {
      *  @param data         Any additional data supplied;
      *  @returns            A Promise of the data to return.
      */
-    public async handleExternal(source: IPCSource, eventType: string, ...data: any[]): Promise<DataResponse> {
+    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };
     }
 
