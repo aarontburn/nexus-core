@@ -1,11 +1,13 @@
 {
     "name": "nexus",
+    "version": "0.0.1",
+    "author": "aarontburn",
+    "description": "A cross-platform application loader, designed for productivity and organization.",
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
         "start": "npm run build && electron --trace-warnings . --dev --in-core ",
         "package": "npm run build && npx electron-builder build --win",
-        "update-nexus": "npm update @nexus-app/nexus-exporter && npm update @nexus-app/nexus-app-module-builder",
         "package:test": "npm run build && electron-builder --dir",
         "publish": "npm run build && cd ./dist && npm publish --access public"
     },

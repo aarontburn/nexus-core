@@ -14,13 +14,12 @@ Within the `package.json` at the root of your project, the `scripts` field may l
 },
 "scripts": {
     "start": "npm-run-all --parallel vite:start electron-start",
-    "export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js",
-    "dev_export": "npm run vite:build && node node_modules/@nexus/nexus-exporter/exporter.js --dev",
-    "postinstall": "npm install https://gitpkg.vercel.app/aarontburn/nexus-core/nexus/dist?main --no-save",
+    "export": "npm run vite:build && node node_modules/@nexus-app/nexus-exporter/exporter.js",
+    "dev_export": "npm run vite:build && node node_modules/@nexus-app/nexus-exporter/exporter.js --dev",
     "preinstall": "cd %npm_package_config_react-wrapper-directory% && npm install",
     "vite:build": "cd %npm_package_config_react-wrapper-directory% && npm run build",
     "vite:start": "cd %npm_package_config_react-wrapper-directory% && npm run dev",
-    "electron-start": "npm run dev_export && electron ./node_modules/@nexus/nexus-client/main.js --dev"
+    "electron-start": "npm run dev_export && electron ./node_modules/@nexus-app/nexus-client/main.js --dev"
 },
 
 // ...
@@ -45,7 +44,6 @@ Commands you can ignore:
 - `npm run vite:build`: Builds React wrapper manually
 - `npm run vite:start`: Starts dev server for React wrapper
 - `npm run preinstall`: Installs React wrapper packages
-- `npm run postinstall`: Updates Nexus core dependency
 - `npm run electron-start`: Launches Nexus manually (not recommended)
 
 ## Command Details
@@ -73,9 +71,6 @@ This command navigates to the `react-wrapper` directory and builds the Vite proj
 
 #### `npm run vite:start`
 This command navigates to the `react-wrapper` directory and starts the Vite project on a development server. There should be no reason to run this command instead of running `npm start`.
-
-#### `npm run postinstall`
-This command updates the Nexus dependencies. Ran automatically during `npm install`. There should be no reason to run this command.
 
 #### `npm run preinstall`
 This command installs all required packages within the `react-wrapper` directory. Ran automatically during `npm install`. This command only needs to be run manually to reinstall any `node_modules` within the React directory.

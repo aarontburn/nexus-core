@@ -5,7 +5,7 @@ This enum provides all HTTP status codes and their meaning. For more information
 ## Example
 
 ```typescript
-import { HTTPStatusCode } from "@nexus/nexus-module-builder";
+import { HTTPStatusCode } from "@nexus-app/nexus-module-builder";
 // ...
 public async handleExternal(...) {
     switch (eventType) {

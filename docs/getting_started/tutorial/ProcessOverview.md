@@ -46,12 +46,12 @@ Let's break down critical parts of this file.
 // src/process/main.ts
 //...
 
-import { Process, Setting } from "@nexus/nexus-module-builder";
-import { BooleanSetting } from "@nexus/nexus-module-builder/settings/types";
+import { Process, Setting } from "@nexus-app/nexus-module-builder";
+import { BooleanSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 // ...
 ```
-There is a set of classes and functions within `@nexus/nexus-module-builder` that may be useful to developing your module. Visit the [Process API](../../api/Process.md) to learn about all the available classes.
+There is a set of classes and functions within `@nexus-app/nexus-module-builder` that may be useful to developing your module. Visit the [Process API](../../api/Process.md) to learn about all the available classes.
 
 
 ### Module Information

@@ -4,7 +4,7 @@
 In the Nexus environment, you can expose an API for other modules to communicate with, as well as communicate with other modules.
 
 ## `DataResponse`
-Inside `@nexus/nexus-module-builder`, you'll find two key tools for module communication: the `DataResponse` object (similar to an HTTP Response), and the `HTTPStatusCode` enum, which provides all standard HTTP status codes.
+Inside `@nexus-app/nexus-module-builder`, you'll find two key tools for module communication: the `DataResponse` object (similar to an HTTP Response), and the `HTTPStatusCode` enum, which provides all standard HTTP status codes.
 
 ```typescript
 interface DataResponse {
