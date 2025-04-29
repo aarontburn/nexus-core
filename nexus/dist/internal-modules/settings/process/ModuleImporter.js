@@ -60,7 +60,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.getImportedModules = exports.importModuleArchive = void 0;
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));

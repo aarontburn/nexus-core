@@ -1,7 +1,7 @@
 import { BaseWindow, Rectangle, session, shell, WebContentsView } from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
-import { ModuleSettings } from "@nexus/nexus-module-builder/ModuleSettings";
+import { ModuleSettings } from "@nexus-app/nexus-module-builder/ModuleSettings";
 import { WINDOW_DIMENSION } from "../utils/constants";
 
 

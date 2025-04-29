@@ -1,4 +1,4 @@
-import { IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder";
+import { IPCCallback, IPCSource, Process } from "@nexus-app/nexus-module-builder";
 import { BaseWindow, WebContentsView } from "electron";
 import { SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
 

@@ -71,7 +71,7 @@ var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var yauzl = __importStar(require("yauzl-promise"));
 var promises_1 = require("stream/promises");
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var compiler_utils_1 = require("./compiler-utils");
 var ModuleCompiler = /** @class */ (function () {
     function ModuleCompiler() {
@@ -312,17 +312,17 @@ var ModuleCompiler = /** @class */ (function () {
                                             return [3 /*break*/, 7];
                                         case 7:
                                             if (!(process.argv.includes("--in-core") || !process.argv.includes("--dev"))) return [3 /*break*/, 9];
-                                            return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                            return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../node_modules/@nexus-app/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus-app/nexus-module-builder"))];
                                         case 8:
                                             _b.sent();
                                             return [3 /*break*/, 11];
-                                        case 9: return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus/nexus-module-builder"))];
+                                        case 9: return [4 /*yield*/, (0, compiler_utils_1.copyFromProd)(path.normalize(path.join(__dirname, "../../../@nexus-app/nexus-module-builder/")), "".concat(builtDirectory, "/node_modules/@nexus-app/nexus-module-builder"))];
                                         case 10:
                                             _b.sent();
                                             _b.label = 11;
                                         case 11: return [4 /*yield*/, Promise.allSettled([
-                                                fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
-                                                fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
+                                                fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus-app/nexus-module-builder/colors.css"),
+                                                fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus-app/nexus-module-builder/font.ttf")
                                             ])];
                                         case 12:
                                             _b.sent();

@@ -1,11 +1,12 @@
 {
-  "name": "@nexus/nexus-exporter",
+  "name": "@nexus-app/nexus-exporter",
   "version": "1.0.0",
   "description": "The module exporter for Nexus.",
   "author": "aarontburn",
   "scripts": {
     "build": "node builder.js",
-    "test": "jest ./tests"
+    "test": "jest ./tests",
+    "publish": "npm run build && cd ./dist && npm publish --access public"
   },
   "dependencies": {
     "archiver": "^7.0.1",

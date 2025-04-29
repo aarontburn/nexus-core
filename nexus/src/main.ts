@@ -1,6 +1,6 @@
 import { app, BrowserWindow, globalShortcut, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
-import { Process } from "@nexus/nexus-module-builder";
+import { Process } from "@nexus-app/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
 import { createBrowserWindow, createWebViews, showWindow } from "./init/window-creator";
 import { InitContext } from "./utils/types";

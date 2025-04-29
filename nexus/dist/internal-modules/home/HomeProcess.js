@@ -75,8 +75,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.HomeProcess = void 0;
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
-var types_1 = require("@nexus/nexus-module-builder/settings/types");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
+var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
 var time_formats_1 = require("./utils/time-formats");
 var MODULE_NAME = "Home";

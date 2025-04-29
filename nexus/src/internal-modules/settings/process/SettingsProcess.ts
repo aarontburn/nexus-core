@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
 import { BaseWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
-import { ChangeEvent, DataResponse, DIRECTORIES, HTTPStatusCodes, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox } from "@nexus/nexus-module-builder";
+import { ChangeEvent, DataResponse, DIRECTORIES, HTTPStatusCodes, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox } from "@nexus-app/nexus-module-builder";
 import { getImportedModules, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";

@@ -1,7 +1,12 @@
 {
-  "name": "@nexus/nexus-exporter",
+  "name": "@nexus-app/nexus-exporter",
   "version": "1.0.0",
   "description": "The module exporter for Nexus.",
+  "homepage": "https://github.com/aarontburn/nexus-core",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/aarontburn/nexus-core.git"
+  },
   "author": "aarontburn",
   "dependencies": {
     "archiver": "^7.0.1",

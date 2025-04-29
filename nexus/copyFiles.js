@@ -8,12 +8,14 @@ if (!process.argv.includes("--verbose")) {
 if (process.argv.includes("--pre")) {
     const outputDir = __dirname + "/dist";
     const packageJSON = __dirname + "/build_package.json";
+    const README = path.normalize(__dirname + "/../README.md");
     const renderer_d_ts = __dirname + "/renderer.d.ts";
     
     // Remove old /dist/ folder
     fs.rmSync(outputDir, { force: true, recursive: true });
     fs.mkdirSync(outputDir);
     fs.copyFileSync(packageJSON, outputDir + "/package.json");
+    fs.copyFileSync(README, outputDir + "/README.md");
     fs.copyFileSync(renderer_d_ts, outputDir + "/renderer.d.ts");
     return
 }

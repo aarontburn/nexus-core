@@ -1,4 +1,4 @@
-import { DIRECTORIES } from "@nexus/nexus-module-builder";
+import { DIRECTORIES } from "@nexus-app/nexus-module-builder";
 import * as fs from "fs";
 
 

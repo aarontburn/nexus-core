@@ -1,5 +1,5 @@
 
-import { DIRECTORIES } from '@nexus/nexus-module-builder';
+import { DIRECTORIES } from '@nexus-app/nexus-module-builder';
 import { OpenDialogOptions, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from "path";

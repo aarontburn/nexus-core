@@ -1,5 +1,5 @@
-import { Process, Setting } from "@nexus/nexus-module-builder";
-import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus/nexus-module-builder/settings/types";
+import { Process, Setting } from "@nexus-app/nexus-module-builder";
+import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {

@@ -1,4 +1,4 @@
-import { IPCSource, Process } from "@nexus/nexus-module-builder";
+import { IPCSource, Process } from "@nexus-app/nexus-module-builder";
 import { InitContext } from "../utils/types";
 
 

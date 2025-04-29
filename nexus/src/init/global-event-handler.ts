@@ -1,4 +1,4 @@
-import { DataResponse, HTTPStatusCodes, IPCCallback, IPCSource, Process } from "@nexus/nexus-module-builder"
+import { DataResponse, HTTPStatusCodes, IPCCallback, IPCSource, Process } from "@nexus-app/nexus-module-builder"
 import { InitContext } from "../utils/types";
 import { ipcMain, WebContentsView } from "electron";
 

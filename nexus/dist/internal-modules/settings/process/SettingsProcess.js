@@ -78,7 +78,7 @@ exports.SettingsProcess = exports.MODULE_ID = void 0;
 var path = __importStar(require("path"));
 var fs = __importStar(require("fs"));
 var electron_1 = require("electron");
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var ModuleImporter_1 = require("./ModuleImporter");
 var settings_1 = require("./settings");
 var internal_args_1 = require("../../../init/internal-args");

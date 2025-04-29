@@ -1,5 +1,5 @@
-import { Process, Setting } from "@nexus/nexus-module-builder";
-import { BooleanSetting, NumberSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
+import { Process, Setting } from "@nexus-app/nexus-module-builder";
+import { BooleanSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";

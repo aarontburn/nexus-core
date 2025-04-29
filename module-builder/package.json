@@ -1,12 +1,12 @@
 {
-  "name": "@nexus/nexus-module-builder",
+  "name": "@nexus-app/nexus-module-builder",
   "version": "1.0.0",
-  "description": "Reusable TypeScript settings and components",
+  "description": "Reusable TypeScript settings and components for Nexus",
+
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "node builder.js && tsc",
-    "prepublishOnly": "npm run build",
-    "docs": "jsdoc2md ./dist/Process.js"
+    "publish": "npm run build && cd ./dist && npm publish --access public"
   },
   "author": "aarontburn",
   "license": "MIT",

@@ -39,7 +39,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 exports.__esModule = true;
 exports.AutoUpdaterProcess = exports.MODULE_ID = void 0;
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var electron_updater_1 = require("electron-updater");
 var path = __importStar(require("path"));

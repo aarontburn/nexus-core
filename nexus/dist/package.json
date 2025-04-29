@@ -1,7 +1,12 @@
 {
-  "name": "@nexus/nexus-client",
+  "name": "@nexus-app/nexus-client",
   "version": "0.0.1",
   "description": "A cross-platform application loader, designed for productivity and organization.",
+  "homepage": "https://github.com/aarontburn/nexus-core",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/aarontburn/nexus-core.git"
+  },
   "scripts": {
     "start": "electron . --dev"
   },
@@ -14,8 +19,8 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "@nexus/nexus-exporter": "https://gitpkg.vercel.app/aarontburn/nexus-core/exporter/dist?main",
-    "@nexus/nexus-module-builder": "https://gitpkg.vercel.app/aarontburn/nexus-core/module-builder/dist?main",
+    "@nexus-app/nexus-exporter": "^1.0.0",
+    "@nexus-app/nexus-module-builder": "^1.0.0",
     "typescript": "^4.8.3",
     "yauzl-promise": "^4.0.0",
     "electron-updater": "^6.6.2"

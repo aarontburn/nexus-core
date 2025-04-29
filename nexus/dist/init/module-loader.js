@@ -69,7 +69,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 exports.__esModule = true;
 exports.writeModuleSettingsToStorage = exports.verifyAllModuleSettings = exports.loadModules = void 0;
-var nexus_module_builder_1 = require("@nexus/nexus-module-builder");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
@@ -78,16 +78,17 @@ var SettingsProcess_1 = require("../internal-modules/settings/process/SettingsPr
 var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
+var internalModules = [new HomeProcess_1.HomeProcess(), new updater_process_1.AutoUpdaterProcess()];
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1;
+        var loadedModules, settingProcess, moduleMap, _i, _a, module_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
                     loadedModules = _b.sent();
                     settingProcess = new SettingsProcess_1.SettingsProcess();
-                    internalModules = [new HomeProcess_1.HomeProcess(), settingProcess, new updater_process_1.AutoUpdaterProcess()];
+                    internalModules.push(settingProcess);
                     moduleMap = new Map();
                     for (_i = 0, _a = __spreadArray(__spreadArray([], internalModules, true), loadedModules, true); _i < _a.length; _i++) {
                         module_1 = _a[_i];
@@ -106,7 +107,9 @@ function registerModule(map, module) {
     if (existingIPCProcess !== undefined) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
-        map["delete"](moduleID);
+        if (!internalModules.map(function (process) { return process.getIPCSource(); }).includes(moduleID)) { // dont delete built-in modules, just skip it
+            map["delete"](moduleID); // remove existing module
+        }
         return;
     }
     map.set(moduleID, module);

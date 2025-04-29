@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import ts from 'typescript';
 import * as path from 'path';
-import { ModuleInfo } from "@nexus/nexus-module-builder";
+import { ModuleInfo } from "@nexus-app/nexus-module-builder";
 
 export const IO_OPTIONS: { encoding: BufferEncoding, withFileTypes: true } = {
     encoding: "utf-8",

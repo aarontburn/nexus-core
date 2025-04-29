@@ -1,4 +1,4 @@
-import { Process } from "@nexus/nexus-module-builder";
+import { Process } from "@nexus-app/nexus-module-builder";
 import { app } from "electron";
 import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater"
 import * as path from "path";

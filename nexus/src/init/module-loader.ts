@@ -1,4 +1,4 @@
-import { Process, ModuleSettings, Setting, DIRECTORIES } from "@nexus/nexus-module-builder";
+import { Process, ModuleSettings, Setting, DIRECTORIES } from "@nexus-app/nexus-module-builder";
 import { ipcMain } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
@@ -9,14 +9,14 @@ import { AutoUpdaterProcess } from "../internal-modules/auto-updater/updater-pro
 import * as fs from "fs";
 import * as path from "path";
 
-
+const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess()];
 
 export async function loadModules(context: InitContext): Promise<Map<string, Process>> {
     // Load modules from storage
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
 
     const settingProcess: SettingsProcess = new SettingsProcess();
-    const internalModules: Process[] = [new HomeProcess(), settingProcess, new AutoUpdaterProcess()];
+    internalModules.push(settingProcess)
 
     // Register all modules
     const moduleMap: Map<string, Process> = new Map();
@@ -25,8 +25,6 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
         registerModule(moduleMap, module);
     }
     return moduleMap;
-
-
 }
 
 
@@ -38,7 +36,10 @@ function registerModule(map: Map<string, Process>, module: Process) {
     if (existingIPCProcess !== undefined) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error(`ID: ${moduleID} | Registered Module: ${existingIPCProcess.getName()} | New Module: ${module.getName()}`);
-        map.delete(moduleID);
+
+        if (!internalModules.map(process => process.getIPCSource()).includes(moduleID)) { // dont delete built-in modules, just skip it
+            map.delete(moduleID); // remove existing module
+        }
         return;
     }
     map.set(moduleID, module);

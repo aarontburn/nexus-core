@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import {  Process, ModuleInfo, DIRECTORIES } from "@nexus/nexus-module-builder";
+import {  Process, ModuleInfo, DIRECTORIES } from "@nexus-app/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
 import Stream from 'stream';
 
@@ -135,17 +135,17 @@ export class ModuleCompiler {
 
                 if (process.argv.includes("--in-core") || !process.argv.includes("--dev")) {
                     await copyFromProd(
-                        path.normalize(path.join(__dirname, "../../node_modules/@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`)
+                        path.normalize(path.join(__dirname, "../../node_modules/@nexus-app/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus-app/nexus-module-builder`)
                 } else {
                     await copyFromProd(
-                        path.normalize(path.join(__dirname, "../../../@nexus/nexus-module-builder/")),
-                        `${builtDirectory}/node_modules/@nexus/nexus-module-builder`)
+                        path.normalize(path.join(__dirname, "../../../@nexus-app/nexus-module-builder/")),
+                        `${builtDirectory}/node_modules/@nexus-app/nexus-module-builder`)
                 }
 
                 await Promise.allSettled([
-                    fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/colors.css"),
-                    fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus/nexus-module-builder/font.ttf")
+                    fs.promises.copyFile(path.join(__dirname, "../view/colors.css"), builtDirectory + "/node_modules/@nexus-app/nexus-module-builder/colors.css"),
+                    fs.promises.copyFile(path.join(__dirname, "../view/font.ttf"), builtDirectory + "/node_modules/@nexus-app/nexus-module-builder/font.ttf")
                 ]);
             }))
 
