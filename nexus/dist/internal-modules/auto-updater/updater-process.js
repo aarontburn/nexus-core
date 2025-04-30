@@ -53,6 +53,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             moduleName: MODULE_NAME
         }) || this;
         _this.autoUpdaterStarted = false;
+        _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
         _this.setModuleInfo({
             name: "Auto Updater",
             author: "Nexus",
@@ -64,11 +65,12 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         return _this;
     }
     AutoUpdaterProcess.prototype.startAutoUpdater = function () {
+        var _this = this;
         if (this.autoUpdaterStarted) {
             return;
         }
         this.autoUpdaterStarted = true;
-        console.info("[Nexus Auto Updater] Current Nexus Version: " + (process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion()));
+        console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
         console.info("[Nexus Auto Updater] Starting auto updater.");
         var TEN_MIN = 10 * 60 * 1000;
         if (process.argv.includes("--dev")) {
@@ -103,6 +105,10 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         });
         electron_updater_1.autoUpdater.on('update-cancelled', function (event) {
             console.info("[Nexus Auto Updater] Update cancelled.");
+            clearInterval(interval);
+        });
+        electron_updater_1.autoUpdater.on('update-not-available', function (info) {
+            console.info("[Nexus Auto Updater] No updates found. Current Version: ".concat(_this.version, " | Remote Version: ").concat(info.version));
             clearInterval(interval);
         });
         electron_updater_1.autoUpdater.on('error', function (err) {

@@ -109,7 +109,9 @@ export function handleExternalWrapper(context: InitContext) {
                 return { body: "Success: Refreshed page for " + target, code: HTTPStatusCodes.OK };
             }
             case "swap-to-module": {
-                const target: string = source.getIPCSource();
+                // data[0] should be the target module ID, or if undefined, will be the caller module.
+                
+                const target: string = data[0] ?? source.getIPCSource();
                 if (!context.moduleViewMap.has(target)) {
                     return {
                         body: new Error(`Could not swap to ${target}; either module doesn't exist or module is an internal module.`),

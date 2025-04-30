@@ -99,8 +99,6 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("nexus.Main", "get-current-module-id")).body),
         ])
         await this.fileManager.writeSettingsToStorage();
-
-
     }
 
 
@@ -169,6 +167,16 @@ export class SettingsProcess extends Process {
             case 'is-developer-mode': {
                 return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
             }
+
+            case "get-accent-color": {
+                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCodes.OK };
+            }
+
+            case "get-module-order": {
+                return { body: this.getSettings().findSetting("module_order").getValue(), code: HTTPStatusCodes.OK };
+
+            }
+
             case 'on-developer-mode-changed': {
                 const callback: (isDev: boolean) => void = data[0];
 
@@ -181,9 +189,7 @@ export class SettingsProcess extends Process {
 
                 return { body: undefined, code: HTTPStatusCodes.OK };
             }
-            case "get-accent-color": {
-                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCodes.OK };
-            }
+
             default: {
                 return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
             }

@@ -7,8 +7,11 @@ These modules embed external applications for Nexus. No data, including login in
 
 | Name | Description |
 |--------|-------------|
+| [Monkey Core](https://github.com/aarontburn/nexus-monkey-core) | Module to control external windows within Nexus. |
+| [Slack Monkey](https://github.com/aarontburn/nexus-slack-monkey) | Embed your Slack client within Nexus. |
 | [Discord Monkey](https://github.com/aarontburn/nexus-discord-monkey) | Embed your Discord client within Nexus. |
-| [Spotify Monkey](https://github.com/aarontburn/nexus-spotify-monkey) | Control and view your Spotify desktop client from within Nexus. |
+| [Spotify Monkey](https://github.com/aarontburn/nexus-spotify-monkey) | Embed your Spotify client within Nexus. |
+| [GitHub Desktop Monkey](https://github.com/aarontburn/nexus-github-desktop-monkey) | Embed your GitHub Desktop client within Nexus |
 
 <br />
 

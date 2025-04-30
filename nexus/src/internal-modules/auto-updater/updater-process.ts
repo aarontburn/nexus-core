@@ -26,6 +26,7 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	private autoUpdaterStarted = false;
+	private readonly version: string = process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion()
 
 	public startAutoUpdater() {
 		if (this.autoUpdaterStarted) {
@@ -33,7 +34,7 @@ export class AutoUpdaterProcess extends Process {
 		}
 		this.autoUpdaterStarted = true;
 	
-		console.info("[Nexus Auto Updater] Current Nexus Version: " + (process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion()));
+		console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
 		console.info("[Nexus Auto Updater] Starting auto updater.");
 	
 		const TEN_MIN: number = 10 * 60 * 1000;
@@ -70,7 +71,6 @@ export class AutoUpdaterProcess extends Process {
 			}
 	
 			console.info("\n" + out.join("\n") + "\n");
-	
 			clearInterval(interval);
 		});
 	
@@ -83,6 +83,11 @@ export class AutoUpdaterProcess extends Process {
 			console.info(`[Nexus Auto Updater] Update cancelled.`);
 			clearInterval(interval);
 		});
+
+		autoUpdater.on('update-not-available', (info: UpdateInfo) => {
+			console.info(`[Nexus Auto Updater] No updates found. Current Version: ${this.version} | Remote Version: ${info.version}`);
+			clearInterval(interval);
+		})
 	
 		autoUpdater.on('error', (err: Error) => {
 			console.error("[Nexus Auto Updater] An error occurred while checking for updates: " + err.message);

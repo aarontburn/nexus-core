@@ -1,6 +1,6 @@
 {
     "name": "nexus",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "aarontburn",
     "description": "A cross-platform application loader, designed for productivity and organization.",
     "scripts": {

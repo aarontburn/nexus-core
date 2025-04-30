@@ -237,6 +237,9 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 'is-developer-mode': {
                         return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
+                    case "get-accent-color": {
+                        return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
                     case 'on-developer-mode-changed': {
                         callback = data[0];
                         if (typeof callback !== "function") {
@@ -245,9 +248,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                         this.devModeSubscribers.push(callback);
                         callback(this.getSettings().findSetting('dev_mode').getValue());
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case "get-accent-color": {
-                        return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     default: {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
