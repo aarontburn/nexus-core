@@ -24,14 +24,14 @@ export class SettingsProcess extends Process {
 
 
     public constructor() {
-		super({
-			moduleID: MODULE_ID,
-			moduleName: MODULE_NAME,
-			paths: {
-				htmlPath: HTML_PATH,
-				iconPath: ICON_PATH
-			}
-		});
+        super({
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        });
 
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({
@@ -164,6 +164,20 @@ export class SettingsProcess extends Process {
 
     public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
+            case "get-setting": {
+                if (typeof data[0] !== 'string') {
+                    return { body: new Error(`Parameter is not a string.`), code: HTTPStatusCodes.BAD_REQUEST };
+                }
+
+                const nameOrAccessID: string = data[0];
+                const setting: Setting<unknown> | undefined = this.getSettings().findSetting(nameOrAccessID);
+
+                if (setting === undefined) {
+                    return { body: new Error(`No setting found with the name or ID of ${nameOrAccessID}.`), code: HTTPStatusCodes.BAD_REQUEST };
+                }
+
+                return { body: setting.getValue(), code: HTTPStatusCodes.OK };
+            }
             case 'is-developer-mode': {
                 return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
             }

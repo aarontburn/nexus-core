@@ -89,10 +89,10 @@ function swapVisibleModule(context, moduleID) {
 exports.swapVisibleModule = swapVisibleModule;
 function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var target, POSSIBLE_MODES, mode, view, target, view, target, didSwap;
-            return __generator(this, function (_b) {
+            return __generator(this, function (_c) {
                 switch (eventType) {
                     case "get-module-IDs": {
                         return [2 /*return*/, { body: Array.from(context.moduleMap.keys()), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
@@ -138,7 +138,7 @@ function handleExternalWrapper(context) {
                         return [2 /*return*/, { body: "Success: Refreshed page for " + target, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "swap-to-module": {
-                        target = source.getIPCSource();
+                        target = (_b = data[0]) !== null && _b !== void 0 ? _b : source.getIPCSource();
                         if (!context.moduleViewMap.has(target)) {
                             return [2 /*return*/, {
                                     body: new Error("Could not swap to ".concat(target, "; either module doesn't exist or module is an internal module.")),

@@ -231,14 +231,28 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var callback;
+            var nameOrAccessID, setting, callback;
             return __generator(this, function (_a) {
                 switch (eventType) {
+                    case "get-setting": {
+                        if (typeof data[0] !== 'string') {
+                            return [2 /*return*/, { body: new Error("Parameter is not a string."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        nameOrAccessID = data[0];
+                        setting = this.getSettings().findSetting(nameOrAccessID);
+                        if (setting === undefined) {
+                            return [2 /*return*/, { body: new Error("No setting found with the name or ID of ".concat(nameOrAccessID, ".")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        return [2 /*return*/, { body: setting.getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
                     case 'is-developer-mode': {
                         return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "get-accent-color": {
                         return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    case "get-module-order": {
+                        return [2 /*return*/, { body: this.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case 'on-developer-mode-changed': {
                         callback = data[0];

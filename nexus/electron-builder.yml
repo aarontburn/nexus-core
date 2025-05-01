@@ -1,0 +1,19 @@
+productName: Nexus
+appId: com.aarontburn.Nexus
+asar: true
+files:
+  - dist/**/*
+
+directories:
+  output: package
+
+icon: ./dist/view/assets/icon
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+publish:
+  provider: github
+  owner: aarontburn
+  repo: nexus-core

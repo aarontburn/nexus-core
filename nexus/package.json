@@ -1,12 +1,10 @@
 {
-    "name": "nexus",
+    "name": "@nexus-app/nexus-client",
     "version": "0.0.2",
-    "author": "aarontburn",
-    "description": "A cross-platform application loader, designed for productivity and organization.",
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
-        "start": "npm run build && electron --trace-warnings . --dev --in-core ",
+        "start": "npm run build && cd ./dist && electron --trace-warnings . --dev --in-core ",
         "package": "npm run build && npx electron-builder build --win",
         "package:test": "npm run build && electron-builder --dir",
         "publish": "npm run build && cd ./dist && npm publish --access public"
@@ -25,26 +23,5 @@
         "electron-updater": "^6.6.2",
         "typescript": "^4.8.3",
         "yauzl-promise": "^4.0.0"
-    },
-    "productName": "Nexus",
-    "build": {
-        "nsis": {
-            "allowToChangeInstallationDirectory": true,
-            "oneClick": false
-        },
-        "icon": "./dist/view/assets/icon",
-        "appId": "com.aarontburn.Nexus",
-        "asar": true,
-        "files": [
-            "./dist/**/*"
-        ],
-        "directories": {
-            "output": "package"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "aarontburn",
-            "repo": "nexus-core"
-        }
     }
 }
