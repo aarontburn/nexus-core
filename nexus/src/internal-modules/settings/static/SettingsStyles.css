@@ -17,6 +17,10 @@
     user-select: none;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 #left {
     width: 20vw;
     min-width: 15vw;

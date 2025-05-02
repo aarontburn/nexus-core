@@ -294,14 +294,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         }
         data.forEach(function (_a) {
             var _b;
-            var name = _a.name, deleted = _a.deleted;
+            var moduleID = _a.name, deleted = _a.deleted;
             var div = document.createElement('div');
             div.className = 'installed-module';
             div.innerHTML = "\n                ".concat(!deleted
-                ? "<p>".concat(name, "</p>")
-                : "<p style=\"font-style: italic; color: grey;\"}>".concat(name, "</p>"), "\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!deleted
-                ? "<p class='remove-module-button' style=\"color: red; margin-right: 15px\">Remove</p>"
-                : "<p style=\"margin-right: 15px; font-style: italic;\">Restart Required</p>", "\n            ");
+                ? "<p>".concat(moduleID, "</p>")
+                : "<p style=\"font-style: italic; color: grey;\"}>".concat(moduleID, "</p>"), "\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!deleted
+                ? "\n                    <p class='remove-module-button clickable' style=\"color: red; margin-right: 15px\">Remove</p>\n                    "
+                : "\n                    <p style=\"margin-right: 15px; font-style: italic;\">Restart Required</p>\n                    ", "\n\n            ");
             (_b = div.querySelector('.remove-module-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
                 var proceed;
                 return __generator(this, function (_a) {
@@ -310,13 +310,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                         case 1:
                             proceed = _a.sent();
                             if (proceed) {
-                                sendToProcess('remove-module', name).then(function (successful) {
+                                sendToProcess('remove-module', moduleID).then(function (successful) {
                                     if (successful) {
-                                        console.log('Removed ' + name);
+                                        console.log('Removed ' + moduleID);
                                         openDeletedPopup();
                                     }
                                     else {
-                                        console.log('Failed to remove ' + name);
+                                        console.log('Failed to remove ' + moduleID);
                                     }
                                     sendToProcess('manage-modules').then(openManageScreen);
                                 });

@@ -5,11 +5,9 @@ const DEFAULT_INTERNAL_FILE = {
     "args": '',
 }
 
-
 export async function getInternalArguments(): Promise<string[]> {
     const internal: { [key: string]: any } = await readInternal();
     return await parseInternalArgs(internal);
-
 }
 
 export async function readInternal(): Promise<{ [key: string]: any }> {

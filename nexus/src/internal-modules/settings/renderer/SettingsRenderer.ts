@@ -87,7 +87,7 @@
                 }
                 break;
             }
- 
+
 
         }
     };
@@ -302,7 +302,7 @@
 
                         break;
                     }
-                    case 'color': 
+                    case 'color':
                     case 'range': {
                         let debounceTimer: NodeJS.Timeout;
 
@@ -356,42 +356,45 @@
                 <p style='margin: 0; margin-left: 15px;'>No external modules found.</p>
             `;
             list.insertAdjacentHTML('beforeend', html);
-
         }
 
 
-        data.forEach(({ name, deleted }) => {
+        data.forEach(({ name: moduleID, deleted }) => {
             const div: HTMLDivElement = document.createElement('div');
             div.className = 'installed-module';
             div.innerHTML = `
                 ${!deleted
-                    ? `<p>${name}</p>`
-                    : `<p style="font-style: italic; color: grey;"}>${name}</p>`}
+                    ? `<p>${moduleID}</p>`
+                    : `<p style="font-style: italic; color: grey;"}>${moduleID}</p>`}
 
                 <div style="margin-right: auto;"></div>
 
                 ${!deleted
-                    ? `<p class='remove-module-button' style="color: red; margin-right: 15px">Remove</p>`
-                    : `<p style="margin-right: 15px; font-style: italic;">Restart Required</p>`}
+                    ? `
+                    <p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>
+                    `
+                    : `
+                    <p style="margin-right: 15px; font-style: italic;">Restart Required</p>
+                    `}
+
             `;
 
 
             div.querySelector('.remove-module-button')?.addEventListener('click', async () => {
                 const proceed: boolean = await openConfirmModuleDeletionPopup();
                 if (proceed) {
-                    sendToProcess('remove-module', name).then(successful => {
+                    sendToProcess('remove-module', moduleID).then(successful => {
                         if (successful) {
-                            console.log('Removed ' + name);
+                            console.log('Removed ' + moduleID);
                             openDeletedPopup()
                         } else {
-                            console.log('Failed to remove ' + name);
+                            console.log('Failed to remove ' + moduleID);
                         }
 
                         sendToProcess('manage-modules').then(openManageScreen);
                     });
                 }
             });
-
 
             list.insertAdjacentElement('beforeend', div);
         });

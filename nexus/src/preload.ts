@@ -1,21 +1,46 @@
 const { ipcRenderer, contextBridge, } = require('electron')
 
+let moduleID: string | undefined = undefined;
+
 contextBridge.exposeInMainWorld('ipc', {
 	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
-		for (const arg of rendererWindow.common.args) {
-			if (arg.startsWith("--module-id")) {
-				return ipcRenderer.invoke(arg.split(":").at(-1), eventType, data)
+		if (!moduleID) {
+			for (const arg of rendererWindow.common.args) {
+				if (arg.startsWith("--module-id")) {
+					moduleID = arg.split(":").at(-1);
+					break;
+				}
 			}
 		}
+		return ipcRenderer.invoke(moduleID, eventType, data);
 	},
 
 	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
-		for (const arg of rendererWindow.common.args) {
-			if (arg.startsWith("--module-id")) {
-				return ipcRenderer.on(arg.split(":").at(-1), (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+		if (!moduleID) {
+			for (const arg of rendererWindow.common.args) {
+				if (arg.startsWith("--module-id")) {
+					moduleID = arg.split(":").at(-1);
+					break;
+				}
 			}
 		}
+
+		ipcRenderer.on(moduleID, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+
 	},
+
+	removeAllListeners: (rendererWindow: Window) => {
+		if (!moduleID) {
+			for (const arg of rendererWindow.common.args) {
+				if (arg.startsWith("--module-id")) {
+					moduleID = arg.split(":").at(-1);
+					break;
+				}
+			}
+		}
+
+		ipcRenderer.removeAllListeners(moduleID);
+	}
 
 
 });

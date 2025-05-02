@@ -1,7 +1,8 @@
 
 export interface IIPC {
-    send(rendererWindow: Window, eventType: string, data: any[]): Promise<any>,
-    on(rendererWindow: Window, func: (eventName: string, ...args: any[]) => void): Electron.IpcRenderer
+    send(rendererWindow: Window, eventType: string, data: any[]): Promise<any>;
+    on(rendererWindow: Window, func: (eventName: string, ...args: any[]) => void): void;
+	removeAllListeners(rendererWindow: Window): void;
 }
 
 export interface ICommon {
