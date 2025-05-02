@@ -16,7 +16,7 @@ interface DataResponse {
 ## Exposing an API
 Within your process, you can override the function `handleExternal` to expose an API to other modules.
 
-```typescript
+```ts
 // src/process/main.ts
 
 export default SampleProcess extends Process {

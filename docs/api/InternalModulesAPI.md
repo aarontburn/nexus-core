@@ -6,6 +6,17 @@ Some of the internal modules expose an API that may be useful.
 Each response is wrapped in a [`DataResponse`](./helpers/DataResponse.md) object.
 
 ## `nexus.Settings`
+## `get-setting`
+This endpoint can be used to get the value of any setting within the `General` tab (and not for other modules).
+
+> **Parameters**  
+> The name or access ID of the setting (name is usually easier if you don't know the access ID).  
+> **Returns**  
+> `400 BAD REQUEST` if the name/access ID is invalid (not a string or not found)  
+> `200 OK` and the value of the setting
+
+
+
 ### `is-developer-mode`
 This endpoint can be used to check if the `Developer Mode` setting has been turned on. 
 
@@ -14,7 +25,7 @@ This endpoint can be used to check if the `Developer Mode` setting has been turn
 > **Parameters**  
 > None  
 > **Returns**  
-> The value of the `Developer Mode` setting in the `General` settings wrapped in a `DataResponse` object. 
+> `200 OK` and the value of the `Developer Mode` setting in the `General` settings.
 
 ---
 
@@ -24,7 +35,8 @@ This endpoint can be used to subscribe to the `Developer Mode` setting. The `cal
 > **Parameters**  
 > `callback: (isDev: boolean) => void` → A callback that is called whenever the `Developer Mode` setting is modified.    
 > **Returns**  
-> Undefined and HTTP Code 200 (OK) if the subscriber was set, or an `Error` object and HTTP Code 400 (Bad Request) if the callback was a non-function. 
+> `200 OK` and undefined if the subscriber was set  
+> `400 BAD REQUEST` and an `Error` object if the callback was a non-function. 
 
 ---
 
@@ -34,7 +46,7 @@ This endpoint can be used to subscribe to access the current value of the `Accen
 > **Parameters**  
 > None  
 > **Returns**  
-> The value of the `Accent Color` setting wrapped in a `DataResponse` object.
+> `200 OK` and the value of the `Accent Color` setting.
 
 ## nexus.Main
 
@@ -44,7 +56,7 @@ Returns an array of all installed module IDs.
 > **Parameters**  
 > None   
 > **Returns**  
-> An array of all installed module IDs (along with HTTP Code 200).
+> `200 OK` and an array of all installed module IDs.
 
 ---
 
@@ -54,7 +66,7 @@ Returns the id of the currently visible module ID.
 > **Parameters**  
 > None  
 > **Returns**  
-> The ID of the currently visible module (along with HTTP Code 200).
+> `200 OK` and the ID of the currently visible module.
 
 ---
 
@@ -66,7 +78,8 @@ Note: In development, this can be done with the keybind  `Shift+CommandOrControl
 > **Parameters**  
 > `mode?: 'left' | 'right' | 'bottom' | 'detach'` → The orientation of the devtools. If omitted, the devtools will open on the right. If the mode is invalid, this will default to `right`.  
 > **Returns**  
-> A success message (along with HTTP Code 200) if this was successful. If the source module is an internal module, this will return HTTP Code 404 (not found) instead.
+> `200 OK` and a success message  
+> `404 NOT FOUND` if the source module is an internal module
 
 ---
 
@@ -78,7 +91,8 @@ Note: In development, this can be done with the keybind `CommandOrControl+R`
 > **Parameters**  
 > `forceReload?: '--force'` → Force reloads the webpage, ignoring any cache.  
 > **Returns**  
-> A success message (along with HTTP Code 200) if this was successful. If the source module is an internal module, this will return HTTP Code 404 (not found) instead.
+> `200 OK` and a success message.  
+> `404 NOT FOUND` if the source module is an internal module.
 
 ---
 
@@ -88,6 +102,8 @@ Swaps the current visible module to the caller module.
 > **Parameters**  
 > None  
 > **Returns**  
-> A success message (along with HTTP Code 200) if this was successful. If the caller module is already shown, this will return HTTP Code 208 (already reported). If the source module is an internal module, this will return HTTP Code 404 (not found) instead.
+> `200 OK` and a success message.   
+> `208 ALREADY REPORTED` if the caller module is already shown.   
+> `404 NOT FOUND` if the source module is an internal module.
 
 ---

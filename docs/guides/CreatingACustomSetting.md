@@ -93,7 +93,7 @@ To create a consistant styling, by default, there is a left component and a righ
 
 > The left component, highlighted in red, is small and meant for smaller input boxes, such as number or color input. 
 
-> The right component, highlighed in purple, extends for the rest of the window size. This means it can fit larger elements, such as the name, description, and larger input boxes, such as a dropdown or text input.
+> The right component, highlighted in purple, extends for the rest of the window size. This means it can fit larger elements, such as the name, description, and larger input boxes, such as a dropdown or text input.
 
 You ARE able to override this default margining, which will be discussed later.
 
