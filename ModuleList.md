@@ -12,6 +12,8 @@ These modules embed external applications for Nexus. No data, including login in
 | [Discord Monkey](https://github.com/aarontburn/nexus-discord-monkey) | Embed your Discord client within Nexus. |
 | [Spotify Monkey](https://github.com/aarontburn/nexus-spotify-monkey) | Embed your Spotify client within Nexus. |
 | [GitHub Desktop Monkey](https://github.com/aarontburn/nexus-github-desktop-monkey) | Embed your GitHub Desktop client within Nexus |
+| [Medal Monkey](https://github.com/aarontburn/nexus-medal-monkey) | Embed your Medal.tv client within Nexus |
+| [Steam Monkey](https://github.com/aarontburn/nexus-steam-monkey) | Embed your Steam client within Nexus |
 
 <br />
 
