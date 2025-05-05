@@ -193,7 +193,8 @@ var SettingsProcess = /** @class */ (function (_super) {
                     }
                     case "accent_color": {
                         electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                            view.webContents.insertCSS(":root { --accent-color: ".concat(modifiedSetting.getValue(), " !important;"), { cssOrigin: "user" });
+                            // view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
+                            view.webContents.executeJavaScript("document.documentElement.style.setProperty('--accent-color', '".concat(modifiedSetting.getValue(), "')"));
                         });
                         break;
                     }

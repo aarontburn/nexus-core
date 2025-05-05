@@ -122,7 +122,8 @@ export class SettingsProcess extends Process {
             case "accent_color": {
                 BaseWindow.getAllWindows()[0].contentView.children.forEach(
                     (view: WebContentsView) => {
-                        view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
+                        // view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
+                        view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
                     });
                 break;
             }
