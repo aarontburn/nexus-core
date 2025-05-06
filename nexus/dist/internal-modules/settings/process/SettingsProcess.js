@@ -112,6 +112,7 @@ var SettingsProcess = /** @class */ (function (_super) {
     SettingsProcess.prototype.initialize = function () {
         return __awaiter(this, void 0, void 0, function () {
             var settings, _i, _a, moduleSettings, moduleName, list, temp;
+            var _this = this;
             return __generator(this, function (_b) {
                 _super.prototype.initialize.call(this);
                 this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
@@ -120,7 +121,8 @@ var SettingsProcess = /** @class */ (function (_super) {
                     moduleSettings = _a[_i];
                     moduleName = moduleSettings.getDisplayName();
                     list = {
-                        module: moduleName,
+                        moduleSettingsName: moduleName,
+                        moduleID: moduleSettings.getProcess().getIPCSource(),
                         moduleInfo: moduleSettings.getProcess().getModuleInfo()
                     };
                     if (moduleSettings.allToArray().length !== 0) {
@@ -129,12 +131,21 @@ var SettingsProcess = /** @class */ (function (_super) {
                     moduleSettings.getProcess().refreshAllSettings();
                 }
                 // Swap settings and home module so it appears at the top
-                if (settings[0].module === "Home") {
+                if (settings[0].moduleSettingsName === "Home") {
                     temp = settings[0];
                     settings[0] = settings[1];
                     settings[1] = temp;
                 }
                 this.sendToRenderer("populate-settings-list", settings);
+                this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+                    prefix: "open-settings",
+                    documentation: {
+                        shortDescription: "Opens the settings associated with a module."
+                    },
+                    executeCommand: function (args) {
+                        _this.handleExternal(_this, 'open-settings-for-module', [args[1]]).then(console.log);
+                    }
+                });
                 return [2 /*return*/];
             });
         });
@@ -193,7 +204,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                     }
                     case "accent_color": {
                         electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                            // view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
                             view.webContents.executeJavaScript("document.documentElement.style.setProperty('--accent-color', '".concat(modifiedSetting.getValue(), "')"));
                         });
                         break;
@@ -231,9 +241,10 @@ var SettingsProcess = /** @class */ (function (_super) {
         });
     };
     SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var nameOrAccessID, setting, callback;
-            return __generator(this, function (_a) {
+            var nameOrAccessID, setting, target, output, callback;
+            return __generator(this, function (_b) {
                 switch (eventType) {
                     case "get-setting": {
                         if (typeof data[0] !== 'string') {
@@ -245,6 +256,16 @@ var SettingsProcess = /** @class */ (function (_super) {
                             return [2 /*return*/, { body: new Error("No setting found with the name or ID of ".concat(nameOrAccessID, ".")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
                         }
                         return [2 /*return*/, { body: setting.getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    case "open-settings-for-module": {
+                        target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
+                        output = this.swapSettingsTab(target);
+                        if (output === undefined) {
+                            return [2 /*return*/, { body: new Error("The specified module '".concat(target, "' either doesn't exist or has no settings.")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        this.requestExternal('nexus.Main', 'swap-to-module');
+                        this.sendToRenderer("swap-tabs", output);
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case 'is-developer-mode': {
                         return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
@@ -331,16 +352,15 @@ var SettingsProcess = /** @class */ (function (_super) {
             });
         });
     };
-    SettingsProcess.prototype.swapSettingsTab = function (moduleToSwapTo) {
+    SettingsProcess.prototype.swapSettingsTab = function (targetModuleID) {
         for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
             var moduleSettings = _a[_i];
-            var name_1 = moduleSettings.getDisplayName();
-            if (moduleToSwapTo !== name_1) {
+            if (targetModuleID !== moduleSettings.getProcess().getIPCSource()) {
                 continue;
             }
             var settingsList = moduleSettings.getSettingsAndHeaders();
             var list = {
-                module: name_1,
+                moduleName: moduleSettings.getDisplayName(),
                 moduleID: moduleSettings.getProcess().getIPCSource(),
                 moduleInfo: moduleSettings.getProcess().getModuleInfo(),
                 settings: []

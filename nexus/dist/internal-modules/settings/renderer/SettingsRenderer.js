@@ -82,6 +82,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 populateSettings(data[0]);
                 break;
             }
+            case "swap-tabs": {
+                var tabInfo = data[0];
+                console.log(tabInfo);
+                swapTabs(tabInfo);
+                onTabButtonPressed(document.getElementById("".concat(tabInfo.moduleID, "-tab-button")));
+                break;
+            }
             case "setting-modified": {
                 var event_2 = data[0];
                 for (var _i = 0, event_1 = event_2; _i < event_1.length; _i++) {
@@ -93,26 +100,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             }
         }
     };
+    function onTabButtonPressed(pressedTabButton) {
+        if (selectedTabElement !== undefined) {
+            selectedTabElement.style.color = "";
+        }
+        selectedTabElement = pressedTabButton;
+        selectedTabElement.setAttribute("style", "color: var(--accent-color);");
+    }
     function populateSettings(data) {
-        var firstModule;
+        var firstModule = undefined;
         data.forEach(function (obj) {
-            var moduleName = obj.module;
             // Setting group click button
-            var groupElement = document.createElement("p");
-            groupElement.className = 'setting-group';
-            groupElement.innerText = moduleName;
-            groupElement.addEventListener("click", function () {
-                if (selectedTabElement !== undefined) {
-                    selectedTabElement.style.color = "";
-                }
-                selectedTabElement = groupElement;
-                selectedTabElement.setAttribute("style", "color: var(--accent-color);");
-                sendToProcess('swap-settings-tab', moduleName).then(swapTabs);
+            var tabButton = document.createElement("p");
+            tabButton.className = 'setting-group';
+            tabButton.innerText = obj.moduleSettingsName;
+            tabButton.id = "".concat(obj.moduleID, "-tab-button");
+            tabButton.addEventListener("click", function () {
+                onTabButtonPressed(tabButton);
+                sendToProcess('swap-settings-tab', obj.moduleID).then(swapTabs);
             });
             if (firstModule === undefined) {
-                firstModule = groupElement;
+                firstModule = tabButton;
             }
-            moduleList.insertAdjacentElement("beforeend", groupElement);
+            moduleList.insertAdjacentElement("beforeend", tabButton);
         });
         firstModule.click();
     }
@@ -161,7 +171,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             var toSentenceCase = function (key) { return key.charAt(0).toUpperCase() + key.slice(1); };
             var inner = [];
             inner.push("<p id='open-folder' class='setting-group' style='float: right; font-size: 25px; margin-top: -12px;'>\uD83D\uDDC0</p>");
-            inner.push("<p style=\"font-size: 27px; color: var(--accent-color);\">".concat(moduleInfo.moduleName || tabInfo.module, "</p>"));
+            inner.push("<p style=\"font-size: 27px; color: var(--accent-color);\">".concat(moduleInfo.moduleName || tabInfo.moduleName, "</p>"));
             inner.push("<p id='moduleID' ".concat(!isDeveloperMode ? 'hidden' : '', "><span>Module ID: </span>").concat(tabInfo.moduleID, "<p/>"));
             for (var key in moduleInfo) {
                 if (keyBlacklist.includes(key)) {
@@ -388,39 +398,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 sendToProcess("open-link", link);
             }
         });
-    }
-    dragElement(document.getElementById("separator"));
-    function dragElement(element) {
-        var md;
-        var left = document.getElementById("left");
-        var right = document.getElementById("right");
-        var container = document.getElementById("splitter");
-        element.onmousedown = function (e) {
-            md = {
-                e: e,
-                leftWidth: left.offsetWidth,
-                rightWidth: right.offsetWidth,
-                containerWidth: container.offsetWidth
-            };
-            document.onmousemove = function (e) {
-                var deltaX = e.clientX - md.e.clientX;
-                var newLeftWidth = md.leftWidth + deltaX;
-                var newRightWidth = md.rightWidth - deltaX;
-                if (newLeftWidth < 0) {
-                    newLeftWidth = 0;
-                }
-                if (newRightWidth < 0) {
-                    newRightWidth = 0;
-                }
-                var leftPercent = (newLeftWidth / md.containerWidth) * 100;
-                var rightPercent = (newRightWidth / md.containerWidth) * 100;
-                left.style.width = leftPercent + "%";
-                right.style.width = rightPercent + "%";
-            };
-            document.onmouseup = function () {
-                document.onmousemove = document.onmouseup = null;
-            };
-        };
     }
     document.body.addEventListener('click', function (event) {
         if (event.target.tagName.toLowerCase() === 'a') {

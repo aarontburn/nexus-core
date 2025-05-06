@@ -15,6 +15,13 @@ const HTML_PATH: string = path.join(__dirname, "../static/SettingsHTML.html");
 const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");
 
 
+interface TabInfo {
+    moduleName: string,
+    moduleID: string,
+    moduleInfo: ModuleInfo,
+    settings: any[]
+}
+
 export class SettingsProcess extends Process {
 
     private readonly moduleSettingsList: Map<string, ModuleSettings> = new Map();
@@ -46,13 +53,14 @@ export class SettingsProcess extends Process {
         super.initialize();
         this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
-        const settings: { module: string, moduleInfo: any }[] = [];
+        const settings: { moduleSettingsName: string, moduleID: string, moduleInfo: any }[] = [];
 
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
             const moduleName: string = moduleSettings.getDisplayName();
 
-            const list: { module: string, moduleInfo: any } = {
-                module: moduleName,
+            const list: { moduleSettingsName: string, moduleID: string, moduleInfo: any } = {
+                moduleSettingsName: moduleName,
+                moduleID: moduleSettings.getProcess().getIPCSource(),
                 moduleInfo: moduleSettings.getProcess().getModuleInfo(),
             };
 
@@ -65,7 +73,7 @@ export class SettingsProcess extends Process {
 
         // Swap settings and home module so it appears at the top
 
-        if (settings[0].module === "Home") {
+        if (settings[0].moduleSettingsName === "Home") {
             const temp = settings[0];
             settings[0] = settings[1];
             settings[1] = temp;
@@ -73,6 +81,16 @@ export class SettingsProcess extends Process {
 
 
         this.sendToRenderer("populate-settings-list", settings);
+
+        this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+            prefix: "open-settings",
+            documentation: {
+                shortDescription: "Opens the settings associated with a module."
+            },
+            executeCommand: (args: string[]) => {
+                this.handleExternal(this, 'open-settings-for-module', [args[1]]).then(console.log);
+            }
+        })
     }
 
     public registerSettings(): (Setting<unknown> | string)[] {
@@ -122,7 +140,6 @@ export class SettingsProcess extends Process {
             case "accent_color": {
                 BaseWindow.getAllWindows()[0].contentView.children.forEach(
                     (view: WebContentsView) => {
-                        // view.webContents.insertCSS(`:root { --accent-color: ${modifiedSetting.getValue()} !important;`, { cssOrigin: "user" })
                         view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
                     });
                 break;
@@ -179,6 +196,21 @@ export class SettingsProcess extends Process {
 
                 return { body: setting.getValue(), code: HTTPStatusCodes.OK };
             }
+            case "open-settings-for-module": {
+                const target: string = data[0] ?? source.getIPCSource();
+
+
+                const output: TabInfo = this.swapSettingsTab(target);
+
+                if (output === undefined) {
+                    return { body: new Error(`The specified module '${target}' either doesn't exist or has no settings.`), code: HTTPStatusCodes.BAD_REQUEST };
+                }
+
+                this.requestExternal('nexus.Main', 'swap-to-module')
+                this.sendToRenderer("swap-tabs", output);
+                return { body: undefined, code: HTTPStatusCodes.OK };
+            }
+
             case 'is-developer-mode': {
                 return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
             }
@@ -189,7 +221,6 @@ export class SettingsProcess extends Process {
 
             case "get-module-order": {
                 return { body: this.getSettings().findSetting("module_order").getValue(), code: HTTPStatusCodes.OK };
-
             }
 
             case 'on-developer-mode-changed': {
@@ -246,17 +277,15 @@ export class SettingsProcess extends Process {
 
     }
 
-    private swapSettingsTab(moduleToSwapTo: string) {
+    private swapSettingsTab(targetModuleID: string): TabInfo {
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            const name: string = moduleSettings.getDisplayName();
-
-            if (moduleToSwapTo !== name) {
+            if (targetModuleID !== moduleSettings.getProcess().getIPCSource()) {
                 continue;
             }
 
             const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
-            const list: { module: string, moduleID: string, moduleInfo: ModuleInfo, settings: (Setting<unknown> | string)[] } = {
-                module: name,
+            const list: TabInfo = {
+                moduleName: moduleSettings.getDisplayName(),
                 moduleID: moduleSettings.getProcess().getIPCSource(),
                 moduleInfo: moduleSettings.getProcess().getModuleInfo(),
                 settings: []

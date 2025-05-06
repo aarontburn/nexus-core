@@ -21,7 +21,7 @@
     }
 
     interface TabInfo {
-        module: string,
+        moduleName: string,
         moduleID: string,
         moduleInfo: ModuleInfo,
         settings: any[]
@@ -78,6 +78,14 @@
                 populateSettings(data[0]);
                 break;
             }
+            case "swap-tabs": {
+                const tabInfo: TabInfo = data[0];
+                console.log(tabInfo)
+                swapTabs(tabInfo);
+                onTabButtonPressed(document.getElementById(`${tabInfo.moduleID}-tab-button`))
+                break;
+            }
+
             case "setting-modified": {
                 const event: ChangeEvent[] = data[0];
 
@@ -92,32 +100,35 @@
         }
     };
 
-    function populateSettings(data: { module: string, moduleInfo: any }[]): void {
-        let firstModule: HTMLElement;
+    function onTabButtonPressed(pressedTabButton: HTMLElement) {
+        if (selectedTabElement !== undefined) {
+            selectedTabElement.style.color = "";
+        }
 
-        data.forEach((obj: { module: string, moduleInfo: any }) => {
-            const moduleName: string = obj.module;
+        selectedTabElement = pressedTabButton;
+        selectedTabElement.setAttribute("style", "color: var(--accent-color);");
 
+    }
+
+    function populateSettings(data: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }[]): void {
+        let firstModule: HTMLElement = undefined;
+
+        data.forEach((obj: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }) => {
             // Setting group click button
-            const groupElement: HTMLElement = document.createElement("p");
-            groupElement.className = 'setting-group';
-            groupElement.innerText = moduleName;
-            groupElement.addEventListener("click", () => {
-                if (selectedTabElement !== undefined) {
-                    selectedTabElement.style.color = "";
-                }
-
-                selectedTabElement = groupElement;
-                selectedTabElement.setAttribute("style", "color: var(--accent-color);");
-
-                sendToProcess('swap-settings-tab', moduleName).then(swapTabs);
+            const tabButton: HTMLElement = document.createElement("p");
+            tabButton.className = 'setting-group';
+            tabButton.innerText = obj.moduleSettingsName;
+            tabButton.id = `${obj.moduleID}-tab-button`;
+            tabButton.addEventListener("click", () => {
+                onTabButtonPressed(tabButton);
+                sendToProcess('swap-settings-tab', obj.moduleID).then(swapTabs);
             });
 
             if (firstModule === undefined) {
-                firstModule = groupElement;
+                firstModule = tabButton;
             }
 
-            moduleList.insertAdjacentElement("beforeend", groupElement);
+            moduleList.insertAdjacentElement("beforeend", tabButton);
         });
         firstModule.click();
     }
@@ -179,7 +190,7 @@
 
 
             inner.push(`<p id='open-folder' class='setting-group' style='float: right; font-size: 25px; margin-top: -12px;'>🗀</p>`)
-            inner.push(`<p style="font-size: 27px; color: var(--accent-color);">${moduleInfo.moduleName || tabInfo.module}</p>`);
+            inner.push(`<p style="font-size: 27px; color: var(--accent-color);">${moduleInfo.moduleName || tabInfo.moduleName}</p>`);
             inner.push(`<p id='moduleID' ${!isDeveloperMode ? 'hidden' : ''}><span>Module ID: </span>${tabInfo.moduleID}<p/>`);
 
             for (const key in moduleInfo) {
@@ -523,48 +534,7 @@
 
 
 
-    dragElement(document.getElementById("separator"));
-    function dragElement(element: HTMLElement) {
-        let md: any;
-        const left: HTMLElement = document.getElementById("left");
-        const right: HTMLElement = document.getElementById("right");
-        const container: HTMLElement = document.getElementById("splitter");
-
-        element.onmousedown = (e: MouseEvent) => {
-            md = {
-                e,
-                leftWidth: left.offsetWidth,
-                rightWidth: right.offsetWidth,
-                containerWidth: container.offsetWidth
-            };
-
-            document.onmousemove = (e: MouseEvent) => {
-                const deltaX: number = e.clientX - md.e.clientX
-
-                let newLeftWidth: number = md.leftWidth + deltaX;
-                let newRightWidth: number = md.rightWidth - deltaX;
-
-                if (newLeftWidth < 0) {
-                    newLeftWidth = 0;
-                }
-
-                if (newRightWidth < 0) {
-                    newRightWidth = 0;
-                }
-
-                const leftPercent: number = (newLeftWidth / md.containerWidth) * 100;
-                const rightPercent: number = (newRightWidth / md.containerWidth) * 100;
-
-                left.style.width = leftPercent + "%";
-                right.style.width = rightPercent + "%";
-            };
-
-            document.onmouseup = () => {
-                document.onmousemove = document.onmouseup = null;
-            };
-        };
-    }
-
+    
     document.body.addEventListener('click', event => {
         if ((event.target as HTMLElement).tagName.toLowerCase() === 'a') {
             event.preventDefault();
