@@ -26,6 +26,7 @@ These modules embed popular websites for Nexus. No data, including login informa
 | [Google Gmail](https://github.com/aarontburn/nexus-google-gmail) | Check and manage your Gmail inbox without leaving Nexus. |
 | [Microsoft Outlook](https://github.com/aarontburn/nexus-microsoft-outlook) | View and manage your Outlook emails from within Nexus. |
 | [Google Calendar](https://github.com/aarontburn/nexus-google-calendar) | Keep track of events and meetings using the embedded Google Calendar. |
+| [Instagram](https://github.com/aarontburn/nexus-instagram) | View your Instagram feed and talk to your friends within Nexus |
 
 <br />
 
@@ -38,3 +39,5 @@ These modules have been developed specifically for Nexus.
 | [Debug Console](https://github.com/aarontburn/nexus-debug-console) | View Nexus logs and run internal commands. |
 | [Debug Console Extras](https://github.com/aarontburn/nexus-debug-console-extras) | Adds additional commands to the [Debug Console](https://github.com/aarontburn/nexus-debug-console) module. |
 | [Volume Controller](https://github.com/aarontburn/nexus-volume-controller) | **[Windows Only]** Control application volume, mute apps, or isolate sound. |
+| [Screenshot Manager](https://github.com/aarontburn/nexus-screenshot-manager) | View, copy, and delete screenshots. |
+| [Color Picker](https://github.com/aarontburn/nexus-color-picker) | Pick colors and edit colors from your screen, perfect for graphic or web designers. |
