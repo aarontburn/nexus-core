@@ -1,6 +1,6 @@
 {
     "name": "@nexus-app/nexus-client",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
