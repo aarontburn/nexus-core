@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import { Process, ModuleInfo, DIRECTORIES } from "@nexus-app/nexus-module-builder";
-import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
+import { Process, ModuleInfo, DIRECTORIES, FILE_NAMES } from "@nexus-app/nexus-module-builder";
+import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule, isModuleInfoValid } from './compiler-utils';
 import Stream from 'stream';
 
 
@@ -176,33 +176,30 @@ export class ModuleCompiler {
 
                 const moduleFolderPath: string = `${folder.path}/${folder.name}`;
 
-                const buildConfig: { [key: string]: string } = (() => {
+                const moduleInfo: ModuleInfo | Error = await (async () => {
                     try {
-                        const configPath: string = path.normalize(moduleFolderPath + "/export-config.js")
-                        const config = require(configPath)
-                        if (config["build"] === undefined) {
-                            throw new Error(`${configPath} missing 'build'`)
-                        } else if (config["build"]["id"] === undefined) {
-                            throw new Error(`${configPath}.build missing 'id'`)
-                        } else if (config["build"]["process"] === undefined) {
-                            throw new Error(`${configPath}.build missing 'process'`)
+                        const config: any = await readModuleInfo(path.join(moduleFolderPath, FILE_NAMES.MODULE_INFO))
+
+                        if (isModuleInfoValid(config)) {
+                            return config;
+                        } else {
+                            throw new Error(path.join(moduleFolderPath, FILE_NAMES.MODULE_INFO) + " is invalid.")
                         }
 
-                        return config["build"];
                     } catch (err) {
                         return err;
                     }
                 })();
 
-                if (buildConfig instanceof Error) {
-                    console.error(buildConfig)
+                if (moduleInfo instanceof Error) {
+                    console.error(moduleInfo)
                     return;
                 }
 
-                const moduleInfo: ModuleInfo = await readModuleInfo(moduleFolderPath + "/module-info.json");
-                const module: any = require(moduleFolderPath + "/" + buildConfig["process"]);
+
+                const module: any = require(path.join(moduleFolderPath, moduleInfo.build.process));
                 if (module["default"] === undefined) {
-                    console.error(`LOAD ERROR: Process has no default export. Path: ${moduleFolderPath + "/" + buildConfig["process"]}`);
+                    console.error(`LOAD ERROR: Process has no default export. Path: ${moduleFolderPath + "/" + moduleInfo.build.process}`);
                     return;
                 }
 

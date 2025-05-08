@@ -243,6 +243,7 @@ br {
     padding: 10px;
 
     display: flex;
+    align-items: center;
 }
 
 .installed-module p {

@@ -60,18 +60,16 @@ const rootKeys = {
 const requiredBuildKeys = {
     process: (s) => validators.NON_EMPTY_STRING(s) && s.endsWith('.js'),
     replace: validators.VALID_REPLACE,
-    build_version: validators.TYPE_NUMBER,
+    'build-version': validators.TYPE_NUMBER,
     included: validators.OPTIONAL_SINGLE_TYPE_ARRAY,
     excluded: validators.OPTIONAL_SINGLE_TYPE_ARRAY
 }
 
-const verifyExportConfig = (exportConfig, verbose = false) => {
-    const params = exportConfig[key]
-    if (verbose) console.info(`Validating ${key} with param ${typeof params === "object" ? JSON.stringify(params) : params}`)
-
-
+const verifyModuleInfo = (exportConfig, verbose = false) => {
     for (const [key, validatorFunction] of Object.entries(rootKeys)) {
-        console.log(`Validating ${key} with param ${exportConfig[key]}`)
+        const params = exportConfig[key]
+        if (verbose) console.info(`Validating ${key} with param ${typeof params === "object" ? JSON.stringify(params) : params}`)
+    
         if (!validatorFunction(exportConfig[key])) {
             return false;
         }
@@ -100,5 +98,5 @@ const verifyExportConfig = (exportConfig, verbose = false) => {
 
 
 module.exports = {
-    verifyExportConfig
+    verifyModuleInfo
 }

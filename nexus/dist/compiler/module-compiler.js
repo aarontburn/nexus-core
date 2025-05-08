@@ -363,7 +363,8 @@ var ModuleCompiler = /** @class */ (function () {
                     case 2:
                         folders = _a.sent();
                         return [4 /*yield*/, Promise.allSettled(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
-                                var moduleFolderPath, buildConfig, moduleInfo, module, m;
+                                var moduleFolderPath, moduleInfo, module, m;
+                                var _this = this;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
@@ -371,35 +372,38 @@ var ModuleCompiler = /** @class */ (function () {
                                                 return [2 /*return*/];
                                             }
                                             moduleFolderPath = "".concat(folder.path, "/").concat(folder.name);
-                                            buildConfig = (function () {
-                                                try {
-                                                    var configPath = path.normalize(moduleFolderPath + "/export-config.js");
-                                                    var config = require(configPath);
-                                                    if (config["build"] === undefined) {
-                                                        throw new Error("".concat(configPath, " missing 'build'"));
-                                                    }
-                                                    else if (config["build"]["id"] === undefined) {
-                                                        throw new Error("".concat(configPath, ".build missing 'id'"));
-                                                    }
-                                                    else if (config["build"]["process"] === undefined) {
-                                                        throw new Error("".concat(configPath, ".build missing 'process'"));
-                                                    }
-                                                    return config["build"];
-                                                }
-                                                catch (err) {
-                                                    return err;
-                                                }
-                                            })();
-                                            if (buildConfig instanceof Error) {
-                                                console.error(buildConfig);
-                                                return [2 /*return*/];
-                                            }
-                                            return [4 /*yield*/, (0, compiler_utils_1.readModuleInfo)(moduleFolderPath + "/module-info.json")];
+                                            return [4 /*yield*/, (function () { return __awaiter(_this, void 0, void 0, function () {
+                                                    var config, err_6;
+                                                    return __generator(this, function (_a) {
+                                                        switch (_a.label) {
+                                                            case 0:
+                                                                _a.trys.push([0, 2, , 3]);
+                                                                return [4 /*yield*/, (0, compiler_utils_1.readModuleInfo)(path.join(moduleFolderPath, nexus_module_builder_1.FILE_NAMES.MODULE_INFO))];
+                                                            case 1:
+                                                                config = _a.sent();
+                                                                if ((0, compiler_utils_1.isModuleInfoValid)(config)) {
+                                                                    return [2 /*return*/, config];
+                                                                }
+                                                                else {
+                                                                    throw new Error(path.join(moduleFolderPath, nexus_module_builder_1.FILE_NAMES.MODULE_INFO) + " is invalid.");
+                                                                }
+                                                                return [3 /*break*/, 3];
+                                                            case 2:
+                                                                err_6 = _a.sent();
+                                                                return [2 /*return*/, err_6];
+                                                            case 3: return [2 /*return*/];
+                                                        }
+                                                    });
+                                                }); })()];
                                         case 1:
                                             moduleInfo = _a.sent();
-                                            module = require(moduleFolderPath + "/" + buildConfig["process"]);
+                                            if (moduleInfo instanceof Error) {
+                                                console.error(moduleInfo);
+                                                return [2 /*return*/];
+                                            }
+                                            module = require(path.join(moduleFolderPath, moduleInfo.build.process));
                                             if (module["default"] === undefined) {
-                                                console.error("LOAD ERROR: Process has no default export. Path: ".concat(moduleFolderPath + "/" + buildConfig["process"]));
+                                                console.error("LOAD ERROR: Process has no default export. Path: ".concat(moduleFolderPath + "/" + moduleInfo.build.process));
                                                 return [2 /*return*/];
                                             }
                                             m = new module["default"]();

@@ -143,7 +143,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     ]);
     var keyBlacklist = [
         'moduleName', 'module_name',
-        'buildVersion', 'build_version',
+        'buildVersion', 'build-version',
     ];
     var nonDevWhitelist = [
         'moduleName', 'module_name',

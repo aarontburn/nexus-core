@@ -29,12 +29,15 @@ export class HomeProcess extends Process {
 		});
 
 		this.setModuleInfo({
-			name: "Home",
-			author: "aarontburn",
+			name: MODULE_NAME,
+			id: MODULE_ID,
+			author: "Nexus",
 			version: "1.0.0",
 			description: "A home screen that displays time and date.",
-			buildVersion: 1,
-			platforms: [],
+			build: {
+				"build-version": 1,
+				process: '',
+			},
 			link: 'https://github.com/aarontburn/nexus-core'
 		});
 	}
@@ -45,7 +48,7 @@ export class HomeProcess extends Process {
 			this.sendToRenderer("is-first-launch");
 			await this.getSettings().findSetting("is_first_launch").setValue(false);
 			await this.fileManager.writeSettingsToStorage();
-			
+
 			return;
 		}
 		await super.initialize();

@@ -1,6 +1,6 @@
 {
   "name": "@nexus-app/nexus-client",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A cross-platform application loader, designed for productivity and organization.",
   "homepage": "https://github.com/aarontburn/nexus-core",
   "repository": {
@@ -19,8 +19,8 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "@nexus-app/nexus-exporter": "^1.0.0",
-    "@nexus-app/nexus-module-builder": "^1.0.0",
+    "@nexus-app/nexus-exporter": "^1.1.1",
+    "@nexus-app/nexus-module-builder": "^1.0.3",
     "typescript": "^4.8.3",
     "yauzl-promise": "^4.0.0",
     "electron-updater": "^6.6.2"

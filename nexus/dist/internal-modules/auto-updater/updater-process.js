@@ -55,11 +55,15 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         _this.autoUpdaterStarted = false;
         _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
         _this.setModuleInfo({
-            name: "Auto Updater",
-            author: "Nexus",
+            name: MODULE_NAME,
+            id: exports.MODULE_ID,
             version: "1.0.0",
-            description: "A home screen that displays time and date.",
-            buildVersion: 1,
+            author: "Nexus",
+            description: "The Nexus auto-updater.",
+            build: {
+                "build-version": 0,
+                process: ''
+            },
             platforms: ['win32', 'darwin']
         });
         return _this;

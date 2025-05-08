@@ -62,10 +62,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.shouldRecompileModule = exports.readModuleInfo = exports.compileAndCopyDirectory = exports.compile = exports.isBuildConfigValid = exports.copyFromProd = exports.IO_OPTIONS = void 0;
+exports.shouldRecompileModule = exports.readModuleInfo = exports.compileAndCopyDirectory = exports.compile = exports.isModuleInfoValid = exports.copyFromProd = exports.IO_OPTIONS = void 0;
 var fs = __importStar(require("fs"));
 var typescript_1 = __importDefault(require("typescript"));
 var path = __importStar(require("path"));
+// @ts-ignore
+var verifier_js_1 = require("@nexus-app/nexus-exporter/verifier.js");
 exports.IO_OPTIONS = {
     encoding: "utf-8",
     withFileTypes: true
@@ -107,19 +109,10 @@ function copyFromProd(sourcePath, destinationPath) {
     });
 }
 exports.copyFromProd = copyFromProd;
-function isBuildConfigValid(config) {
-    if (config["build"] === undefined) {
-        return [false, 'build'];
-    }
-    else if (config["build"]["id"] === undefined) {
-        return [false, 'id'];
-    }
-    else if (config["build"]["process"] === undefined) {
-        return [false, 'process'];
-    }
-    return [true, undefined];
+function isModuleInfoValid(moduleInfo) {
+    return (0, verifier_js_1.verifyModuleInfo)(moduleInfo);
 }
-exports.isBuildConfigValid = isBuildConfigValid;
+exports.isModuleInfoValid = isModuleInfoValid;
 function compile(inputFilePath, outputDir) {
     return __awaiter(this, void 0, void 0, function () {
         var inputFileContent, _a, outputText, diagnostics, outputFileName, outputFilePath, error_1;
@@ -231,8 +224,8 @@ function readModuleInfo(path) {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = JSON).parse;
-                    return [4 /*yield*/, fs.promises.readFile(path)];
-                case 1: return [2 /*return*/, _b.apply(_a, [(_c.sent()).toString()])];
+                    return [4 /*yield*/, fs.promises.readFile(path, 'utf-8')];
+                case 1: return [2 /*return*/, _b.apply(_a, [(_c.sent())])];
                 case 2:
                     err_1 = _c.sent();
                     if (err_1.code !== 'ENOENT') { // File doesn't exist

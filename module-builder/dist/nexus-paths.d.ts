@@ -7,6 +7,5 @@ export declare const DIRECTORIES: {
 };
 export declare const FILE_NAMES: {
     INTERNAL_JSON: string;
-    EXPORT_CONFIG: string;
     MODULE_INFO: string;
 };

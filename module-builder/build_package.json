@@ -1,6 +1,6 @@
 {
   "name": "@nexus-app/nexus-module-builder",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Reusable TypeScript settings and components for Nexus.",
   "homepage": "https://github.com/aarontburn/nexus-core",
   "repository": {

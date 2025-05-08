@@ -1,8 +1,4 @@
 {
-  "name": "@nexus-app/nexus-module-builder",
-  "version": "1.0.0",
-  "description": "Reusable TypeScript settings and components for Nexus",
-
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "node builder.js && tsc",

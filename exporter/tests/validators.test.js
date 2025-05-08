@@ -19,7 +19,7 @@ const validObj = {
         ],
         "included": [],
         "process": "./process/main.js",
-        "build_version": 1,
+        "build-version": 1,
         "replace": [
             {
                 "from": "{EXPORTED_MODULE_ID}",

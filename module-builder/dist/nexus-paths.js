@@ -12,6 +12,5 @@ exports.DIRECTORIES = {
 };
 exports.FILE_NAMES = {
     INTERNAL_JSON: "/internal.json",
-    EXPORT_CONFIG: "/export-config.js",
     MODULE_INFO: "/module-info.json",
 };

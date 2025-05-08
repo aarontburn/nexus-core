@@ -1,13 +1,12 @@
 {
-    "name": "@nexus-app/nexus-client",
-    "version": "0.0.3",
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
         "start": "npm run build && cd ./dist && electron --trace-warnings . --dev --in-core ",
         "package": "npm run build && npx electron-builder build --win",
         "package:test": "npm run build && electron-builder --dir",
-        "publish": "npm run build && cd ./dist && npm publish --access public"
+        "publish": "npm run build && cd ./dist && npm publish --access public",
+        "postinstall": "npm install @nexus-app/nexus-exporter@latest @nexus-app/nexus-module-builder@latest"
     },
     "main": "./dist/main.js",
     "devDependencies": {
@@ -18,8 +17,8 @@
         "typescript": "^4.8.3"
     },
     "dependencies": {
-        "@nexus-app/nexus-exporter": "^1.0.0",
-        "@nexus-app/nexus-module-builder": "^1.0.0",
+        "@nexus-app/nexus-exporter": "^1.1.1",
+        "@nexus-app/nexus-module-builder": "^1.0.3",
         "electron-updater": "^6.6.2",
         "typescript": "^4.8.3",
         "yauzl-promise": "^4.0.0"

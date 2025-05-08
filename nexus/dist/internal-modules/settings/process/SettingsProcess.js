@@ -104,8 +104,14 @@ var SettingsProcess = /** @class */ (function (_super) {
         _this.getSettings().setDisplayName("General");
         _this.setModuleInfo({
             name: "General",
-            author: "aarontburn",
-            description: "General settings."
+            id: exports.MODULE_ID,
+            version: "1.0.0",
+            author: "Nexus",
+            description: "General settings.",
+            build: {
+                "build-version": 0,
+                process: ''
+            }
         });
         return _this;
     }

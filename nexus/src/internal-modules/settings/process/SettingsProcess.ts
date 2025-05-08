@@ -43,8 +43,14 @@ export class SettingsProcess extends Process {
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({
             name: "General",
-            author: "aarontburn",
+            id: MODULE_ID,
+            version: "1.0.0",
+            author: "Nexus",
             description: "General settings.",
+            build: {
+                "build-version": 0,
+                process: ''
+            },
         });
 
     }

@@ -151,7 +151,7 @@
 
     const keyBlacklist: string[] = [
         'moduleName', 'module_name',
-        'buildVersion', 'build_version',
+        'buildVersion', 'build-version',
     ];
 
     const nonDevWhitelist: string[] = [

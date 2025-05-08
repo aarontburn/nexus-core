@@ -1,45 +1,41 @@
-const { verifyExportConfig } = require("../src/verifier")
+const { verifyModuleInfo } = require("../src/verifier")
 
 const validObj = {
-    "name": "Sample TS Module",
+    "name": "ChatGPT",
+    "id": "aarontburn.ChatGPT",
     "version": "1.0.0",
-    "id": "developer.Sample_TS_Module",
-    "author": "developer",
-    "description": "A developer template to create a module using vanilla TS and HTML.",
-    "link": "https://github.com/aarontburn/modules-template-vanilla-ts",
-    "git-latest": {
-        "git-username": "git-username",
-        "git-repo-name": "repository-name"
-    },
+    "author": "aarontburn",
+    "description": "A ChatGPT module for Nexus.",
+    "link": "https://github.com/aarontburn/nexus-chatgpt",
     "platforms": [],
+    "git-latest": {
+        "git-username": "aarontburn",
+        "git-repo-name": "nexus-chatgpt"
+    },
     "build": {
+        "build-version": 1,
         "excluded": ["electron.ts"],
         "included": [],
         "process": "./process/main.js",
-        "build_version": 1,
         "replace": [
             {
                 "from": "{EXPORTED_MODULE_ID}",
                 "to": "%id%",
-                "at": [
-                    "./process/main.ts"
-                ]
+                "at": ["./process/main.ts"]
             },
             {
                 "from": "{EXPORTED_MODULE_NAME}",
                 "to": "%name%",
-                "at": [
-                    "./process/main.ts",
-                    "./module-info.json"
-                ]
+                "at": ["./process/main.ts", "./module-info.json"]
             }
         ]
     }
+
 }
 
 function runTests() {
     test("valid object", () => {
-        expect(verifyExportConfig({ ...validObj })).toBe(true)
+        expect(verifyModuleInfo({ ...validObj })).toBe(true)
     });
 }
 runTests();

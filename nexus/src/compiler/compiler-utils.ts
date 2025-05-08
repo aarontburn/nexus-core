@@ -2,6 +2,8 @@ import * as fs from "fs";
 import ts from 'typescript';
 import * as path from 'path';
 import { ModuleInfo } from "@nexus-app/nexus-module-builder";
+// @ts-ignore
+import { verifyModuleInfo } from "@nexus-app/nexus-exporter/verifier.js"
 
 export const IO_OPTIONS: { encoding: BufferEncoding, withFileTypes: true } = {
     encoding: "utf-8",
@@ -26,17 +28,10 @@ export async function copyFromProd(sourcePath: string, destinationPath: string) 
 }
 
 
-export function isBuildConfigValid(config: any): [boolean, string] {
-    if (config["build"] === undefined) {
-        return [false, 'build'];
-    } else if (config["build"]["id"] === undefined) {
-        return [false, 'id'];
-    } else if (config["build"]["process"] === undefined) {
-        return [false, 'process'];
-    }
-
-    return [true, undefined];
+export function isModuleInfoValid(moduleInfo: any): boolean {
+    return verifyModuleInfo(moduleInfo);
 }
+
 
 export async function compile(inputFilePath: string, outputDir: string) {
     if (!inputFilePath.endsWith(".ts")) {
@@ -111,7 +106,7 @@ export async function compileAndCopyDirectory(readDirectory: string, outputDirec
 
 export async function readModuleInfo(path: string): Promise<ModuleInfo | undefined> {
     try {
-        return JSON.parse((await fs.promises.readFile(path)).toString());
+        return JSON.parse((await fs.promises.readFile(path, 'utf-8')));
     } catch (err) {
         if (err.code !== 'ENOENT') { // File doesn't exist
             console.error(err);

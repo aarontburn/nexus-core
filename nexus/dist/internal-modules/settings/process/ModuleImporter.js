@@ -143,6 +143,7 @@ function getImportedModules(deletedModules) {
                         var moduleID = buildConfig.id;
                         var moduleName = buildConfig.name;
                         map.set(moduleID, {
+                            path: path.join(file.path, file.name),
                             moduleName: moduleName,
                             moduleID: moduleID,
                             isDeleted: false
@@ -151,8 +152,8 @@ function getImportedModules(deletedModules) {
                     deletedModules.forEach(function (moduleID) { return map.set(moduleID, __assign(__assign({}, map.get(moduleID)), { isDeleted: true })); });
                     out = [];
                     Array.from(map.values()).forEach(function (_a) {
-                        var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted;
-                        return out.push({ moduleName: moduleName, moduleID: moduleID, isDeleted: isDeleted });
+                        var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted, path = _a.path;
+                        return out.push({ path: path, moduleName: moduleName, moduleID: moduleID, isDeleted: isDeleted });
                     });
                     return [2 /*return*/, out];
             }

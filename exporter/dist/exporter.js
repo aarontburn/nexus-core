@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const dialogNode = require('dialog-node');
 const { tryOrUndefined, missingObjectKeys, defaultDevJSON, tryOrUndefinedAsync } = require('./utils');
-const { verifyExportConfig } = require('./verifier');
+const { verifyModuleInfo } = require('./verifier');
 const archiver = require('archiver')('zip');
 
 
@@ -21,36 +21,22 @@ const MODULE_INFO_FILE = "module-info.json";
 const PROJECT_ROOT_DIR = process.argv.includes("--test") ? path.join(__dirname, "../sample/") : path.join(__dirname, "../../../");
 
 
-const EXPORT_CONFIG_FILE = "export-config.js"
-const DEFAULT_EXCLUDED = []
 
-const EXPORT_CONFIG = tryOrUndefined(() => require(path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)));
-if (EXPORT_CONFIG === undefined) {
-    throw new Error(`Could not import ${EXPORT_CONFIG_FILE}. Path: ${path.join(PROJECT_ROOT_DIR, "src/" + EXPORT_CONFIG_FILE)}`);
-} else if (!verifyExportConfig(EXPORT_CONFIG)) {
-    throw new Error(`${EXPORT_CONFIG_FILE} contains invalid fields and cannot be exported.`);
+const MODULE_INFO = JSON.parse(tryOrUndefined(() => fs.readFileSync(path.join(PROJECT_ROOT_DIR, "src/" + MODULE_INFO_FILE), 'utf8')) ?? {});
+if (Object.keys(MODULE_INFO).length === 0) {
+    throw new Error(`Could not import ${MODULE_INFO_FILE}. Path: ${path.join(PROJECT_ROOT_DIR, "src/" + MODULE_INFO_FILE)}`);
+} else if (!verifyModuleInfo(MODULE_INFO)) {
+    throw new Error(`${MODULE_INFO_FILE} contains invalid fields and cannot be exported.`);
 }
+const BUILD_CONFIG = MODULE_INFO["build"]
 
 const [excludedFiles, addToBuild] = [
-    [...DEFAULT_EXCLUDED, ...EXPORT_CONFIG["excluded"] ?? []],
-    EXPORT_CONFIG["included"] ?? []
+    BUILD_CONFIG["excluded"] ?? [],
+    BUILD_CONFIG["included"] ?? []
 ];
 
-const BUILD_CONFIG = EXPORT_CONFIG["build"];
-if (BUILD_CONFIG === undefined) {
-    throw new Error(`${EXPORT_CONFIG_FILE} missing 'build'.`);
-}
-
-
-const missingKeys = missingObjectKeys(BUILD_CONFIG, ["id", "process", "replace"]);
-if (missingKeys.length > 0) {
-    throw new Error(`${EXPORT_CONFIG_FILE}.build missing fields: ${missingKeys}`);
-}
-
-
-
 // The path of the output directory in the output folder
-const _OUTPUT_FOLDER_PATH = process.argv.includes("--test") ? path.normalize(__dirname + "/output/") : path.normalize(PROJECT_ROOT_DIR + "/output/" + BUILD_CONFIG["id"] + "/");
+const _OUTPUT_FOLDER_PATH = process.argv.includes("--test") ? path.normalize(__dirname + "/output/") : path.normalize(PROJECT_ROOT_DIR + "/output/" + MODULE_INFO["id"] + "/");
 
 // The path to the node_modules directory in the output folder.
 const SRC_NODE_MODULES = PROJECT_ROOT_DIR + "/node_modules";
@@ -63,7 +49,7 @@ const getOutputFolder = () => {
     }
 
     if (process.argv.includes('--dev')) {
-        return `${os.homedir()}/.nexus_dev/external_modules/${BUILD_CONFIG["id"]}/`;
+        return `${os.homedir()}/.nexus_dev/external_modules/${MODULE_INFO["id"]}/`;
     }
 
     return chosenFolder === undefined ? _OUTPUT_FOLDER_PATH : chosenFolder
@@ -100,7 +86,7 @@ async function getDirectory() {
             if (directory === '') {
                 resolve(undefined);
             }
-            resolve(`${directory.trim()}/${BUILD_CONFIG["id"]}/`);
+            resolve(`${directory.trim()}/${MODULE_INFO["id"]}/`);
         });
     })
     return promise;
@@ -113,7 +99,7 @@ async function modifyModuleInfoJSON() {
     }
     const jsonPath = PROJECT_ROOT_DIR + "/src/" + MODULE_INFO_FILE;
     const json = JSON.parse(await fs.promises.readFile(jsonPath, "utf-8"));
-    json["build_version"] += 1
+    json['build']["build-version"] += 1
     await fs.promises.writeFile(jsonPath, JSON.stringify(json, undefined, 4));
 }
 
@@ -166,7 +152,7 @@ async function copyFiles() {
     )
 
     for (const { from, to, at } of BUILD_CONFIG["replace"] ?? []) {
-        const replaceTo = to[0] === "%" && to[to.length - 1] === "%" ? BUILD_CONFIG[to.replaceAll("%", '')] : to;
+        const replaceTo = to[0] === "%" && to[to.length - 1] === "%" ? MODULE_INFO[to.replaceAll("%", '')] : to;
 
         for (const file of at) {
             const filePath = path.normalize(path.join(getOutputFolder(), file));
@@ -267,7 +253,7 @@ async function changeLastExported() {
     }
 
     devJSON['args'] = devJSON['args'].replace(/(--last_exported_id:)[^\s]+/, '');
-    devJSON['args'] += ` --last_exported_id:${BUILD_CONFIG["id"]}`;
+    devJSON['args'] += ` --last_exported_id:${MODULE_INFO["id"]}`;
 
     await fs.promises.writeFile(devPath + "/internal.json", JSON.stringify(devJSON, undefined, 4));
 }

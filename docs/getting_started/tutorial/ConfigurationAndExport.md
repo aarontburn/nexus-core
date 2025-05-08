@@ -80,7 +80,7 @@ This file contains metadata about your module that Nexus reads when loading it. 
     "author": "developer",
     "version": "1.0.0",
     "description": "A template to create a module for Nexus using React.",
-    "build_version": 1,
+    "build-version": 1,
     "platforms": ["win32", "linux", "darwin"]
 }
 ```
@@ -89,7 +89,7 @@ Notice how `name` is `"{EXPORTED_MODULE_NAME}"`; similar to the process, we can 
 Unlike `export-config.js`, most of these properties have no restrictions on naming. Use this to describe your module!
 
 Here are the properties that have need special information:
-- `build_version`: This value is automatically incremented each time you run npm run export. Nexus uses it to detect changes and trigger a recompile.
+- `build-version`: This value is automatically incremented each time you run npm run export. Nexus uses it to detect changes and trigger a recompile.
 - `platforms`: While Nexus is cross-platform, there are some dependencies that may not work across all operating systems. You should list the operating systems your module can (or is expected to) run on. Possible values are: `win32` (Windows), `linux` (Linux), and `darwin` (MacOS).
 
 ## Exporting your module

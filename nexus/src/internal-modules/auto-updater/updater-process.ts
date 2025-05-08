@@ -16,11 +16,15 @@ export class AutoUpdaterProcess extends Process {
 		});
 
 		this.setModuleInfo({
-			name: "Auto Updater",
-			author: "Nexus",
+			name: MODULE_NAME,
+			id: MODULE_ID,
 			version: "1.0.0",
-			description: "A home screen that displays time and date.",
-			buildVersion: 1,
+			author: "Nexus",
+			description: "The Nexus auto-updater.",
+			build: {
+				"build-version": 0,
+				process: ''
+			},
 			platforms: ['win32', 'darwin'],
 		});
 	}

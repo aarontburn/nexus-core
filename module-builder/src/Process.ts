@@ -9,12 +9,22 @@ import FileManger from "./process-helpers/FileManager";
 
 export interface ModuleInfo {
     name: string;
-    author: string;
-    version?: string;
-    description: string;
-    buildVersion?: number;
+    id: string;
+    version: string;
+
+    author?: string;
+    description?: string;
     platforms?: string[];
     link?: string;
+    "git-latest"?: { "git-username": string, "git-repo-name": string }
+    build: {
+        'build-version': number;
+        process: string;
+        excluded?: string[];
+        included?: string[];
+        replace?: { from: string, to: string, at: string[] }[]
+    }
+
 }
 
 export interface ProcessConstructorArguments {

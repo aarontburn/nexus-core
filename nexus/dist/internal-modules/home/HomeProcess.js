@@ -95,12 +95,15 @@ var HomeProcess = /** @class */ (function (_super) {
             }
         }) || this;
         _this.setModuleInfo({
-            name: "Home",
-            author: "aarontburn",
+            name: MODULE_NAME,
+            id: MODULE_ID,
+            author: "Nexus",
             version: "1.0.0",
             description: "A home screen that displays time and date.",
-            buildVersion: 1,
-            platforms: [],
+            build: {
+                "build-version": 1,
+                process: ''
+            },
             link: 'https://github.com/aarontburn/nexus-core'
         });
         return _this;
