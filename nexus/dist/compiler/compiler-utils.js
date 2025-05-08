@@ -62,7 +62,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.shouldRecompileModule = exports.readModuleInfo = exports.compileAndCopyDirectory = exports.compile = exports.copyFromProd = exports.IO_OPTIONS = void 0;
+exports.shouldRecompileModule = exports.readModuleInfo = exports.compileAndCopyDirectory = exports.compile = exports.isBuildConfigValid = exports.copyFromProd = exports.IO_OPTIONS = void 0;
 var fs = __importStar(require("fs"));
 var typescript_1 = __importDefault(require("typescript"));
 var path = __importStar(require("path"));
@@ -107,6 +107,19 @@ function copyFromProd(sourcePath, destinationPath) {
     });
 }
 exports.copyFromProd = copyFromProd;
+function isBuildConfigValid(config) {
+    if (config["build"] === undefined) {
+        return [false, 'build'];
+    }
+    else if (config["build"]["id"] === undefined) {
+        return [false, 'id'];
+    }
+    else if (config["build"]["process"] === undefined) {
+        return [false, 'process'];
+    }
+    return [true, undefined];
+}
+exports.isBuildConfigValid = isBuildConfigValid;
 function compile(inputFilePath, outputDir) {
     return __awaiter(this, void 0, void 0, function () {
         var inputFileContent, _a, outputText, diagnostics, outputFileName, outputFilePath, error_1;

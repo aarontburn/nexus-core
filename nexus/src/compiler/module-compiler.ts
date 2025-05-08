@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl-promise';
 import { pipeline } from 'stream/promises';
-import {  Process, ModuleInfo, DIRECTORIES } from "@nexus-app/nexus-module-builder";
+import { Process, ModuleInfo, DIRECTORIES } from "@nexus-app/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule } from './compiler-utils';
 import Stream from 'stream';
 
@@ -211,7 +211,7 @@ export class ModuleCompiler {
                 m.setModuleInfo(moduleInfo);
                 externalModules.push(m);
             }));
-            
+
             const rejected = loadResult.filter(result => result.status === 'rejected');
             if (rejected.length > 0) {
                 console.error("Errors occurred during module loading.");

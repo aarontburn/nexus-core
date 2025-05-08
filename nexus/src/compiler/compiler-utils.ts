@@ -26,6 +26,18 @@ export async function copyFromProd(sourcePath: string, destinationPath: string) 
 }
 
 
+export function isBuildConfigValid(config: any): [boolean, string] {
+    if (config["build"] === undefined) {
+        return [false, 'build'];
+    } else if (config["build"]["id"] === undefined) {
+        return [false, 'id'];
+    } else if (config["build"]["process"] === undefined) {
+        return [false, 'process'];
+    }
+
+    return [true, undefined];
+}
+
 export async function compile(inputFilePath: string, outputDir: string) {
     if (!inputFilePath.endsWith(".ts")) {
         console.log("Skipping " + inputFilePath + ". Not a compilable file (must be .ts)");

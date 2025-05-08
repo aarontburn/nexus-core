@@ -1,8 +1,4 @@
 {
-  "name": "@nexus-app/nexus-exporter",
-  "version": "1.0.0",
-  "description": "The module exporter for Nexus.",
-  "author": "aarontburn",
   "scripts": {
     "build": "node builder.js",
     "test": "jest ./tests",

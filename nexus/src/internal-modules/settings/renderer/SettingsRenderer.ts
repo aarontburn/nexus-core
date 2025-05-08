@@ -354,7 +354,7 @@
     const screen: HTMLElement = document.getElementById("manage-module");
     const list: HTMLElement = document.getElementById('installed-modules-list');
 
-    function openManageScreen(data: { name: string, deleted: boolean }[]): void {
+    function openManageScreen(data: { moduleName: string, moduleID: string, isDeleted: boolean }[]): void {
         screen.hidden = false;
 
         // Clear list
@@ -370,24 +370,21 @@
         }
 
 
-        data.forEach(({ name: moduleID, deleted }) => {
+        data.forEach(({ moduleName, moduleID, isDeleted }) => {
             const div: HTMLDivElement = document.createElement('div');
             div.className = 'installed-module';
             div.innerHTML = `
-                ${!deleted
-                    ? `<p>${moduleID}</p>`
-                    : `<p style="font-style: italic; color: grey;"}>${moduleID}</p>`}
+                <div>
+                    <p class="module-name">${moduleName}</p>
+                    <p class="module-id">${moduleID}</p>
+                </div>
 
                 <div style="margin-right: auto;"></div>
 
-                ${!deleted
-                    ? `
-                    <p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>
-                    `
-                    : `
-                    <p style="margin-right: 15px; font-style: italic;">Restart Required</p>
-                    `}
-
+                ${!isDeleted ?
+                `<p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>`
+                : `<p style="margin-right: 15px; font-style: italic;">Restart Required</p>`
+                }
             `;
 
 
@@ -534,7 +531,7 @@
 
 
 
-    
+
     document.body.addEventListener('click', event => {
         if ((event.target as HTMLElement).tagName.toLowerCase() === 'a') {
             event.preventDefault();

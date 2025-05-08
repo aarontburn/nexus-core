@@ -304,14 +304,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         }
         data.forEach(function (_a) {
             var _b;
-            var moduleID = _a.name, deleted = _a.deleted;
+            var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted;
             var div = document.createElement('div');
             div.className = 'installed-module';
-            div.innerHTML = "\n                ".concat(!deleted
-                ? "<p>".concat(moduleID, "</p>")
-                : "<p style=\"font-style: italic; color: grey;\"}>".concat(moduleID, "</p>"), "\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!deleted
-                ? "\n                    <p class='remove-module-button clickable' style=\"color: red; margin-right: 15px\">Remove</p>\n                    "
-                : "\n                    <p style=\"margin-right: 15px; font-style: italic;\">Restart Required</p>\n                    ", "\n\n            ");
+            div.innerHTML = "\n                <div>\n                    <p class=\"module-name\">".concat(moduleName, "</p>\n                    <p class=\"module-id\">").concat(moduleID, "</p>\n                </div>\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!isDeleted ?
+                "<p class='remove-module-button clickable' style=\"color: red; margin-right: 15px\">Remove</p>"
+                : "<p style=\"margin-right: 15px; font-style: italic;\">Restart Required</p>", "\n            ");
             (_b = div.querySelector('.remove-module-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
                 var proceed;
                 return __generator(this, function (_a) {

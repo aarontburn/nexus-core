@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -123,19 +134,26 @@ function getImportedModules(deletedModules) {
         var files, map, out;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, { withFileTypes: true })];
+                case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.DIRECTORIES.COMPILED_MODULES_PATH, { withFileTypes: true })];
                 case 1:
                     files = _a.sent();
                     map = new Map();
-                    deletedModules.forEach(function (name) { return map.set(name, true); });
                     files.forEach(function (file) {
-                        var extension = path.extname(file.name);
-                        if (extension === '.zip') {
-                            map.set(file.name, false);
-                        }
+                        var buildConfig = require(path.join(file.path, file.name, '/export-config.js')).build;
+                        var moduleID = buildConfig.id;
+                        var moduleName = buildConfig.name;
+                        map.set(moduleID, {
+                            moduleName: moduleName,
+                            moduleID: moduleID,
+                            isDeleted: false
+                        });
                     });
+                    deletedModules.forEach(function (moduleID) { return map.set(moduleID, __assign(__assign({}, map.get(moduleID)), { isDeleted: true })); });
                     out = [];
-                    map.forEach(function (deleted, name) { return out.push({ name: name, deleted: deleted }); });
+                    Array.from(map.values()).forEach(function (_a) {
+                        var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted;
+                        return out.push({ moduleName: moduleName, moduleID: moduleID, isDeleted: isDeleted });
+                    });
                     return [2 /*return*/, out];
             }
         });

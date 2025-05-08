@@ -224,11 +224,11 @@ br {
     margin: 0;
     margin-top: 20px;
     white-space: pre;
+    font-weight: 300;
 }
 
 
 #manage-module {
-    border: 1px solid var(--text-color);
     border-radius: 5px;
     margin: 5px;
     height: calc(100vh - 10px);
@@ -249,4 +249,12 @@ br {
     margin: 0;
     padding: 0;
     font-size: 20px;
+}
+
+.installed-module .module-name {
+    font-size: 20px;
+}
+
+.installed-module .module-id {
+    font-size: 15px;
 }

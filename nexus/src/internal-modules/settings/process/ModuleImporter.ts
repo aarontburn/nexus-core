@@ -38,22 +38,39 @@ async function importPluginArchive(filePath: string): Promise<boolean> {
     }
 }
 
-export async function getImportedModules(deletedModules: string[]): Promise<{ name: string, deleted: boolean }[]> {
-    const files: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH, { withFileTypes: true });
 
-    const map: Map<string, boolean> = new Map();
 
-    deletedModules.forEach((name: string) => map.set(name, true))
+export interface ImportedModuleInfo {
+    moduleName: string,
+    moduleID: string,
+    isDeleted: boolean,
+    path: string,
+}
+
+
+
+export async function getImportedModules(deletedModules: string[]): Promise<ImportedModuleInfo[]> {
+    const files: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.COMPILED_MODULES_PATH, { withFileTypes: true });
+
+    const map: Map<string, ImportedModuleInfo> = new Map();
 
     files.forEach(file => {
-        const extension: string = path.extname(file.name);
-        if (extension === '.zip') {
-            map.set(file.name, false);
-        }
+        const buildConfig = require(path.join(file.path, file.name, '/export-config.js')).build;
+        const moduleID: string = buildConfig.id;
+        const moduleName: string = buildConfig.name;
+
+        map.set(moduleID, {
+            path: path.join(file.path, file.name),
+            moduleName,
+            moduleID,
+            isDeleted: false,
+        });
     });
 
-    const out: { name: string, deleted: boolean }[] = [];
-    map.forEach((deleted: boolean, name: string) => out.push({ name: name, deleted: deleted }));
+    deletedModules.forEach((moduleID: string) => map.set(moduleID, { ...map.get(moduleID), isDeleted: true }))
+
+    const out: ImportedModuleInfo[] = [];
+    Array.from(map.values()).forEach(({ moduleName, moduleID, isDeleted, path }) => out.push({ path, moduleName, moduleID, isDeleted }));
 
     return out;
 }
