@@ -75,6 +75,7 @@ var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
+var compiler_utils_1 = require("../../../compiler/compiler-utils");
 function importModuleArchive() {
     return __awaiter(this, void 0, void 0, function () {
         var options, response, filePath, successful;
@@ -129,33 +130,48 @@ function importPluginArchive(filePath) {
         });
     });
 }
-function getImportedModules(deletedModules) {
+function getImportedModules(process, deletedModules) {
     return __awaiter(this, void 0, void 0, function () {
-        var files, map, out;
+        var folders, map;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.DIRECTORIES.COMPILED_MODULES_PATH, { withFileTypes: true })];
                 case 1:
-                    files = _a.sent();
+                    folders = _a.sent();
                     map = new Map();
-                    files.forEach(function (file) {
-                        var buildConfig = require(path.join(file.path, file.name, '/export-config.js')).build;
-                        var moduleID = buildConfig.id;
-                        var moduleName = buildConfig.name;
-                        map.set(moduleID, {
-                            path: path.join(file.path, file.name),
-                            moduleName: moduleName,
-                            moduleID: moduleID,
-                            isDeleted: false
-                        });
-                    });
+                    return [4 /*yield*/, Promise.all(folders.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
+                            var moduleInfo, iconPath;
+                            var _a;
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
+                                    case 0: return [4 /*yield*/, (0, compiler_utils_1.readModuleInfo)(path.join(folder.path, folder.name, nexus_module_builder_1.FILE_NAMES.MODULE_INFO))];
+                                    case 1:
+                                        moduleInfo = _b.sent();
+                                        if (moduleInfo === undefined) {
+                                            return [2 /*return*/];
+                                        }
+                                        return [4 /*yield*/, process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)];
+                                    case 2: return [4 /*yield*/, (_b.sent()).body];
+                                    case 3:
+                                        iconPath = _b.sent();
+                                        map.set(moduleInfo.id, {
+                                            iconPath: iconPath,
+                                            path: path.join(folder.path, folder.name),
+                                            moduleName: moduleInfo.name,
+                                            moduleID: moduleInfo.id,
+                                            author: (_a = moduleInfo.author) !== null && _a !== void 0 ? _a : '',
+                                            isDeleted: false,
+                                            version: moduleInfo.version
+                                        });
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }))];
+                case 2:
+                    _a.sent();
                     deletedModules.forEach(function (moduleID) { return map.set(moduleID, __assign(__assign({}, map.get(moduleID)), { isDeleted: true })); });
-                    out = [];
-                    Array.from(map.values()).forEach(function (_a) {
-                        var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted, path = _a.path;
-                        return out.push({ path: path, moduleName: moduleName, moduleID: moduleID, isDeleted: isDeleted });
-                    });
-                    return [2 /*return*/, out];
+                    return [2 /*return*/, Array.from(map.values())];
             }
         });
     });

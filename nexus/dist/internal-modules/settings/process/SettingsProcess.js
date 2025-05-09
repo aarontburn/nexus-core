@@ -392,7 +392,7 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, moduleID_1, fileName, result, elementId, elementValue, settingId, link, moduleOrder;
+            var _a, moduleID_1, info, err_1, elementId, elementValue, settingId, link, moduleOrder;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -402,19 +402,19 @@ var SettingsProcess = /** @class */ (function (_super) {
                             case 'open-module-folder': return [3 /*break*/, 2];
                             case 'import-module': return [3 /*break*/, 3];
                             case 'manage-modules': return [3 /*break*/, 4];
-                            case 'remove-module': return [3 /*break*/, 5];
-                            case 'restart-now': return [3 /*break*/, 7];
-                            case "swap-settings-tab": return [3 /*break*/, 8];
-                            case "setting-modified": return [3 /*break*/, 9];
-                            case 'setting-reset': return [3 /*break*/, 10];
-                            case 'open-link': return [3 /*break*/, 11];
-                            case "module-order": return [3 /*break*/, 12];
+                            case 'remove-module': return [3 /*break*/, 6];
+                            case 'restart-now': return [3 /*break*/, 11];
+                            case "swap-settings-tab": return [3 /*break*/, 12];
+                            case "setting-modified": return [3 /*break*/, 13];
+                            case 'setting-reset': return [3 /*break*/, 14];
+                            case 'open-link': return [3 /*break*/, 15];
+                            case "module-order": return [3 /*break*/, 16];
                         }
-                        return [3 /*break*/, 15];
+                        return [3 /*break*/, 19];
                     case 1:
                         {
                             this.initialize();
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
                         _b.label = 2;
                     case 2:
@@ -425,7 +425,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                                     throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1));
                                 }
                             });
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
                         _b.label = 3;
                     case 3:
@@ -433,66 +433,69 @@ var SettingsProcess = /** @class */ (function (_super) {
                             return [2 /*return*/, (0, ModuleImporter_1.importModuleArchive)()];
                         }
                         _b.label = 4;
-                    case 4:
-                        {
-                            return [2 /*return*/, (0, ModuleImporter_1.getImportedModules)(this.deletedModules)];
-                        }
-                        _b.label = 5;
-                    case 5:
-                        fileName = data[0];
-                        return [4 /*yield*/, fs.promises.rm("".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(fileName))];
+                    case 4: return [4 /*yield*/, (0, ModuleImporter_1.getImportedModules)(this, this.deletedModules)];
+                    case 5: return [2 /*return*/, _b.sent()];
                     case 6:
-                        result = _b.sent();
-                        console.info("[Nexus Settings] Removing " + fileName);
-                        if (result === undefined) {
-                            this.deletedModules.push(fileName);
-                            return [2 /*return*/, true];
-                        }
-                        return [2 /*return*/, false];
+                        info = data[0];
+                        _b.label = 7;
                     case 7:
+                        _b.trys.push([7, 9, , 10]);
+                        console.info("[Nexus Settings] Removing " + info.moduleID);
+                        return [4 /*yield*/, fs.promises.rm(info.path.replace('\\built\\', '\\external_modules\\') + '.zip')];
+                    case 8:
+                        _b.sent();
+                        this.deletedModules.push(info.moduleID);
+                        return [2 /*return*/, true];
+                    case 9:
+                        err_1 = _b.sent();
+                        console.error("[Nexus Settings] An error occurred when deleting " + info.moduleID);
+                        console.error(err_1);
+                        return [3 /*break*/, 10];
+                    case 10: return [2 /*return*/, false];
+                    case 11:
                         {
                             electron_1.app.relaunch();
                             electron_1.app.exit();
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
-                        _b.label = 8;
-                    case 8:
+                        _b.label = 12;
+                    case 12:
                         {
                             return [2 /*return*/, this.swapSettingsTab(data[0])];
                         }
-                        _b.label = 9;
-                    case 9:
+                        _b.label = 13;
+                    case 13:
                         {
                             elementId = data[0];
                             elementValue = data[1];
                             this.onSettingChange(elementId, elementValue);
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
-                        _b.label = 10;
-                    case 10:
+                        _b.label = 14;
+                    case 14:
                         {
                             settingId = data[0];
                             this.onSettingChange(settingId);
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
-                        _b.label = 11;
-                    case 11:
+                        _b.label = 15;
+                    case 15:
                         {
                             link = data[0];
                             electron_1.shell.openExternal(link);
-                            return [3 /*break*/, 15];
+                            return [3 /*break*/, 19];
                         }
-                        _b.label = 12;
-                    case 12:
+                        _b.label = 16;
+                    case 16:
                         moduleOrder = data[0];
                         return [4 /*yield*/, this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"))];
-                    case 13:
+                    case 17:
                         _b.sent();
                         return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
-                    case 14:
+                    case 18:
                         _b.sent();
-                        return [3 /*break*/, 15];
-                    case 15: return [2 /*return*/];
+                        return [3 /*break*/, 19];
+                    case 19: return [2 /*return*/];
                 }
             });
         });

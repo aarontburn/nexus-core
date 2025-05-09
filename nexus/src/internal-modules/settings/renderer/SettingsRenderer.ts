@@ -27,6 +27,30 @@
         settings: any[]
     }
 
+    interface ImportedModuleInfo {
+        moduleName: string,
+        moduleID: string,
+        isDeleted: boolean,
+        author: string,
+        version: string,
+        path: string,
+        iconPath?: string;
+
+    }
+
+    const getAbbreviation = (moduleName: string) => {
+        const ABBREVIATION_LENGTH: number = 3;
+        const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
+        const out: string[] = [];
+
+        for (let i = 0; i < ABBREVIATION_LENGTH; i++) {
+            if (i >= abbreviation.length) {
+                break;
+            }
+            out.push(abbreviation[i]);
+        }
+        return out.join("");
+    }
     const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
         return window.ipc.send(window, eventName, data);
     }
@@ -351,11 +375,10 @@
     }
 
 
-    const screen: HTMLElement = document.getElementById("manage-module");
     const list: HTMLElement = document.getElementById('installed-modules-list');
 
-    function openManageScreen(data: { moduleName: string, moduleID: string, isDeleted: boolean }[]): void {
-        screen.hidden = false;
+    function openManageScreen(data: ImportedModuleInfo[]): void {
+        document.getElementById("manage-module").hidden = false;
 
         // Clear list
         while (list.firstChild) {
@@ -369,21 +392,34 @@
             list.insertAdjacentHTML('beforeend', html);
         }
 
+        data = data.sort((a: ImportedModuleInfo, b: ImportedModuleInfo) => {
+            if (a.isDeleted !== b.isDeleted) {
+                return a.isDeleted ? 1 : -1;
+            }
 
-        data.forEach(({ moduleName, moduleID, isDeleted }) => {
+            return a.moduleName.localeCompare(b.moduleName);
+        });
+
+
+        data.forEach((info: ImportedModuleInfo) => {
             const div: HTMLDivElement = document.createElement('div');
             div.className = 'installed-module';
             div.innerHTML = `
-                <div>
-                    <p class="module-name">${moduleName}</p>
-                    <p class="module-id">${moduleID}</p>
+                <div class="module-icon">
+                ${info.iconPath ? `<img src="${info.iconPath}"></img>` : `<p>${getAbbreviation(info.moduleName)}</p>`}
+                </div>
+
+                <div ${info.isDeleted ? 'class="deleted"' : ''}>
+                    <p class="module-name">${info.moduleName}${info.isDeleted ? ' (Deleted)' : ''}</p>
+                    <p class="module-id">${info.moduleID} ${info.version ? `| ${info.version}` : ''}</p>
+                    <p class="module-path">${info.path}</p>
                 </div>
 
                 <div style="margin-right: auto;"></div>
 
-                ${!isDeleted ?
-                `<p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>`
-                : `<p style="margin-right: 15px; font-style: italic;">Restart Required</p>`
+                ${!info.isDeleted ?
+                    `<p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>`
+                    : `<p style="margin-right: 15px; font-style: italic; text-align: right; color: gray;">Restart Required</p>`
                 }
             `;
 
@@ -391,12 +427,12 @@
             div.querySelector('.remove-module-button')?.addEventListener('click', async () => {
                 const proceed: boolean = await openConfirmModuleDeletionPopup();
                 if (proceed) {
-                    sendToProcess('remove-module', moduleID).then(successful => {
+                    sendToProcess('remove-module', info).then(successful => {
                         if (successful) {
-                            console.log('Removed ' + moduleID);
+                            console.log('Removed ' + info.moduleID);
                             openDeletedPopup()
                         } else {
-                            console.log('Failed to remove ' + moduleID);
+                            console.log('Failed to remove ' + info.moduleID);
                         }
 
                         sendToProcess('manage-modules').then(openManageScreen);

@@ -110,7 +110,7 @@ export function handleExternalWrapper(context: InitContext) {
             }
             case "swap-to-module": {
                 // data[0] should be the target module ID, or if undefined, will be the caller module.
-                
+
                 const target: string = data[0] ?? source.getIPCSource();
                 if (!context.moduleViewMap.has(target)) {
                     return {
@@ -124,6 +124,17 @@ export function handleExternalWrapper(context: InitContext) {
                 } else {
                     return { body: `Success: ${target} is already visible.`, code: HTTPStatusCodes.ALREADY_REPORTED };
                 }
+            }
+            case "get-module-icon-path": {
+                const target: string = data[0] ?? source.getIPCSource();
+                if (!context.moduleMap.has(target)) {
+                    return {
+                        body: new Error(`Couldn't get icon for ${target}; module doesn't exist.`),
+                        code: HTTPStatusCodes.NOT_FOUND
+                    };
+                }
+
+                return { body: context.moduleMap.get(target).getIconPath(), code: HTTPStatusCodes.OK }
             }
             default: {
                 return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };

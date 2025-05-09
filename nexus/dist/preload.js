@@ -8,31 +8,31 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 var _a = require('electron'), ipcRenderer = _a.ipcRenderer, contextBridge = _a.contextBridge;
-var moduleID = undefined;
+var PRELOAD_MODULE_ID = undefined;
 contextBridge.exposeInMainWorld('ipc', {
     send: function (rendererWindow, eventType, data) {
-        if (!moduleID) {
+        if (!PRELOAD_MODULE_ID) {
             for (var _i = 0, _a = rendererWindow.common.args; _i < _a.length; _i++) {
                 var arg = _a[_i];
                 if (arg.startsWith("--module-id")) {
-                    moduleID = arg.split(":").at(-1);
+                    PRELOAD_MODULE_ID = arg.split(":").at(-1);
                     break;
                 }
             }
         }
-        return ipcRenderer.invoke(moduleID, eventType, data);
+        return ipcRenderer.invoke(PRELOAD_MODULE_ID, eventType, data);
     },
     on: function (rendererWindow, func) {
-        if (!moduleID) {
+        if (!PRELOAD_MODULE_ID) {
             for (var _i = 0, _a = rendererWindow.common.args; _i < _a.length; _i++) {
                 var arg = _a[_i];
                 if (arg.startsWith("--module-id")) {
-                    moduleID = arg.split(":").at(-1);
+                    PRELOAD_MODULE_ID = arg.split(":").at(-1);
                     break;
                 }
             }
         }
-        ipcRenderer.on(moduleID, function (_, eventName) {
+        ipcRenderer.on(PRELOAD_MODULE_ID, function (_, eventName) {
             var args = [];
             for (var _i = 2; _i < arguments.length; _i++) {
                 args[_i - 2] = arguments[_i];
@@ -41,16 +41,16 @@ contextBridge.exposeInMainWorld('ipc', {
         });
     },
     removeAllListeners: function (rendererWindow) {
-        if (!moduleID) {
+        if (!PRELOAD_MODULE_ID) {
             for (var _i = 0, _a = rendererWindow.common.args; _i < _a.length; _i++) {
                 var arg = _a[_i];
                 if (arg.startsWith("--module-id")) {
-                    moduleID = arg.split(":").at(-1);
+                    PRELOAD_MODULE_ID = arg.split(":").at(-1);
                     break;
                 }
             }
         }
-        ipcRenderer.removeAllListeners(moduleID);
+        ipcRenderer.removeAllListeners(PRELOAD_MODULE_ID);
     }
 });
 // Note: This differs from process.argv in the process and has renderer information.

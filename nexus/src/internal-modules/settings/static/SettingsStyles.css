@@ -229,9 +229,8 @@ br {
 
 
 #manage-module {
-    border-radius: 5px;
     margin: 5px;
-    height: calc(100vh - 10px);
+    height: min-content;
 }
 
 
@@ -258,4 +257,32 @@ br {
 
 .installed-module .module-id {
     font-size: 15px;
+}
+
+.installed-module .module-path {
+    font-size: 15px;
+    padding-top: 1px;
+    color: gray;
+}
+
+.installed-module .deleted>* {
+    color: gray
+}
+
+.installed-module .module-icon {
+    margin-right: 10px;
+}
+
+.installed-module .module-icon>img,
+.installed-module .module-icon>p {
+    width: 48px;
+    height: 48px;
+
+}
+
+.installed-module .module-icon>p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
 }

@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from 'fs';
 import { BaseWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
 import { ChangeEvent, DataResponse, DIRECTORIES, HTTPStatusCodes, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox } from "@nexus-app/nexus-module-builder";
-import { getImportedModules, importModuleArchive } from "./ModuleImporter";
+import { getImportedModules, ImportedModuleInfo, importModuleArchive } from "./ModuleImporter";
 import { getInternalSettings, getSettings } from "./settings";
 import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
 import { writeModuleSettingsToStorage } from "../../../init/module-loader";
@@ -347,16 +347,20 @@ export class SettingsProcess extends Process {
                 return importModuleArchive();
             }
             case 'manage-modules': {
-                return getImportedModules(this.deletedModules);
+                return await getImportedModules(this, this.deletedModules);
             }
             case 'remove-module': {
-                const fileName: string = data[0];
+                const info: ImportedModuleInfo = data[0];
 
-                const result = await fs.promises.rm(`${DIRECTORIES.EXTERNAL_MODULES_PATH}/${fileName}`);
-                console.info("[Nexus Settings] Removing " + fileName);
-                if (result === undefined) {
-                    this.deletedModules.push(fileName);
+                try {
+                    console.info("[Nexus Settings] Removing " + info.moduleID);
+                    await fs.promises.rm(info.path.replace('\\built\\', '\\external_modules\\') + '.zip');
+                    this.deletedModules.push(info.moduleID);
                     return true;
+
+                } catch (err) {
+                    console.error("[Nexus Settings] An error occurred when deleting " + info.moduleID)
+                    console.error(err);
                 }
                 return false;
             }

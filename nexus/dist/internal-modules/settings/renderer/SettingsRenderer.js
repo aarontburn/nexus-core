@@ -35,6 +35,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 (function () {
+    var getAbbreviation = function (moduleName) {
+        var ABBREVIATION_LENGTH = 3;
+        var abbreviation = moduleName.split(" ").map(function (s) { return s[0]; });
+        var out = [];
+        for (var i = 0; i < ABBREVIATION_LENGTH; i++) {
+            if (i >= abbreviation.length) {
+                break;
+            }
+            out.push(abbreviation[i]);
+        }
+        return out.join("");
+    };
     var sendToProcess = function (eventName) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -289,11 +301,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         var spacerHTML = "\n            <br/>\n            <br/>\n        ";
         settingsList.insertAdjacentHTML("beforeend", spacerHTML);
     }
-    var screen = document.getElementById("manage-module");
     var list = document.getElementById('installed-modules-list');
     function openManageScreen(data) {
         var _this = this;
-        screen.hidden = false;
+        document.getElementById("manage-module").hidden = false;
         // Clear list
         while (list.firstChild) {
             list.removeChild(list.lastChild);
@@ -302,15 +313,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             var html = "\n                <p style='margin: 0; margin-left: 15px;'>No external modules found.</p>\n            ";
             list.insertAdjacentHTML('beforeend', html);
         }
-        data.forEach(function (_a) {
-            var _b;
-            var moduleName = _a.moduleName, moduleID = _a.moduleID, isDeleted = _a.isDeleted;
+        data = data.sort(function (a, b) {
+            if (a.isDeleted !== b.isDeleted) {
+                return a.isDeleted ? 1 : -1;
+            }
+            return a.moduleName.localeCompare(b.moduleName);
+        });
+        data.forEach(function (info) {
+            var _a;
             var div = document.createElement('div');
             div.className = 'installed-module';
-            div.innerHTML = "\n                <div>\n                    <p class=\"module-name\">".concat(moduleName, "</p>\n                    <p class=\"module-id\">").concat(moduleID, "</p>\n                </div>\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!isDeleted ?
+            div.innerHTML = "\n                <div class=\"module-icon\">\n                ".concat(info.iconPath ? "<img src=\"".concat(info.iconPath, "\"></img>") : "<p>".concat(getAbbreviation(info.moduleName), "</p>"), "\n                </div>\n\n                <div ").concat(info.isDeleted ? 'class="deleted"' : '', ">\n                    <p class=\"module-name\">").concat(info.moduleName).concat(info.isDeleted ? ' (Deleted)' : '', "</p>\n                    <p class=\"module-id\">").concat(info.moduleID, " ").concat(info.version ? "| ".concat(info.version) : '', "</p>\n                    <p class=\"module-path\">").concat(info.path, "</p>\n                </div>\n\n                <div style=\"margin-right: auto;\"></div>\n\n                ").concat(!info.isDeleted ?
                 "<p class='remove-module-button clickable' style=\"color: red; margin-right: 15px\">Remove</p>"
-                : "<p style=\"margin-right: 15px; font-style: italic;\">Restart Required</p>", "\n            ");
-            (_b = div.querySelector('.remove-module-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                : "<p style=\"margin-right: 15px; font-style: italic; text-align: right; color: gray;\">Restart Required</p>", "\n            ");
+            (_a = div.querySelector('.remove-module-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
                 var proceed;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
@@ -318,13 +334,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                         case 1:
                             proceed = _a.sent();
                             if (proceed) {
-                                sendToProcess('remove-module', moduleID).then(function (successful) {
+                                sendToProcess('remove-module', info).then(function (successful) {
                                     if (successful) {
-                                        console.log('Removed ' + moduleID);
+                                        console.log('Removed ' + info.moduleID);
                                         openDeletedPopup();
                                     }
                                     else {
-                                        console.log('Failed to remove ' + moduleID);
+                                        console.log('Failed to remove ' + info.moduleID);
                                     }
                                     sendToProcess('manage-modules').then(openManageScreen);
                                 });

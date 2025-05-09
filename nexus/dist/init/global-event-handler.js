@@ -89,10 +89,10 @@ function swapVisibleModule(context, moduleID) {
 exports.swapVisibleModule = swapVisibleModule;
 function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function () {
-            var target, POSSIBLE_MODES, mode, view, target, view, target, didSwap;
-            return __generator(this, function (_c) {
+            var target, POSSIBLE_MODES, mode, view, target, view, target, didSwap, target;
+            return __generator(this, function (_d) {
                 switch (eventType) {
                     case "get-module-IDs": {
                         return [2 /*return*/, { body: Array.from(context.moduleMap.keys()), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
@@ -152,6 +152,16 @@ function handleExternalWrapper(context) {
                         else {
                             return [2 /*return*/, { body: "Success: ".concat(target, " is already visible."), code: nexus_module_builder_1.HTTPStatusCodes.ALREADY_REPORTED }];
                         }
+                    }
+                    case "get-module-icon-path": {
+                        target = (_c = data[0]) !== null && _c !== void 0 ? _c : source.getIPCSource();
+                        if (!context.moduleMap.has(target)) {
+                            return [2 /*return*/, {
+                                    body: new Error("Couldn't get icon for ".concat(target, "; module doesn't exist.")),
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND
+                                }];
+                        }
+                        return [2 /*return*/, { body: context.moduleMap.get(target).getIconPath(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     default: {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];

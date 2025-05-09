@@ -38,10 +38,10 @@
             return map;
         }, new Map());
         for (var _i = 0, idOrder_1 = idOrder; _i < idOrder_1.length; _i++) {
-            var moduleID_1 = idOrder_1[_i];
-            if (moduleMap.has(moduleID_1)) {
-                reorderedModules.push(moduleMap.get(moduleID_1));
-                moduleMap["delete"](moduleID_1);
+            var moduleID = idOrder_1[_i];
+            if (moduleMap.has(moduleID)) {
+                reorderedModules.push(moduleMap.get(moduleID));
+                moduleMap["delete"](moduleID);
             }
         }
         for (var _a = 0, _b = Array.from(moduleMap.values()); _a < _b.length; _a++) {
@@ -81,12 +81,12 @@
             return out.join("");
         };
         var _loop_1 = function (obj) {
-            var moduleName = obj.moduleName, moduleID_2 = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath, url = obj.url;
+            var moduleName = obj.moduleName, moduleID = obj.moduleID, htmlPath = obj.htmlPath, iconPath = obj.iconPath, url = obj.url;
             if (htmlPath === undefined && url === undefined) { // internal module, ignore
                 return "continue";
             }
             var button = document.createElement("button");
-            button.id = moduleID_2;
+            button.id = moduleID;
             button.className = "header-button drag-item";
             button.draggable = true;
             button.title = moduleName;
@@ -106,17 +106,17 @@
                         break;
                     }
                     default: {
-                        console.log("Unsupported icon for ".concat(moduleID_2, ": ") + iconPath);
+                        console.log("Unsupported icon for ".concat(moduleID, ": ") + iconPath);
                         button.textContent = getAbbreviation(moduleName);
                         break;
                     }
                 }
             }
             button.addEventListener("click", function () {
-                handleButtonClick(moduleID_2, button);
+                handleButtonClick(moduleID, button);
             });
             var builtIns = ["nexus.Home", "nexus.Settings"];
-            if (builtIns.includes(moduleID_2)) {
+            if (builtIns.includes(moduleID)) {
                 button.draggable = false;
                 document.getElementById('built-ins').insertAdjacentElement("beforeend", button);
             }

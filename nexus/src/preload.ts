@@ -1,45 +1,45 @@
 const { ipcRenderer, contextBridge, } = require('electron')
 
-let moduleID: string | undefined = undefined;
 
+let PRELOAD_MODULE_ID: string | undefined = undefined;
 contextBridge.exposeInMainWorld('ipc', {
 	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
-		if (!moduleID) {
+		if (!PRELOAD_MODULE_ID) {
 			for (const arg of rendererWindow.common.args) {
 				if (arg.startsWith("--module-id")) {
-					moduleID = arg.split(":").at(-1);
+					PRELOAD_MODULE_ID = arg.split(":").at(-1);
 					break;
 				}
 			}
 		}
-		return ipcRenderer.invoke(moduleID, eventType, data);
+		return ipcRenderer.invoke(PRELOAD_MODULE_ID, eventType, data);
 	},
 
 	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
-		if (!moduleID) {
+		if (!PRELOAD_MODULE_ID) {
 			for (const arg of rendererWindow.common.args) {
 				if (arg.startsWith("--module-id")) {
-					moduleID = arg.split(":").at(-1);
+					PRELOAD_MODULE_ID = arg.split(":").at(-1);
 					break;
 				}
 			}
 		}
 
-		ipcRenderer.on(moduleID, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+		ipcRenderer.on(PRELOAD_MODULE_ID, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
 
 	},
 
 	removeAllListeners: (rendererWindow: Window) => {
-		if (!moduleID) {
+		if (!PRELOAD_MODULE_ID) {
 			for (const arg of rendererWindow.common.args) {
 				if (arg.startsWith("--module-id")) {
-					moduleID = arg.split(":").at(-1);
+					PRELOAD_MODULE_ID = arg.split(":").at(-1);
 					break;
 				}
 			}
 		}
 
-		ipcRenderer.removeAllListeners(moduleID);
+		ipcRenderer.removeAllListeners(PRELOAD_MODULE_ID);
 	}
 
 
@@ -49,4 +49,5 @@ contextBridge.exposeInMainWorld('ipc', {
 contextBridge.exposeInMainWorld("common", {
 	args: process.argv as readonly string[]
 });
+
 
