@@ -74,20 +74,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.HomeProcess = void 0;
+exports.HomeProcess = exports.MODULE_ID = void 0;
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
 var time_formats_1 = require("./utils/time-formats");
 var MODULE_NAME = "Home";
-var MODULE_ID = 'nexus.Home';
+exports.MODULE_ID = 'nexus.Home';
 var HTML_PATH = path.join(__dirname, "./static/index.html");
 var ICON_PATH = path.join(__dirname, "../../view/assets/logo-no-background.svg");
 var HomeProcess = /** @class */ (function (_super) {
     __extends(HomeProcess, _super);
     function HomeProcess() {
         var _this = _super.call(this, {
-            moduleID: MODULE_ID,
+            moduleID: exports.MODULE_ID,
             moduleName: MODULE_NAME,
             paths: {
                 htmlPath: HTML_PATH,
@@ -96,7 +96,7 @@ var HomeProcess = /** @class */ (function (_super) {
         }) || this;
         _this.setModuleInfo({
             name: MODULE_NAME,
-            id: MODULE_ID,
+            id: exports.MODULE_ID,
             author: "Nexus",
             version: "1.0.0",
             description: "A home screen that displays time and date.",

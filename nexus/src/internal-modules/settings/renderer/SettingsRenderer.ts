@@ -1,11 +1,27 @@
 (() => {
     interface ModuleInfo {
-        moduleName: string,
-        author: string,
-        version: string,
-        description: string,
-        buildVersion: number,
-        platforms: string[]
+        name: string;
+        id: string;
+        version: string;
+        author?: string;
+        description?: string;
+        platforms?: string[];
+        link?: string;
+        "git-latest"?: {
+            "git-username": string;
+            "git-repo-name": string;
+        };
+        build: {
+            'build-version': number;
+            process: string;
+            excluded?: string[];
+            included?: string[];
+            replace?: {
+                from: string;
+                to: string;
+                at: string[];
+            }[];
+        };
     }
 
     interface InputElement {
@@ -92,10 +108,14 @@
             case 'is-dev': {
                 isDeveloperMode = data[0] as boolean;
 
-                const element: HTMLElement = document.getElementById('moduleID');
-                if (element) {
-                    element.hidden = !isDeveloperMode;
-                }
+                Array.from(document.getElementsByClassName("hidden-unless-dev")).forEach(e => {
+                    if (isDeveloperMode) {
+                        e.classList.remove('hidden');
+                    } else {
+                        e.classList.add('hidden');
+                    }
+                })
+
                 break;
             }
             case "populate-settings-list": {
@@ -104,7 +124,6 @@
             }
             case "swap-tabs": {
                 const tabInfo: TabInfo = data[0];
-                console.log(tabInfo)
                 swapTabs(tabInfo);
                 onTabButtonPressed(document.getElementById(`${tabInfo.moduleID}-tab-button`))
                 break;
@@ -173,19 +192,6 @@
         ['click', 'value'],
     ]);
 
-    const keyBlacklist: string[] = [
-        'moduleName', 'module_name',
-        'buildVersion', 'build-version',
-    ];
-
-    const nonDevWhitelist: string[] = [
-        'moduleName', 'module_name',
-        'description',
-        'link',
-        'author',
-    ];
-
-
 
 
     function swapTabs(tab: TabInfo | string): void {
@@ -208,43 +214,18 @@
         const tabInfo: TabInfo = tab as TabInfo;
 
 
-        function getModuleInfoHTML(moduleInfo: any): string {
-            const toSentenceCase = (key: string) => key.charAt(0).toUpperCase() + key.slice(1);
-            const inner: string[] = [];
+        function getModuleInfoHTML(moduleInfo: ModuleInfo): string {
+            return `
+                <p id='open-folder' class='setting-group'>🗀</p>
+                <div class="header">
+                    <p class="module-name">${moduleInfo.name || tabInfo.moduleName}</p>
+                    <p class="module-id hidden-unless-dev ${!isDeveloperMode ? 'hidden' : ''}" id="moduleID">${tabInfo.moduleID} (v${moduleInfo.version})</p>
+                </div>
+                ${moduleInfo.description ? `<p class="module-desc">${moduleInfo.description}</p>` : ''}
 
-
-            inner.push(`<p id='open-folder' class='setting-group' style='float: right; font-size: 25px; margin-top: -12px;'>🗀</p>`)
-            inner.push(`<p style="font-size: 27px; color: var(--accent-color);">${moduleInfo.moduleName || tabInfo.moduleName}</p>`);
-            inner.push(`<p id='moduleID' ${!isDeveloperMode ? 'hidden' : ''}><span>Module ID: </span>${tabInfo.moduleID}<p/>`);
-
-            for (const key in moduleInfo) {
-                if (keyBlacklist.includes(key)) {
-                    continue;
-                }
-
-                const value: any = moduleInfo[key];
-                if (!value || value.length === 0) {
-                    continue;
-                }
-
-                if (!isDeveloperMode) {
-                    if (key.toLowerCase() === "link") {
-                        inner.push(`<p><span>${toSentenceCase(key)}: </span><a href=${value}>${value}</a><p/>`);
-                    } else if (nonDevWhitelist.includes(key)) {
-                        inner.push(`<p><span>${toSentenceCase(key)}:</span> ${value}</p>`);
-                    }
-
-                } else {
-                    if (key.toLowerCase() === "link") {
-                        inner.push(`<p><span>${toSentenceCase(key)}: </span><a href=${value}>${value}</a><p/>`);
-                        continue;
-                    }
-                    inner.push(`<p><span>${toSentenceCase(key)}:</span> ${value}</p>`);
-                }
-
-
-            }
-            return inner.reduce((acc, html) => acc += html + "\n", '');
+                ${moduleInfo.author ? `<p><span>Author: </span> ${moduleInfo.author}</p>` : ''}
+                ${moduleInfo.link ? `<p><span>Link: </span><a href=${moduleInfo.link}>${moduleInfo.link}</a><p/>` : ''}
+            `
         }
 
 
@@ -253,7 +234,7 @@
         if (moduleInfo !== undefined) {
             const moduleInfoHTML: string = `
                 <div class='module-info'>
-                    ${getModuleInfoHTML(moduleInfo)}
+                    ${getModuleInfoHTML(moduleInfo).replace(/  /g, '').replace(/\n/g, '').trim()}
                 </div>
             `
             settingsList.insertAdjacentHTML("beforeend", moduleInfoHTML);

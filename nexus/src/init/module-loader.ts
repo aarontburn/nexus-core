@@ -3,20 +3,21 @@ import { ipcMain } from "electron";
 import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
-import { HomeProcess } from "../internal-modules/home/HomeProcess";
-import { SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
-import { AutoUpdaterProcess } from "../internal-modules/auto-updater/updater-process";
+import { HomeProcess, MODULE_ID as HOME_ID } from "../internal-modules/home/HomeProcess";
+import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
+import { AutoUpdaterProcess, MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
 import * as fs from "fs";
 import * as path from "path";
 
-const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess()];
+
+const INTERNAL_MODULE_IDS = [SettingID, AutoUpdaterID, HOME_ID]
 
 export async function loadModules(context: InitContext): Promise<Map<string, Process>> {
     // Load modules from storage
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
 
     const settingProcess: SettingsProcess = new SettingsProcess();
-    internalModules.push(settingProcess)
+    const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess(context), settingProcess];
 
     // Register all modules
     const moduleMap: Map<string, Process> = new Map();
@@ -37,7 +38,7 @@ function registerModule(map: Map<string, Process>, module: Process) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error(`ID: ${moduleID} | Registered Module: ${existingIPCProcess.getName()} | New Module: ${module.getName()}`);
 
-        if (!internalModules.map(process => process.getIPCSource()).includes(moduleID)) { // dont delete built-in modules, just skip it
+        if (!INTERNAL_MODULE_IDS.includes(moduleID)) { // dont delete built-in modules, just skip it
             map.delete(moduleID); // remove existing module
         }
         return;

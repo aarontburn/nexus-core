@@ -84,10 +84,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         switch (eventType) {
             case 'is-dev': {
                 isDeveloperMode = data[0];
-                var element = document.getElementById('moduleID');
-                if (element) {
-                    element.hidden = !isDeveloperMode;
-                }
+                Array.from(document.getElementsByClassName("hidden-unless-dev")).forEach(function (e) {
+                    if (isDeveloperMode) {
+                        e.classList.remove('hidden');
+                    }
+                    else {
+                        e.classList.add('hidden');
+                    }
+                });
                 break;
             }
             case "populate-settings-list": {
@@ -96,7 +100,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             }
             case "swap-tabs": {
                 var tabInfo = data[0];
-                console.log(tabInfo);
                 swapTabs(tabInfo);
                 onTabButtonPressed(document.getElementById("".concat(tabInfo.moduleID, "-tab-button")));
                 break;
@@ -153,16 +156,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         ['select', 'value'],
         ['click', 'value'],
     ]);
-    var keyBlacklist = [
-        'moduleName', 'module_name',
-        'buildVersion', 'build-version',
-    ];
-    var nonDevWhitelist = [
-        'moduleName', 'module_name',
-        'description',
-        'link',
-        'author',
-    ];
     function swapTabs(tab) {
         // Clear existing settings
         var removeNodes = [];
@@ -180,40 +173,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         }
         var tabInfo = tab;
         function getModuleInfoHTML(moduleInfo) {
-            var toSentenceCase = function (key) { return key.charAt(0).toUpperCase() + key.slice(1); };
-            var inner = [];
-            inner.push("<p id='open-folder' class='setting-group' style='float: right; font-size: 25px; margin-top: -12px;'>\uD83D\uDDC0</p>");
-            inner.push("<p style=\"font-size: 27px; color: var(--accent-color);\">".concat(moduleInfo.moduleName || tabInfo.moduleName, "</p>"));
-            inner.push("<p id='moduleID' ".concat(!isDeveloperMode ? 'hidden' : '', "><span>Module ID: </span>").concat(tabInfo.moduleID, "<p/>"));
-            for (var key in moduleInfo) {
-                if (keyBlacklist.includes(key)) {
-                    continue;
-                }
-                var value = moduleInfo[key];
-                if (!value || value.length === 0) {
-                    continue;
-                }
-                if (!isDeveloperMode) {
-                    if (key.toLowerCase() === "link") {
-                        inner.push("<p><span>".concat(toSentenceCase(key), ": </span><a href=").concat(value, ">").concat(value, "</a><p/>"));
-                    }
-                    else if (nonDevWhitelist.includes(key)) {
-                        inner.push("<p><span>".concat(toSentenceCase(key), ":</span> ").concat(value, "</p>"));
-                    }
-                }
-                else {
-                    if (key.toLowerCase() === "link") {
-                        inner.push("<p><span>".concat(toSentenceCase(key), ": </span><a href=").concat(value, ">").concat(value, "</a><p/>"));
-                        continue;
-                    }
-                    inner.push("<p><span>".concat(toSentenceCase(key), ":</span> ").concat(value, "</p>"));
-                }
-            }
-            return inner.reduce(function (acc, html) { return acc += html + "\n"; }, '');
+            return "\n                <p id='open-folder' class='setting-group'>\uD83D\uDDC0</p>\n                <div class=\"header\">\n                    <p class=\"module-name\">".concat(moduleInfo.name || tabInfo.moduleName, "</p>\n                    <p class=\"module-id hidden-unless-dev ").concat(!isDeveloperMode ? 'hidden' : '', "\" id=\"moduleID\">").concat(tabInfo.moduleID, " (v").concat(moduleInfo.version, ")</p>\n                </div>\n                ").concat(moduleInfo.description ? "<p class=\"module-desc\">".concat(moduleInfo.description, "</p>") : '', "\n\n                ").concat(moduleInfo.author ? "<p><span>Author: </span> ".concat(moduleInfo.author, "</p>") : '', "\n                ").concat(moduleInfo.link ? "<p><span>Link: </span><a href=".concat(moduleInfo.link, ">").concat(moduleInfo.link, "</a><p/>") : '', "\n            ");
         }
         var moduleInfo = tabInfo.moduleInfo;
         if (moduleInfo !== undefined) {
-            var moduleInfoHTML = "\n                <div class='module-info'>\n                    ".concat(getModuleInfoHTML(moduleInfo), "\n                </div>\n            ");
+            var moduleInfoHTML = "\n                <div class='module-info'>\n                    ".concat(getModuleInfoHTML(moduleInfo).replace(/  /g, '').replace(/\n/g, '').trim(), "\n                </div>\n            ");
             settingsList.insertAdjacentHTML("beforeend", moduleInfoHTML);
             document.getElementById('open-folder').addEventListener('click', function () {
                 sendToProcess('open-module-folder', tabInfo.moduleID);

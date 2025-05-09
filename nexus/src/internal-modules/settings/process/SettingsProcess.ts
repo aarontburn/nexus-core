@@ -46,7 +46,7 @@ export class SettingsProcess extends Process {
             id: MODULE_ID,
             version: "1.0.0",
             author: "Nexus",
-            description: "General settings.",
+            description: "General settings that control the Nexus client.",
             build: {
                 "build-version": 0,
                 process: ''

@@ -3,11 +3,10 @@ import { BooleanSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-m
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
-import { writeModuleSettingsToStorage } from "../../init/module-loader";
 
 
 const MODULE_NAME: string = "Home";
-const MODULE_ID: string = 'nexus.Home';
+export const MODULE_ID: string = 'nexus.Home';
 const HTML_PATH: string = path.join(__dirname, "./static/index.html");
 const ICON_PATH: string = path.join(__dirname, "../../view/assets/logo-no-background.svg");
 

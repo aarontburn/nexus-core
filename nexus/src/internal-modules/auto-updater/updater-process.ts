@@ -2,6 +2,8 @@ import { Process } from "@nexus-app/nexus-module-builder";
 import { app } from "electron";
 import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater"
 import * as path from "path";
+import { InitContext } from "../../utils/types";
+import ModuleUpdater from "./module-updater";
 
 
 const MODULE_NAME: string = "Nexus Auto Updater";
@@ -9,11 +11,14 @@ export const MODULE_ID: string = 'nexus.Auto_Updater';
 
 export class AutoUpdaterProcess extends Process {
 
-	public constructor() {
+	private moduleUpdater: ModuleUpdater;
+
+	public constructor(context: InitContext) {
 		super({
 			moduleID: MODULE_ID,
 			moduleName: MODULE_NAME,
 		});
+		this.moduleUpdater = new ModuleUpdater(context); 
 
 		this.setModuleInfo({
 			name: MODULE_NAME,
@@ -27,6 +32,12 @@ export class AutoUpdaterProcess extends Process {
 			},
 			platforms: ['win32', 'darwin'],
 		});
+		
+	}
+
+	public async initialize(): Promise<void> {
+		console.info("[Nexus Auto Updater] Checking for module updates...");
+		this.moduleUpdater.initialize();
 	}
 
 	private autoUpdaterStarted = false;
