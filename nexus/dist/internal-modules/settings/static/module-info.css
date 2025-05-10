@@ -32,3 +32,20 @@
     color: gray;
     transition: 0.2s;
 }
+
+.module-controls {
+    display: flex;
+    align-items: end;
+    height: 100%;
+}
+
+.module-controls>p {
+    font-size: 15px;
+    transition: 0.2s;
+    color: gray;
+    margin-right: 1em;
+}
+
+.module-controls>p:hover {
+    color: var(--accent-color)
+}

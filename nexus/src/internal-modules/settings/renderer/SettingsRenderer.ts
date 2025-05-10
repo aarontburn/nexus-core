@@ -398,10 +398,18 @@
 
                 <div style="margin-right: auto;"></div>
 
-                ${!info.isDeleted ?
-                    `<p class='remove-module-button clickable' style="color: red; margin-right: 15px">Remove</p>`
-                    : `<p style="margin-right: 15px; font-style: italic; text-align: right; color: gray;">Restart Required</p>`
-                }
+                <div class="module-controls">
+                    <p class='clickable'">Check For Update</p>
+                    <p class='clickable'">Force Reload</p>
+                    ${!info.isDeleted ?
+                        `<p class='remove-module-button clickable' style="color: red;">Remove</p>` :
+                        `<p style="font-style: italic; text-align: right; color: gray;">Restart Required</p>`
+                    }
+                </div>
+
+
+
+
             `;
 
 

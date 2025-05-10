@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,6 +59,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
+var electron_1 = require("electron");
+var fs = __importStar(require("fs"));
+var path_1 = require("path");
 var ModuleUpdater = /** @class */ (function () {
     function ModuleUpdater(context) {
         this.context = context;
@@ -47,47 +74,152 @@ var ModuleUpdater = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        console.info("[Nexus Auto Updater] Checking for module updates...");
                         releases = {};
-                        return [4 /*yield*/, Promise.allSettled(Array.from(this.context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () {
-                                var moduleInfo, response, releaseData, assets, error_1;
+                        return [4 /*yield*/, Promise.all(Array.from(this.context.moduleMap.values()).map(function (module) { return __awaiter(_this, void 0, void 0, function () {
+                                var versionInfo;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0:
-                                            moduleInfo = module.getModuleInfo();
-                                            if (!(moduleInfo["git-latest"] &&
-                                                moduleInfo["git-latest"]["git-repo-name"] &&
-                                                moduleInfo["git-latest"]['git-username'])) return [3 /*break*/, 5];
-                                            _a.label = 1;
+                                        case 0: return [4 /*yield*/, this.getLatestRemoteVersion(module.getID())];
                                         case 1:
-                                            _a.trys.push([1, 4, , 5]);
-                                            return [4 /*yield*/, fetch("https://api.github.com/repos/".concat(moduleInfo["git-latest"]['git-username'], "/").concat(moduleInfo["git-latest"]["git-repo-name"], "/releases/latest"))];
-                                        case 2:
-                                            response = _a.sent();
-                                            if (!response.ok) {
-                                                throw new Error("GitHub API error: ".concat(response.status, " - ").concat(response.statusText));
+                                            versionInfo = _a.sent();
+                                            if (versionInfo === undefined) {
+                                                return [2 /*return*/];
                                             }
-                                            return [4 /*yield*/, response.json()];
-                                        case 3:
-                                            releaseData = _a.sent();
-                                            assets = releaseData.assets;
-                                            if (!assets || assets.length === 0) {
-                                                console.warn("No assets found in the latest release.");
-                                                return [2 /*return*/, []];
+                                            // Decide if this should update for all different version or only ascending version
+                                            if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+                                                releases[module.getID()] = versionInfo;
                                             }
-                                            releases[module.getID()] = assets[0].browser_download_url;
-                                            return [3 /*break*/, 5];
-                                        case 4:
-                                            error_1 = _a.sent();
-                                            console.error("Error fetching latest release:", error_1);
-                                            return [3 /*break*/, 5];
-                                        case 5: return [2 /*return*/];
+                                            return [2 /*return*/];
                                     }
                                 });
                             }); }))];
                     case 1:
                         _a.sent();
-                        console.log(releases);
+                        console.info("[Nexus Auto Updater] Module updates found:\n" +
+                            Object.keys(releases)
+                                .map(function (moduleID) { return "\t".concat(moduleID, " (").concat(releases[moduleID].currentVersion, " => ").concat(releases[moduleID].latestVersion, ")"); })
+                                .join("\n"));
                         return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ModuleUpdater.prototype.checkForUpdate = function (moduleID) {
+        return __awaiter(this, void 0, void 0, function () {
+            var versionInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getLatestRemoteVersion(moduleID)];
+                    case 1:
+                        versionInfo = _a.sent();
+                        if (versionInfo === undefined) {
+                            return [2 /*return*/, undefined];
+                        }
+                        if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+                            return [2 /*return*/, versionInfo];
+                        }
+                        else {
+                            return [2 /*return*/, undefined];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ModuleUpdater.prototype.downloadLatest = function (moduleID, url) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, arrayBuffer, buffer, externalFolders, _i, externalFolders_1, folderName, pathToFolder, filePath;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        console.info("[Nexus Auto Updater] Downloading new version for ".concat(moduleID, " from ").concat(url));
+                        return [4 /*yield*/, electron_1.net.fetch(url)];
+                    case 1:
+                        response = _a.sent();
+                        return [4 /*yield*/, response.arrayBuffer()];
+                    case 2:
+                        arrayBuffer = _a.sent();
+                        buffer = Buffer.from(arrayBuffer);
+                        return [4 /*yield*/, fs.promises.readdir(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH)];
+                    case 3:
+                        externalFolders = _a.sent();
+                        _i = 0, externalFolders_1 = externalFolders;
+                        _a.label = 4;
+                    case 4:
+                        if (!(_i < externalFolders_1.length)) return [3 /*break*/, 7];
+                        folderName = externalFolders_1[_i];
+                        if (!folderName.endsWith('.zip'))
+                            return [3 /*break*/, 6];
+                        if (!folderName.includes(moduleID)) return [3 /*break*/, 6];
+                        pathToFolder = (0, path_1.join)(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, folderName);
+                        return [4 /*yield*/, fs.promises.rm(pathToFolder, { recursive: true, force: true })];
+                    case 5:
+                        _a.sent();
+                        console.info("[Nexus Auto Updater] \tRemoved the old version of ".concat(moduleID));
+                        _a.label = 6;
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 4];
+                    case 7:
+                        filePath = "".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(moduleID, ".zip");
+                        return [4 /*yield*/, fs.promises.writeFile(filePath, buffer)];
+                    case 8:
+                        _a.sent();
+                        console.info("[Nexus Auto Updater] \tSuccessfully downloaded new version for ".concat(moduleID, "; will be applied next launch."));
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // Returns 1 if the version1 is higher, -1 if version2 is higher, 0 if equal
+    ModuleUpdater.prototype.compareSemanticVersion = function (version1, version2) {
+        var v1 = version1.split('.').map(function (part) { return parseInt(part, 10); });
+        var v2 = version2.split('.').map(function (part) { return parseInt(part, 10); });
+        for (var i = 0; i < 3; i++) {
+            if (v1[i] !== v2[i]) {
+                return v1[i] > v2[i] ? 1 : -1;
+            }
+        }
+        return 0;
+    };
+    ModuleUpdater.prototype.getLatestRemoteVersion = function (moduleID) {
+        return __awaiter(this, void 0, void 0, function () {
+            var moduleInfo, response, releaseData, version, assets, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        moduleInfo = this.context.moduleMap.get(moduleID).getModuleInfo();
+                        if (!(moduleInfo["git-latest"] &&
+                            moduleInfo["git-latest"]["git-repo-name"] &&
+                            moduleInfo["git-latest"]['git-username'])) return [3 /*break*/, 5];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        return [4 /*yield*/, fetch("https://api.github.com/repos/".concat(moduleInfo["git-latest"]['git-username'], "/").concat(moduleInfo["git-latest"]["git-repo-name"], "/releases/latest"))];
+                    case 2:
+                        response = _a.sent();
+                        if (!response.ok) {
+                            throw new Error("GitHub API error: ".concat(response.status, " - ").concat(response.statusText));
+                        }
+                        return [4 /*yield*/, response.json()];
+                    case 3:
+                        releaseData = _a.sent();
+                        version = releaseData.tag_name;
+                        assets = releaseData.assets;
+                        if (!assets || assets.length === 0) {
+                            console.warn("No assets found in the latest release.");
+                        }
+                        return [2 /*return*/, {
+                                currentVersion: moduleInfo.version,
+                                latestVersion: version,
+                                url: assets[0].browser_download_url
+                            }];
+                    case 4:
+                        error_1 = _a.sent();
+                        console.error("Error fetching latest release:", error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });

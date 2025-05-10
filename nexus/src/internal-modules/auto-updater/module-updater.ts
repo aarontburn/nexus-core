@@ -1,6 +1,16 @@
-import { ModuleInfo } from "@nexus-app/nexus-module-builder";
+import { DIRECTORIES, ModuleInfo, Process } from "@nexus-app/nexus-module-builder";
 import { InitContext } from "../../utils/types";
 
+import { net } from "electron";
+import * as fs from "fs";
+import { join } from "path";
+
+
+interface VersionInfo {
+    url: string;
+    currentVersion: string;
+    latestVersion: string;
+}
 
 export default class ModuleUpdater {
     private context: InitContext
@@ -9,21 +19,72 @@ export default class ModuleUpdater {
     }
 
     public async initialize() {
-        const releases: { [moduleID: string]: { version: string, url: string } } = await this.getAllRemote();
+        console.info("[Nexus Auto Updater] Checking for module updates...");
 
+        const releases: { [moduleID: string]: VersionInfo } = {};
+        await Promise.all(Array.from(this.context.moduleMap.values()).map(async (module: Process) => {
+            const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(module.getID());
 
-        const shouldUpdateModuleIDs: string[] = [];
-        Array.from(this.context.moduleMap.values()).map(module => {
-            const currentModuleVersion: string = module.getModuleInfo().version;
-            const remoteModuleVersion: string = releases[module.getID()].version;
-            if (this.compareSemanticVersion(remoteModuleVersion, currentModuleVersion) === 1) {
-                shouldUpdateModuleIDs.push(module.getID())
+            if (versionInfo === undefined) {
+                return;
             }
-        })
+
+            // Decide if this should update for all different version or only ascending version
+            if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+                releases[module.getID()] = versionInfo;
+            }
+        }));
+
+        console.info(
+            "[Nexus Auto Updater] Module updates found:\n" +
+            Object.keys(releases)
+                .map(moduleID => `\t${moduleID} (${releases[moduleID].currentVersion} => ${releases[moduleID].latestVersion})`)
+                .join("\n")
+        )
 
     }
 
-    // Returns 1 if the version1 is higher
+    public async checkForUpdate(moduleID: string): Promise<VersionInfo | undefined> {
+        const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(moduleID);
+
+        if (versionInfo === undefined) {
+            return undefined;
+        }
+
+        if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+            return versionInfo;
+        } else {
+            return undefined;
+        }
+    }
+
+    private async downloadLatest(moduleID: string, url: string) {
+        console.info(`[Nexus Auto Updater] Downloading new version for ${moduleID} from ${url}`);
+
+        const response: Response = await net.fetch(url);
+        const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        // Remove old version
+        const externalFolders: string[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH);
+        for (const folderName of externalFolders) {
+            if (!folderName.endsWith('.zip')) continue;
+
+            if (folderName.includes(moduleID)) {
+                const pathToFolder: string = join(DIRECTORIES.EXTERNAL_MODULES_PATH, folderName);
+                await fs.promises.rm(pathToFolder, { recursive: true, force: true });
+                console.info(`[Nexus Auto Updater] \tRemoved the old version of ${moduleID}`);
+            }
+        }
+
+        const filePath = `${DIRECTORIES.EXTERNAL_MODULES_PATH}/${moduleID}.zip`;
+        await fs.promises.writeFile(filePath, buffer);
+        console.info(`[Nexus Auto Updater] \tSuccessfully downloaded new version for ${moduleID}; will be applied next launch.`);
+
+
+    }
+
+    // Returns 1 if the version1 is higher, -1 if version2 is higher, 0 if equal
     private compareSemanticVersion(version1: string, version2: string): 1 | 0 | -1 {
         const v1: number[] = version1.split('.').map(part => parseInt(part, 10));
         const v2: number[] = version2.split('.').map(part => parseInt(part, 10));
@@ -33,38 +94,38 @@ export default class ModuleUpdater {
                 return v1[i] > v2[i] ? 1 : -1;
             }
         }
-        return 0
+        return 0;
     }
 
-    private async getAllRemote() {
-        const releases: { [moduleID: string]: { version: string, url: string } } = {};
-        await Promise.allSettled(Array.from(this.context.moduleMap.values()).map(async module => {
-            const moduleInfo: ModuleInfo = module.getModuleInfo();
+    private async getLatestRemoteVersion(moduleID: string): Promise<VersionInfo | undefined> {
+        const moduleInfo: ModuleInfo = this.context.moduleMap.get(moduleID).getModuleInfo();
 
-            if (moduleInfo["git-latest"] &&
-                moduleInfo["git-latest"]["git-repo-name"] &&
-                moduleInfo["git-latest"]['git-username']) {
+        if (moduleInfo["git-latest"] &&
+            moduleInfo["git-latest"]["git-repo-name"] &&
+            moduleInfo["git-latest"]['git-username']) {
 
-                try {
-                    const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
+            try {
+                const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
 
-                    if (!response.ok) {
-                        throw new Error(`GitHub API error: ${response.status} - ${response.statusText}`);
-                    }
-                    const releaseData = await response.json();
-                    const version = releaseData.tag_name
-                    const assets = releaseData.assets;
-
-                    if (!assets || assets.length === 0) {
-                        console.warn("No assets found in the latest release.");
-                        return [];
-                    }
-                    releases[module.getID()] = { url: assets[0].browser_download_url, version: version }
-                } catch (error) {
-                    console.error("Error fetching latest release:", error);
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status} - ${response.statusText}`);
                 }
+                const releaseData = await response.json();
+                const version = releaseData.tag_name;
+                const assets = releaseData.assets;
+
+                if (!assets || assets.length === 0) {
+                    console.warn("No assets found in the latest release.");
+                }
+                return {
+                    currentVersion: moduleInfo.version,
+                    latestVersion: version,
+                    url: assets[0].browser_download_url
+                }
+            } catch (error) {
+                console.error("Error fetching latest release:", error);
             }
-        }));
-        return releases;
+        }
     }
+
 }

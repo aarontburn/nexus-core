@@ -112,7 +112,6 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
     AutoUpdaterProcess.prototype.initialize = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                console.info("[Nexus Auto Updater] Checking for module updates...");
                 this.moduleUpdater.initialize();
                 return [2 /*return*/];
             });

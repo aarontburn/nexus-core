@@ -36,7 +36,6 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	public async initialize(): Promise<void> {
-		console.info("[Nexus Auto Updater] Checking for module updates...");
 		this.moduleUpdater.initialize();
 	}
 
