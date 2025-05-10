@@ -92,15 +92,18 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             moduleID: exports.MODULE_ID,
             moduleName: MODULE_NAME
         }) || this;
+        _this.finishedChecking = false;
         _this.autoUpdaterStarted = false;
         _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
         _this.moduleUpdater = new module_updater_1["default"](context);
+        _this.context = context;
         _this.setModuleInfo({
             name: MODULE_NAME,
             id: exports.MODULE_ID,
             version: "1.0.0",
             author: "Nexus",
-            description: "The Nexus auto-updater.",
+            description: "The Nexus auto-updater and module updater.",
+            link: 'https://github.com/aarontburn/nexus-core',
             build: {
                 "build-version": 0,
                 process: ''
@@ -109,11 +112,93 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         });
         return _this;
     }
-    AutoUpdaterProcess.prototype.initialize = function () {
+    AutoUpdaterProcess.prototype.handleExternal = function (source, eventType, data) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var _c, target, updateInfo, force, moduleID, updateInfo, successful;
+            var _this = this;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _c = eventType;
+                        switch (_c) {
+                            case "check-for-update": return [3 /*break*/, 1];
+                            case "get-all-updates": return [3 /*break*/, 3];
+                            case "update-module": return [3 /*break*/, 4];
+                        }
+                        return [3 /*break*/, 8];
+                    case 1:
+                        target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
+                        if (!this.context.moduleMap.has(target)) {
+                            return [2 /*return*/, { body: new Error("No module with the ID of ".concat(target, " found.")), code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND }];
+                        }
+                        return [4 /*yield*/, this.moduleUpdater.checkForUpdate(target)];
+                    case 2:
+                        updateInfo = _d.sent();
+                        return [2 /*return*/, { body: updateInfo, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    case 3:
+                        {
+                            if (this.finishedChecking) {
+                                return [2 /*return*/, { body: this.moduleUpdater.getAvailableUpdates(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                            }
+                            return [2 /*return*/, new Promise(function (resolve) {
+                                    var timeoutMS = 10000;
+                                    var intervalMS = 500;
+                                    var timeout = setTimeout(function () {
+                                        clearInterval(interval);
+                                        resolve({ body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.LOCKED });
+                                    }, timeoutMS);
+                                    var interval = setInterval(function () {
+                                        if (_this.finishedChecking) {
+                                            clearTimeout(timeout);
+                                            clearInterval(interval);
+                                            resolve({ body: _this.moduleUpdater.getAvailableUpdates(), code: nexus_module_builder_1.HTTPStatusCodes.OK });
+                                        }
+                                    }, intervalMS);
+                                })];
+                        }
+                        _d.label = 4;
+                    case 4:
+                        force = data[0] === "force";
+                        moduleID = (_b = data[1]) !== null && _b !== void 0 ? _b : source.getIPCSource();
+                        if (!this.context.moduleMap.has(moduleID)) {
+                            return [2 /*return*/, { body: new Error("No module with the ID of ".concat(moduleID, " found.")), code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND }];
+                        }
+                        return [4 /*yield*/, this.moduleUpdater.getLatestRemoteVersion(moduleID)];
+                    case 5:
+                        updateInfo = _d.sent();
+                        if (updateInfo === undefined) {
+                            return [2 /*return*/, { body: "No latest releases found for " + moduleID, code: nexus_module_builder_1.HTTPStatusCodes.NO_CONTENT }];
+                        }
+                        if (!(force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1)) return [3 /*break*/, 7];
+                        return [4 /*yield*/, this.moduleUpdater.downloadLatest(moduleID, updateInfo.url)];
+                    case 6:
+                        successful = _d.sent();
+                        if (!successful) {
+                            return [2 /*return*/, { body: "An error occurred while updating ".concat(moduleID), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        _d.label = 7;
+                    case 7: return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    case 8:
+                        {
+                            return [2 /*return*/, { code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined }];
+                        }
+                        _d.label = 9;
+                    case 9: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    AutoUpdaterProcess.prototype.beforeWindowCreated = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                this.moduleUpdater.initialize();
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.moduleUpdater.checkForAllUpdates()];
+                    case 1:
+                        _a.sent();
+                        this.finishedChecking = true;
+                        return [2 /*return*/];
+                }
             });
         });
     };

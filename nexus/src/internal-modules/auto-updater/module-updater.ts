@@ -6,7 +6,7 @@ import * as fs from "fs";
 import { join } from "path";
 
 
-interface VersionInfo {
+export interface VersionInfo {
     url: string;
     currentVersion: string;
     latestVersion: string;
@@ -14,11 +14,14 @@ interface VersionInfo {
 
 export default class ModuleUpdater {
     private context: InitContext
+
+    private updates: { [moduleID: string]: VersionInfo };
+
     constructor(context: InitContext) {
         this.context = context;
     }
 
-    public async initialize() {
+    public async checkForAllUpdates() {
         console.info("[Nexus Auto Updater] Checking for module updates...");
 
         const releases: { [moduleID: string]: VersionInfo } = {};
@@ -34,6 +37,7 @@ export default class ModuleUpdater {
                 releases[module.getID()] = versionInfo;
             }
         }));
+        this.updates = releases;
 
         console.info(
             "[Nexus Auto Updater] Module updates found:\n" +
@@ -41,8 +45,13 @@ export default class ModuleUpdater {
                 .map(moduleID => `\t${moduleID} (${releases[moduleID].currentVersion} => ${releases[moduleID].latestVersion})`)
                 .join("\n")
         )
-
     }
+
+    public getAvailableUpdates(): { [moduleID: string]: VersionInfo } {
+        return { ...this.updates }
+    }
+
+
 
     public async checkForUpdate(moduleID: string): Promise<VersionInfo | undefined> {
         const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(moduleID);
@@ -58,34 +67,43 @@ export default class ModuleUpdater {
         }
     }
 
-    private async downloadLatest(moduleID: string, url: string) {
-        console.info(`[Nexus Auto Updater] Downloading new version for ${moduleID} from ${url}`);
+    public async downloadLatest(moduleID: string, url: string): Promise<boolean> {
+        try {
+            console.info(`[Nexus Auto Updater] Downloading new version for ${moduleID} from ${url}`);
 
-        const response: Response = await net.fetch(url);
-        const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+            const response: Response = await net.fetch(url);
+            const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
 
-        // Remove old version
-        const externalFolders: string[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH);
-        for (const folderName of externalFolders) {
-            if (!folderName.endsWith('.zip')) continue;
+            // Remove old version
+            const externalFolders: string[] = await fs.promises.readdir(DIRECTORIES.EXTERNAL_MODULES_PATH);
+            for (const folderName of externalFolders) {
+                if (!folderName.endsWith('.zip')) continue;
 
-            if (folderName.includes(moduleID)) {
-                const pathToFolder: string = join(DIRECTORIES.EXTERNAL_MODULES_PATH, folderName);
-                await fs.promises.rm(pathToFolder, { recursive: true, force: true });
-                console.info(`[Nexus Auto Updater] \tRemoved the old version of ${moduleID}`);
+                if (folderName.includes(moduleID)) {
+                    const pathToFolder: string = join(DIRECTORIES.EXTERNAL_MODULES_PATH, folderName);
+                    await fs.promises.rm(pathToFolder, { recursive: true, force: true });
+                    console.info(`[Nexus Auto Updater] \tRemoved the old version of ${moduleID}`);
+                }
             }
-        }
 
-        const filePath = `${DIRECTORIES.EXTERNAL_MODULES_PATH}/${moduleID}.zip`;
-        await fs.promises.writeFile(filePath, buffer);
-        console.info(`[Nexus Auto Updater] \tSuccessfully downloaded new version for ${moduleID}; will be applied next launch.`);
+            const filePath = `${DIRECTORIES.EXTERNAL_MODULES_PATH}/${moduleID}.zip`;
+            await fs.promises.writeFile(filePath, buffer);
+            console.info(`[Nexus Auto Updater] \tSuccessfully downloaded new version for ${moduleID}; will be applied next launch.`);
+
+            return true;
+        } catch (err) {
+            console.error(`[Nexus Auto Updater] An error occurred while updating ${moduleID}`);
+            console.error(err);
+
+        }
+        return false;
 
 
     }
 
     // Returns 1 if the version1 is higher, -1 if version2 is higher, 0 if equal
-    private compareSemanticVersion(version1: string, version2: string): 1 | 0 | -1 {
+    public compareSemanticVersion(version1: string, version2: string): 1 | 0 | -1 {
         const v1: number[] = version1.split('.').map(part => parseInt(part, 10));
         const v2: number[] = version2.split('.').map(part => parseInt(part, 10));
 
@@ -97,8 +115,12 @@ export default class ModuleUpdater {
         return 0;
     }
 
-    private async getLatestRemoteVersion(moduleID: string): Promise<VersionInfo | undefined> {
-        const moduleInfo: ModuleInfo = this.context.moduleMap.get(moduleID).getModuleInfo();
+    public async getLatestRemoteVersion(moduleID: string): Promise<VersionInfo | undefined> {
+        const moduleInfo: ModuleInfo | undefined = this.context.moduleMap.get(moduleID)?.getModuleInfo();
+
+        if (moduleInfo === undefined) {
+            throw new Error("Attempted to access module info for a module that doesn't exist: " + moduleID);
+        }
 
         if (moduleInfo["git-latest"] &&
             moduleInfo["git-latest"]["git-repo-name"] &&

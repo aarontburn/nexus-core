@@ -73,16 +73,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 exports.SettingsProcess = exports.MODULE_ID = void 0;
 var path = __importStar(require("path"));
 var fs = __importStar(require("fs"));
 var electron_1 = require("electron");
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
-var ModuleImporter_1 = require("./ModuleImporter");
+var module_importer_1 = require("./module-importer");
 var settings_1 = require("./settings");
-var internal_args_1 = require("../../../init/internal-args");
 var module_loader_1 = require("../../../init/module-loader");
+var handle_external_1 = __importDefault(require("./handle-external"));
+var updater_process_1 = require("../../auto-updater/updater-process");
+var internal_args_1 = require("../../../init/internal-args");
 var MODULE_NAME = "Settings";
 exports.MODULE_ID = 'nexus.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
@@ -100,13 +105,14 @@ var SettingsProcess = /** @class */ (function (_super) {
         }) || this;
         _this.moduleSettingsList = new Map();
         _this.deletedModules = [];
-        _this.devModeSubscribers = [];
+        _this.availableUpdates = {};
         _this.getSettings().setDisplayName("General");
         _this.setModuleInfo({
-            name: "General",
+            name: "General Settings",
             id: exports.MODULE_ID,
             version: "1.0.0",
             author: "Nexus",
+            link: 'https://github.com/aarontburn/nexus-core',
             description: "General settings that control the Nexus client.",
             build: {
                 "build-version": 0,
@@ -117,32 +123,16 @@ var SettingsProcess = /** @class */ (function (_super) {
     }
     SettingsProcess.prototype.initialize = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var settings, _i, _a, moduleSettings, moduleName, list, temp;
             var _this = this;
-            return __generator(this, function (_b) {
+            return __generator(this, function (_a) {
                 _super.prototype.initialize.call(this);
                 this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
-                settings = [];
-                for (_i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
-                    moduleSettings = _a[_i];
-                    moduleName = moduleSettings.getDisplayName();
-                    list = {
-                        moduleSettingsName: moduleName,
-                        moduleID: moduleSettings.getProcess().getIPCSource(),
-                        moduleInfo: moduleSettings.getProcess().getModuleInfo()
-                    };
-                    if (moduleSettings.allToArray().length !== 0) {
-                        settings.push(list);
+                this.populateSettingsList();
+                this.requestExternal(updater_process_1.MODULE_ID, "get-all-updates").then(function (response) {
+                    if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK) {
+                        _this.availableUpdates = response.body;
                     }
-                    moduleSettings.getProcess().refreshAllSettings();
-                }
-                // Swap settings and home module so it appears at the top
-                if (settings[0].moduleSettingsName === "Home") {
-                    temp = settings[0];
-                    settings[0] = settings[1];
-                    settings[1] = temp;
-                }
-                this.sendToRenderer("populate-settings-list", settings);
+                });
                 this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
                     prefix: "open-settings",
                     documentation: {
@@ -161,6 +151,43 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.registerInternalSettings = function () {
         return (0, settings_1.getInternalSettings)(this);
+    };
+    SettingsProcess.prototype.onSettingModified = function (modifiedSetting) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, (0, settings_1.onSettingModified)(this, modifiedSetting)];
+            });
+        });
+    };
+    SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, (0, handle_external_1["default"])(this, source, eventType, data)];
+            });
+        });
+    };
+    SettingsProcess.prototype.populateSettingsList = function () {
+        var settings = [];
+        for (var _i = 0, _a = Array.from(this.moduleSettingsList.values()); _i < _a.length; _i++) {
+            var moduleSettings = _a[_i];
+            var moduleSettingsDisplayName = moduleSettings.getDisplayName();
+            var list = {
+                moduleSettingsName: moduleSettingsDisplayName,
+                moduleID: moduleSettings.getProcess().getIPCSource(),
+                moduleInfo: moduleSettings.getProcess().getModuleInfo()
+            };
+            if (moduleSettings.allToArray().length !== 0) {
+                settings.push(list);
+            }
+            moduleSettings.getProcess().refreshAllSettings();
+        }
+        // Swap settings and home module so it appears at the top
+        if (settings[0].moduleSettingsName === "Home") {
+            var temp = settings[0];
+            settings[0] = settings[1];
+            settings[1] = temp;
+        }
+        this.sendToRenderer("populate-settings-list", settings);
     };
     SettingsProcess.prototype.onExit = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -189,113 +216,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _f.sent();
                         return [2 /*return*/];
                 }
-            });
-        });
-    };
-    SettingsProcess.prototype.onSettingModified = function (modifiedSetting) {
-        return __awaiter(this, void 0, void 0, function () {
-            var zoom_1, shouldForceReload_1, mode;
-            return __generator(this, function (_a) {
-                if (modifiedSetting === undefined) {
-                    return [2 /*return*/];
-                }
-                switch (modifiedSetting.getAccessID()) {
-                    case "zoom": {
-                        zoom_1 = modifiedSetting.getValue();
-                        electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                            view.webContents.setZoomFactor(zoom_1 / 100);
-                            view.emit("bounds-changed");
-                        });
-                        break;
-                    }
-                    case "accent_color": {
-                        electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
-                            view.webContents.executeJavaScript("document.documentElement.style.setProperty('--accent-color', '".concat(modifiedSetting.getValue(), "')"));
-                        });
-                        break;
-                    }
-                    case "dev_mode": {
-                        this.sendToRenderer("is-dev", modifiedSetting.getValue());
-                        this.devModeSubscribers.forEach(function (callback) {
-                            callback(modifiedSetting.getValue());
-                        });
-                        break;
-                    }
-                    case "force_reload": {
-                        shouldForceReload_1 = modifiedSetting.getValue();
-                        (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
-                            if (shouldForceReload_1) {
-                                if (!args.includes("--force-reload")) {
-                                    args.push("--force-reload");
-                                }
-                            }
-                            else {
-                                args = args.filter(function (arg) { return arg !== "--force-reload"; });
-                            }
-                            return (0, internal_args_1.writeInternal)(args);
-                        });
-                        break;
-                    }
-                    case "dark_mode": {
-                        mode = modifiedSetting.getValue();
-                        electron_1.nativeTheme.themeSource = mode.toLowerCase();
-                        break;
-                    }
-                }
-                return [2 /*return*/];
-            });
-        });
-    };
-    SettingsProcess.prototype.handleExternal = function (source, eventType, data) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function () {
-            var nameOrAccessID, setting, target, output, callback;
-            return __generator(this, function (_b) {
-                switch (eventType) {
-                    case "get-setting": {
-                        if (typeof data[0] !== 'string') {
-                            return [2 /*return*/, { body: new Error("Parameter is not a string."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
-                        }
-                        nameOrAccessID = data[0];
-                        setting = this.getSettings().findSetting(nameOrAccessID);
-                        if (setting === undefined) {
-                            return [2 /*return*/, { body: new Error("No setting found with the name or ID of ".concat(nameOrAccessID, ".")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
-                        }
-                        return [2 /*return*/, { body: setting.getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case "open-settings-for-module": {
-                        target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
-                        output = this.swapSettingsTab(target);
-                        if (output === undefined) {
-                            return [2 /*return*/, { body: new Error("The specified module '".concat(target, "' either doesn't exist or has no settings.")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
-                        }
-                        this.requestExternal('nexus.Main', 'swap-to-module');
-                        this.sendToRenderer("swap-tabs", output);
-                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case 'is-developer-mode': {
-                        return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case "get-accent-color": {
-                        return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case "get-module-order": {
-                        return [2 /*return*/, { body: this.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    case 'on-developer-mode-changed': {
-                        callback = data[0];
-                        if (typeof callback !== "function") {
-                            return [2 /*return*/, { body: new Error("Callback is invalid."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
-                        }
-                        this.devModeSubscribers.push(callback);
-                        callback(this.getSettings().findSetting('dev_mode').getValue());
-                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    default: {
-                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
-                    }
-                }
-                return [2 /*return*/];
             });
         });
     };
@@ -392,110 +312,139 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, moduleID_1, info, err_1, elementId, elementValue, settingId, link, moduleOrder;
+            var _a, moduleID, moduleID, response, moduleID_1, moduleID_2, info, err_1, elementId, elementValue, settingId, link, moduleOrder;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = eventType;
                         switch (_a) {
                             case "settings-init": return [3 /*break*/, 1];
-                            case 'open-module-folder': return [3 /*break*/, 2];
-                            case 'import-module': return [3 /*break*/, 3];
-                            case 'manage-modules': return [3 /*break*/, 4];
-                            case 'remove-module': return [3 /*break*/, 6];
-                            case 'restart-now': return [3 /*break*/, 11];
-                            case "swap-settings-tab": return [3 /*break*/, 12];
-                            case "setting-modified": return [3 /*break*/, 13];
-                            case 'setting-reset': return [3 /*break*/, 14];
-                            case 'open-link': return [3 /*break*/, 15];
-                            case "module-order": return [3 /*break*/, 16];
+                            case "update-module": return [3 /*break*/, 2];
+                            case "check-for-update": return [3 /*break*/, 3];
+                            case "force-reload-module": return [3 /*break*/, 5];
+                            case 'open-module-folder': return [3 /*break*/, 6];
+                            case 'import-module': return [3 /*break*/, 7];
+                            case 'manage-modules': return [3 /*break*/, 9];
+                            case 'remove-module': return [3 /*break*/, 11];
+                            case 'restart-now': return [3 /*break*/, 16];
+                            case "swap-settings-tab": return [3 /*break*/, 17];
+                            case "setting-modified": return [3 /*break*/, 18];
+                            case 'setting-reset': return [3 /*break*/, 19];
+                            case 'open-link': return [3 /*break*/, 20];
+                            case "module-order": return [3 /*break*/, 21];
                         }
-                        return [3 /*break*/, 19];
+                        return [3 /*break*/, 24];
                     case 1:
                         {
                             this.initialize();
-                            return [3 /*break*/, 19];
+                            return [3 /*break*/, 24];
                         }
                         _b.label = 2;
                     case 2:
                         {
-                            moduleID_1 = data[0];
-                            electron_1.shell.openPath(path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1)).then(function (result) {
-                                if (result !== '') {
-                                    throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_1));
-                                }
-                            });
-                            return [3 /*break*/, 19];
+                            moduleID = data[0];
+                            this.requestExternal(updater_process_1.MODULE_ID, "update-module", undefined, moduleID);
+                            return [3 /*break*/, 24];
                         }
                         _b.label = 3;
                     case 3:
-                        {
-                            return [2 /*return*/, (0, ModuleImporter_1.importModuleArchive)()];
+                        moduleID = data[0];
+                        return [4 /*yield*/, this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID)];
+                    case 4:
+                        response = _b.sent();
+                        if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK && response.body !== undefined) {
+                            return [2 /*return*/, true];
                         }
-                        _b.label = 4;
-                    case 4: return [4 /*yield*/, (0, ModuleImporter_1.getImportedModules)(this, this.deletedModules)];
-                    case 5: return [2 /*return*/, _b.sent()];
+                        return [2 /*return*/, false];
+                    case 5:
+                        {
+                            moduleID_1 = data[0];
+                            console.info("[Nexus Settings] Force reloading ".concat(moduleID_1, " on next launch."));
+                            (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                                if (!args.includes("--force-reload-module:" + moduleID_1)) {
+                                    args.push("--force-reload-module:" + moduleID_1);
+                                }
+                                return (0, internal_args_1.writeInternal)(args);
+                            });
+                            return [3 /*break*/, 24];
+                        }
+                        _b.label = 6;
                     case 6:
-                        info = data[0];
+                        {
+                            moduleID_2 = data[0];
+                            electron_1.shell.openPath(path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_2)).then(function (result) {
+                                if (result !== '') {
+                                    throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_2));
+                                }
+                            });
+                            return [3 /*break*/, 24];
+                        }
                         _b.label = 7;
-                    case 7:
-                        _b.trys.push([7, 9, , 10]);
+                    case 7: return [4 /*yield*/, (0, module_importer_1.importModuleArchive)()];
+                    case 8: return [2 /*return*/, _b.sent()];
+                    case 9: return [4 /*yield*/, (0, module_importer_1.getImportedModules)(this, this.availableUpdates, this.deletedModules)];
+                    case 10: return [2 /*return*/, _b.sent()];
+                    case 11:
+                        info = data[0];
+                        _b.label = 12;
+                    case 12:
+                        _b.trys.push([12, 14, , 15]);
                         console.info("[Nexus Settings] Removing " + info.moduleID);
                         return [4 /*yield*/, fs.promises.rm(info.path.replace('\\built\\', '\\external_modules\\') + '.zip')];
-                    case 8:
+                    case 13:
                         _b.sent();
                         this.deletedModules.push(info.moduleID);
                         return [2 /*return*/, true];
-                    case 9:
+                    case 14:
                         err_1 = _b.sent();
                         console.error("[Nexus Settings] An error occurred when deleting " + info.moduleID);
                         console.error(err_1);
-                        return [3 /*break*/, 10];
-                    case 10: return [2 /*return*/, false];
-                    case 11:
+                        return [3 /*break*/, 15];
+                    case 15: return [2 /*return*/, false];
+                    case 16:
                         {
                             electron_1.app.relaunch();
                             electron_1.app.exit();
-                            return [3 /*break*/, 19];
+                            return [3 /*break*/, 24];
                         }
-                        _b.label = 12;
-                    case 12:
+                        _b.label = 17;
+                    case 17:
                         {
                             return [2 /*return*/, this.swapSettingsTab(data[0])];
                         }
-                        _b.label = 13;
-                    case 13:
+                        _b.label = 18;
+                    case 18:
                         {
                             elementId = data[0];
                             elementValue = data[1];
                             this.onSettingChange(elementId, elementValue);
-                            return [3 /*break*/, 19];
+                            return [3 /*break*/, 24];
                         }
-                        _b.label = 14;
-                    case 14:
+                        _b.label = 19;
+                    case 19:
                         {
                             settingId = data[0];
                             this.onSettingChange(settingId);
-                            return [3 /*break*/, 19];
+                            return [3 /*break*/, 24];
                         }
-                        _b.label = 15;
-                    case 15:
+                        _b.label = 20;
+                    case 20:
                         {
                             link = data[0];
                             electron_1.shell.openExternal(link);
-                            return [3 /*break*/, 19];
+                            return [3 /*break*/, 24];
                         }
-                        _b.label = 16;
-                    case 16:
+                        _b.label = 21;
+                    case 21:
                         moduleOrder = data[0];
                         return [4 /*yield*/, this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"))];
-                    case 17:
+                    case 22:
                         _b.sent();
                         return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
-                    case 18:
+                    case 23:
                         _b.sent();
-                        return [3 /*break*/, 19];
-                    case 19: return [2 /*return*/];
+                        return [3 /*break*/, 24];
+                    case 24: return [2 /*return*/];
                 }
             });
         });
@@ -509,4 +458,4 @@ var SettingsProcess = /** @class */ (function (_super) {
     return SettingsProcess;
 }(nexus_module_builder_1.Process));
 exports.SettingsProcess = SettingsProcess;
-//# sourceMappingURL=SettingsProcess.js.map
+//# sourceMappingURL=main.js.map

@@ -283,7 +283,9 @@ var ModuleCompiler = /** @class */ (function () {
                                                 return [2 /*return*/];
                                             }
                                             modulePathInTempDir = "".concat(tempFolders.path).concat(tempFolders.name);
-                                            _a = process.argv.includes("--last_exported_id:".concat(tempFolders.name));
+                                            _a = forceReload
+                                                || process.argv.includes("--last_exported_id:".concat(tempFolders.name))
+                                                || process.argv.includes("--force-reload-module:".concat(tempFolders.name.replace(/[^a-zA-Z_.]+/g, '')));
                                             if (_a) return [3 /*break*/, 2];
                                             return [4 /*yield*/, (0, compiler_utils_1.shouldRecompileModule)(modulePathInTempDir, builtDirectory)];
                                         case 1:
@@ -291,7 +293,7 @@ var ModuleCompiler = /** @class */ (function () {
                                             _b.label = 2;
                                         case 2:
                                             shouldRecompile = _a;
-                                            if (!forceReload && !shouldRecompile) {
+                                            if (!shouldRecompile) {
                                                 console.log("Skipping compiling of " + tempFolders.name + "; no changes detected.");
                                                 return [2 /*return*/];
                                             }

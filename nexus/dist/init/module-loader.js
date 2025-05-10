@@ -74,11 +74,11 @@ var electron_1 = require("electron");
 var module_compiler_1 = require("../compiler/module-compiler");
 var global_event_handler_1 = require("./global-event-handler");
 var HomeProcess_1 = require("../internal-modules/home/HomeProcess");
-var SettingsProcess_1 = require("../internal-modules/settings/process/SettingsProcess");
+var main_1 = require("../internal-modules/settings/process/main");
 var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
-var INTERNAL_MODULE_IDS = [SettingsProcess_1.MODULE_ID, updater_process_1.MODULE_ID, HomeProcess_1.MODULE_ID];
+var INTERNAL_MODULE_IDS = [main_1.MODULE_ID, updater_process_1.MODULE_ID, HomeProcess_1.MODULE_ID];
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
         var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1;
@@ -87,7 +87,7 @@ function loadModules(context) {
                 case 0: return [4 /*yield*/, module_compiler_1.ModuleCompiler.load(process.argv.includes("--force-reload"))];
                 case 1:
                     loadedModules = _b.sent();
-                    settingProcess = new SettingsProcess_1.SettingsProcess();
+                    settingProcess = new main_1.SettingsProcess();
                     internalModules = [new HomeProcess_1.HomeProcess(), new updater_process_1.AutoUpdaterProcess(context), settingProcess];
                     moduleMap = new Map();
                     for (_i = 0, _a = __spreadArray(__spreadArray([], internalModules, true), loadedModules, true); _i < _a.length; _i++) {
@@ -107,7 +107,7 @@ function registerModule(map, module) {
     if (existingIPCProcess !== undefined) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error("ID: ".concat(moduleID, " | Registered Module: ").concat(existingIPCProcess.getName(), " | New Module: ").concat(module.getName()));
-        if (!INTERNAL_MODULE_IDS.includes(moduleID)) { // dont delete built-in modules, just skip it
+        if (!INTERNAL_MODULE_IDS.includes(moduleID)) { // don't delete built-in modules, just skip it
             map["delete"](moduleID); // remove existing module
         }
         return;

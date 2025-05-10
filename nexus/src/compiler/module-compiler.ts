@@ -115,11 +115,12 @@ export class ModuleCompiler {
                 }
                 const modulePathInTempDir: string = `${tempFolders.path}${tempFolders.name}`;
 
-                const shouldRecompile: boolean =
-                    process.argv.includes(`--last_exported_id:${tempFolders.name}`) ||
-                    await shouldRecompileModule(modulePathInTempDir, builtDirectory)
+                const shouldRecompile: boolean = forceReload
+                    || process.argv.includes(`--last_exported_id:${tempFolders.name}`)
+                    || process.argv.includes(`--force-reload-module:${tempFolders.name.replace(/[^a-zA-Z_.]+/g, '')}`)
+                    || await shouldRecompileModule(modulePathInTempDir, builtDirectory)
 
-                if (!forceReload && !shouldRecompile) {
+                if (!shouldRecompile) {
                     console.log("Skipping compiling of " + tempFolders.name + "; no changes detected.");
                     return;
                 }

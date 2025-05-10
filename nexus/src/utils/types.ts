@@ -1,6 +1,6 @@
 import { IPCCallback, IPCSource, Process } from "@nexus-app/nexus-module-builder";
 import { BaseWindow, WebContentsView } from "electron";
-import { SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
+import { SettingsProcess } from "../internal-modules/settings/process/main";
 
 export interface InitContext {
     moduleMap: Map<string, Process>;

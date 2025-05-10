@@ -4,7 +4,7 @@ import { InitContext } from "../utils/types";
 import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess, MODULE_ID as HOME_ID } from "../internal-modules/home/HomeProcess";
-import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/settings/process/SettingsProcess";
+import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/settings/process/main";
 import { AutoUpdaterProcess, MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
 import * as fs from "fs";
 import * as path from "path";
@@ -38,7 +38,7 @@ function registerModule(map: Map<string, Process>, module: Process) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error(`ID: ${moduleID} | Registered Module: ${existingIPCProcess.getName()} | New Module: ${module.getName()}`);
 
-        if (!INTERNAL_MODULE_IDS.includes(moduleID)) { // dont delete built-in modules, just skip it
+        if (!INTERNAL_MODULE_IDS.includes(moduleID)) { // don't delete built-in modules, just skip it
             map.delete(moduleID); // remove existing module
         }
         return;

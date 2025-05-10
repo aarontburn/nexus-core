@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -67,7 +78,7 @@ var ModuleUpdater = /** @class */ (function () {
     function ModuleUpdater(context) {
         this.context = context;
     }
-    ModuleUpdater.prototype.initialize = function () {
+    ModuleUpdater.prototype.checkForAllUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
             var releases;
             var _this = this;
@@ -96,6 +107,7 @@ var ModuleUpdater = /** @class */ (function () {
                             }); }))];
                     case 1:
                         _a.sent();
+                        this.updates = releases;
                         console.info("[Nexus Auto Updater] Module updates found:\n" +
                             Object.keys(releases)
                                 .map(function (moduleID) { return "\t".concat(moduleID, " (").concat(releases[moduleID].currentVersion, " => ").concat(releases[moduleID].latestVersion, ")"); })
@@ -104,6 +116,9 @@ var ModuleUpdater = /** @class */ (function () {
                 }
             });
         });
+    };
+    ModuleUpdater.prototype.getAvailableUpdates = function () {
+        return __assign({}, this.updates);
     };
     ModuleUpdater.prototype.checkForUpdate = function (moduleID) {
         return __awaiter(this, void 0, void 0, function () {
@@ -129,10 +144,11 @@ var ModuleUpdater = /** @class */ (function () {
     };
     ModuleUpdater.prototype.downloadLatest = function (moduleID, url) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, arrayBuffer, buffer, externalFolders, _i, externalFolders_1, folderName, pathToFolder, filePath;
+            var response, arrayBuffer, buffer, externalFolders, _i, externalFolders_1, folderName, pathToFolder, filePath, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        _a.trys.push([0, 9, , 10]);
                         console.info("[Nexus Auto Updater] Downloading new version for ".concat(moduleID, " from ").concat(url));
                         return [4 /*yield*/, electron_1.net.fetch(url)];
                     case 1:
@@ -167,7 +183,13 @@ var ModuleUpdater = /** @class */ (function () {
                     case 8:
                         _a.sent();
                         console.info("[Nexus Auto Updater] \tSuccessfully downloaded new version for ".concat(moduleID, "; will be applied next launch."));
-                        return [2 /*return*/];
+                        return [2 /*return*/, true];
+                    case 9:
+                        err_1 = _a.sent();
+                        console.error("[Nexus Auto Updater] An error occurred while updating ".concat(moduleID));
+                        console.error(err_1);
+                        return [3 /*break*/, 10];
+                    case 10: return [2 /*return*/, false];
                 }
             });
         });
@@ -184,27 +206,31 @@ var ModuleUpdater = /** @class */ (function () {
         return 0;
     };
     ModuleUpdater.prototype.getLatestRemoteVersion = function (moduleID) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var moduleInfo, response, releaseData, version, assets, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        moduleInfo = this.context.moduleMap.get(moduleID).getModuleInfo();
+                        moduleInfo = (_a = this.context.moduleMap.get(moduleID)) === null || _a === void 0 ? void 0 : _a.getModuleInfo();
+                        if (moduleInfo === undefined) {
+                            throw new Error("Attempted to access module info for a module that doesn't exist: " + moduleID);
+                        }
                         if (!(moduleInfo["git-latest"] &&
                             moduleInfo["git-latest"]["git-repo-name"] &&
                             moduleInfo["git-latest"]['git-username'])) return [3 /*break*/, 5];
-                        _a.label = 1;
+                        _b.label = 1;
                     case 1:
-                        _a.trys.push([1, 4, , 5]);
+                        _b.trys.push([1, 4, , 5]);
                         return [4 /*yield*/, fetch("https://api.github.com/repos/".concat(moduleInfo["git-latest"]['git-username'], "/").concat(moduleInfo["git-latest"]["git-repo-name"], "/releases/latest"))];
                     case 2:
-                        response = _a.sent();
+                        response = _b.sent();
                         if (!response.ok) {
                             throw new Error("GitHub API error: ".concat(response.status, " - ").concat(response.statusText));
                         }
                         return [4 /*yield*/, response.json()];
                     case 3:
-                        releaseData = _a.sent();
+                        releaseData = _b.sent();
                         version = releaseData.tag_name;
                         assets = releaseData.assets;
                         if (!assets || assets.length === 0) {
@@ -216,7 +242,7 @@ var ModuleUpdater = /** @class */ (function () {
                                 url: assets[0].browser_download_url
                             }];
                     case 4:
-                        error_1 = _a.sent();
+                        error_1 = _b.sent();
                         console.error("Error fetching latest release:", error_1);
                         return [3 /*break*/, 5];
                     case 5: return [2 /*return*/];

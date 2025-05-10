@@ -36,8 +36,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getInternalSettings = exports.getSettings = void 0;
+exports.getInternalSettings = exports.getSettings = exports.onSettingModified = void 0;
 var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
+var electron_1 = require("electron");
+var internal_args_1 = require("../../../init/internal-args");
+var devModeSubscribers = [];
+var onSettingModified = function (module, modifiedSetting) { return __awaiter(void 0, void 0, void 0, function () {
+    var zoom_1, shouldForceReload_1, mode;
+    return __generator(this, function (_a) {
+        if (modifiedSetting === undefined) {
+            return [2 /*return*/];
+        }
+        switch (modifiedSetting.getAccessID()) {
+            case "zoom": {
+                zoom_1 = modifiedSetting.getValue();
+                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                    view.webContents.setZoomFactor(zoom_1 / 100);
+                    view.emit("bounds-changed");
+                });
+                break;
+            }
+            case "accent_color": {
+                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                    view.webContents.executeJavaScript("document.documentElement.style.setProperty('--accent-color', '".concat(modifiedSetting.getValue(), "')"));
+                });
+                break;
+            }
+            case "dev_mode": {
+                module.sendToRenderer("is-dev", modifiedSetting.getValue());
+                devModeSubscribers.forEach(function (callback) {
+                    callback(modifiedSetting.getValue());
+                });
+                break;
+            }
+            case "force_reload": {
+                shouldForceReload_1 = modifiedSetting.getValue();
+                (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                    if (shouldForceReload_1) {
+                        if (!args.includes("--force-reload")) {
+                            args.push("--force-reload");
+                        }
+                    }
+                    else {
+                        args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                    }
+                    return (0, internal_args_1.writeInternal)(args);
+                });
+                break;
+            }
+            case "dark_mode": {
+                mode = modifiedSetting.getValue();
+                electron_1.nativeTheme.themeSource = mode.toLowerCase();
+                break;
+            }
+        }
+        return [2 /*return*/];
+    });
+}); };
+exports.onSettingModified = onSettingModified;
 var getSettings = function (module) {
     return [
         "Appearance",

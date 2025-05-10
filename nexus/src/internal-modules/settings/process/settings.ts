@@ -1,5 +1,67 @@
 import { Process, Setting } from "@nexus-app/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import { BaseWindow, nativeTheme, WebContentsView } from "electron";
+import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
+
+const devModeSubscribers: ((isDev: boolean) => void)[] = [];
+
+
+export const onSettingModified = async (module: Process, modifiedSetting?: Setting<unknown>): Promise<void> => {
+    if (modifiedSetting === undefined) {
+        return;
+    }
+    switch (modifiedSetting.getAccessID()) {
+        case "zoom": {
+            const zoom: number = modifiedSetting.getValue() as number;
+
+            BaseWindow.getAllWindows()[0].contentView.children.forEach(
+                (view: WebContentsView) => {
+                    view.webContents.setZoomFactor(zoom / 100);
+                    view.emit("bounds-changed");
+                });
+
+            break;
+        }
+        case "accent_color": {
+            BaseWindow.getAllWindows()[0].contentView.children.forEach(
+                (view: WebContentsView) => {
+                    view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
+                });
+            break;
+        }
+        case "dev_mode": {
+            module.sendToRenderer("is-dev", modifiedSetting.getValue());
+            devModeSubscribers.forEach((callback) => {
+                callback(modifiedSetting.getValue() as boolean);
+            })
+            break;
+        }
+
+        case "force_reload": {
+            const shouldForceReload: boolean = modifiedSetting.getValue() as boolean;
+
+            readInternal().then(parseInternalArgs).then(args => {
+                if (shouldForceReload) {
+                    if (!args.includes("--force-reload")) {
+                        args.push("--force-reload");
+                    }
+                } else {
+                    args = args.filter(arg => arg !== "--force-reload");
+                }
+
+                return writeInternal(args);
+            });
+            break;
+
+        }
+        case "dark_mode": {
+            // System, Dark, Light
+            const mode: string = modifiedSetting.getValue() as string;
+            nativeTheme.themeSource = mode.toLowerCase() as any;
+            break;
+        }
+    }
+}
 
 
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {

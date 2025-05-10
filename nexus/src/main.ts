@@ -6,7 +6,7 @@ import { createBrowserWindow, createWebViews, showWindow } from "./init/window-c
 import { InitContext } from "./utils/types";
 import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
-import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/SettingsProcess";
+import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/main";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 import { AutoUpdaterProcess, MODULE_ID as UPDATER_PROCESS_ID } from "./internal-modules/auto-updater/updater-process";
 
@@ -68,7 +68,7 @@ async function nexusStart() {
     for (const arg of internalArguments) {
         process.argv.push(arg);
     }
-    await writeInternal(internalArguments);
+    await writeInternal(internalArguments.filter(s => !s.startsWith("--force-reload-module")));
 
     // Load modules
     context.moduleMap = await loadModules(context);

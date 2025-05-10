@@ -24,14 +24,14 @@ export async function readInternal(): Promise<{ [key: string]: any }> {
     return parsedContents;
 }
 
-export async function writeInternal(args: string[]) {
+export async function writeInternal(args: string[], raw: boolean = true) {
     await fs.promises.writeFile(
         DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON,
         JSON.stringify(
             {
                 args: args.length === 0
                     ? ''
-                    : args.filter(arg => !arg.startsWith('--last_exported_id')).join(' ')
+                    : args.filter(arg => raw || !arg.startsWith('--last_exported_id')).join(' ')
             }, undefined, 4)
     );
 }

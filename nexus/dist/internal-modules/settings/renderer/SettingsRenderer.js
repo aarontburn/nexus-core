@@ -262,12 +262,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             });
         });
         // Add spacers to the bottom
-        var spacerHTML = "\n            <br/>\n            <br/>\n        ";
-        settingsList.insertAdjacentHTML("beforeend", spacerHTML);
+        settingsList.insertAdjacentHTML("beforeend", "<br/><br/>");
+    }
+    function renderIfTrue(condition, html) {
+        return condition ? html : '';
     }
     var list = document.getElementById('installed-modules-list');
+    var forceReloadedModules = [];
     function openManageScreen(data) {
         var _this = this;
+        console.log(data);
         document.getElementById("manage-module").hidden = false;
         // Clear list
         while (list.firstChild) {
@@ -287,32 +291,75 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             var _a;
             var div = document.createElement('div');
             div.className = 'installed-module';
-            div.innerHTML = "\n                <div class=\"module-icon\">\n                ".concat(info.iconPath ? "<img src=\"".concat(info.iconPath, "\"></img>") : "<p>".concat(getAbbreviation(info.moduleName), "</p>"), "\n                </div>\n\n                <div ").concat(info.isDeleted ? 'class="deleted"' : '', ">\n                    <p class=\"module-name\">").concat(info.moduleName).concat(info.isDeleted ? ' (Deleted)' : '', "</p>\n                    <p class=\"module-id\">").concat(info.moduleID, " ").concat(info.version ? "| ".concat(info.version) : '', "</p>\n                    <p class=\"module-path\">").concat(info.path, "</p>\n                </div>\n\n                <div style=\"margin-right: auto;\"></div>\n\n                <div class=\"module-controls\">\n                    <p class='clickable'\">Check For Update</p>\n                    <p class='clickable'\">Force Reload</p>\n                    ").concat(!info.isDeleted ?
-                "<p class='remove-module-button clickable' style=\"color: red;\">Remove</p>" :
-                "<p style=\"font-style: italic; text-align: right; color: gray;\">Restart Required</p>", "\n                </div>\n\n\n\n\n            ");
-            (_a = div.querySelector('.remove-module-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
-                var proceed;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, openConfirmModuleDeletionPopup()];
-                        case 1:
-                            proceed = _a.sent();
-                            if (proceed) {
-                                sendToProcess('remove-module', info).then(function (successful) {
-                                    if (successful) {
-                                        console.log('Removed ' + info.moduleID);
-                                        openDeletedPopup();
-                                    }
-                                    else {
-                                        console.log('Failed to remove ' + info.moduleID);
-                                    }
-                                    sendToProcess('manage-modules').then(openManageScreen);
-                                });
-                            }
-                            return [2 /*return*/];
-                    }
-                });
-            }); });
+            div.innerHTML = "\n                <div class=\"module-icon\">\n                    ".concat(info.iconPath ? "<img src=\"".concat(info.iconPath, "\"></img>") : "<p>".concat(getAbbreviation(info.moduleName), "</p>"), "\n                </div>\n\n                <div ").concat(info.isDeleted ? 'class="deleted"' : '', ">\n                    <p class=\"module-name\">").concat(info.moduleName).concat(renderIfTrue(info.isDeleted, ' (Deleted)'), "</p>\n                    <p class=\"module-id\">").concat(info.moduleID, " | ").concat(info.version, " ").concat(renderIfTrue(info.updateAvailable, "(Update Available)"), "</p>\n                    <p class=\"module-path\">").concat(info.path, "</p>\n                </div>\n\n                <div style=\"margin-right: auto;\"></div>\n\n                <div class=\"module-controls\">\n                ").concat(!info.isDeleted
+                ? " <p class='check-update-button clickable'>".concat(info.updateAvailable ? "Update Now" : 'Check For Update', "</p>\n                        <p class='force-reload-button clickable'>").concat(forceReloadedModules.includes(info.moduleID) ? 'Reloading Next Launch' : 'Force Reload', "</p>\n                        <p class='remove-module-button clickable';\">Uninstall</p>\n                        ")
+                : "<p style=\"font-style: italic; text-align: right; color: gray;\">Restart Required</p>", "\n                </div>\n\n            ");
+            if (!info.isDeleted) {
+                var checkUpdateButton_1 = div.querySelector('.check-update-button');
+                checkUpdateButton_1.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        if (checkUpdateButton_1.textContent === "Update Now") {
+                            sendToProcess('update-module', info.moduleID);
+                        }
+                        else if (checkUpdateButton_1.textContent === "Check For Update") {
+                            sendToProcess('check-for-update', info.moduleID).then(function (isUpdateAvailable) {
+                                if (isUpdateAvailable) {
+                                    checkUpdateButton_1.textContent = "Update Now";
+                                    div.querySelector('.module-id').textContent = "".concat(info.moduleID, " | ").concat(info.version, " (Update Available)");
+                                }
+                                else {
+                                    checkUpdateButton_1.textContent = "No Update Found";
+                                    checkUpdateButton_1.style.pointerEvents = "none";
+                                    setTimeout(function () {
+                                        checkUpdateButton_1.textContent = "Check For Update";
+                                        checkUpdateButton_1.style.pointerEvents = "";
+                                        checkUpdateButton_1.style.color = "";
+                                    }, 2000);
+                                }
+                            });
+                        }
+                        return [2 /*return*/];
+                    });
+                }); });
+                var forceReloadButton_1 = div.querySelector('.force-reload-button');
+                if (forceReloadedModules.includes(info.moduleID)) {
+                    forceReloadButton_1.style.pointerEvents = "none";
+                    forceReloadButton_1.style.color = "var(--accent-color)";
+                }
+                forceReloadButton_1.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        forceReloadedModules.push(info.moduleID);
+                        forceReloadButton_1.textContent = 'Reloading Next Launch';
+                        forceReloadButton_1.style.pointerEvents = "none";
+                        forceReloadButton_1.style.color = "var(--accent-color)";
+                        sendToProcess('force-reload-module', info.moduleID);
+                        return [2 /*return*/];
+                    });
+                }); });
+                (_a = div.querySelector('.remove-module-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                    var proceed;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, openConfirmModuleDeletionPopup()];
+                            case 1:
+                                proceed = _a.sent();
+                                if (proceed) {
+                                    sendToProcess('remove-module', info).then(function (successful) {
+                                        if (successful) {
+                                            console.log('Removed ' + info.moduleID);
+                                            openDeletedPopup();
+                                        }
+                                        else {
+                                            console.log('Failed to remove ' + info.moduleID);
+                                        }
+                                        sendToProcess('manage-modules').then(openManageScreen);
+                                    });
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
             list.insertAdjacentElement('beforeend', div);
         });
     }

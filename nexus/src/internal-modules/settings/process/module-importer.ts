@@ -4,7 +4,8 @@ import { OpenDialogOptions, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from "path";
 import { readModuleInfo } from '../../../compiler/compiler-utils';
-import { SettingsProcess } from './SettingsProcess';
+import { SettingsProcess } from './main';
+import { VersionInfo } from '../../auto-updater/module-updater';
 
 
 
@@ -49,12 +50,13 @@ export interface ImportedModuleInfo {
     author: string,
     version: string,
     path: string,
-    iconPath?: string
+    iconPath?: string,
+    updateAvailable?: boolean
 }
 
 
 
-export async function getImportedModules(process: SettingsProcess, deletedModules: string[]): Promise<ImportedModuleInfo[]> {
+export async function getImportedModules(process: SettingsProcess, availableUpdates: { [moduleID: string]: VersionInfo },  deletedModules: string[]): Promise<ImportedModuleInfo[]> {
     const folders: fs.Dirent[] = await fs.promises.readdir(DIRECTORIES.COMPILED_MODULES_PATH, { withFileTypes: true });
 
     const map: Map<string, ImportedModuleInfo> = new Map();
@@ -67,7 +69,7 @@ export async function getImportedModules(process: SettingsProcess, deletedModule
             return;
         }
 
-        const iconPath: string = await (await process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)).body
+        const iconPath: string = (await process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)).body
 
         map.set(moduleInfo.id, {
             iconPath: iconPath,
@@ -76,7 +78,8 @@ export async function getImportedModules(process: SettingsProcess, deletedModule
             moduleID: moduleInfo.id,
             author: moduleInfo.author ?? '',
             isDeleted: false,
-            version: moduleInfo.version
+            version: moduleInfo.version,
+            updateAvailable: Object.keys(availableUpdates).includes(moduleInfo.id)
         });
     }));
 

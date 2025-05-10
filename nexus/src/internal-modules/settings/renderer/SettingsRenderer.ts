@@ -25,32 +25,33 @@
     }
 
     interface InputElement {
-        id: string,
-        inputType: string,
-        returnValue?: any
+        id: string;
+        inputType: string;
+        returnValue?: any;
     }
 
     interface ChangeEvent {
-        id: string,
-        attribute: string,
-        value: any
+        id: string;
+        attribute: string;
+        value: any;
     }
 
     interface TabInfo {
-        moduleName: string,
-        moduleID: string,
-        moduleInfo: ModuleInfo,
-        settings: any[]
+        moduleName: string;
+        moduleID: string;
+        moduleInfo: ModuleInfo;
+        settings: any[];
     }
 
     interface ImportedModuleInfo {
-        moduleName: string,
-        moduleID: string,
-        isDeleted: boolean,
-        author: string,
-        version: string,
-        path: string,
+        moduleName: string;
+        moduleID: string;
+        isDeleted: boolean;
+        author: string;
+        version: string;
+        path: string;
         iconPath?: string;
+        updateAvailable?: boolean;
 
     }
 
@@ -347,18 +348,18 @@
         });
 
         // Add spacers to the bottom
-        const spacerHTML: string = `
-            <br/>
-            <br/>
-        `
-
-        settingsList.insertAdjacentHTML("beforeend", spacerHTML);
+        settingsList.insertAdjacentHTML("beforeend", `<br/><br/>`);
     }
 
 
-    const list: HTMLElement = document.getElementById('installed-modules-list');
+    function renderIfTrue(condition: boolean, html: string): string {
+        return condition ? html : '';
+    }
 
+    const list: HTMLElement = document.getElementById('installed-modules-list');
+    const forceReloadedModules: string[] = [];
     function openManageScreen(data: ImportedModuleInfo[]): void {
+        console.log(data)
         document.getElementById("manage-module").hidden = false;
 
         // Clear list
@@ -387,47 +388,88 @@
             div.className = 'installed-module';
             div.innerHTML = `
                 <div class="module-icon">
-                ${info.iconPath ? `<img src="${info.iconPath}"></img>` : `<p>${getAbbreviation(info.moduleName)}</p>`}
+                    ${info.iconPath ? `<img src="${info.iconPath}"></img>` : `<p>${getAbbreviation(info.moduleName)}</p>`}
                 </div>
 
                 <div ${info.isDeleted ? 'class="deleted"' : ''}>
-                    <p class="module-name">${info.moduleName}${info.isDeleted ? ' (Deleted)' : ''}</p>
-                    <p class="module-id">${info.moduleID} ${info.version ? `| ${info.version}` : ''}</p>
+                    <p class="module-name">${info.moduleName}${renderIfTrue(info.isDeleted, ' (Deleted)')}</p>
+                    <p class="module-id">${info.moduleID} | ${info.version} ${renderIfTrue(info.updateAvailable, `(Update Available)`)}</p>
                     <p class="module-path">${info.path}</p>
                 </div>
 
                 <div style="margin-right: auto;"></div>
 
                 <div class="module-controls">
-                    <p class='clickable'">Check For Update</p>
-                    <p class='clickable'">Force Reload</p>
-                    ${!info.isDeleted ?
-                        `<p class='remove-module-button clickable' style="color: red;">Remove</p>` :
-                        `<p style="font-style: italic; text-align: right; color: gray;">Restart Required</p>`
-                    }
+                ${!info.isDeleted
+                    ? ` <p class='check-update-button clickable'>${info.updateAvailable ? "Update Now" : 'Check For Update'}</p>
+                        <p class='force-reload-button clickable'>${forceReloadedModules.includes(info.moduleID) ? 'Reloading Next Launch' : 'Force Reload'}</p>
+                        <p class='remove-module-button clickable';">Uninstall</p>
+                        `
+                    : `<p style="font-style: italic; text-align: right; color: gray;">Restart Required</p>`
+                }
                 </div>
 
-
-
-
             `;
+            if (!info.isDeleted) {
+                const checkUpdateButton: HTMLElement = div.querySelector('.check-update-button');
+                checkUpdateButton.addEventListener('click', async () => {
+                    if (checkUpdateButton.textContent === "Update Now") {
+                        sendToProcess('update-module', info.moduleID);
 
+                    } else if (checkUpdateButton.textContent === "Check For Update") {
+                        sendToProcess('check-for-update', info.moduleID).then(isUpdateAvailable => {
+                            if (isUpdateAvailable) {
+                                checkUpdateButton.textContent = "Update Now";
+                                div.querySelector('.module-id').textContent = `${info.moduleID} | ${info.version} (Update Available)`;
+                            } else {
+                                checkUpdateButton.textContent = "No Update Found";
+                                checkUpdateButton.style.pointerEvents = "none";
 
-            div.querySelector('.remove-module-button')?.addEventListener('click', async () => {
-                const proceed: boolean = await openConfirmModuleDeletionPopup();
-                if (proceed) {
-                    sendToProcess('remove-module', info).then(successful => {
-                        if (successful) {
-                            console.log('Removed ' + info.moduleID);
-                            openDeletedPopup()
-                        } else {
-                            console.log('Failed to remove ' + info.moduleID);
-                        }
+                                setTimeout(() => {
+                                    checkUpdateButton.textContent = "Check For Update";
+                                    checkUpdateButton.style.pointerEvents = "";
+                                    checkUpdateButton.style.color = "";
 
-                        sendToProcess('manage-modules').then(openManageScreen);
-                    });
+                                }, 2000)
+
+                            }
+                        });
+                    }
+                });
+
+                const forceReloadButton: HTMLElement = div.querySelector('.force-reload-button');
+                if (forceReloadedModules.includes(info.moduleID)) {
+                    forceReloadButton.style.pointerEvents = "none";
+                    forceReloadButton.style.color = "var(--accent-color)";
                 }
-            });
+                forceReloadButton.addEventListener('click', async () => {
+                    forceReloadedModules.push(info.moduleID);
+                    forceReloadButton.textContent = 'Reloading Next Launch';
+                    forceReloadButton.style.pointerEvents = "none";
+                    forceReloadButton.style.color = "var(--accent-color)";
+
+
+                    sendToProcess('force-reload-module', info.moduleID)
+                });
+
+                div.querySelector('.remove-module-button').addEventListener('click', async () => {
+                    const proceed: boolean = await openConfirmModuleDeletionPopup();
+                    if (proceed) {
+                        sendToProcess('remove-module', info).then(successful => {
+                            if (successful) {
+                                console.log('Removed ' + info.moduleID);
+                                openDeletedPopup()
+                            } else {
+                                console.log('Failed to remove ' + info.moduleID);
+                            }
+
+                            sendToProcess('manage-modules').then(openManageScreen);
+                        });
+                    }
+                });
+            }
+
+
 
             list.insertAdjacentElement('beforeend', div);
         });

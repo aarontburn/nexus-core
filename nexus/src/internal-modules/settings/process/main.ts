@@ -1,11 +1,15 @@
 import * as path from "path";
 import * as fs from 'fs';
-import { BaseWindow, WebContentsView, app, nativeTheme, shell } from 'electron';
+import { BaseWindow, app, shell } from 'electron';
 import { ChangeEvent, DataResponse, DIRECTORIES, HTTPStatusCodes, IPCSource, ModuleInfo, ModuleSettings, Process, Setting, SettingBox } from "@nexus-app/nexus-module-builder";
-import { getImportedModules, ImportedModuleInfo, importModuleArchive } from "./ModuleImporter";
-import { getInternalSettings, getSettings } from "./settings";
-import { parseInternalArgs, readInternal, writeInternal } from "../../../init/internal-args";
+import { getImportedModules, ImportedModuleInfo, importModuleArchive } from "./module-importer";
+import { getInternalSettings, getSettings, onSettingModified } from "./settings";
 import { writeModuleSettingsToStorage } from "../../../init/module-loader";
+import handleExternal from "./handle-external";
+import { TabInfo } from "./types";
+import { MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
+import { VersionInfo } from "../../auto-updater/module-updater";
+import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 
 
 const MODULE_NAME: string = "Settings";
@@ -15,20 +19,14 @@ const HTML_PATH: string = path.join(__dirname, "../static/SettingsHTML.html");
 const ICON_PATH: string = path.join(__dirname, "../static/setting.svg");
 
 
-interface TabInfo {
-    moduleName: string,
-    moduleID: string,
-    moduleInfo: ModuleInfo,
-    settings: any[]
-}
+
 
 export class SettingsProcess extends Process {
 
     private readonly moduleSettingsList: Map<string, ModuleSettings> = new Map();
 
     private readonly deletedModules: string[] = [];
-    private readonly devModeSubscribers: ((isDev: boolean) => void)[] = [];
-
+    private availableUpdates: { [moduleID: string]: VersionInfo } = {};
 
     public constructor() {
         super({
@@ -42,10 +40,11 @@ export class SettingsProcess extends Process {
 
         this.getSettings().setDisplayName("General");
         this.setModuleInfo({
-            name: "General",
+            name: "General Settings",
             id: MODULE_ID,
             version: "1.0.0",
             author: "Nexus",
+            link: 'https://github.com/aarontburn/nexus-core',
             description: "General settings that control the Nexus client.",
             build: {
                 "build-version": 0,
@@ -59,13 +58,48 @@ export class SettingsProcess extends Process {
         super.initialize();
         this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
 
-        const settings: { moduleSettingsName: string, moduleID: string, moduleInfo: any }[] = [];
+
+        this.populateSettingsList()
+
+        this.requestExternal(UPDATER_ID, "get-all-updates").then(response => {
+            if (response.code === HTTPStatusCodes.OK) {
+                this.availableUpdates = response.body;
+            }
+        })
+
+        this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+            prefix: "open-settings",
+            documentation: {
+                shortDescription: "Opens the settings associated with a module."
+            },
+            executeCommand: (args: string[]) => {
+                this.handleExternal(this, 'open-settings-for-module', [args[1]]).then(console.log);
+            }
+        });
+    }
+
+    public registerSettings(): (Setting<unknown> | string)[] {
+        return getSettings(this);
+    }
+    public registerInternalSettings(): Setting<unknown>[] {
+        return getInternalSettings(this);
+    }
+    public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
+        return onSettingModified(this, modifiedSetting);
+    }
+    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
+        return handleExternal(this, source, eventType, data);
+    }
+
+
+    private populateSettingsList() {
+        const settings: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }[] = [];
 
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            const moduleName: string = moduleSettings.getDisplayName();
+            const moduleSettingsDisplayName: string = moduleSettings.getDisplayName();
 
-            const list: { moduleSettingsName: string, moduleID: string, moduleInfo: any } = {
-                moduleSettingsName: moduleName,
+            const list: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo } = {
+                moduleSettingsName: moduleSettingsDisplayName,
                 moduleID: moduleSettings.getProcess().getIPCSource(),
                 moduleInfo: moduleSettings.getProcess().getModuleInfo(),
             };
@@ -87,25 +121,11 @@ export class SettingsProcess extends Process {
 
 
         this.sendToRenderer("populate-settings-list", settings);
-
-        this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
-            prefix: "open-settings",
-            documentation: {
-                shortDescription: "Opens the settings associated with a module."
-            },
-            executeCommand: (args: string[]) => {
-                this.handleExternal(this, 'open-settings-for-module', [args[1]]).then(console.log);
-            }
-        })
     }
 
-    public registerSettings(): (Setting<unknown> | string)[] {
-        return getSettings(this);
-    }
 
-    public registerInternalSettings(): Setting<unknown>[] {
-        return getInternalSettings(this);
-    }
+
+
 
     public async onExit(): Promise<void> {
         const window: BaseWindow = BaseWindow.getAllWindows()[0];
@@ -127,127 +147,6 @@ export class SettingsProcess extends Process {
 
 
 
-    public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
-        if (modifiedSetting === undefined) {
-            return;
-        }
-        switch (modifiedSetting.getAccessID()) {
-            case "zoom": {
-                const zoom: number = modifiedSetting.getValue() as number;
-
-                BaseWindow.getAllWindows()[0].contentView.children.forEach(
-                    (view: WebContentsView) => {
-                        view.webContents.setZoomFactor(zoom / 100);
-                        view.emit("bounds-changed");
-                    });
-
-                break;
-            }
-            case "accent_color": {
-                BaseWindow.getAllWindows()[0].contentView.children.forEach(
-                    (view: WebContentsView) => {
-                        view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
-                    });
-                break;
-            }
-            case "dev_mode": {
-                this.sendToRenderer("is-dev", modifiedSetting.getValue());
-                this.devModeSubscribers.forEach((callback) => {
-                    callback(modifiedSetting.getValue() as boolean);
-                })
-                break;
-            }
-
-            case "force_reload": {
-                const shouldForceReload: boolean = modifiedSetting.getValue() as boolean;
-
-                readInternal().then(parseInternalArgs).then(args => {
-                    if (shouldForceReload) {
-                        if (!args.includes("--force-reload")) {
-                            args.push("--force-reload");
-                        }
-                    } else {
-                        args = args.filter(arg => arg !== "--force-reload");
-                    }
-
-                    return writeInternal(args);
-                })
-                break;
-
-            }
-            case "dark_mode": {
-                // System, Dark, Light
-                const mode: string = modifiedSetting.getValue() as string;
-                nativeTheme.themeSource = mode.toLowerCase() as any;
-                break;
-            }
-        }
-
-    }
-
-
-    public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
-        switch (eventType) {
-            case "get-setting": {
-                if (typeof data[0] !== 'string') {
-                    return { body: new Error(`Parameter is not a string.`), code: HTTPStatusCodes.BAD_REQUEST };
-                }
-
-                const nameOrAccessID: string = data[0];
-                const setting: Setting<unknown> | undefined = this.getSettings().findSetting(nameOrAccessID);
-
-                if (setting === undefined) {
-                    return { body: new Error(`No setting found with the name or ID of ${nameOrAccessID}.`), code: HTTPStatusCodes.BAD_REQUEST };
-                }
-
-                return { body: setting.getValue(), code: HTTPStatusCodes.OK };
-            }
-            case "open-settings-for-module": {
-                const target: string = data[0] ?? source.getIPCSource();
-
-
-                const output: TabInfo = this.swapSettingsTab(target);
-
-                if (output === undefined) {
-                    return { body: new Error(`The specified module '${target}' either doesn't exist or has no settings.`), code: HTTPStatusCodes.BAD_REQUEST };
-                }
-
-                this.requestExternal('nexus.Main', 'swap-to-module')
-                this.sendToRenderer("swap-tabs", output);
-                return { body: undefined, code: HTTPStatusCodes.OK };
-            }
-
-            case 'is-developer-mode': {
-                return { body: this.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
-            }
-
-            case "get-accent-color": {
-                return { body: this.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCodes.OK };
-            }
-
-            case "get-module-order": {
-                return { body: this.getSettings().findSetting("module_order").getValue(), code: HTTPStatusCodes.OK };
-            }
-
-            case 'on-developer-mode-changed': {
-                const callback: (isDev: boolean) => void = data[0];
-
-                if (typeof callback !== "function") {
-                    return { body: new Error("Callback is invalid."), code: HTTPStatusCodes.BAD_REQUEST };
-                }
-
-                this.devModeSubscribers.push(callback);
-                callback(this.getSettings().findSetting('dev_mode').getValue() as boolean);
-
-                return { body: undefined, code: HTTPStatusCodes.OK };
-            }
-
-            default: {
-                return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
-            }
-
-        }
-    }
 
 
 
@@ -304,7 +203,6 @@ export class SettingsProcess extends Process {
                     continue;
                 }
 
-
                 const setting: Setting<unknown> = s as Setting<unknown>;
                 const settingBox: SettingBox<unknown> = setting.getUIComponent();
                 const settingInfo: any = {
@@ -325,10 +223,40 @@ export class SettingsProcess extends Process {
 
 
 
-    public async handleEvent(eventType: string, data: any): Promise<any> {
+    public async handleEvent(eventType: string, data: any[]): Promise<any> {
         switch (eventType) {
             case "settings-init": {
                 this.initialize();
+                break;
+            }
+
+            case "update-module": {
+                const moduleID: string = data[0];
+
+                this.requestExternal(UPDATER_ID, "update-module", undefined, moduleID);
+                break;
+            }
+
+            case "check-for-update": {
+                const moduleID: string = data[0];
+                const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
+
+                if (response.code === HTTPStatusCodes.OK && response.body !== undefined) {
+                    return true;
+                }
+
+                return false
+            }
+            case "force-reload-module": {
+                const moduleID: string = data[0];
+                console.info(`[Nexus Settings] Force reloading ${moduleID} on next launch.`);
+
+                readInternal().then(parseInternalArgs).then((args: string[]) => {
+                    if (!args.includes("--force-reload-module:" + moduleID)) {
+                        args.push("--force-reload-module:" + moduleID);
+                    }
+                    return writeInternal(args);
+                });
                 break;
             }
 
@@ -344,10 +272,10 @@ export class SettingsProcess extends Process {
             }
 
             case 'import-module': {
-                return importModuleArchive();
+                return await importModuleArchive();
             }
             case 'manage-modules': {
-                return await getImportedModules(this, this.deletedModules);
+                return await getImportedModules(this, this.availableUpdates, this.deletedModules);
             }
             case 'remove-module': {
                 const info: ImportedModuleInfo = data[0];
@@ -398,7 +326,7 @@ export class SettingsProcess extends Process {
             case "module-order": {
                 const moduleOrder: string[] = data[0];
                 await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
-                await this.fileManager.writeSettingsToStorage()
+                await this.fileManager.writeSettingsToStorage();
                 break;
             }
         }

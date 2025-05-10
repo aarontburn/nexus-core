@@ -130,7 +130,7 @@ function importPluginArchive(filePath) {
         });
     });
 }
-function getImportedModules(process, deletedModules) {
+function getImportedModules(process, availableUpdates, deletedModules) {
     return __awaiter(this, void 0, void 0, function () {
         var folders, map;
         var _this = this;
@@ -152,9 +152,8 @@ function getImportedModules(process, deletedModules) {
                                             return [2 /*return*/];
                                         }
                                         return [4 /*yield*/, process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)];
-                                    case 2: return [4 /*yield*/, (_b.sent()).body];
-                                    case 3:
-                                        iconPath = _b.sent();
+                                    case 2:
+                                        iconPath = (_b.sent()).body;
                                         map.set(moduleInfo.id, {
                                             iconPath: iconPath,
                                             path: path.join(folder.path, folder.name),
@@ -162,7 +161,8 @@ function getImportedModules(process, deletedModules) {
                                             moduleID: moduleInfo.id,
                                             author: (_a = moduleInfo.author) !== null && _a !== void 0 ? _a : '',
                                             isDeleted: false,
-                                            version: moduleInfo.version
+                                            version: moduleInfo.version,
+                                            updateAvailable: Object.keys(availableUpdates).includes(moduleInfo.id)
                                         });
                                         return [2 /*return*/];
                                 }
@@ -177,4 +177,4 @@ function getImportedModules(process, deletedModules) {
     });
 }
 exports.getImportedModules = getImportedModules;
-//# sourceMappingURL=ModuleImporter.js.map
+//# sourceMappingURL=module-importer.js.map
