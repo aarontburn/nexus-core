@@ -31,7 +31,6 @@ root/
         +-- index.html
         +-- renderer.ts
 
-    +-- export-config.js
     +-- module-info.json
 
 +-- .gitattributes
@@ -73,14 +72,12 @@ root/
         +-- index.html
         +-- renderer.ts
 
-    +-- export-config.js
     +-- module-info.json
 ```
 - `src/`: This is the folder that will be converted into your module and should contain ALL of your source code and assets.
-- `src/export-config.js`: A file containing export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/module-info.json`: A file containing details about your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/process/`: The directory containing all code and assets for the process (backend).
-- `src/process/main.ts`: The entry point to your module and the main [Process](../ProcessOverview.md). If you move or rename this file, ensure your changes are also reflected in `export-config.js` (read about [export-config.js](../../../api/export-config.js.md)).  
+- `src/process/main.ts`: The entry point to your module and the main [Process](../ProcessOverview.md). If you move or rename this file, ensure your changes are also reflected in `module-info.json` (read about [module-info.json](../../../api/module-info.json.md)).  
 - `src/renderer/`: The directory containing all code and assets for the renderer (frontend).
 - `src/renderer/index.html`: A bare-bones HTML file. Because we are using React, this file **does not need to be modified**, and only contains code to host our React application. 
 - `src/renderer/renderer.ts`: This file interfaces between the process and the React webpage, and its purpose is to pass data between them. You likely won’t need to modify this unless you're changing the dev server config.

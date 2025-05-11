@@ -142,6 +142,7 @@ export class AutoUpdaterProcess extends Process {
 				try {
 					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.checkForUpdate(target);
 					return { body: updateInfo, code: HTTPStatusCodes.OK };
+					
 				} catch ({ code, message }) {
 					return { body: message, code: code };
 

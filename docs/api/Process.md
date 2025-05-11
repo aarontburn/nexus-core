@@ -15,12 +15,12 @@ While the `constructor` is the entry point to your module, it takes time for the
 export default class SampleProcess extends Process {
     public constructor() {
         super({
-          moduleID: MODULE_ID,
-          moduleName: MODULE_NAME,
-          paths: {
-            htmlPath: HTML_PATH,
-            iconPath: ICON_PATH
-          }
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
         });
     }
 }
@@ -263,7 +263,7 @@ In most cases, this is synonymous to [`getID`](#getid-string).
 
 ## Internal Functions (do not use)
 ### `setModuleInfo(moduleInfo: ModuleInfo): void`
-This function is called internally to set the metadata of your module as specified in `module-info.json`. This function should be ignored and will always throw an `Error` object.
+This function is called internally to set the metadata of your module as specified in `module-info.json`. This function should be ignored and will always throw an `Error`.
 
 ---
 

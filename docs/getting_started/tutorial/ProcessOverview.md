@@ -59,7 +59,7 @@ There is a set of classes and functions within `@nexus-app/nexus-module-builder`
 // src/process/main.ts
 // ...
 
-// These is replaced to the ID specified in export-config.js during export. DO NOT MODIFY.
+// These is replaced to the ID specified in module-info.json during export. DO NOT MODIFY.
 const MODULE_ID: string = "{EXPORTED_MODULE_ID}";
 const MODULE_NAME: string = "{EXPORTED_MODULE_NAME}";
 // ---------------------------------------------------
@@ -77,7 +77,7 @@ These constants are used to identify and create your module.
 - `ICON_PATH`: The relative path to the modules icon. If this is undefined, the icon is replaced by the abbreviation of the `MODULE_NAME`. 
     - Can be a `svg`, `png`, `jpg`, or `jpeg`.
 
-You may have noticed that `MODULE_ID` and `MODULE_NAME` are `"{EXPORTED_MODULE_ID}"` and `"{EXPORTED_MODULE_NAME}"`, respectively. These values are replaced during module building to the values defined in `export-config.js` (learn more [here](../../api/export-config.js.md)) and **should not be modified.**
+You may have noticed that `MODULE_ID` and `MODULE_NAME` are `"{EXPORTED_MODULE_ID}"` and `"{EXPORTED_MODULE_NAME}"`, respectively. These values are replaced during module building to the values defined in `module-info.json` (learn more [here](../../api/module-info.json.md)) and **should not be modified.**
 
 
 ### The Process Class
@@ -88,7 +88,14 @@ You may have noticed that `MODULE_ID` and `MODULE_NAME` are `"{EXPORTED_MODULE_I
 export default class SampleProcess extends Process {
 
     public constructor() {
-        super(MODULE_ID, MODULE_NAME, HTML_PATH, ICON_PATH);
+        super({
+            moduleID: MODULE_ID,
+            moduleName: MODULE_NAME,
+            paths: {
+                htmlPath: HTML_PATH,
+                iconPath: ICON_PATH
+            }
+        });
     }
 
     public initialize(): void {

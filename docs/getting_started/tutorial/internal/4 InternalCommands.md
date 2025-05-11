@@ -4,7 +4,7 @@ This section is to help you understand some of the commands defined within the `
 
 ---
 Within the `package.json` at the root of your project, the `scripts` field may look like:
-```json
+```jsonc
 // package.json
 // ...
 
@@ -41,7 +41,7 @@ This command automatically exports your module to `C:\Users\<user home>\.nexus_d
 #### `npm run export`
 This command exports your module for production. Use this command when you finish developing your module and plan on distributing it.
 
-This will open a file location chooser, and will save your module in a `.zip` folder named the `id` found in `export-config.js`. If no location is chosen (via the `cancel` or `X` button), it will save in an `output` directory in the root of your project.
+This will open a file location chooser, and will save your module in a `.zip` folder named the `id` found in `module-info.json`. If no location is chosen (via the `cancel` or `X` button), it will save in an `output` directory in the root of your project.
 
 ---
 

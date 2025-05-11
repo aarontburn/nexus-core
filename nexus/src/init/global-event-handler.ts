@@ -136,6 +136,8 @@ export function handleExternalWrapper(context: InitContext) {
 
                 return { body: context.moduleMap.get(target).getIconPath(), code: HTTPStatusCodes.OK }
             }
+
+            
             default: {
                 return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
             }

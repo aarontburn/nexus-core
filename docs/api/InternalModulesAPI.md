@@ -6,7 +6,9 @@ Some of the internal modules expose an API that may be useful.
 Each response is wrapped in a [`DataResponse`](./helpers/DataResponse.md) object.
 
 ## `nexus.Settings`
-## `get-setting`
+This is the main setting handler.
+
+### `get-setting`
 This endpoint can be used to get the value of any setting within the `General` tab (and not for other modules).
 
 > **Parameters**  
@@ -15,7 +17,17 @@ This endpoint can be used to get the value of any setting within the `General` t
 > `400 BAD REQUEST` if the name/access ID is invalid (not a string or not found)  
 > `200 OK` and the value of the setting
 
+---
+### `open-settings-for-module`
+Swaps to the Settings tab and opens the settings of the target module.
 
+> **Parameters**  
+> `moduleID?: string | undefined` → The module to display the settings of. If `undefined`, this will be the caller module.
+> **Returns**  
+> `200 OK` if the operation was done successfully.
+> `400 BAD REQUEST` if the target module doesn't exist or has no settings.
+
+---
 
 ### `is-developer-mode`
 This endpoint can be used to check if the `Developer Mode` setting has been turned on. 
@@ -48,7 +60,62 @@ This endpoint can be used to subscribe to access the current value of the `Accen
 > **Returns**  
 > `200 OK` and the value of the `Accent Color` setting.
 
-## nexus.Main
+<br />
+
+## `nexus.Auto_Updater`
+This module manages remote Nexus client updates and module updating.
+
+```
+interface VersionInfo {
+    url: string;
+    currentVersion: string;
+    latestVersion: string;
+}
+```
+
+
+
+### `check-for-update`
+Returns an array of all installed module IDs.
+
+> **Parameters**  
+> `moduleID?: string | undefined` → The target module to check for updates, or `undefined` to check the caller module.   
+> **Returns**   
+> `200 OK` and either a `VersionInfo` object if an update is found, or `undefined` if an update wasn't found.  
+> `404 NOT FOUND` and an `Error` if the target module isn't found.  
+> `403 Forbidden`/Others if an error happens when accessing the update API. 
+
+---
+
+### `get-all-updates`
+Checks for updates for all modules.
+
+> **Parameters**  
+> None  
+> **Returns**   
+> `200 OK` and a `{ [moduleID: string]: VersionInfo }` object.  
+> `423 LOCKED` if the checking process takes longer than 10 seconds.   
+
+---
+
+### `update-module`
+Checks for updates for all modules.
+
+> **Parameters**  
+> `"force" | undefined` → If `"force"` is the first argument, this will install the latest update regardless of the current version.  
+> `moduleID?: string` → The module to update. If omitted, this will be the source module.
+> **Returns**   
+> `200 OK` if the update was successfully completed.  
+> `204 NO CONTENT` if there is no latest remote version.  
+> `400 BAD REQUEST` if the download wasn't successful.  
+> `403 Forbidden`/Others if an internal server error occurs with GitHub.  
+> `404 NOT FOUND` if the `moduleID` isn't found within the installed modules.  
+
+
+<br />
+
+## `nexus.Main`
+This is the main Nexus client.
 
 ### `get-module-IDs`
 Returns an array of all installed module IDs.
@@ -107,3 +174,12 @@ Swaps the current visible module to the caller module.
 > `404 NOT FOUND` if the source module is an internal module.
 
 ---
+
+### `get-module-icon-path`
+Swaps the current visible module to the caller module.
+
+> **Parameters**  
+> `target?: string | undefined` → The moduleID to get the icon path to. If `undefined`, this will be the caller module.    
+> **Returns**  
+> `200 OK` and the absolute path of the icon. If no icon is set, this will be `undefined`.   
+> `404 NOT FOUND` if the target module isn't valid.

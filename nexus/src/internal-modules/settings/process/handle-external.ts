@@ -5,7 +5,6 @@ import { devModeSubscribers } from "./settings";
 
 
 
-
 export default async function handleExternal(process: SettingsProcess, source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
     switch (eventType) {
         case "get-setting": {

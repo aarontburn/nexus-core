@@ -138,11 +138,11 @@ export default class ModuleUpdater {
                 throw { code: response.status, message: response.statusText };
             }
             const releaseData = await response.json();
-            const version = releaseData.tag_name;
-            const assets = releaseData.assets;
+            const version: string | undefined = releaseData.tag_name;
+            const assets: any[] | undefined = releaseData.assets;
 
             if (!assets || assets.length === 0) {
-                console.warn("No assets found in the latest release.");
+                return undefined;
             }
             return {
                 currentVersion: moduleInfo.version,

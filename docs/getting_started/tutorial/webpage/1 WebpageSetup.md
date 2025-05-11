@@ -33,7 +33,6 @@ root/
         +-- renderer.ts
         +-- styles.css
 
-    +-- export-config.js
     +-- module-info.json
 
 +-- .gitattributes
@@ -73,14 +72,12 @@ root/
         +-- renderer.ts
         +-- styles.css
 
-    +-- export-config.js
     +-- module-info.json
 ```
 - `src/`: This is the folder that will be converted into your module and should contain ALL of your source code and assets.
-- `src/export-config.js`: A file containing export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
-- `src/module-info.json`: A file containing details about your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
+- `src/module-info.json`: A file containing metadata and export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/process/`: The directory containing all code and assets for the process (backend).
-  -  `/process/main.ts`: The entry point to your module and the main [Process](./2%20WebpageProcess.md). If you move or rename this file, ensure your changes are also reflected in `export-config.js` (read about [export-config.js](../../../api/export-config.js.md)).
+  -  `/process/main.ts`: The entry point to your module and the main [Process](./2%20WebpageProcess.md). If you move or rename this file, ensure your changes are also reflected in `module-info.json` (read about [module-info.json](../../../api/module-info.json.md)).
 - `src/renderer/`: The directory containing all code and assets for the renderer (frontend).
   - `renderer/index.html`: The default UI for your module.
   - `renderer/renderer.ts`: The main logic file for the renderer. It listens for messages from the process and interacts with the DOM accordingly.

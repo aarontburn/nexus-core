@@ -20,4 +20,4 @@
 [`NumberSetting`](./api/setting_types/NumberSetting.md)  
 [`StringSetting`](./api/setting_types/StringSetting.md)  
 
-**[`export-config.js`](./api/export-config.js.md)**
+**[`module-info.json`](./api/module-info.json.md)**

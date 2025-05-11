@@ -233,7 +233,6 @@ export class SettingsProcess extends Process {
             case "update-module": {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal(UPDATER_ID, "update-module", undefined, moduleID);
-                console.log(response)
                 if (response.code !== HTTPStatusCodes.OK) {
                     return false;
                 }
@@ -244,10 +243,6 @@ export class SettingsProcess extends Process {
                     return writeInternal(args);
                 });
                 return true
-
-
-
-
             }
 
             case "check-for-update": {
