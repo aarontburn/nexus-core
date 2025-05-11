@@ -36,11 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getInternalSettings = exports.getSettings = exports.onSettingModified = void 0;
+exports.getInternalSettings = exports.getSettings = exports.onSettingModified = exports.devModeSubscribers = void 0;
 var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
 var electron_1 = require("electron");
 var internal_args_1 = require("../../../init/internal-args");
-var devModeSubscribers = [];
+exports.devModeSubscribers = [];
 var onSettingModified = function (module, modifiedSetting) { return __awaiter(void 0, void 0, void 0, function () {
     var zoom_1, shouldForceReload_1, mode;
     return __generator(this, function (_a) {
@@ -64,7 +64,7 @@ var onSettingModified = function (module, modifiedSetting) { return __awaiter(vo
             }
             case "dev_mode": {
                 module.sendToRenderer("is-dev", modifiedSetting.getValue());
-                devModeSubscribers.forEach(function (callback) {
+                exports.devModeSubscribers.forEach(function (callback) {
                     callback(modifiedSetting.getValue());
                 });
                 break;
@@ -138,8 +138,14 @@ var getSettings = function (module) {
         }); }),
         "Developer",
         new types_1.BooleanSetting(module)
-            .setName('Developer Mode')
-            .setAccessID('dev_mode')
+            .setName("Automatically Install Updates")
+            .setDescription("Always download Nexus updates and install before closing.")
+            .setAccessID("always_update")
+            .setDefault(true),
+        new types_1.BooleanSetting(module)
+            .setName("Automatically Check for Module Updates")
+            .setDescription("Limited to 60 an hour.")
+            .setAccessID("check_module_updates")
             .setDefault(false),
         new types_1.BooleanSetting(module)
             .setName("Force Reload Modules at Launch")
@@ -147,10 +153,9 @@ var getSettings = function (module) {
             .setAccessID("force_reload")
             .setDefault(false),
         new types_1.BooleanSetting(module)
-            .setName("Automatically Install Updates")
-            .setDescription("Always download Nexus updates and install before closing.")
-            .setAccessID("always_update")
-            .setDefault(true),
+            .setName('Developer Mode')
+            .setAccessID('dev_mode')
+            .setDefault(false),
     ];
 };
 exports.getSettings = getSettings;

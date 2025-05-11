@@ -42,4 +42,4 @@
     dragElement(document.getElementById("separator"));
 
 
-})()
+})();

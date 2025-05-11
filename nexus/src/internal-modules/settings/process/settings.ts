@@ -3,8 +3,7 @@ import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSe
 import { BaseWindow, nativeTheme, WebContentsView } from "electron";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 
-const devModeSubscribers: ((isDev: boolean) => void)[] = [];
-
+export const devModeSubscribers: ((isDev: boolean) => void)[] = [];
 
 export const onSettingModified = async (module: Process, modifiedSetting?: Setting<unknown>): Promise<void> => {
     if (modifiedSetting === undefined) {
@@ -107,8 +106,15 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
 
         "Developer",
         new BooleanSetting(module)
-            .setName('Developer Mode')
-            .setAccessID('dev_mode')
+            .setName("Automatically Install Updates")
+            .setDescription("Always download Nexus updates and install before closing.")
+            .setAccessID("always_update")
+            .setDefault(true),
+
+        new BooleanSetting(module)
+            .setName("Automatically Check for Module Updates")
+            .setDescription("Limited to 60 an hour.")
+            .setAccessID("check_module_updates")
             .setDefault(false),
 
         new BooleanSetting(module)
@@ -118,10 +124,11 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setDefault(false),
 
         new BooleanSetting(module)
-            .setName("Automatically Install Updates")
-            .setDescription("Always download Nexus updates and install before closing.")
-            .setAccessID("always_update")
-            .setDefault(true),
+            .setName('Developer Mode')
+            .setAccessID('dev_mode')
+            .setDefault(false),
+
+
     ];
 }
 

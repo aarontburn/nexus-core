@@ -4,6 +4,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   width: fit-content;
+  scrollbar-width: none;
 }
 
 body {

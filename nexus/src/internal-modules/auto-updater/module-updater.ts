@@ -26,16 +26,21 @@ export default class ModuleUpdater {
 
         const releases: { [moduleID: string]: VersionInfo } = {};
         await Promise.all(Array.from(this.context.moduleMap.values()).map(async (module: Process) => {
-            const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(module.getID());
+            try {
+                const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(module.getID());
 
-            if (versionInfo === undefined) {
-                return;
+                if (versionInfo === undefined) {
+                    return;
+                }
+
+                // Decide if this should update for all different version or only ascending version
+                if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+                    releases[module.getID()] = versionInfo;
+                }
+            } catch ({ code, message }) {
+                console.error(`[Nexus Auto Updater] Error when checking for update: ${code} - ${message}`)
             }
 
-            // Decide if this should update for all different version or only ascending version
-            if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
-                releases[module.getID()] = versionInfo;
-            }
         }));
         this.updates = releases;
 
@@ -44,7 +49,7 @@ export default class ModuleUpdater {
             Object.keys(releases)
                 .map(moduleID => `\t${moduleID} (${releases[moduleID].currentVersion} => ${releases[moduleID].latestVersion})`)
                 .join("\n")
-        )
+        );
     }
 
     public getAvailableUpdates(): { [moduleID: string]: VersionInfo } {
@@ -56,14 +61,15 @@ export default class ModuleUpdater {
     public async checkForUpdate(moduleID: string): Promise<VersionInfo | undefined> {
         const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(moduleID);
 
-        if (versionInfo === undefined) {
-            return undefined;
-        }
+        if (versionInfo === undefined
+            || this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) !== 1) {
 
-        if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
-            return versionInfo;
-        } else {
+            console.info(`[Nexus Auto Updater] No updates found for ${moduleID}.`);
             return undefined;
+
+        } else {
+            console.info(`[Nexus Auto Updater] Update found for ${moduleID} (${versionInfo.currentVersion} => ${versionInfo.latestVersion}).`);
+            return versionInfo;
         }
     }
 
@@ -126,27 +132,24 @@ export default class ModuleUpdater {
             moduleInfo["git-latest"]["git-repo-name"] &&
             moduleInfo["git-latest"]['git-username']) {
 
-            try {
-                const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
+            const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
 
-                if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.status} - ${response.statusText}`);
-                }
-                const releaseData = await response.json();
-                const version = releaseData.tag_name;
-                const assets = releaseData.assets;
-
-                if (!assets || assets.length === 0) {
-                    console.warn("No assets found in the latest release.");
-                }
-                return {
-                    currentVersion: moduleInfo.version,
-                    latestVersion: version,
-                    url: assets[0].browser_download_url
-                }
-            } catch (error) {
-                console.error("Error fetching latest release:", error);
+            if (!response.ok) {
+                throw { code: response.status, message: response.statusText };
             }
+            const releaseData = await response.json();
+            const version = releaseData.tag_name;
+            const assets = releaseData.assets;
+
+            if (!assets || assets.length === 0) {
+                console.warn("No assets found in the latest release.");
+            }
+            return {
+                currentVersion: moduleInfo.version,
+                latestVersion: version,
+                url: assets[0].browser_download_url
+            }
+
         }
     }
 

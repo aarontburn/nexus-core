@@ -68,7 +68,7 @@ async function nexusStart() {
     for (const arg of internalArguments) {
         process.argv.push(arg);
     }
-    await writeInternal(internalArguments.filter(s => !s.startsWith("--force-reload-module")));
+    await writeInternal(internalArguments.filter(s => !s.startsWith("--force-reload-module") && !s.startsWith('--last_exported_id')));
 
     // Load modules
     context.moduleMap = await loadModules(context);
@@ -99,10 +99,6 @@ async function nexusStart() {
 }
 
 function onProcessAndRendererReady(context: InitContext): void {
-    if (context.settingModule.getSettings().findSetting("always_update").getValue() as boolean) {
-        (context.moduleMap.get(UPDATER_PROCESS_ID) as AutoUpdaterProcess).startAutoUpdater();
-    }
-
     if (process.argv.includes("--dev")) {
         globalShortcut.register('Shift+CommandOrControl+I', () => {
             if (!context.window.isFocused()) {

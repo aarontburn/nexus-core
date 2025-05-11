@@ -38,81 +38,21 @@ export class AutoUpdaterProcess extends Process {
 
 	}
 
-	public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
-		switch (eventType) {
-			case "check-for-update": {
-				const target: string = data[0] ?? source.getIPCSource();
-				if (!this.context.moduleMap.has(target)) {
-					return { body: new Error(`No module with the ID of ${target} found.`), code: HTTPStatusCodes.NOT_FOUND };
-				}
-				const updateInfo: VersionInfo | undefined = await this.moduleUpdater.checkForUpdate(target);
-				return { body: updateInfo, code: HTTPStatusCodes.OK };
-			}
-
-			case "get-all-updates": {
-				if (this.finishedChecking) {
-					return { body: this.moduleUpdater.getAvailableUpdates(), code: HTTPStatusCodes.OK };
-				}
-
-				return new Promise((resolve) => {
-					const timeoutMS = 10000;
-					const intervalMS = 500;
-
-					const timeout = setTimeout(() => {
-						clearInterval(interval);
-						resolve({ body: undefined, code: HTTPStatusCodes.LOCKED });
-					}, timeoutMS);
-
-					const interval = setInterval(() => {
-						if (this.finishedChecking) {
-							clearTimeout(timeout);
-							clearInterval(interval);
-							resolve({ body: this.moduleUpdater.getAvailableUpdates(), code: HTTPStatusCodes.OK });
-						}
-					}, intervalMS);
-				});
-			}
-
-			case "update-module": {
-				// data[0] should be force or undefined
-				// data[1] should be the target module ID or undefined
-
-				// if true, will update regardless of the current version. 
-				// if false, will only update if the version is different
-				const force: boolean = data[0] === "force";
-				const moduleID: string = data[1] ?? source.getIPCSource();
-
-				if (!this.context.moduleMap.has(moduleID)) {
-					return { body: new Error(`No module with the ID of ${moduleID} found.`), code: HTTPStatusCodes.NOT_FOUND };
-				}
-
-				const updateInfo: VersionInfo | undefined = await this.moduleUpdater.getLatestRemoteVersion(moduleID);
-				if (updateInfo === undefined) {
-					return { body: "No latest releases found for " + moduleID, code: HTTPStatusCodes.NO_CONTENT };
-				}
-
-				if (force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1) {
-					const successful: boolean = await this.moduleUpdater.downloadLatest(moduleID, updateInfo.url);
-					if (!successful) {
-						return { body: `An error occurred while updating ${moduleID}`, code: HTTPStatusCodes.BAD_REQUEST };
-					}
-				}
-
-				return { body: undefined, code: HTTPStatusCodes.OK };
-			}
-
-
-			default: {
-				return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };
-			}
-		}
-	}
 
 	private finishedChecking: boolean = false;
 
 	public async beforeWindowCreated(): Promise<void> {
-		await this.moduleUpdater.checkForAllUpdates();
+		if ((await this.requestExternal("nexus.Settings", "get-setting", "check_module_updates")).body) {
+			await this.moduleUpdater.checkForAllUpdates();
+		}
+
 		this.finishedChecking = true;
+	}
+
+	public async initialize(): Promise<void> {
+		if ((await this.requestExternal("nexus.Settings", "get-setting", "always_update")).body) {
+			this.startAutoUpdater()
+		}
 	}
 
 	private autoUpdaterStarted = false;
@@ -188,8 +128,91 @@ export class AutoUpdaterProcess extends Process {
 		interval = setInterval(() => {
 			autoUpdater.checkForUpdates().catch(() => { });
 		}, TEN_MIN);
-	}
 
+
+
+	}
+	public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
+		switch (eventType) {
+			case "check-for-update": {
+				const target: string = data[0] ?? source.getIPCSource();
+				if (!this.context.moduleMap.has(target)) {
+					return { body: new Error(`No module with the ID of ${target} found.`), code: HTTPStatusCodes.NOT_FOUND };
+				}
+				try {
+					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.checkForUpdate(target);
+					return { body: updateInfo, code: HTTPStatusCodes.OK };
+				} catch ({ code, message }) {
+					return { body: message, code: code };
+
+				}
+
+			}
+
+			case "get-all-updates": {
+				if (this.finishedChecking) {
+					return { body: this.moduleUpdater.getAvailableUpdates(), code: HTTPStatusCodes.OK };
+				}
+
+				return new Promise((resolve) => {
+					const timeoutMS = 10000;
+					const intervalMS = 500;
+
+					const timeout = setTimeout(() => {
+						clearInterval(interval);
+						resolve({ body: undefined, code: HTTPStatusCodes.LOCKED });
+					}, timeoutMS);
+
+					const interval = setInterval(() => {
+						if (this.finishedChecking) {
+							clearTimeout(timeout);
+							clearInterval(interval);
+							resolve({ body: this.moduleUpdater.getAvailableUpdates(), code: HTTPStatusCodes.OK });
+						}
+					}, intervalMS);
+				});
+			}
+
+			case "update-module": {
+				// data[0] should be force or undefined
+				// data[1] should be the target module ID or undefined
+
+				// if true, will update regardless of the current version. 
+				// if false, will only update if the version is different
+				const force: boolean = data[0] === "force";
+				const moduleID: string = data[1] ?? source.getIPCSource();
+
+				if (!this.context.moduleMap.has(moduleID)) {
+					return { body: new Error(`No module with the ID of ${moduleID} found.`), code: HTTPStatusCodes.NOT_FOUND };
+				}
+
+				try {
+					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.getLatestRemoteVersion(moduleID);
+					if (updateInfo === undefined) {
+						return { body: "No latest releases found for " + moduleID, code: HTTPStatusCodes.NO_CONTENT };
+					}
+
+					if (force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1) {
+						const successful: boolean = await this.moduleUpdater.downloadLatest(moduleID, updateInfo.url);
+						if (!successful) {
+							return { body: new Error(`An error occurred while updating ${moduleID}`), code: HTTPStatusCodes.BAD_REQUEST };
+						}
+					}
+
+					return { body: undefined, code: HTTPStatusCodes.OK };
+
+				} catch ({ code, message }) {
+					return { body: message, code: code };
+				}
+
+			}
+
+
+			default: {
+				return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };
+			}
+		}
+	}
 
 
 

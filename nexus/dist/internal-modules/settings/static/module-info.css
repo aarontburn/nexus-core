@@ -3,6 +3,90 @@
 }
 
 
+/* Manage Screen */
+.installed-module {
+    margin: 10px 15px;
+    border: 2px solid gray;
+    border-radius: 5px;
+    width: calc(100% - 30px);
+    padding: 10px;
+
+    display: flex;
+    align-items: center;
+    height: 85px;
+}
+
+.installed-module p {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+}
+
+.installed-module .module-name {
+    font-size: 20px;
+}
+
+.installed-module .module-id {
+    font-size: 15px;
+}
+
+.installed-module .module-path {
+    font-size: 15px;
+    padding-top: 1px;
+    color: gray;
+}
+
+.installed-module .module-version {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.installed-module .deleted>* {
+    color: gray
+}
+
+.installed-module .module-icon {
+    margin-right: 10px;
+}
+
+.installed-module .module-icon>img,
+.installed-module .module-icon>p {
+    width: 48px;
+    height: 48px;
+    user-select: none;
+}
+
+.installed-module .module-icon>p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+
+
+
+/* Module Info */
+
+.module-info {
+    border: 2px solid gray;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px 15px;
+}
+
+.module-info>p {
+    margin: 0;
+    padding: 0;
+    font-size: 19px;
+    font-weight: 300;
+    margin-top: 5px;
+}
+
+.module-info>p>span {
+    color: var(--accent-color);
+}
+
 .module-info #open-folder {
     float: right;
     font-size: 25px;
@@ -24,6 +108,8 @@
     color: var(--accent-color);
 }
 
+
+
 .module-info .module-desc {
     margin-bottom: 15px;
 }
@@ -44,8 +130,15 @@
     transition: 0.2s;
     color: gray;
     margin-right: 1em;
+    text-align: right;
 }
 
 .module-controls>p:hover {
     color: var(--accent-color)
+}
+
+@media only screen and (max-width: 1150px) {
+    .module-path {
+        display: none;
+    }
 }

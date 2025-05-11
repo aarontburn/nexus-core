@@ -1,0 +1,55 @@
+/* Dialog Box */
+.overlay {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+}
+
+.dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2a2b33;
+    border-radius: 5px;
+    padding: 15px 25px;
+    text-align: center;
+}
+
+
+@media (prefers-color-scheme: light) {
+    .dialog {
+        background-color: var(--off-white);
+    }
+}
+
+.dialog>* {
+    user-select: none;
+}
+
+.dialog h3,
+.dialog h4 {
+    padding: 0;
+    margin: 5px;
+    font-weight: 400;
+}
+
+#dialog-cancel,
+#dialog-proceed {
+    transition: 0.2s;
+}
+
+#dialog-cancel:hover,
+#dialog-proceed:hover {
+    cursor: pointer;
+    color: var(--accent-color);
+}
+
+#dialog-controls-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 15px;
+    margin-top: 10px;
+}

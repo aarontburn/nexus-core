@@ -312,7 +312,7 @@ var SettingsProcess = /** @class */ (function (_super) {
     };
     SettingsProcess.prototype.handleEvent = function (eventType, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, moduleID, moduleID, response, moduleID_1, moduleID_2, info, err_1, elementId, elementValue, settingId, link, moduleOrder;
+            var _a, moduleID_1, response, moduleID, response, moduleID_2, moduleID_3, info, err_1, elementId, elementValue, settingId, link, moduleOrder;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -320,131 +320,145 @@ var SettingsProcess = /** @class */ (function (_super) {
                         switch (_a) {
                             case "settings-init": return [3 /*break*/, 1];
                             case "update-module": return [3 /*break*/, 2];
-                            case "check-for-update": return [3 /*break*/, 3];
-                            case "force-reload-module": return [3 /*break*/, 5];
-                            case 'open-module-folder': return [3 /*break*/, 6];
-                            case 'import-module': return [3 /*break*/, 7];
-                            case 'manage-modules': return [3 /*break*/, 9];
-                            case 'remove-module': return [3 /*break*/, 11];
-                            case 'restart-now': return [3 /*break*/, 16];
-                            case "swap-settings-tab": return [3 /*break*/, 17];
-                            case "setting-modified": return [3 /*break*/, 18];
-                            case 'setting-reset': return [3 /*break*/, 19];
-                            case 'open-link': return [3 /*break*/, 20];
-                            case "module-order": return [3 /*break*/, 21];
+                            case "check-for-update": return [3 /*break*/, 4];
+                            case "force-reload-module": return [3 /*break*/, 6];
+                            case 'open-module-folder': return [3 /*break*/, 7];
+                            case 'import-module': return [3 /*break*/, 8];
+                            case 'manage-modules': return [3 /*break*/, 10];
+                            case 'remove-module': return [3 /*break*/, 12];
+                            case 'restart-now': return [3 /*break*/, 17];
+                            case "swap-settings-tab": return [3 /*break*/, 18];
+                            case "setting-modified": return [3 /*break*/, 19];
+                            case 'setting-reset': return [3 /*break*/, 20];
+                            case 'open-link': return [3 /*break*/, 21];
+                            case "module-order": return [3 /*break*/, 22];
                         }
-                        return [3 /*break*/, 24];
+                        return [3 /*break*/, 25];
                     case 1:
                         {
                             this.initialize();
-                            return [3 /*break*/, 24];
+                            return [3 /*break*/, 26];
                         }
                         _b.label = 2;
                     case 2:
-                        {
-                            moduleID = data[0];
-                            this.requestExternal(updater_process_1.MODULE_ID, "update-module", undefined, moduleID);
-                            return [3 /*break*/, 24];
-                        }
-                        _b.label = 3;
+                        moduleID_1 = data[0];
+                        return [4 /*yield*/, this.requestExternal(updater_process_1.MODULE_ID, "update-module", undefined, moduleID_1)];
                     case 3:
+                        response = _b.sent();
+                        console.log(response);
+                        if (response.code !== nexus_module_builder_1.HTTPStatusCodes.OK) {
+                            return [2 /*return*/, false];
+                        }
+                        (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                            if (!args.includes("--force-reload-module:" + moduleID_1)) {
+                                args.push("--force-reload-module:" + moduleID_1);
+                            }
+                            return (0, internal_args_1.writeInternal)(args);
+                        });
+                        return [2 /*return*/, true];
+                    case 4:
                         moduleID = data[0];
                         return [4 /*yield*/, this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID)];
-                    case 4:
+                    case 5:
                         response = _b.sent();
                         if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK && response.body !== undefined) {
                             return [2 /*return*/, true];
                         }
                         return [2 /*return*/, false];
-                    case 5:
-                        {
-                            moduleID_1 = data[0];
-                            console.info("[Nexus Settings] Force reloading ".concat(moduleID_1, " on next launch."));
-                            (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
-                                if (!args.includes("--force-reload-module:" + moduleID_1)) {
-                                    args.push("--force-reload-module:" + moduleID_1);
-                                }
-                                return (0, internal_args_1.writeInternal)(args);
-                            });
-                            return [3 /*break*/, 24];
-                        }
-                        _b.label = 6;
                     case 6:
                         {
                             moduleID_2 = data[0];
-                            electron_1.shell.openPath(path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_2)).then(function (result) {
-                                if (result !== '') {
-                                    throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_2));
+                            console.info("[Nexus Settings] Force reloading ".concat(moduleID_2, " on next launch."));
+                            (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                                if (!args.includes("--force-reload-module:" + moduleID_2)) {
+                                    args.push("--force-reload-module:" + moduleID_2);
                                 }
+                                return (0, internal_args_1.writeInternal)(args);
                             });
-                            return [3 /*break*/, 24];
+                            return [3 /*break*/, 26];
                         }
                         _b.label = 7;
-                    case 7: return [4 /*yield*/, (0, module_importer_1.importModuleArchive)()];
-                    case 8: return [2 /*return*/, _b.sent()];
-                    case 9: return [4 /*yield*/, (0, module_importer_1.getImportedModules)(this, this.availableUpdates, this.deletedModules)];
-                    case 10: return [2 /*return*/, _b.sent()];
-                    case 11:
-                        info = data[0];
-                        _b.label = 12;
+                    case 7:
+                        {
+                            moduleID_3 = data[0];
+                            electron_1.shell.openPath(path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_3)).then(function (result) {
+                                if (result !== '') {
+                                    throw new Error('Could not find folder: ' + path.normalize(nexus_module_builder_1.DIRECTORIES.MODULE_STORAGE_PATH + moduleID_3));
+                                }
+                            });
+                            return [3 /*break*/, 26];
+                        }
+                        _b.label = 8;
+                    case 8: return [4 /*yield*/, (0, module_importer_1.importModuleArchive)()];
+                    case 9: return [2 /*return*/, _b.sent()];
+                    case 10: return [4 /*yield*/, (0, module_importer_1.getImportedModules)(this, this.availableUpdates, this.deletedModules)];
+                    case 11: return [2 /*return*/, _b.sent()];
                     case 12:
-                        _b.trys.push([12, 14, , 15]);
+                        info = data[0];
+                        _b.label = 13;
+                    case 13:
+                        _b.trys.push([13, 15, , 16]);
                         console.info("[Nexus Settings] Removing " + info.moduleID);
                         return [4 /*yield*/, fs.promises.rm(info.path.replace('\\built\\', '\\external_modules\\') + '.zip')];
-                    case 13:
+                    case 14:
                         _b.sent();
                         this.deletedModules.push(info.moduleID);
                         return [2 /*return*/, true];
-                    case 14:
+                    case 15:
                         err_1 = _b.sent();
                         console.error("[Nexus Settings] An error occurred when deleting " + info.moduleID);
                         console.error(err_1);
-                        return [3 /*break*/, 15];
-                    case 15: return [2 /*return*/, false];
-                    case 16:
+                        return [3 /*break*/, 16];
+                    case 16: return [2 /*return*/, false];
+                    case 17:
                         {
                             electron_1.app.relaunch();
                             electron_1.app.exit();
-                            return [3 /*break*/, 24];
-                        }
-                        _b.label = 17;
-                    case 17:
-                        {
-                            return [2 /*return*/, this.swapSettingsTab(data[0])];
+                            return [3 /*break*/, 26];
                         }
                         _b.label = 18;
                     case 18:
                         {
-                            elementId = data[0];
-                            elementValue = data[1];
-                            this.onSettingChange(elementId, elementValue);
-                            return [3 /*break*/, 24];
+                            return [2 /*return*/, this.swapSettingsTab(data[0])];
                         }
                         _b.label = 19;
                     case 19:
                         {
-                            settingId = data[0];
-                            this.onSettingChange(settingId);
-                            return [3 /*break*/, 24];
+                            elementId = data[0];
+                            elementValue = data[1];
+                            this.onSettingChange(elementId, elementValue);
+                            return [3 /*break*/, 26];
                         }
                         _b.label = 20;
                     case 20:
                         {
-                            link = data[0];
-                            electron_1.shell.openExternal(link);
-                            return [3 /*break*/, 24];
+                            settingId = data[0];
+                            this.onSettingChange(settingId);
+                            return [3 /*break*/, 26];
                         }
                         _b.label = 21;
                     case 21:
+                        {
+                            link = data[0];
+                            electron_1.shell.openExternal(link);
+                            return [3 /*break*/, 26];
+                        }
+                        _b.label = 22;
+                    case 22:
                         moduleOrder = data[0];
                         return [4 /*yield*/, this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"))];
-                    case 22:
-                        _b.sent();
-                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
                     case 23:
                         _b.sent();
-                        return [3 /*break*/, 24];
-                    case 24: return [2 /*return*/];
+                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
+                    case 24:
+                        _b.sent();
+                        return [3 /*break*/, 26];
+                    case 25:
+                        {
+                            console.warn("[Nexus Setting] Unhandled event: " + eventType);
+                        }
+                        _b.label = 26;
+                    case 26: return [2 /*return*/];
                 }
             });
         });

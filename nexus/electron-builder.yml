@@ -9,9 +9,16 @@ directories:
 
 icon: ./dist/view/assets/icon
 
+extraMetadata:
+  name: "Nexus"
+  version: "0.0.4"
+  description: "A cross-platform application loader, designed for productivity and organization."
+  author: "aarontburn"
+
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-Setup-${version}.${ext}
 
 publish:
   provider: github

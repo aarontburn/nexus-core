@@ -30,6 +30,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         autoHideMenuBar: true,
         title: "Nexus",
         icon: path.join(__dirname, "../view/assets/icon.ico"),
+        backgroundColor: "#111111", 
     });
 
 
@@ -37,6 +38,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         event.preventDefault();
         await close(context, window);
     })
+    
 
     const view: WebContentsView = new WebContentsView({
         webPreferences: {

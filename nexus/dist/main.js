@@ -44,7 +44,6 @@ var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var main_1 = require("./internal-modules/settings/process/main");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
-var updater_process_1 = require("./internal-modules/auto-updater/updater-process");
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -104,7 +103,7 @@ function nexusStart() {
                         arg = internalArguments_1[_i];
                         process.argv.push(arg);
                     }
-                    return [4 /*yield*/, (0, internal_args_1.writeInternal)(internalArguments.filter(function (s) { return !s.startsWith("--force-reload-module"); }))];
+                    return [4 /*yield*/, (0, internal_args_1.writeInternal)(internalArguments.filter(function (s) { return !s.startsWith("--force-reload-module") && !s.startsWith('--last_exported_id'); }))];
                 case 3:
                     _c.sent();
                     // Load modules
@@ -142,9 +141,6 @@ function nexusStart() {
     });
 }
 function onProcessAndRendererReady(context) {
-    if (context.settingModule.getSettings().findSetting("always_update").getValue()) {
-        context.moduleMap.get(updater_process_1.MODULE_ID).startAutoUpdater();
-    }
     if (process.argv.includes("--dev")) {
         electron_1.globalShortcut.register('Shift+CommandOrControl+I', function () {
             if (!context.window.isFocused()) {

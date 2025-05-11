@@ -232,15 +232,28 @@ export class SettingsProcess extends Process {
 
             case "update-module": {
                 const moduleID: string = data[0];
+                const response: DataResponse = await this.requestExternal(UPDATER_ID, "update-module", undefined, moduleID);
+                console.log(response)
+                if (response.code !== HTTPStatusCodes.OK) {
+                    return false;
+                }
+                readInternal().then(parseInternalArgs).then((args: string[]) => {
+                    if (!args.includes("--force-reload-module:" + moduleID)) {
+                        args.push("--force-reload-module:" + moduleID);
+                    }
+                    return writeInternal(args);
+                });
+                return true
 
-                this.requestExternal(UPDATER_ID, "update-module", undefined, moduleID);
-                break;
+
+
+
             }
 
             case "check-for-update": {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
-
+                
                 if (response.code === HTTPStatusCodes.OK && response.body !== undefined) {
                     return true;
                 }
@@ -328,6 +341,9 @@ export class SettingsProcess extends Process {
                 await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
                 await this.fileManager.writeSettingsToStorage();
                 break;
+            }
+            default: {
+                console.warn("[Nexus Setting] Unhandled event: " + eventType)
             }
         }
     }

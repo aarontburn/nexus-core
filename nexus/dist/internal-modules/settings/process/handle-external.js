@@ -37,56 +37,81 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
+var settings_1 = require("./settings");
 function handleExternal(process, source, eventType, data) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var nameOrAccessID, setting, target, output, callback;
-        return __generator(this, function (_b) {
-            switch (eventType) {
-                case "get-setting": {
-                    if (typeof data[0] !== 'string') {
-                        return [2 /*return*/, { body: new Error("Parameter is not a string."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+        var _b, nameOrAccessID, setting, target, output, callback;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = eventType;
+                    switch (_b) {
+                        case "get-setting": return [3 /*break*/, 1];
+                        case "open-settings-for-module": return [3 /*break*/, 2];
+                        case 'is-developer-mode': return [3 /*break*/, 4];
+                        case "get-accent-color": return [3 /*break*/, 5];
+                        case "get-module-order": return [3 /*break*/, 6];
+                        case 'on-developer-mode-changed': return [3 /*break*/, 7];
                     }
-                    nameOrAccessID = data[0];
-                    setting = this.getSettings().findSetting(nameOrAccessID);
-                    if (setting === undefined) {
-                        return [2 /*return*/, { body: new Error("No setting found with the name or ID of ".concat(nameOrAccessID, ".")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                    return [3 /*break*/, 8];
+                case 1:
+                    {
+                        if (typeof data[0] !== 'string') {
+                            return [2 /*return*/, { body: new Error("Parameter is not a string."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        nameOrAccessID = data[0];
+                        setting = process.getSettings().findSetting(nameOrAccessID);
+                        if (setting === undefined) {
+                            return [2 /*return*/, { body: new Error("No setting found with the name or ID of ".concat(nameOrAccessID, ".")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        return [2 /*return*/, { body: setting.getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
-                    return [2 /*return*/, { body: setting.getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                case "open-settings-for-module": {
+                    _c.label = 2;
+                case 2:
                     target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
-                    output = this.swapSettingsTab(target);
+                    return [4 /*yield*/, process.handleEvent("swap-settings-tab", [target])];
+                case 3:
+                    output = _c.sent();
                     if (output === undefined) {
                         return [2 /*return*/, { body: new Error("The specified module '".concat(target, "' either doesn't exist or has no settings.")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
                     }
-                    this.requestExternal('nexus.Main', 'swap-to-module');
-                    this.sendToRenderer("swap-tabs", output);
+                    process.requestExternal('nexus.Main', 'swap-to-module');
+                    process.sendToRenderer("swap-tabs", output);
                     return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                case 'is-developer-mode': {
-                    return [2 /*return*/, { body: this.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                case "get-accent-color": {
-                    return [2 /*return*/, { body: this.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                case "get-module-order": {
-                    return [2 /*return*/, { body: this.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                case 'on-developer-mode-changed': {
-                    callback = data[0];
-                    if (typeof callback !== "function") {
-                        return [2 /*return*/, { body: new Error("Callback is invalid."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                case 4:
+                    {
+                        return [2 /*return*/, { body: process.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
-                    this.devModeSubscribers.push(callback);
-                    callback(this.getSettings().findSetting('dev_mode').getValue());
-                    return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                }
-                default: {
-                    return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
-                }
+                    _c.label = 5;
+                case 5:
+                    {
+                        return [2 /*return*/, { body: process.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    _c.label = 6;
+                case 6:
+                    {
+                        return [2 /*return*/, { body: process.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    _c.label = 7;
+                case 7:
+                    {
+                        callback = data[0];
+                        if (typeof callback !== "function") {
+                            return [2 /*return*/, { body: new Error("Callback is invalid."), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
+                        }
+                        settings_1.devModeSubscribers.push(callback);
+                        callback(process.getSettings().findSetting('dev_mode').getValue());
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    _c.label = 8;
+                case 8:
+                    {
+                        return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
+                    }
+                    _c.label = 9;
+                case 9: return [2 /*return*/];
             }
-            return [2 /*return*/];
         });
     });
 }

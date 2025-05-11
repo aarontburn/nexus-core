@@ -120,15 +120,14 @@ function readInternal() {
     });
 }
 exports.readInternal = readInternal;
-function writeInternal(args, raw) {
-    if (raw === void 0) { raw = true; }
+function writeInternal(args) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fs.promises.writeFile(nexus_module_builder_1.DIRECTORIES.INTERNAL_PATH + nexus_module_builder_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
                         args: args.length === 0
                             ? ''
-                            : args.filter(function (arg) { return raw || !arg.startsWith('--last_exported_id'); }).join(' ')
+                            : args.join(' ')
                     }, undefined, 4))];
                 case 1:
                     _a.sent();

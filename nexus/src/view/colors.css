@@ -15,14 +15,20 @@ html {
     --text-color: var(--off-white);
     --background-color: var(--off-black);
 
+    --faded-color: #555555;
+
     color-scheme: light dark;
 }
+
+
 
 
 @media (prefers-color-scheme: light) {
     :root {
         --text-color: var(--off-black);
         --background-color: var(--off-white);
+        --faded-color: #babbbb;
+
     }
 }
 
