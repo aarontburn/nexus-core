@@ -63,6 +63,18 @@
     }
     function populateSettings(data) {
         var firstModule = undefined;
+        var priority = {
+            "nexus.Settings": 0,
+            "nexus.Home": 1
+        };
+        data = data.sort(function (a, b) {
+            var aPriority = priority[a.moduleID] !== undefined ? priority[a.moduleID] : 2;
+            var bPriority = priority[b.moduleID] !== undefined ? priority[b.moduleID] : 2;
+            if (aPriority !== bPriority) {
+                return aPriority - bPriority;
+            }
+            return a.moduleSettingsName.localeCompare(b.moduleSettingsName);
+        });
         data.forEach(function (obj) {
             // Setting group click button
             var tabButton = document.createElement("p");

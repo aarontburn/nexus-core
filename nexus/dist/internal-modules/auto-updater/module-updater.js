@@ -239,7 +239,7 @@ var ModuleUpdater = /** @class */ (function () {
                         version = releaseData.tag_name;
                         assets = releaseData.assets;
                         if (!assets || assets.length === 0) {
-                            console.warn("No assets found in the latest release.");
+                            return [2 /*return*/, undefined];
                         }
                         return [2 /*return*/, {
                                 currentVersion: moduleInfo.version,

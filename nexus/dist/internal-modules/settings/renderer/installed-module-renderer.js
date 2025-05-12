@@ -128,6 +128,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                                 var isUpdateAvailable = _a[0];
                                 if (isUpdateAvailable) {
                                     checkUpdateButton_1.textContent = "Update Now";
+                                    checkUpdateButton_1.style.pointerEvents = "";
                                     div.querySelector('.module-version').textContent = "| ".concat(info.version, " (Update Available)");
                                 }
                                 else {

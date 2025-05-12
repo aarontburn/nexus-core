@@ -121,6 +121,22 @@
     function populateSettings(data: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }[]): void {
         let firstModule: HTMLElement = undefined;
 
+        const priority: { [id: string]: number } = {
+            "nexus.Settings": 0,
+            "nexus.Home": 1
+        };
+
+        data = data.sort((a, b) => {
+            const aPriority: number = priority[a.moduleID] !== undefined ? priority[a.moduleID] : 2;
+            const bPriority: number = priority[b.moduleID] !== undefined ? priority[b.moduleID] : 2;
+
+            if (aPriority !== bPriority) {
+                return aPriority - bPriority;
+            }
+
+            return a.moduleSettingsName.localeCompare(b.moduleSettingsName);
+        });
+
         data.forEach((obj: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }) => {
             // Setting group click button
             const tabButton: HTMLElement = document.createElement("p");

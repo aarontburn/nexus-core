@@ -345,7 +345,6 @@ var SettingsProcess = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.requestExternal(updater_process_1.MODULE_ID, "update-module", undefined, moduleID_1)];
                     case 3:
                         response = _b.sent();
-                        console.log(response);
                         if (response.code !== nexus_module_builder_1.HTTPStatusCodes.OK) {
                             return [2 /*return*/, false];
                         }

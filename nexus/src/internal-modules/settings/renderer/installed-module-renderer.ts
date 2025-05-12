@@ -139,6 +139,7 @@
                         ]).then(([isUpdateAvailable]) => {
                             if (isUpdateAvailable) {
                                 checkUpdateButton.textContent = "Update Now";
+                                checkUpdateButton.style.pointerEvents = "";
                                 div.querySelector('.module-version').textContent = `| ${info.version} (Update Available)`;
                             } else {
                                 checkUpdateButton.textContent = "No Update Found";

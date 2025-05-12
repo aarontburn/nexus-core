@@ -12,7 +12,7 @@ import { VersionInfo } from '../../auto-updater/module-updater';
 export async function importModuleArchive(): Promise<boolean> {
     const options: OpenDialogOptions = {
         properties: ['openFile'],
-        filters: [{ name: 'Nexus Archive File (.zip, .tar)', extensions: ['zip', 'tar'] }]
+        filters: [{ name: 'Nexus Archive File (.zip)', extensions: ['zip'] }]
     };
 
     const response: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(options);
@@ -31,9 +31,9 @@ export async function importModuleArchive(): Promise<boolean> {
 }
 
 async function importPluginArchive(filePath: string): Promise<boolean> {
-    const folderName: string = filePath.split("\\").at(-1);
+    const folderName: string = path.normalize(filePath).split("\\").at(-1);
     try {
-        await fs.promises.copyFile(filePath, `${DIRECTORIES.EXTERNAL_MODULES_PATH}/${folderName}`);
+        await fs.promises.copyFile(filePath, path.join(DIRECTORIES.EXTERNAL_MODULES_PATH, folderName));
         return true;
     } catch (err) {
         console.error(err);

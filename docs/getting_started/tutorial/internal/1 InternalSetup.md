@@ -13,7 +13,7 @@ Download the provided template.
 Once downloaded, open your text editor to the root directory of the project. Then, open a terminal in the same location and run:
 
 ```
-npm start
+npm install
 ```
 to install the required packages.
 
@@ -46,7 +46,7 @@ Let's break down each section of the project.
 ### Low Maintenance Files
 Starting with root files and directories that are self-explanatory, unchanged from standard Node.js projects, or will require very little configuration:
 
-- `node_modules/`: This is where dependencies are installed.
+- `node_modules/`: Dependency installation folder.
 - `.gitattributes`: Standard [git attributes](https://git-scm.com/docs/gitattributes).
 - `.gitignore`: Standard [.gitignore](https://git-scm.com/docs/gitignore).
 - `package-lock.json`: Standard [package-lock.json](https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json).

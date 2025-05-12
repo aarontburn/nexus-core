@@ -13,7 +13,7 @@ Download the provided template.
 Once downloaded, open your text editor to the root directory of the project. Then, open a terminal in the same location and run:
 
 ```
-npm start
+npm install
 ```
 to install the required packages.
 

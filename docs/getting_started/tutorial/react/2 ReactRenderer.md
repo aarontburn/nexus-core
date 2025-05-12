@@ -38,20 +38,20 @@ root/
             +-- react_module/       // After building your module once
             +-- src/
                 +-- App.tsx
-                +-- ModulesBridge.ts
+                +-- nexus-bridge.ts
                 +-- ...
 
             +-- ...
 ```
 
-`renderer.ts` no longer handles events itself. Instead, it loads the dev server in development `localhost:5173` or the built HTML in production. All event handling should happen in your React app via ModulesBridge.ts.
+`renderer.ts` no longer handles events itself. Instead, it loads the dev server in development at `http://localhost:5173` or the built HTML in production. All event handling should happen in your React app via **nexus-bridge.ts**.
 
 ## Developing with React
 During development, your React application is hosted on a development server, located (by default) on `http://localhost:5173/`. If you need to change this, modify `src/renderer/renderer.ts`.
 
 > During production, your React application is bundled into a single `index.html` file located in `react-wrapper/react_module`. This is what gets loaded into Nexus.
 
-To be able to send and listen to events from your process, the `react-wrapper/src/` directory contains `ModulesBridge.ts`. This file contains functions that you can use to listen to events and send events back.
+To be able to send and listen to events from your process, the `react-wrapper/src/` directory contains `nexus-bridge.ts`. This file contains functions that you can use to listen to events and send events back.
 
 Within your React application, use `addProcessListener` within a `useEffect` to listen to events. The template already has this set up, but you can move this to wherever you need to listen to events. To send data to the process, use `sendToProcess`.
 
@@ -92,7 +92,7 @@ The way events are handled is very similar to how the process does it. All event
 
 Notice how we call `sendToProcess("init")` after we attach the process listener. This is to let the process know that the renderer is ready, and to make sure we don't miss any events sent from the process.
 
-## HMR
+## HMR/Live Reloading
 During development, there **is** support for HMR (Hot Module Replacement, or Live Reloading) **from within the `react-wrapper` directory**. Any changes done elsewhere will require a full restart of Nexus.
 
 Use `CTRL + R` will refresh the application and should reflect any changes you've made in the `react-wrapper`.

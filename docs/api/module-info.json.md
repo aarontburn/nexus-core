@@ -109,7 +109,7 @@ A integer that is incremented when your module is exported. This value is automa
 Lists the relative paths of files to exclude from the exported module. This can be omitted if no files need to be excluded.
 - `excluded` must be an array of strings, an empty array, or undefined.
 
-#### `included?: string[]`
+#### `build` > `included?: string[]`
 Lists the relative paths of files to include to the exported module. This can be omitted if no files need to be included. This will add the specified files in the root directory of exported module (equivalent to putting them in the `src/` directory in development).
 - `included` must be an array of strings, an empty array, or undefined.
 

@@ -2,44 +2,37 @@ const { ipcRenderer, contextBridge, } = require('electron')
 
 
 let PRELOAD_MODULE_ID: string | undefined = undefined;
-contextBridge.exposeInMainWorld('ipc', {
-	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
-		if (!PRELOAD_MODULE_ID) {
-			for (const arg of rendererWindow.common.args) {
-				if (arg.startsWith("--module-id")) {
-					PRELOAD_MODULE_ID = arg.split(":").at(-1);
-					break;
-				}
+
+
+function getModuleID() {
+	if (!PRELOAD_MODULE_ID) {
+		for (const arg of process.argv) {
+			if (arg.toLocaleLowerCase().startsWith("--module-id")) {
+				PRELOAD_MODULE_ID = arg.split(":").at(-1).toLocaleLowerCase();
+				break;
 			}
 		}
-		return ipcRenderer.invoke(PRELOAD_MODULE_ID, eventType, data);
+	}
+	if (PRELOAD_MODULE_ID === undefined) {
+		console.error(`WARNING: Could not find module ID within renderers 'process.argv'.`);
+	}
+
+
+	return PRELOAD_MODULE_ID;
+}
+
+contextBridge.exposeInMainWorld('ipc', {
+	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
+		return ipcRenderer.invoke(getModuleID(), eventType, data);
 	},
 
 	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
-		if (!PRELOAD_MODULE_ID) {
-			for (const arg of rendererWindow.common.args) {
-				if (arg.startsWith("--module-id")) {
-					PRELOAD_MODULE_ID = arg.split(":").at(-1);
-					break;
-				}
-			}
-		}
-
-		ipcRenderer.on(PRELOAD_MODULE_ID, (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
+		ipcRenderer.on(getModuleID(), (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
 
 	},
 
 	removeAllListeners: (rendererWindow: Window) => {
-		if (!PRELOAD_MODULE_ID) {
-			for (const arg of rendererWindow.common.args) {
-				if (arg.startsWith("--module-id")) {
-					PRELOAD_MODULE_ID = arg.split(":").at(-1);
-					break;
-				}
-			}
-		}
-
-		ipcRenderer.removeAllListeners(PRELOAD_MODULE_ID);
+		ipcRenderer.removeAllListeners(getModuleID());
 	}
 
 
@@ -49,5 +42,3 @@ contextBridge.exposeInMainWorld('ipc', {
 contextBridge.exposeInMainWorld("common", {
 	args: process.argv as readonly string[]
 });
-
-

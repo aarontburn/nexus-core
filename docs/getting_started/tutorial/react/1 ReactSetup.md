@@ -75,7 +75,7 @@ root/
     +-- module-info.json
 ```
 - `src/`: This is the folder that will be converted into your module and should contain ALL of your source code and assets.
-- `src/module-info.json`: A file containing details about your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
+- `src/module-info.json`: A file containing metadata and export configurations for your module. Read the [Exporting](../ConfigurationAndExport.md) section for more details.
 - `src/process/`: The directory containing all code and assets for the process (backend).
 - `src/process/main.ts`: The entry point to your module and the main [Process](../ProcessOverview.md). If you move or rename this file, ensure your changes are also reflected in `module-info.json` (read about [module-info.json](../../../api/module-info.json.md)).  
 - `src/renderer/`: The directory containing all code and assets for the renderer (frontend).
@@ -100,7 +100,7 @@ root/
                 +-- App.tsx
                 +-- index.css
                 +-- main.tsx
-                +-- ModulesBridge.ts
+                +-- nexus-bridge.ts
                 +-- vite-env-d.ts
 
             +-- index.html
@@ -114,7 +114,7 @@ root/
 
 Here are the files that are important:
 - `App.tsx`: Where your source code is located.
-- `ModulesBridge.ts`: This file contains methods used to communicate with your process.
+- `nexus-bridge.ts`: This file contains methods used to communicate with your process.
 
 ---
 ### Next Steps:

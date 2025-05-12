@@ -7,8 +7,6 @@ This section is to help you understand some of the commands defined within the `
 Within the `package.json` at the root of your project, the `scripts` field may look like:
 ```jsonc
 // package.json
-// ...
-
 "config": {
     "react-wrapper-directory": "./src/renderer/react-wrapper"
 },
@@ -20,9 +18,7 @@ Within the `package.json` at the root of your project, the `scripts` field may l
     "vite:build": "cd %npm_package_config_react-wrapper-directory% && npm run build",
     "vite:start": "cd %npm_package_config_react-wrapper-directory% && npm run dev",
     "electron-start": "npm run dev_export && electron ./node_modules/@nexus-app/nexus-client/main.js --dev"
-},
-
-// ...
+}
 ```
 These commands are ran via:
 ```
