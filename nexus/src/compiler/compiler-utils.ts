@@ -78,7 +78,7 @@ export async function compile(inputFilePath: string, outputDir: string) {
 
 
 export async function compileAndCopyDirectory(readDirectory: string, outputDirectory: string) {
-    if (readDirectory.split('/').at(-1) === "node_modules") { // Don't compile directories and just copy over
+    if (path.basename(readDirectory) === "node_modules") { // Don't compile directories and just copy over
         await fs.promises.cp(readDirectory, outputDirectory, { force: true, recursive: true });
         return;
     }

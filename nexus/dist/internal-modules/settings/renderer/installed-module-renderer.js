@@ -40,7 +40,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     };
     var getAbbreviation = function (moduleName) {
         var ABBREVIATION_LENGTH = 3;

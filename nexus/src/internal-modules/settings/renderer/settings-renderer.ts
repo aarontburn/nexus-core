@@ -45,14 +45,9 @@
 
 
     const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     }
 
-    window.ipc.on(window, (eventName: string, data: any[]) => {
-        handleEvent(eventName, data);
-    });
-
-    sendToProcess("settings-init");
 
     let isDeveloperMode: boolean = false;
 
@@ -68,7 +63,7 @@
     });
 
 
-    const handleEvent = (eventType: string, data: any[]) => {
+    window.ipc.onProcessEvent((eventType: string, data: any[]) => {
         switch (eventType) {
             case 'is-dev': {
                 isDeveloperMode = data[0] as boolean;
@@ -106,7 +101,9 @@
 
 
         }
-    };
+    });
+    sendToProcess("settings-init");
+
 
     function onTabButtonPressed(pressedTabButton?: HTMLElement) {
         if (selectedTabElement !== undefined) {

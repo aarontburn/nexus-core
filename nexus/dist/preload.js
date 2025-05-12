@@ -9,24 +9,25 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 var _a = require('electron'), ipcRenderer = _a.ipcRenderer, contextBridge = _a.contextBridge;
 var PRELOAD_MODULE_ID = undefined;
-function getModuleId() {
+function getModuleID() {
     if (!PRELOAD_MODULE_ID) {
         for (var _i = 0, _a = process.argv; _i < _a.length; _i++) {
             var arg = _a[_i];
-            if (arg.startsWith("--module-id")) {
-                PRELOAD_MODULE_ID = arg.split(":").at(-1);
+            if (arg.toLocaleLowerCase().startsWith("--module-id")) {
+                PRELOAD_MODULE_ID = arg.split(":").at(-1).toLocaleLowerCase();
                 break;
             }
         }
     }
+    if (PRELOAD_MODULE_ID === undefined) {
+        throw new Error("Could not find module ID within renderers 'process.argv'.");
+    }
     return PRELOAD_MODULE_ID;
 }
 contextBridge.exposeInMainWorld('ipc', {
-    send: function (rendererWindow, eventType, data) {
-        return ipcRenderer.invoke(getModuleId(), eventType, data);
-    },
-    on: function (rendererWindow, func) {
-        ipcRenderer.on(getModuleId(), function (_, eventName) {
+    sendToProcess: function (eventType, data) { return ipcRenderer.invoke(getModuleID(), eventType, data); },
+    onProcessEvent: function (func) {
+        ipcRenderer.on(getModuleID(), function (_, eventName) {
             var args = [];
             for (var _i = 2; _i < arguments.length; _i++) {
                 args[_i - 2] = arguments[_i];
@@ -34,8 +35,8 @@ contextBridge.exposeInMainWorld('ipc', {
             return func.apply(void 0, __spreadArray([eventName], args, false));
         });
     },
-    removeAllListeners: function (rendererWindow) {
-        ipcRenderer.removeAllListeners(getModuleId());
+    removeAllListeners: function () {
+        ipcRenderer.removeAllListeners(getModuleID());
     }
 });
 // Note: This differs from process.argv in the process and has renderer information.

@@ -1,8 +1,8 @@
 
 export interface IIPC {
-    send(rendererWindow: Window, eventType: string, data: any[]): Promise<any>;
-    on(rendererWindow: Window, func: (eventName: string, ...args: any[]) => void): void;
-	removeAllListeners(rendererWindow: Window): void;
+    sendToProcess(eventType: string, data: any[]): Promise<any>;
+    onProcessEvent(func: (eventType: string, ...args: any[]) => void): void;
+	removeAllListeners(): void;
 }
 
 export interface ICommon {

@@ -4,9 +4,9 @@
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     };
-    window.ipc.on(window, function (eventName, data) {
+    window.ipc.onProcessEvent(function (eventName, data) {
         switch (eventName) {
             case "load-modules": {
                 var _a = data[0], order = _a.order, modules = _a.modules;

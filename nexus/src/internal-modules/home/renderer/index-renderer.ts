@@ -1,16 +1,9 @@
 (() => {
-    const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
-        return window.ipc.send(window, eventName, data);
+    const sendToProcess = (eventType: string, ...data: any[]): Promise<any> => {
+        return window.ipc.sendToProcess(eventType, data);
     }
 
-
-    window.ipc.on(window, (eventName: string, data: any[]) => {
-        handleEvent(eventName, data);
-    });
-
-
     sendToProcess("init");
-
 
     const displayContainer: HTMLElement = document.getElementById('center');
 
@@ -21,7 +14,7 @@
 
     let currentOrder: string = undefined;
     
-    const handleEvent = (eventType: string, data: any[]) => {
+    window.ipc.onProcessEvent((eventType: string, data: any[]) => {
         switch (eventType) {
             case "is-first-launch": {
                 window.location.href = "../first-boot/html/1welcome.html";
@@ -50,7 +43,8 @@
                 break;
             }
         }
-    }
+    });
+
 
     function changeDisplayOrder(newOrder: string): void {
         currentOrder = newOrder;

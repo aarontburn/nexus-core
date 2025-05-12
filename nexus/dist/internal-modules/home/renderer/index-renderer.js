@@ -1,14 +1,11 @@
 (function () {
-    var sendToProcess = function (eventName) {
+    var sendToProcess = function (eventType) {
         var data = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventType, data);
     };
-    window.ipc.on(window, function (eventName, data) {
-        handleEvent(eventName, data);
-    });
     sendToProcess("init");
     var displayContainer = document.getElementById('center');
     var fullDate = document.getElementById("full-date");
@@ -16,7 +13,7 @@
     var standardTime = document.getElementById("standard-time");
     var militaryTime = document.getElementById("military-time");
     var currentOrder = undefined;
-    var handleEvent = function (eventType, data) {
+    window.ipc.onProcessEvent(function (eventType, data) {
         switch (eventType) {
             case "is-first-launch": {
                 window.location.href = "../first-boot/html/1welcome.html";
@@ -44,7 +41,7 @@
                 break;
             }
         }
-    };
+    });
     function changeDisplayOrder(newOrder) {
         currentOrder = newOrder;
         while (displayContainer.firstChild) {

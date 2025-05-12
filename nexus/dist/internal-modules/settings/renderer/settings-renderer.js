@@ -4,12 +4,8 @@
         for (var _i = 1; _i < arguments.length; _i++) {
             data[_i - 1] = arguments[_i];
         }
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     };
-    window.ipc.on(window, function (eventName, data) {
-        handleEvent(eventName, data);
-    });
-    sendToProcess("settings-init");
     var isDeveloperMode = false;
     var selectedTabElement = undefined;
     var moduleList = document.getElementById("left-list");
@@ -19,7 +15,7 @@
         swapTabs('manage');
         onTabButtonPressed(undefined);
     });
-    var handleEvent = function (eventType, data) {
+    window.ipc.onProcessEvent(function (eventType, data) {
         switch (eventType) {
             case 'is-dev': {
                 isDeveloperMode = data[0];
@@ -53,7 +49,8 @@
                 break;
             }
         }
-    };
+    });
+    sendToProcess("settings-init");
     function onTabButtonPressed(pressedTabButton) {
         if (selectedTabElement !== undefined) {
             selectedTabElement.style.color = "";

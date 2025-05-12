@@ -84,7 +84,7 @@ function importModuleArchive() {
                 case 0:
                     options = {
                         properties: ['openFile'],
-                        filters: [{ name: 'Nexus Archive File (.zip, .tar)', extensions: ['zip', 'tar'] }]
+                        filters: [{ name: 'Nexus Archive File (.zip)', extensions: ['zip'] }]
                     };
                     return [4 /*yield*/, electron_1.dialog.showOpenDialog(options)];
                 case 1:
@@ -113,11 +113,11 @@ function importPluginArchive(filePath) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    folderName = filePath.split("\\").at(-1);
+                    folderName = path.basename(path.normalize(filePath));
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fs.promises.copyFile(filePath, "".concat(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, "/").concat(folderName))];
+                    return [4 /*yield*/, fs.promises.copyFile(filePath, path.join(nexus_module_builder_1.DIRECTORIES.EXTERNAL_MODULES_PATH, folderName))];
                 case 2:
                     _a.sent();
                     return [2 /*return*/, true];

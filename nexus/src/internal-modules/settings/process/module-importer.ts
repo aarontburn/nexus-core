@@ -31,7 +31,7 @@ export async function importModuleArchive(): Promise<boolean> {
 }
 
 async function importPluginArchive(filePath: string): Promise<boolean> {
-    const folderName: string = path.normalize(filePath).split("\\").at(-1);
+    const folderName: string = path.basename(path.normalize(filePath));
     try {
         await fs.promises.copyFile(filePath, path.join(DIRECTORIES.EXTERNAL_MODULES_PATH, folderName));
         return true;

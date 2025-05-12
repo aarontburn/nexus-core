@@ -49,7 +49,8 @@ export class ModuleCompiler {
             files.map(async (folder) => {
                 const unarchiveDirectory: string = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
 
-                if (folder.name.split(".").at(-1) === 'zip') {
+                
+                if (path.extname(folder.name) === 'zip') {
                     try {
                         const zip: yauzl.ZipFile = await yauzl.open(path.join(folder.path, folder.name));
                         await fs.promises.mkdir(unarchiveDirectory, { recursive: true });

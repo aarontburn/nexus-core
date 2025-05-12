@@ -151,7 +151,7 @@ var ModuleCompiler = /** @class */ (function () {
                                     switch (_e.label) {
                                         case 0:
                                             unarchiveDirectory = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
-                                            if (!(folder.name.split(".").at(-1) === 'zip')) return [3 /*break*/, 19];
+                                            if (!(path.extname(folder.name) === 'zip')) return [3 /*break*/, 19];
                                             _e.label = 1;
                                         case 1:
                                             _e.trys.push([1, 18, , 19]);

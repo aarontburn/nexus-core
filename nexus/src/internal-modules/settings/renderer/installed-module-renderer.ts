@@ -1,6 +1,6 @@
 (() => {
     const sendToProcess = (eventName: string, ...data: any[]): Promise<any> => {
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     }
 
     interface ImportedModuleInfo {

@@ -175,7 +175,7 @@ function compileAndCopyDirectory(readDirectory, outputDirectory) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(readDirectory.split('/').at(-1) === "node_modules")) return [3 /*break*/, 2];
+                    if (!(path.basename(readDirectory) === "node_modules")) return [3 /*break*/, 2];
                     return [4 /*yield*/, fs.promises.cp(readDirectory, outputDirectory, { force: true, recursive: true })];
                 case 1:
                     _a.sent();

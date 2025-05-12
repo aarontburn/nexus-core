@@ -7,10 +7,10 @@ interface ModuleData {
 
 (() => {
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
-        return window.ipc.send(window, eventName, data);
+        return window.ipc.sendToProcess(eventName, data);
     }
 
-    window.ipc.on(window, (eventName: string, data: any[]) => {
+    window.ipc.onProcessEvent((eventName: string, data: any[]) => {
         switch (eventName) {
             case "load-modules": {
                 const { order, modules }: { order: string, modules: ModuleData[] } = data[0];

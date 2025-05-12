@@ -14,7 +14,7 @@ function getModuleID() {
 		}
 	}
 	if (PRELOAD_MODULE_ID === undefined) {
-		console.error(`WARNING: Could not find module ID within renderers 'process.argv'.`);
+		throw new Error(`Could not find module ID within renderers 'process.argv'.`);
 	}
 
 
@@ -22,20 +22,14 @@ function getModuleID() {
 }
 
 contextBridge.exposeInMainWorld('ipc', {
-	send: (rendererWindow: Window, eventType: string, data: any): Promise<any> => {
-		return ipcRenderer.invoke(getModuleID(), eventType, data);
-	},
-
-	on: (rendererWindow: Window, func: (eventName: string, ...args: any[]) => void) => {
+	sendToProcess: (eventType: string, data: any): Promise<any> => ipcRenderer.invoke(getModuleID(), eventType, data),
+	onProcessEvent: (func: (eventName: string, ...args: any[]) => void) => {
 		ipcRenderer.on(getModuleID(), (_: Electron.IpcRendererEvent, eventName: string, ...args: any[]) => func(eventName, ...args));
-
 	},
 
-	removeAllListeners: (rendererWindow: Window) => {
+	removeAllListeners: () => {
 		ipcRenderer.removeAllListeners(getModuleID());
 	}
-
-
 });
 
 // Note: This differs from process.argv in the process and has renderer information.
