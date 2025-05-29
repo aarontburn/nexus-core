@@ -83,6 +83,7 @@ var electron_1 = require("electron");
 var electron_updater_1 = require("electron-updater");
 var path = __importStar(require("path"));
 var module_updater_1 = __importDefault(require("./module-updater"));
+var notification_process_1 = require("../notification/notification-process");
 var MODULE_NAME = "Nexus Auto Updater";
 exports.MODULE_ID = 'nexus.Auto_Updater';
 var AutoUpdaterProcess = /** @class */ (function (_super) {
@@ -94,7 +95,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         }) || this;
         _this.finishedChecking = false;
         _this.autoUpdaterStarted = false;
-        _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
+        _this.version = electron_1.app.getVersion();
         _this.moduleUpdater = new module_updater_1["default"](context);
         _this.context = context;
         _this.setModuleInfo({
@@ -154,11 +155,11 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         console.info("[Nexus Auto Updater] Starting auto updater.");
         var TEN_MIN = 10 * 60 * 1000;
         if (process.argv.includes("--dev")) {
-            electron_updater_1.autoUpdater.autoDownload = false;
-            electron_updater_1.autoUpdater.autoInstallOnAppQuit = false;
             electron_updater_1.autoUpdater.updateConfigPath = path.join(__dirname, '../../view/dev-app-update.yml');
             electron_updater_1.autoUpdater.forceDevUpdateConfig = true;
         }
+        electron_updater_1.autoUpdater.autoInstallOnAppQuit = false;
+        electron_updater_1.autoUpdater.autoDownload = false;
         electron_updater_1.autoUpdater.logger = null;
         electron_updater_1.autoUpdater.disableWebInstaller = true;
         var interval = undefined;
@@ -166,6 +167,23 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             console.info("[Nexus Auto Updater] Checking for update...");
         });
         electron_updater_1.autoUpdater.on('update-available', function (info) {
+            _this.requestExternal(notification_process_1.NOTIFICATION_MANAGER_ID, "open-dialog", {
+                windowTitle: "Nexus Update Available",
+                size: info.releaseNotes ? { width: 800, height: 500 } : { width: 500, height: 300 },
+                markdownContentString: "\n\t\t\t\t\t\t<h2 align=\"center\">Nexus Update Available</h2>\n\n\t\t\t\t\t\t<p align=\"center\">You're currently using <strong>v".concat(electron_1.app.getVersion(), "</strong>.</p>\n\t\t\t\t\t\t<p align=\"center\">A newer version <strong>v").concat(info.version, "</strong> is available.</p>\n\t\t\t\t\t\t<p align=\"center\">Would you like to download it now?</p>\n\n\t\t\t\t\t\t").concat(info.releaseNotes
+                    ? "\n\t\t\t\t\t\t\t\t<h3>Release Notes</h3>\n\t\t\t\t\t\t\t\t<div>".concat(info.releaseNotes, "</div>\n\t\t\t\t\t\t\t")
+                    : '', "\n\n\t\t\t\t"),
+                resolveAction: {
+                    text: "Download Now",
+                    action: function () {
+                        electron_updater_1.autoUpdater.downloadUpdate();
+                    }
+                },
+                rejectAction: {
+                    text: "Later",
+                    action: function () { }
+                }
+            });
             var out = [];
             out.push("[Nexus Auto Updater] Update Found:");
             if (info.releaseName) {
@@ -180,7 +198,22 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
             clearInterval(interval);
         });
         electron_updater_1.autoUpdater.on('update-downloaded', function (event) {
-            console.info("[Nexus Auto Updater] Release ".concat(event.version, " downloaded. This will be installed on next launch."));
+            console.info("[Nexus Auto Updater] Release ".concat(event.version, " downloaded."));
+            _this.requestExternal(notification_process_1.NOTIFICATION_MANAGER_ID, "open-dialog", {
+                windowTitle: "Restart Required",
+                size: { width: 500, height: 300 },
+                markdownContentString: "\n\t\t\t\t\t<h2 align=\"center\">Nexus ".concat(event.version, " Downloaded</h2>\n\n\t\t\t\t\t<p align=\"center\">The latest version has been downloaded.</p>\n\t\t\t\t\t<p align=\"center\">Restart now to complete the update process.</p>\n\t\t\t\t"),
+                resolveAction: {
+                    text: "Restart Now",
+                    action: function () {
+                        electron_updater_1.autoUpdater.quitAndInstall();
+                    }
+                },
+                rejectAction: {
+                    text: "Later",
+                    action: function () { }
+                }
+            });
             clearInterval(interval);
         });
         electron_updater_1.autoUpdater.on('update-cancelled', function (event) {
@@ -203,35 +236,58 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
     AutoUpdaterProcess.prototype.handleExternal = function (source, eventType, data) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var _c, target, updateInfo, _d, code, message, force, moduleID, updateInfo, successful, _e, code, message;
+            var _c, url, moduleID, downloadedSuccess, target, updateInfo, _d, code, message, force, moduleID, updateInfo, successful, _e, code, message;
             var _this = this;
             return __generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
                         _c = eventType;
                         switch (_c) {
-                            case "check-for-update": return [3 /*break*/, 1];
-                            case "get-all-updates": return [3 /*break*/, 5];
-                            case "update-module": return [3 /*break*/, 6];
+                            case "install-module-from-git": return [3 /*break*/, 1];
+                            case "check-for-update": return [3 /*break*/, 3];
+                            case "get-all-updates": return [3 /*break*/, 7];
+                            case "update-module": return [3 /*break*/, 8];
                         }
-                        return [3 /*break*/, 12];
+                        return [3 /*break*/, 14];
                     case 1:
+                        url = "https://" + data[0];
+                        // input url must be in the format github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip
+                        // notice no https://, added in later
+                        if (!url.startsWith("https://github.com/") || !url.includes("/releases/latest/download/") || !url.endsWith(".zip")) {
+                            return [2 /*return*/, { code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST, body: new Error("Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'") }];
+                        }
+                        moduleID = url.split("/").at(-1).replace(".zip", '');
+                        return [4 /*yield*/, this.moduleUpdater.downloadLatest(moduleID, url)];
+                    case 2:
+                        downloadedSuccess = _f.sent();
+                        if (downloadedSuccess) {
+                            return [2 /*return*/, {
+                                    code: nexus_module_builder_1.HTTPStatusCodes.OK, body: {
+                                        moduleID: moduleID
+                                    }
+                                }];
+                        }
+                        else {
+                            return [2 /*return*/, { code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST, body: "Could not download module from ".concat(url) }];
+                        }
+                        return [3 /*break*/, 15];
+                    case 3:
                         target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
                         if (!this.context.moduleMap.has(target)) {
                             return [2 /*return*/, { body: new Error("No module with the ID of ".concat(target, " found.")), code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND }];
                         }
-                        _f.label = 2;
-                    case 2:
-                        _f.trys.push([2, 4, , 5]);
+                        _f.label = 4;
+                    case 4:
+                        _f.trys.push([4, 6, , 7]);
                         return [4 /*yield*/, this.moduleUpdater.checkForUpdate(target)];
-                    case 3:
+                    case 5:
                         updateInfo = _f.sent();
                         return [2 /*return*/, { body: updateInfo, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    case 4:
+                    case 6:
                         _d = _f.sent();
                         code = _d.code, message = _d.message;
                         return [2 /*return*/, { body: message, code: code }];
-                    case 5:
+                    case 7:
                         {
                             if (this.finishedChecking) {
                                 return [2 /*return*/, { body: this.moduleUpdater.getAvailableUpdates(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
@@ -252,41 +308,41 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
                                     }, intervalMS);
                                 })];
                         }
-                        _f.label = 6;
-                    case 6:
+                        _f.label = 8;
+                    case 8:
                         force = data[0] === "force";
                         moduleID = (_b = data[1]) !== null && _b !== void 0 ? _b : source.getIPCSource();
                         if (!this.context.moduleMap.has(moduleID)) {
                             return [2 /*return*/, { body: new Error("No module with the ID of ".concat(moduleID, " found.")), code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND }];
                         }
-                        _f.label = 7;
-                    case 7:
-                        _f.trys.push([7, 11, , 12]);
+                        _f.label = 9;
+                    case 9:
+                        _f.trys.push([9, 13, , 14]);
                         return [4 /*yield*/, this.moduleUpdater.getLatestRemoteVersion(moduleID)];
-                    case 8:
+                    case 10:
                         updateInfo = _f.sent();
                         if (updateInfo === undefined) {
                             return [2 /*return*/, { body: "No latest releases found for " + moduleID, code: nexus_module_builder_1.HTTPStatusCodes.NO_CONTENT }];
                         }
-                        if (!(force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1)) return [3 /*break*/, 10];
+                        if (!(force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1)) return [3 /*break*/, 12];
                         return [4 /*yield*/, this.moduleUpdater.downloadLatest(moduleID, updateInfo.url)];
-                    case 9:
+                    case 11:
                         successful = _f.sent();
                         if (!successful) {
                             return [2 /*return*/, { body: new Error("An error occurred while updating ".concat(moduleID)), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
                         }
-                        _f.label = 10;
-                    case 10: return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    case 11:
+                        _f.label = 12;
+                    case 12: return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    case 13:
                         _e = _f.sent();
                         code = _e.code, message = _e.message;
                         return [2 /*return*/, { body: message, code: code }];
-                    case 12:
+                    case 14:
                         {
                             return [2 /*return*/, { code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined }];
                         }
-                        _f.label = 13;
-                    case 13: return [2 /*return*/];
+                        _f.label = 15;
+                    case 15: return [2 /*return*/];
                 }
             });
         });

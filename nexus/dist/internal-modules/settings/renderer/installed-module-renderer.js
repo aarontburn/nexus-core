@@ -163,7 +163,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var proceed;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, openConfirmModuleDeletionPopup()];
+                            case 0: return [4 /*yield*/, openConfirmModuleDeletionPopup(info.moduleID)];
                             case 1:
                                 proceed = _a.sent();
                                 if (proceed) {
@@ -193,29 +193,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             }
         });
     });
-    function openPopup(html) {
+    function openPopup(body, rejectText, resolveText) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve) {
-                        var _a, _b;
-                        var div = document.createElement("div");
-                        div.classList.add('overlay');
-                        div.innerHTML = html;
-                        document.body.prepend(div);
-                        div.addEventListener('click', function (event) {
-                            if (event.target.className.includes('overlay')) {
-                                div.remove();
-                                resolve(false);
-                            }
-                        });
-                        (_a = div.querySelector("#dialog-cancel")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
-                            div.remove();
-                            resolve(false);
-                        });
-                        (_b = div.querySelector("#dialog-proceed")) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () {
-                            div.remove();
-                            resolve(true);
-                        });
+                        sendToProcess("open-popup", {
+                            body: body,
+                            rejectText: rejectText,
+                            resolveText: resolveText
+                        }).then(resolve);
                     })];
             });
         });
@@ -224,29 +210,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (color === void 0) { color = 'var(--accent-color)'; }
         return "<span style='color: ".concat(color, ";'>").concat(text, "</span>");
     }
-    function openConfirmModuleDeletionPopup() {
-        var html = "\n            <div class='dialog'>\n                <h3>Are you sure you want to ".concat(color('delete', 'red'), " this module?</h3>\n                <h4>Your data will be saved.<h4/>\n                <h4 style=\"padding-top: 10px;\">Proceed?</h4>\n\n                <div id=\"dialog-controls-container\">\n                    <h3 id='dialog-cancel'>Cancel</h3>\n                    <h3 id='dialog-proceed'>Delete</h3>\n                </div>\n            </div>\n        ");
-        return openPopup(html);
+    function openConfirmModuleDeletionPopup(moduleID) {
+        var html = "\n            <h2 align=\"center\">\n                Are you sure you want to delete ".concat(moduleID, "?\n            </h2>\n\n            <p align=\"center\">\n                Your data will be saved.\n            </p>\n\n            <p align=\"center\">\n                Proceed?\n            </p>\n\n        ");
+        return openPopup(html, "Cancel", "Delete");
     }
     function openDeletedPopup() {
-        var html = "\n            <div class='dialog'>\n                <h3 >".concat(color('Successfully', 'green'), " deleted module.</h3>\n                <h4>Restart required for the changes to take effect.<h4/>\n                <h4 style=\"padding-top: 10px;\">Restart now?</h4>\n\n                <div id=\"dialog-controls-container\">\n                    <h3 id='dialog-cancel'>Not Now</h3>\n                    <h3 id='dialog-proceed'>Restart</h3>\n                </div>\n            </div>\n        ");
-        openPopup(html).then(function (proceed) {
+        var html = "\n            <h2 align=\"center\">\n                Successfully deleted module.\n            </h2>\n\n            <p align=\"center\">\n                Restart required for the changes to take effect.\n            </p>\n\n            <p align=\"center\">\n                Restart now?\n            </p>\n            \n        ";
+        openPopup(html, "Later", "Restart").then(function (proceed) {
             if (proceed) {
                 sendToProcess("restart-now");
             }
         });
     }
     function openRestartPopup() {
-        var html = "\n            <div class='dialog'>\n                <h3>".concat(color('Successfully', 'green'), " imported the module.</h3>\n                <h4>You need to restart to finish the setup.<h4/>\n                <h4 style=\"padding-top: 10px;\">Restart now?</h4>\n\n                <div id=\"dialog-controls-container\">\n                    <h3 id='dialog-cancel'>Not now</h3>\n                    <h3 id='dialog-proceed'>Restart</h3>\n                </div>\n            </div>\n        ");
-        openPopup(html).then(function (proceed) {
+        var markdown = "\n            <h2 align=\"center\">\n                ".concat(color('Successfully', 'green'), " imported the module.\n            </h2>\n\n            <p align=\"center\">\n                You need to restart to finish the setup.\n            </p>\n\n            <p align=\"center\">\n                Restart now?\n            </p>\n\n        ");
+        openPopup(markdown, "Later", "Restart").then(function (proceed) {
             if (proceed) {
                 sendToProcess("restart-now");
             }
         });
     }
     function openLinkPopup(link) {
-        var html = "\n            <div class=\"dialog\">\n                <h3>You are navigating to an ".concat(color('external', 'red'), " website.</h3>\n                <h4 class='link'>").concat(link, "</h4>\n                <h4 style=\"padding-top: 10px;\">Only visit the site if you trust it.</h4>\n\n                <div id=\"dialog-controls-container\">\n                    <h3 id='dialog-cancel'>Cancel</h3>\n                    <h3 id='dialog-proceed'>Proceed</h3>\n                </div>\n            </div>\n        ");
-        openPopup(html).then(function (proceed) {
+        var markdown = "\n            <h2 align=\"center\">\n                You are navigating to an ".concat(color('external', 'red'), " website.\n            </h2>\n\n            <p align=\"center\">\n                ").concat(link, "\n            </p>\n\n            <p align=\"center\">\n                Only visit the site if you trust it.\n            </p>\n\n\n        ");
+        openPopup(markdown, "Cancel", "Proceed").then(function (proceed) {
             if (proceed) {
                 sendToProcess("open-link", link);
             }

@@ -10,6 +10,7 @@ import { TabInfo } from "./types";
 import { MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
 import { VersionInfo } from "../../auto-updater/module-updater";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
+import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../../notification/notification-process";
 
 
 const MODULE_NAME: string = "Settings";
@@ -229,6 +230,31 @@ export class SettingsProcess extends Process {
                 this.initialize();
                 break;
             }
+            case "open-popup": {
+                const { body, rejectText, resolveText } = data[0];
+                return new Promise((resolve) => {
+                    this.requestExternal(NOTIFICATION_MANAGER_ID, "open-dialog", {
+                        windowTitle: "Nexus Settings",
+                        markdownContentString: body,
+                        size: { width: 500, height: 300 },
+                        rejectAction: {
+                            text: rejectText,
+                            action: function (): void {
+                                resolve(false);
+                            }
+                        },
+                        resolveAction: {
+                            text: resolveText,
+                            action: function (): void {
+                                resolve(true)
+                            }
+                        }
+
+                    } satisfies Omit<NotificationProps, "sourceModule">);
+                })
+
+
+            }
 
             case "update-module": {
                 const moduleID: string = data[0];
@@ -248,7 +274,7 @@ export class SettingsProcess extends Process {
             case "check-for-update": {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
-                
+
                 if (response.code === HTTPStatusCodes.OK && response.body !== undefined) {
                     return true;
                 }

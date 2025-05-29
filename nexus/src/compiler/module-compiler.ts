@@ -45,12 +45,11 @@ export class ModuleCompiler {
         await fs.promises.rm(this.TEMP_ARCHIVE_PATH, { recursive: true, force: true });
         await fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true });
 
-        await Promise.all(
+        
+        await Promise.allSettled(
             files.map(async (folder) => {
                 const unarchiveDirectory: string = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
-
-                
-                if (path.extname(folder.name) === 'zip') {
+                if (folder.name.endsWith("zip")) {
                     try {
                         const zip: yauzl.ZipFile = await yauzl.open(path.join(folder.path, folder.name));
                         await fs.promises.mkdir(unarchiveDirectory, { recursive: true });

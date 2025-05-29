@@ -8,16 +8,17 @@ import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/set
 import { AutoUpdaterProcess, MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
 import * as fs from "fs";
 import * as path from "path";
+import { NOTIFICATION_MANAGER_ID, NotificationManagerProcess } from "../internal-modules/notification/notification-process";
 
 
-const INTERNAL_MODULE_IDS = [SettingID, AutoUpdaterID, HOME_ID]
+const INTERNAL_MODULE_IDS = [SettingID, AutoUpdaterID, HOME_ID, NOTIFICATION_MANAGER_ID]
 
 export async function loadModules(context: InitContext): Promise<Map<string, Process>> {
     // Load modules from storage
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
 
     const settingProcess: SettingsProcess = new SettingsProcess();
-    const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess(context), settingProcess];
+    const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess(context), settingProcess, new NotificationManagerProcess()];
 
     // Register all modules
     const moduleMap: Map<string, Process> = new Map();

@@ -1,0 +1,59 @@
+:root {
+    --header-size: 3rem;
+}
+
+#header {
+    height: var(--header-size);
+    border-bottom: 1px solid gray;
+    display: flex;
+    align-items: center;
+    app-region: drag;
+    padding: 0 1rem;
+    font-size: 16px;
+}
+
+#header .close-button {
+    transition: 0.2s;
+    app-region: no-drag;
+
+    &:hover {
+        color: var(--accent-color);
+    }
+}
+
+#button-container {
+    display: flex;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    padding: 0 10px;
+}
+
+#button-container button {
+    padding: 5px 15px;
+    min-width: 85px;
+    width: fit-content;
+    transition: 0.2s;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--accent-color);
+    }
+
+}
+
+.markdown-container {
+    border-bottom: 1px solid gray;
+    height: calc(100% - 2rem - var(--header-size) - 20px);
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+@media (prefers-color-scheme: light) {
+    #button-container button {
+        background-color: #dbdbdb;
+    }
+}

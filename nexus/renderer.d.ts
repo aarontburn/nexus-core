@@ -1,7 +1,7 @@
 
 export interface IIPC {
-    sendToProcess(eventType: string, data: any[]): Promise<any>;
-    onProcessEvent(func: (eventType: string, ...args: any[]) => void): void;
+    sendToProcess(eventType: string, data: any): Promise<any>;
+    onProcessEvent(func: (eventType: string, args: any[]) => void): void;
 	removeAllListeners(): void;
 }
 

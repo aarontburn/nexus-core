@@ -106,8 +106,8 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
 
         "Developer",
         new BooleanSetting(module)
-            .setName("Automatically Install Updates")
-            .setDescription("Always download Nexus updates and install before closing.")
+            .setName("Automatically Check for Nexus Updates")
+            .setDescription("Check for updates automatically.")
             .setAccessID("always_update")
             .setDefault(true),
 

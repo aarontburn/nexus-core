@@ -4,6 +4,7 @@ import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater
 import * as path from "path";
 import { InitContext } from "../../utils/types";
 import ModuleUpdater, { VersionInfo } from "./module-updater";
+import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../notification/notification-process";
 
 
 const MODULE_NAME: string = "Nexus Auto Updater";
@@ -39,6 +40,8 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 
+
+
 	private finishedChecking: boolean = false;
 
 	public async beforeWindowCreated(): Promise<void> {
@@ -56,7 +59,7 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	private autoUpdaterStarted = false;
-	private readonly version: string = process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion()
+	private readonly version: string = app.getVersion();
 
 	public startAutoUpdater() {
 		if (this.autoUpdaterStarted) {
@@ -70,12 +73,12 @@ export class AutoUpdaterProcess extends Process {
 		const TEN_MIN: number = 10 * 60 * 1000;
 
 		if (process.argv.includes("--dev")) {
-			autoUpdater.autoDownload = false;
-			autoUpdater.autoInstallOnAppQuit = false;
 			autoUpdater.updateConfigPath = path.join(__dirname, '../../view/dev-app-update.yml');
 			autoUpdater.forceDevUpdateConfig = true;
 		}
 
+		autoUpdater.autoInstallOnAppQuit = false;
+		autoUpdater.autoDownload = false;
 		autoUpdater.logger = null;
 		autoUpdater.disableWebInstaller = true;
 
@@ -86,6 +89,38 @@ export class AutoUpdaterProcess extends Process {
 		});
 
 		autoUpdater.on('update-available', (info: UpdateInfo) => {
+			this.requestExternal(NOTIFICATION_MANAGER_ID, "open-dialog", {
+				windowTitle: "Nexus Update Available",
+				size: info.releaseNotes ? { width: 800, height: 500 } : { width: 500, height: 300 },
+				markdownContentString: `
+						<h2 align="center">Nexus Update Available</h2>
+
+						<p align="center">You're currently using <strong>v${app.getVersion()}</strong>.</p>
+						<p align="center">A newer version <strong>v${info.version}</strong> is available.</p>
+						<p align="center">Would you like to download it now?</p>
+
+						${info.releaseNotes
+						? `
+								<h3>Release Notes</h3>
+								<div>${info.releaseNotes}</div>
+							`
+						: ''}
+
+				`,
+				resolveAction: {
+					text: "Download Now",
+					action: () => {
+						autoUpdater.downloadUpdate();
+					}
+				},
+				rejectAction: {
+					text: "Later",
+					action: () => { }
+				}
+			} satisfies Omit<NotificationProps, "sourceModule">);
+
+
+
 			const out: string[] = [];
 			out.push("[Nexus Auto Updater] Update Found:");
 
@@ -104,8 +139,33 @@ export class AutoUpdaterProcess extends Process {
 			clearInterval(interval);
 		});
 
+
 		autoUpdater.on('update-downloaded', (event: UpdateDownloadedEvent) => {
-			console.info(`[Nexus Auto Updater] Release ${event.version} downloaded. This will be installed on next launch.`);
+			console.info(`[Nexus Auto Updater] Release ${event.version} downloaded.`);
+
+			this.requestExternal(NOTIFICATION_MANAGER_ID, "open-dialog", {
+				windowTitle: "Restart Required",
+				size: { width: 500, height: 300 },
+				markdownContentString: `
+					<h2 align="center">Nexus ${event.version} Downloaded</h2>
+
+					<p align="center">The latest version has been downloaded.</p>
+					<p align="center">Restart now to complete the update process.</p>
+				`,
+				resolveAction: {
+					text: "Restart Now",
+					action: () => {
+						autoUpdater.quitAndInstall();
+					}
+				},
+				rejectAction: {
+					text: "Later",
+					action: () => { }
+				}
+			} satisfies Omit<NotificationProps, "sourceModule">)
+
+
+
 			clearInterval(interval);
 		});
 
@@ -116,6 +176,8 @@ export class AutoUpdaterProcess extends Process {
 
 		autoUpdater.on('update-not-available', (info: UpdateInfo) => {
 			console.info(`[Nexus Auto Updater] No updates found. Current Version: ${this.version} | Remote Version: ${info.version}`);
+
+
 			clearInterval(interval);
 		})
 
@@ -134,6 +196,31 @@ export class AutoUpdaterProcess extends Process {
 	}
 	public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
 		switch (eventType) {
+			case "install-module-from-git": {
+				const url: string = "https://" + data[0];
+				// input url must be in the format github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip
+				// notice no https://, added in later
+
+				if (!url.startsWith("https://github.com/") || !url.includes("/releases/latest/download/") || !url.endsWith(".zip")) {
+					return { code: HTTPStatusCodes.BAD_REQUEST, body: new Error("Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'") }
+				}
+				const moduleID: string = url.split("/").at(-1).replace(".zip", '');
+
+				const downloadedSuccess: boolean = await this.moduleUpdater.downloadLatest(moduleID, url);
+				if (downloadedSuccess) {
+					return {
+						code: HTTPStatusCodes.OK, body: {
+							moduleID: moduleID
+						}
+					}
+				} else {
+					return { code: HTTPStatusCodes.BAD_REQUEST, body: `Could not download module from ${url}` }
+				}
+
+
+				break;
+			}
+
 			case "check-for-update": {
 				const target: string = data[0] ?? source.getIPCSource();
 				if (!this.context.moduleMap.has(target)) {
@@ -142,7 +229,7 @@ export class AutoUpdaterProcess extends Process {
 				try {
 					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.checkForUpdate(target);
 					return { body: updateInfo, code: HTTPStatusCodes.OK };
-					
+
 				} catch ({ code, message }) {
 					return { body: message, code: code };
 

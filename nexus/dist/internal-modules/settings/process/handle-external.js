@@ -48,13 +48,14 @@ function handleExternal(process, source, eventType, data) {
                     _b = eventType;
                     switch (_b) {
                         case "get-setting": return [3 /*break*/, 1];
-                        case "open-settings-for-module": return [3 /*break*/, 2];
-                        case 'is-developer-mode': return [3 /*break*/, 4];
-                        case "get-accent-color": return [3 /*break*/, 5];
-                        case "get-module-order": return [3 /*break*/, 6];
-                        case 'on-developer-mode-changed': return [3 /*break*/, 7];
+                        case "on-module-installed": return [3 /*break*/, 2];
+                        case "open-settings-for-module": return [3 /*break*/, 3];
+                        case 'is-developer-mode': return [3 /*break*/, 5];
+                        case "get-accent-color": return [3 /*break*/, 6];
+                        case "get-module-order": return [3 /*break*/, 7];
+                        case 'on-developer-mode-changed': return [3 /*break*/, 8];
                     }
-                    return [3 /*break*/, 8];
+                    return [3 /*break*/, 9];
                 case 1:
                     {
                         if (typeof data[0] !== 'string') {
@@ -69,9 +70,16 @@ function handleExternal(process, source, eventType, data) {
                     }
                     _c.label = 2;
                 case 2:
+                    {
+                        process.requestExternal("nexus.Main", "swap-to-module");
+                        process.sendToRenderer("open-restart-popup");
+                        return [3 /*break*/, 10];
+                    }
+                    _c.label = 3;
+                case 3:
                     target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
                     return [4 /*yield*/, process.handleEvent("swap-settings-tab", [target])];
-                case 3:
+                case 4:
                     output = _c.sent();
                     if (output === undefined) {
                         return [2 /*return*/, { body: new Error("The specified module '".concat(target, "' either doesn't exist or has no settings.")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
@@ -79,22 +87,22 @@ function handleExternal(process, source, eventType, data) {
                     process.requestExternal('nexus.Main', 'swap-to-module');
                     process.sendToRenderer("swap-tabs", output);
                     return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                case 4:
-                    {
-                        return [2 /*return*/, { body: process.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
-                    }
-                    _c.label = 5;
                 case 5:
                     {
-                        return [2 /*return*/, { body: process.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                        return [2 /*return*/, { body: process.getSettings().findSetting('dev_mode').getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     _c.label = 6;
                 case 6:
                     {
-                        return [2 /*return*/, { body: process.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                        return [2 /*return*/, { body: process.getSettings().findSetting("accent_color").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     _c.label = 7;
                 case 7:
+                    {
+                        return [2 /*return*/, { body: process.getSettings().findSetting("module_order").getValue(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    _c.label = 8;
+                case 8:
                     {
                         callback = data[0];
                         if (typeof callback !== "function") {
@@ -104,13 +112,13 @@ function handleExternal(process, source, eventType, data) {
                         callback(process.getSettings().findSetting('dev_mode').getValue());
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
-                    _c.label = 8;
-                case 8:
+                    _c.label = 9;
+                case 9:
                     {
                         return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.NOT_IMPLEMENTED }];
                     }
-                    _c.label = 9;
-                case 9: return [2 /*return*/];
+                    _c.label = 10;
+                case 10: return [2 /*return*/];
             }
         });
     });

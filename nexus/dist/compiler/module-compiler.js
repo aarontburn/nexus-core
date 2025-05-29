@@ -143,7 +143,7 @@ var ModuleCompiler = /** @class */ (function () {
                         return [4 /*yield*/, fs.promises.mkdir(this.TEMP_ARCHIVE_PATH, { recursive: true })];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, Promise.all(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, Promise.allSettled(files.map(function (folder) { return __awaiter(_this, void 0, void 0, function () {
                                 var unarchiveDirectory, zip, entryPromises, _loop_1, _a, zip_1, zip_1_1, e_1_1, error_1;
                                 var _this = this;
                                 var _b, e_1, _c, _d;
@@ -151,7 +151,7 @@ var ModuleCompiler = /** @class */ (function () {
                                     switch (_e.label) {
                                         case 0:
                                             unarchiveDirectory = this.TEMP_ARCHIVE_PATH + folder.name.substring(0, folder.name.length - 4);
-                                            if (!(path.extname(folder.name) === 'zip')) return [3 /*break*/, 19];
+                                            if (!folder.name.endsWith("zip")) return [3 /*break*/, 19];
                                             _e.label = 1;
                                         case 1:
                                             _e.trys.push([1, 18, , 19]);

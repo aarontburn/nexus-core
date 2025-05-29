@@ -48,7 +48,7 @@ This is where the logic of your renderer is stored. Not only does this file mani
 
 // Sends information to the process.
 const sendToProcess = (eventType: string, ...data: any[]): Promise<void> => {
-    return window.ipc.send(eventType, data);
+    return window.ipc.sendToProcess(eventType, data);
 }
 
 // Create event handler.
@@ -68,7 +68,7 @@ const handleEvent = (eventType: string, data: any[]) => {
 }
 
 // Attach event handler.
-window.ipc.on((eventType: string, data: any[]) => {
+window.ipc.onProcessEvent((eventType: string, data: any[]) => {
     handleEvent(eventType, data);
 });
 
@@ -85,7 +85,7 @@ These are the essential parts of the renderer that will allow it to communicate 
 
 // Sends information to the the process.
 const sendToProcess = (eventType: string, ...data: any[]): Promise<void> => {
-    return window.ipc.send(eventType, data);
+    return window.ipc.sendToProcess(eventType, data);
 }
 ```
 This provided function allows you to send information to the process, given an `eventType` and any data associated with the event.
@@ -124,7 +124,7 @@ const handleEvent = (eventType: string, data: any[]) => {
 }
 
 // Attach event handler.
-window.ipc.on((eventType: string, data: any[]) => {
+window.ipc.onProcessEvent((eventType: string, data: any[]) => {
     handleEvent(eventType, data);
 });
 

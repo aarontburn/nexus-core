@@ -35,15 +35,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 var electron_1 = require("electron");
 var internal_args_1 = require("./init/internal-args");
+var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var init_directory_creator_1 = require("./init/init-directory-creator");
 var window_creator_1 = require("./init/window-creator");
 var module_loader_1 = require("./init/module-loader");
 var global_event_handler_1 = require("./init/global-event-handler");
 var main_1 = require("./internal-modules/settings/process/main");
 var external_module_interfacer_1 = require("./init/external-module-interfacer");
+var path_1 = __importDefault(require("path"));
+var updater_process_1 = require("./internal-modules/auto-updater/updater-process");
+var notification_process_1 = require("./internal-modules/notification/notification-process");
+var PROTOCOL = "nexus-app";
 electron_1.Menu.setApplicationMenu(null);
 electron_1.app.whenReady().then(function () {
     nexusStart();
@@ -58,6 +66,14 @@ electron_1.app.on("window-all-closed", function () {
         electron_1.app.quit();
     }
 });
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        electron_1.app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, [path_1["default"].resolve(process.argv[1])]);
+    }
+}
+else {
+    electron_1.app.setAsDefaultProtocolClient(PROTOCOL);
+}
 function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
         var processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
@@ -134,11 +150,80 @@ function nexusStart() {
                     _c.sent();
                     // Register IPC Callback
                     context.ipcCallback = (0, global_event_handler_1.getIPCCallback)(context);
+                    attachSingleInstance(context);
                     (0, window_creator_1.showWindow)(context);
                     return [2 /*return*/];
             }
         });
     });
+}
+function attachSingleInstance(context) {
+    var gotTheLock = electron_1.app.requestSingleInstanceLock();
+    var protocolWithExtension = PROTOCOL + "://";
+    var onDeepLinkOrSecondInstance = function (path) {
+        if (path.startsWith(protocolWithExtension)) {
+            var data = path.slice(protocolWithExtension.length);
+            var splitPath = data.split("_");
+            switch (splitPath[0]) {
+                case "install": {
+                    console.log("Attempting to installing module from " + splitPath.slice(1).join('_'));
+                    context.ipcCallback.requestExternalModule(context.mainIPCSource, updater_process_1.MODULE_ID, "install-module-from-git", splitPath.slice(1).join('_'))
+                        .then(function (response) {
+                        if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK) {
+                            context.ipcCallback.requestExternalModule(context.mainIPCSource, notification_process_1.NOTIFICATION_MANAGER_ID, "open-dialog", {
+                                windowTitle: "Successfully Installed Module",
+                                size: { width: 500, height: 300 },
+                                markdownContentString: "\n                                        <h2 align=\"center\">\n                                            Successfully installed ".concat(response.body.moduleID, "\n                                        </h2>\n\n                                        <p align=\"center\">\n                                            You will need to restart Nexus.\n                                        </p>\n\n                                        <p align=\"center\">\n                                            Restart now?\n                                        </p>\n                                    "),
+                                rejectAction: {
+                                    text: "Later",
+                                    action: function () {
+                                        // do nothing?
+                                    }
+                                },
+                                resolveAction: {
+                                    text: "Restart",
+                                    action: function () {
+                                        electron_1.app.relaunch();
+                                        electron_1.app.exit();
+                                    }
+                                }
+                            });
+                        }
+                        console.log(response.body);
+                    });
+                    break;
+                }
+                default: {
+                    console.error("No protocol handler found for URL: " + path);
+                    break;
+                }
+            }
+        }
+    };
+    if (!gotTheLock) {
+        electron_1.app.quit();
+    }
+    else {
+        electron_1.app.on('second-instance', function (_, commandLine, __) {
+            // Someone tried to run a second instance, we should focus our window.
+            if (context.window) {
+                if (context.window.isMinimized()) {
+                    context.window.restore();
+                }
+                context.window.focus();
+            }
+            onDeepLinkOrSecondInstance(commandLine.pop());
+        });
+    }
+    // MacOS deep link compatibility i think
+    electron_1.app.on('open-url', function (event, url) {
+        event.preventDefault();
+        onDeepLinkOrSecondInstance(url);
+    });
+    for (var _i = 0, _a = process.argv.filter(function (arg) { return arg.startsWith(PROTOCOL); }); _i < _a.length; _i++) {
+        var arg = _a[_i];
+        onDeepLinkOrSecondInstance(arg);
+    }
 }
 function onProcessAndRendererReady(context) {
     if (process.argv.includes("--dev")) {

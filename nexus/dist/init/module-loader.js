@@ -78,7 +78,8 @@ var main_1 = require("../internal-modules/settings/process/main");
 var updater_process_1 = require("../internal-modules/auto-updater/updater-process");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
-var INTERNAL_MODULE_IDS = [main_1.MODULE_ID, updater_process_1.MODULE_ID, HomeProcess_1.MODULE_ID];
+var notification_process_1 = require("../internal-modules/notification/notification-process");
+var INTERNAL_MODULE_IDS = [main_1.MODULE_ID, updater_process_1.MODULE_ID, HomeProcess_1.MODULE_ID, notification_process_1.NOTIFICATION_MANAGER_ID];
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
         var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1;
@@ -88,7 +89,7 @@ function loadModules(context) {
                 case 1:
                     loadedModules = _b.sent();
                     settingProcess = new main_1.SettingsProcess();
-                    internalModules = [new HomeProcess_1.HomeProcess(), new updater_process_1.AutoUpdaterProcess(context), settingProcess];
+                    internalModules = [new HomeProcess_1.HomeProcess(), new updater_process_1.AutoUpdaterProcess(context), settingProcess, new notification_process_1.NotificationManagerProcess()];
                     moduleMap = new Map();
                     for (_i = 0, _a = __spreadArray(__spreadArray([], internalModules, true), loadedModules, true); _i < _a.length; _i++) {
                         module_1 = _a[_i];

@@ -11,14 +11,19 @@ icon: ./dist/view/assets/icon
 
 extraMetadata:
   name: "Nexus"
-  version: "0.0.5"
+  version: "0.0.8"
   description: "A cross-platform application loader, designed for productivity and organization."
   author: "aarontburn"
+
+protocols:
+  - name: Nexus
+    schemes: [nexus-app]
+    role: Viewer
 
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-Setup-${version}.${ext}
+  artifactName: ${productName}-Setup.${ext}
 
 publish:
   provider: github

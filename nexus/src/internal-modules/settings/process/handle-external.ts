@@ -21,6 +21,12 @@ export default async function handleExternal(process: SettingsProcess, source: I
 
             return { body: setting.getValue(), code: HTTPStatusCodes.OK };
         }
+        case "on-module-installed": {
+            process.requestExternal("nexus.Main", "swap-to-module");
+            process.sendToRenderer("open-restart-popup");
+            break;
+        }
+
         case "open-settings-for-module": {
             const target: string = data[0] ?? source.getIPCSource();
 

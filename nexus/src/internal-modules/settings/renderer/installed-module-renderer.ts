@@ -15,6 +15,8 @@
 
     }
 
+
+
     const getAbbreviation = (moduleName: string): string => {
         const ABBREVIATION_LENGTH: number = 3;
         const abbreviation: string[] = moduleName.split(" ").map(s => s[0]);
@@ -170,7 +172,7 @@
                 });
 
                 div.querySelector('.remove-module-button').addEventListener('click', async () => {
-                    const proceed: boolean = await openConfirmModuleDeletionPopup();
+                    const proceed: boolean = await openConfirmModuleDeletionPopup(info.moduleID);
                     if (proceed) {
                         sendToProcess('remove-module', info).then(successful => {
                             if (successful) {
@@ -203,31 +205,18 @@
 
 
 
-    async function openPopup(html: string): Promise<boolean> {
+    async function openPopup(body: string, rejectText: string, resolveText: string): Promise<boolean> {
 
         return new Promise((resolve) => {
-            const div: HTMLElement = document.createElement("div");
-            div.classList.add('overlay');
-            div.innerHTML = html;
-            document.body.prepend(div);
+            sendToProcess("open-popup", {
+                body,
+                rejectText,
+                resolveText
+            }).then(resolve)
 
-            div.addEventListener('click', (event) => {
-                if ((event.target as HTMLElement).className.includes('overlay')) {
-                    div.remove();
-                    resolve(false);
-                }
-            });
-
-            div.querySelector(`#dialog-cancel`)?.addEventListener('click', () => {
-                div.remove();
-                resolve(false);
-            });
-
-            div.querySelector(`#dialog-proceed`)?.addEventListener('click', () => {
-                div.remove();
-                resolve(true);
-            });
         });
+
+
     }
 
 
@@ -235,38 +224,42 @@
         return `<span style='color: ${color};'>${text}</span>`
     }
 
-    function openConfirmModuleDeletionPopup(): Promise<boolean> {
+    function openConfirmModuleDeletionPopup(moduleID: string): Promise<boolean> {
         const html: string = `
-            <div class='dialog'>
-                <h3>Are you sure you want to ${color('delete', 'red')} this module?</h3>
-                <h4>Your data will be saved.<h4/>
-                <h4 style="padding-top: 10px;">Proceed?</h4>
+            <h2 align="center">
+                Are you sure you want to delete ${moduleID}?
+            </h2>
 
-                <div id="dialog-controls-container">
-                    <h3 id='dialog-cancel'>Cancel</h3>
-                    <h3 id='dialog-proceed'>Delete</h3>
-                </div>
-            </div>
+            <p align="center">
+                Your data will be saved.
+            </p>
+
+            <p align="center">
+                Proceed?
+            </p>
+
         `;
 
-        return openPopup(html);
+        return openPopup(html, "Cancel", "Delete");
     }
 
     function openDeletedPopup() {
         const html: string = `
-            <div class='dialog'>
-                <h3 >${color('Successfully', 'green')} deleted module.</h3>
-                <h4>Restart required for the changes to take effect.<h4/>
-                <h4 style="padding-top: 10px;">Restart now?</h4>
+            <h2 align="center">
+                Successfully deleted module.
+            </h2>
 
-                <div id="dialog-controls-container">
-                    <h3 id='dialog-cancel'>Not Now</h3>
-                    <h3 id='dialog-proceed'>Restart</h3>
-                </div>
-            </div>
+            <p align="center">
+                Restart required for the changes to take effect.
+            </p>
+
+            <p align="center">
+                Restart now?
+            </p>
+            
         `;
 
-        openPopup(html).then((proceed: boolean) => {
+        openPopup(html, "Later", "Restart").then((proceed: boolean) => {
             if (proceed) {
                 sendToProcess("restart-now");
             }
@@ -278,20 +271,22 @@
 
 
     function openRestartPopup(): void {
-        const html: string = `
-            <div class='dialog'>
-                <h3>${color('Successfully', 'green')} imported the module.</h3>
-                <h4>You need to restart to finish the setup.<h4/>
-                <h4 style="padding-top: 10px;">Restart now?</h4>
+        const markdown: string = `
+            <h2 align="center">
+                ${color('Successfully', 'green')} imported the module.
+            </h2>
 
-                <div id="dialog-controls-container">
-                    <h3 id='dialog-cancel'>Not now</h3>
-                    <h3 id='dialog-proceed'>Restart</h3>
-                </div>
-            </div>
+            <p align="center">
+                You need to restart to finish the setup.
+            </p>
+
+            <p align="center">
+                Restart now?
+            </p>
+
         `;
 
-        openPopup(html).then((proceed: boolean) => {
+        openPopup(markdown, "Later", "Restart").then((proceed: boolean) => {
             if (proceed) {
                 sendToProcess("restart-now");
             }
@@ -300,20 +295,23 @@
     }
 
     function openLinkPopup(link: string): void {
-        const html: string = `
-            <div class="dialog">
-                <h3>You are navigating to an ${color('external', 'red')} website.</h3>
-                <h4 class='link'>${link}</h4>
-                <h4 style="padding-top: 10px;">Only visit the site if you trust it.</h4>
+        const markdown: string = `
+            <h2 align="center">
+                You are navigating to an ${color('external', 'red')} website.
+            </h2>
 
-                <div id="dialog-controls-container">
-                    <h3 id='dialog-cancel'>Cancel</h3>
-                    <h3 id='dialog-proceed'>Proceed</h3>
-                </div>
-            </div>
+            <p align="center">
+                ${link}
+            </p>
+
+            <p align="center">
+                Only visit the site if you trust it.
+            </p>
+
+
         `
 
-        openPopup(html).then((proceed: boolean) => {
+        openPopup(markdown, "Cancel", "Proceed").then((proceed: boolean) => {
             if (proceed) {
                 sendToProcess("open-link", link);
             }

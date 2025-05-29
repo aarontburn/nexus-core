@@ -1,6 +1,6 @@
 import { app, BrowserWindow, globalShortcut, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
-import { Process } from "@nexus-app/nexus-module-builder";
+import { DataResponse, HTTPStatusCodes, Process } from "@nexus-app/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
 import { createBrowserWindow, createWebViews, showWindow } from "./init/window-creator";
 import { InitContext } from "./utils/types";
@@ -8,7 +8,12 @@ import { loadModules, verifyAllModuleSettings } from "./init/module-loader";
 import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./init/global-event-handler";
 import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/main";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
-import { AutoUpdaterProcess, MODULE_ID as UPDATER_PROCESS_ID } from "./internal-modules/auto-updater/updater-process";
+import path from "path";
+import { MODULE_ID as UPDATER_ID } from "./internal-modules/auto-updater/updater-process";
+import { NOTIFICATION_MANAGER_ID, NotificationProps } from "./internal-modules/notification/notification-process";
+
+const PROTOCOL: string = "nexus-app";
+
 
 Menu.setApplicationMenu(null);
 
@@ -28,6 +33,16 @@ app.on("window-all-closed", () => {
         app.quit();
     }
 });
+
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, [path.resolve(process.argv[1])])
+    }
+} else {
+    app.setAsDefaultProtocolClient(PROTOCOL)
+}
+
+
 
 
 async function nexusStart() {
@@ -89,13 +104,104 @@ async function nexusStart() {
 
     // Create window
     context.window = await createBrowserWindow(context);
+
     await createWebViews(context);
 
     // Register IPC Callback
     context.ipcCallback = getIPCCallback(context);
+    attachSingleInstance(context);
 
 
     showWindow(context);
+}
+
+function attachSingleInstance(context: InitContext) {
+    const gotTheLock: boolean = app.requestSingleInstanceLock();
+
+    const protocolWithExtension: string = PROTOCOL + "://";
+    const onDeepLinkOrSecondInstance = (path: string) => {
+        if (path.startsWith(protocolWithExtension)) {
+            const data: string = path.slice(protocolWithExtension.length);
+            const splitPath: string[] = data.split("_");
+            switch (splitPath[0]) {
+                case "install": {
+                    console.log("Attempting to installing module from " + splitPath.slice(1).join('_'));
+                    context.ipcCallback.requestExternalModule(context.mainIPCSource, UPDATER_ID, "install-module-from-git", splitPath.slice(1).join('_'))
+                        .then((response: DataResponse) => {
+                            if (response.code === HTTPStatusCodes.OK) {
+                                context.ipcCallback.requestExternalModule(context.mainIPCSource, NOTIFICATION_MANAGER_ID, "open-dialog", {
+                                    windowTitle: "Successfully Installed Module",
+                                    size: { width: 500, height: 300 },
+                                    markdownContentString: `
+                                        <h2 align="center">
+                                            Successfully installed ${response.body.moduleID}
+                                        </h2>
+
+                                        <p align="center">
+                                            You will need to restart Nexus.
+                                        </p>
+
+                                        <p align="center">
+                                            Restart now?
+                                        </p>
+                                    `,
+                                    rejectAction: {
+                                        text: "Later",
+                                        action: function (): void {
+                                            // do nothing?
+                                        }
+                                    },
+                                    resolveAction: {
+                                        text: "Restart",
+                                        action: function (): void {
+                                            app.relaunch();
+                                            app.exit();
+                                        }
+                                    }
+                                } satisfies Omit<NotificationProps, "sourceModule">);
+                            }
+
+                            console.log(response.body)
+                        });
+
+
+                    break;
+                }
+                default: {
+                    console.error("No protocol handler found for URL: " + path);
+                    break;
+                }
+            }
+
+        }
+    }
+
+    if (!gotTheLock) {
+        app.quit();
+    } else {
+        app.on('second-instance', (_, commandLine, __) => {
+            // Someone tried to run a second instance, we should focus our window.
+            if (context.window) {
+                if (context.window.isMinimized()) {
+                    context.window.restore();
+                }
+                context.window.focus()
+            }
+
+            onDeepLinkOrSecondInstance(commandLine.pop());
+        })
+
+    }
+
+    // MacOS deep link compatibility i think
+    app.on('open-url', (event, url) => {
+        event.preventDefault();
+        onDeepLinkOrSecondInstance(url);
+    });
+
+    for (const arg of process.argv.filter(arg => arg.startsWith(PROTOCOL))) {
+        onDeepLinkOrSecondInstance(arg);
+    }
 }
 
 function onProcessAndRendererReady(context: InitContext): void {
@@ -112,7 +218,7 @@ function onProcessAndRendererReady(context: InitContext): void {
             if (!context.window.isFocused()) {
                 return;
             }
-            
+
             const displayedModuleID: string = context.displayedModule.getID();
             context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
         })
@@ -140,7 +246,7 @@ function onProcessAndRendererReady(context: InitContext): void {
             url: module.getURL()
         });
     });
-    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', { order: moduleOrder, modules: data});
+    context.ipcCallback.notifyRenderer(context.mainIPCSource, 'load-modules', { order: moduleOrder, modules: data });
 
     let startupModuleID: string = "nexus.Home";
 

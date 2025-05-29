@@ -138,8 +138,8 @@ var getSettings = function (module) {
         }); }),
         "Developer",
         new types_1.BooleanSetting(module)
-            .setName("Automatically Install Updates")
-            .setDescription("Always download Nexus updates and install before closing.")
+            .setName("Automatically Check for Nexus Updates")
+            .setDescription("Check for updates automatically.")
             .setAccessID("always_update")
             .setDefault(true),
         new types_1.BooleanSetting(module)

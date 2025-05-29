@@ -2,7 +2,7 @@
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
-        "start": "npm run build && cd ./dist && electron --trace-warnings . --dev --in-core ",
+        "start": "npm run build && cd ./dist && electron . --dev --in-core ",
         "package": "npm run build && npx electron-builder build --win",
         "package:test": "npm run build && electron-builder --dir",
         "publish": "npm run build && cd ./dist && npm publish --access public",
@@ -11,6 +11,7 @@
     "main": "./dist/main.js",
     "devDependencies": {
         "@types/semver": "^7.7.0",
+        "@types/showdown": "^2.0.6",
         "@types/yauzl-promise": "^4.0.1",
         "electron": "^35.1.5",
         "electron-builder": "^24.13.3",
@@ -20,6 +21,7 @@
         "@nexus-app/nexus-exporter": "^1.1.1",
         "@nexus-app/nexus-module-builder": "^1.0.3",
         "electron-updater": "^6.6.2",
+        "showdown": "^2.1.0",
         "typescript": "^4.8.3",
         "yauzl-promise": "^4.0.0"
     }
