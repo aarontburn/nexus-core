@@ -1,11 +1,11 @@
 {
   "name": "@nexus-app/nexus-client",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "A cross-platform application loader, designed for productivity and organization.",
   "homepage": "https://github.com/aarontburn/nexus-core",
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/aarontburn/nexus-core.git"
+    "type": "git",
+    "url": "git+https://github.com/aarontburn/nexus-core.git"
   },
   "scripts": {
     "start": "electron . --dev"
@@ -13,16 +13,19 @@
   "main": "./main.js",
   "author": "aarontburn",
   "devDependencies": {
+    "@types/semver": "^7.7.0",
+    "@types/showdown": "^2.0.6",
     "@types/yauzl-promise": "^4.0.1",
-    "electron": "^28.0.0",
+    "electron": "^35.1.5",
     "electron-builder": "^24.13.3",
     "typescript": "^4.8.3"
   },
   "dependencies": {
     "@nexus-app/nexus-exporter": "^1.1.1",
     "@nexus-app/nexus-module-builder": "^1.0.3",
+    "electron-updater": "^6.6.2",
+    "showdown": "^2.1.0",
     "typescript": "^4.8.3",
-    "yauzl-promise": "^4.0.0",
-    "electron-updater": "^6.6.2"
+    "yauzl-promise": "^4.0.0"
   }
 }

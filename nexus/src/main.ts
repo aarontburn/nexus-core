@@ -46,6 +46,12 @@ if (process.defaultApp) {
 
 
 async function nexusStart() {
+    const gotTheLock: boolean = app.requestSingleInstanceLock();
+    if (!gotTheLock) {
+        app.quit();
+    }
+
+
     let processReady: boolean = false;
     let rendererReady: boolean = false;
 
@@ -116,7 +122,6 @@ async function nexusStart() {
 }
 
 function attachSingleInstance(context: InitContext) {
-    const gotTheLock: boolean = app.requestSingleInstanceLock();
 
     const protocolWithExtension: string = PROTOCOL + "://";
     const onDeepLinkOrSecondInstance = (path: string) => {
@@ -176,22 +181,18 @@ function attachSingleInstance(context: InitContext) {
         }
     }
 
-    if (!gotTheLock) {
-        app.quit();
-    } else {
-        app.on('second-instance', (_, commandLine, __) => {
-            // Someone tried to run a second instance, we should focus our window.
-            if (context.window) {
-                if (context.window.isMinimized()) {
-                    context.window.restore();
-                }
-                context.window.focus()
+    app.on('second-instance', (_, commandLine, __) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (context.window) {
+            if (context.window.isMinimized()) {
+                context.window.restore();
             }
+            context.window.focus()
+        }
 
-            onDeepLinkOrSecondInstance(commandLine.pop());
-        })
+        onDeepLinkOrSecondInstance(commandLine.pop());
+    });
 
-    }
 
     // MacOS deep link compatibility i think
     app.on('open-url', (event, url) => {

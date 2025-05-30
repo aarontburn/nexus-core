@@ -59,7 +59,7 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	private autoUpdaterStarted = false;
-	private readonly version: string = app.getVersion();
+	private readonly version: string = process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion();
 
 	public startAutoUpdater() {
 		if (this.autoUpdaterStarted) {

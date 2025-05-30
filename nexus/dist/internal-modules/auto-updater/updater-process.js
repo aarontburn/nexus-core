@@ -95,7 +95,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         }) || this;
         _this.finishedChecking = false;
         _this.autoUpdaterStarted = false;
-        _this.version = electron_1.app.getVersion();
+        _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
         _this.moduleUpdater = new module_updater_1["default"](context);
         _this.context = context;
         _this.setModuleInfo({

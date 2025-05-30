@@ -76,10 +76,14 @@ else {
 }
 function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
-        var processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
+        var gotTheLock, processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
+                    gotTheLock = electron_1.app.requestSingleInstanceLock();
+                    if (!gotTheLock) {
+                        electron_1.app.quit();
+                    }
                     processReady = false;
                     rendererReady = false;
                     context = {
@@ -158,7 +162,6 @@ function nexusStart() {
     });
 }
 function attachSingleInstance(context) {
-    var gotTheLock = electron_1.app.requestSingleInstanceLock();
     var protocolWithExtension = PROTOCOL + "://";
     var onDeepLinkOrSecondInstance = function (path) {
         if (path.startsWith(protocolWithExtension)) {
@@ -200,21 +203,16 @@ function attachSingleInstance(context) {
             }
         }
     };
-    if (!gotTheLock) {
-        electron_1.app.quit();
-    }
-    else {
-        electron_1.app.on('second-instance', function (_, commandLine, __) {
-            // Someone tried to run a second instance, we should focus our window.
-            if (context.window) {
-                if (context.window.isMinimized()) {
-                    context.window.restore();
-                }
-                context.window.focus();
+    electron_1.app.on('second-instance', function (_, commandLine, __) {
+        // Someone tried to run a second instance, we should focus our window.
+        if (context.window) {
+            if (context.window.isMinimized()) {
+                context.window.restore();
             }
-            onDeepLinkOrSecondInstance(commandLine.pop());
-        });
-    }
+            context.window.focus();
+        }
+        onDeepLinkOrSecondInstance(commandLine.pop());
+    });
     // MacOS deep link compatibility i think
     electron_1.app.on('open-url', function (event, url) {
         event.preventDefault();
