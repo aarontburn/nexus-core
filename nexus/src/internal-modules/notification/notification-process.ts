@@ -2,6 +2,7 @@ import { DataResponse, HTTPStatusCodes, IPCSource, Process } from "@nexus-app/ne
 import { BaseWindow, BrowserWindow, MessageChannelMain } from "electron";
 import path from 'path';
 import showdown from "showdown";
+import { MAIN_ID } from "../../main";
 
 const NOTIFICATION_MANAGER_NAME: string = "Nexus Notification Manager";
 export const NOTIFICATION_MANAGER_ID: string = 'nexus.Notification_Manager';
@@ -44,9 +45,12 @@ export class NotificationManagerProcess extends Process {
 	}
 
 
-	private openDialog(props: NotificationProps) {
+	private async openDialog(props: NotificationProps) {
+		const window: BaseWindow = (await this.requestExternal(MAIN_ID, 'get-primary-window')).body;
+
+
 		const modalWindow = new BrowserWindow({
-			parent: BaseWindow.getAllWindows()[0],
+			parent: window,
 			modal: true,
 
 			width: props.size?.width ?? 800, height: props.size?.height ?? 500,

@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var settings_1 = require("./settings");
+var main_1 = require("../../../main");
 function handleExternal(process, source, eventType, data) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
@@ -71,7 +72,7 @@ function handleExternal(process, source, eventType, data) {
                     _c.label = 2;
                 case 2:
                     {
-                        process.requestExternal("nexus.Main", "swap-to-module");
+                        process.requestExternal(main_1.MAIN_ID, "swap-to-module");
                         process.sendToRenderer("open-restart-popup");
                         return [3 /*break*/, 10];
                     }
@@ -84,7 +85,7 @@ function handleExternal(process, source, eventType, data) {
                     if (output === undefined) {
                         return [2 /*return*/, { body: new Error("The specified module '".concat(target, "' either doesn't exist or has no settings.")), code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST }];
                     }
-                    process.requestExternal('nexus.Main', 'swap-to-module');
+                    process.requestExternal(main_1.MAIN_ID, 'swap-to-module');
                     process.sendToRenderer("swap-tabs", output);
                     return [2 /*return*/, { body: undefined, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                 case 5:

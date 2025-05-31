@@ -1,4 +1,4 @@
-import { BaseWindow, Rectangle, shell, WebContentsView } from "electron";
+import { app, BaseWindow, Rectangle, shell, WebContentsView } from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
 import { ModuleSettings } from "@nexus-app/nexus-module-builder/ModuleSettings";
@@ -30,15 +30,16 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         autoHideMenuBar: true,
         title: "Nexus",
         icon: path.join(__dirname, "../view/assets/icon.ico"),
-        backgroundColor: "#111111", 
+        backgroundColor: "#111111",
     });
+
 
 
     window.on('close', async (event) => {
         event.preventDefault();
         await close(context, window);
     })
-    
+
 
     const view: WebContentsView = new WebContentsView({
         webPreferences: {
@@ -88,7 +89,7 @@ export function createWebViews(context: InitContext) {
                 backgroundThrottling: false,
                 preload: path.join(__dirname, "../preload.js"),
                 partition: module.getHTTPOptions()?.partition,
-                
+
             }
         });
 

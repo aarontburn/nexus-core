@@ -89,6 +89,7 @@ var handle_external_1 = __importDefault(require("./handle-external"));
 var updater_process_1 = require("../../auto-updater/updater-process");
 var internal_args_1 = require("../../../init/internal-args");
 var notification_process_1 = require("../../notification/notification-process");
+var main_1 = require("../../../main");
 var MODULE_NAME = "Settings";
 exports.MODULE_ID = 'nexus.Settings';
 var HTML_PATH = path.join(__dirname, "../static/SettingsHTML.html");
@@ -195,8 +196,9 @@ var SettingsProcess = /** @class */ (function (_super) {
             var window, isWindowMaximized, bounds, _a, _b, _c, _d, _e;
             return __generator(this, function (_f) {
                 switch (_f.label) {
-                    case 0:
-                        window = electron_1.BaseWindow.getAllWindows()[0];
+                    case 0: return [4 /*yield*/, this.requestExternal(main_1.MAIN_ID, 'get-primary-window')];
+                    case 1:
+                        window = (_f.sent()).body;
                         isWindowMaximized = window.isMaximized();
                         bounds = window.getBounds();
                         _b = (_a = Promise).allSettled;
@@ -206,14 +208,14 @@ var SettingsProcess = /** @class */ (function (_super) {
                             this.getSettings().findSetting('window_x').setValue(bounds.x),
                             this.getSettings().findSetting('window_y').setValue(bounds.y)];
                         _e = (_d = this.getSettings().findSetting('startup_last_open_id')).setValue;
-                        return [4 /*yield*/, this.requestExternal("nexus.Main", "get-current-module-id")];
-                    case 1: return [4 /*yield*/, _b.apply(_a, [_c.concat([
+                        return [4 /*yield*/, this.requestExternal(main_1.MAIN_ID, "get-current-module-id")];
+                    case 2: return [4 /*yield*/, _b.apply(_a, [_c.concat([
                                 _e.apply(_d, [(_f.sent()).body])
                             ])])];
-                    case 2:
+                    case 3:
                         _f.sent();
                         return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
-                    case 3:
+                    case 4:
                         _f.sent();
                         return [2 /*return*/];
                 }
@@ -439,7 +441,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 18:
                         {
                             electron_1.app.relaunch();
-                            electron_1.app.exit();
+                            electron_1.app.quit();
                             return [3 /*break*/, 27];
                         }
                         _c.label = 19;

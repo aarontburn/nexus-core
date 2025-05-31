@@ -42,13 +42,12 @@ if (process.defaultApp) {
     app.setAsDefaultProtocolClient(PROTOCOL)
 }
 
-
-
+export const MAIN_ID: string = 'nexus.Main'
 
 async function nexusStart() {
     const gotTheLock: boolean = app.requestSingleInstanceLock();
     if (!gotTheLock) {
-        app.quit();
+        app.exit();
     }
 
 
@@ -64,7 +63,7 @@ async function nexusStart() {
         displayedModule: undefined,
         mainIPCSource: {
             getIPCSource() {
-                return "nexus.Main";
+                return MAIN_ID;
             },
         },
         setProcessReady: () => {
@@ -158,15 +157,16 @@ function attachSingleInstance(context: InitContext) {
                                     },
                                     resolveAction: {
                                         text: "Restart",
-                                        action: function (): void {
-                                            app.relaunch();
-                                            app.exit();
+                                        action: () => {
+                                            app.relaunch({
+                                                args: process.argv.filter(arg => arg !== path)
+                                            });
+                                            app.quit();
                                         }
                                     }
                                 } satisfies Omit<NotificationProps, "sourceModule">);
                             }
 
-                            console.log(response.body)
                         });
 
 

@@ -11,6 +11,7 @@ import { MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
 import { VersionInfo } from "../../auto-updater/module-updater";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../../notification/notification-process";
+import { MAIN_ID } from "../../../main";
 
 
 const MODULE_NAME: string = "Settings";
@@ -129,7 +130,7 @@ export class SettingsProcess extends Process {
 
 
     public async onExit(): Promise<void> {
-        const window: BaseWindow = BaseWindow.getAllWindows()[0];
+        const window: BaseWindow = (await this.requestExternal(MAIN_ID, 'get-primary-window')).body;
 
         // Save window dimensions
         const isWindowMaximized: boolean = window.isMaximized();
@@ -141,7 +142,7 @@ export class SettingsProcess extends Process {
             this.getSettings().findSetting('window_height').setValue(bounds.height),
             this.getSettings().findSetting('window_x').setValue(bounds.x),
             this.getSettings().findSetting('window_y').setValue(bounds.y),
-            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal("nexus.Main", "get-current-module-id")).body),
+            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal(MAIN_ID, "get-current-module-id")).body),
         ])
         await this.fileManager.writeSettingsToStorage();
     }
@@ -329,7 +330,7 @@ export class SettingsProcess extends Process {
 
             case 'restart-now': {
                 app.relaunch();
-                app.exit();
+                app.quit();
                 break;
             }
 

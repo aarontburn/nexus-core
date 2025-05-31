@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.MAIN_ID = void 0;
 var electron_1 = require("electron");
 var internal_args_1 = require("./init/internal-args");
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
@@ -74,6 +75,7 @@ if (process.defaultApp) {
 else {
     electron_1.app.setAsDefaultProtocolClient(PROTOCOL);
 }
+exports.MAIN_ID = 'nexus.Main';
 function nexusStart() {
     return __awaiter(this, void 0, void 0, function () {
         var gotTheLock, processReady, rendererReady, context, internalArguments, _i, internalArguments_1, arg, _a, _b;
@@ -82,7 +84,7 @@ function nexusStart() {
                 case 0:
                     gotTheLock = electron_1.app.requestSingleInstanceLock();
                     if (!gotTheLock) {
-                        electron_1.app.quit();
+                        electron_1.app.exit();
                     }
                     processReady = false;
                     rendererReady = false;
@@ -95,7 +97,7 @@ function nexusStart() {
                         displayedModule: undefined,
                         mainIPCSource: {
                             getIPCSource: function () {
-                                return "nexus.Main";
+                                return exports.MAIN_ID;
                             }
                         },
                         setProcessReady: function () {
@@ -186,13 +188,14 @@ function attachSingleInstance(context) {
                                 resolveAction: {
                                     text: "Restart",
                                     action: function () {
-                                        electron_1.app.relaunch();
-                                        electron_1.app.exit();
+                                        electron_1.app.relaunch({
+                                            args: process.argv.filter(function (arg) { return arg !== path; })
+                                        });
+                                        electron_1.app.quit();
                                     }
                                 }
                             });
                         }
-                        console.log(response.body);
                     });
                     break;
                 }

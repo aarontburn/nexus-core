@@ -65,6 +65,20 @@ export function handleExternalWrapper(context: InitContext) {
             case "get-current-module-id": {
                 return { body: context.displayedModule.getID(), code: HTTPStatusCodes.OK };
             }
+            case "get-primary-window": {
+                return { body: context.window, code: HTTPStatusCodes.OK }
+            }
+            case "get-module-window": {
+                const target: string = source.getIPCSource();
+                if (!context.moduleViewMap.has(target)) {
+                    return {
+                        body: new Error(`Could not retrieve WebContentView for ${target}; either target doesn't exist or target is an internal module.`),
+                        code: HTTPStatusCodes.NOT_FOUND
+                    };
+                }
+
+                return { body: context.moduleViewMap.get(target), code: HTTPStatusCodes.OK }
+            }
             case "open-dev-tools": {
                 // Only allow aarontburn.Debug_Console to open devtools for other modules
                 const target: string = source.getIPCSource() === "aarontburn.Debug_Console" ? data[1] : source.getIPCSource();
@@ -137,7 +151,7 @@ export function handleExternalWrapper(context: InitContext) {
                 return { body: context.moduleMap.get(target).getIconPath(), code: HTTPStatusCodes.OK }
             }
 
-            
+
             default: {
                 return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
             }

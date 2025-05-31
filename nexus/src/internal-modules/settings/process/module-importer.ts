@@ -6,6 +6,7 @@ import * as path from "path";
 import { readModuleInfo } from '../../../compiler/compiler-utils';
 import { SettingsProcess } from './main';
 import { VersionInfo } from '../../auto-updater/module-updater';
+import { MAIN_ID } from '../../../main';
 
 
 
@@ -69,7 +70,7 @@ export async function getImportedModules(process: SettingsProcess, availableUpda
             return;
         }
 
-        const iconPath: string = (await process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)).body
+        const iconPath: string = (await process.requestExternal(MAIN_ID, 'get-module-icon-path', moduleInfo.id)).body
 
         map.set(moduleInfo.id, {
             iconPath: iconPath,

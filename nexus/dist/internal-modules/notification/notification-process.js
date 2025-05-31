@@ -59,6 +59,7 @@ var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var showdown_1 = __importDefault(require("showdown"));
+var main_1 = require("../../main");
 var NOTIFICATION_MANAGER_NAME = "Nexus Notification Manager";
 exports.NOTIFICATION_MANAGER_ID = 'nexus.Notification_Manager';
 var NotificationManagerProcess = /** @class */ (function (_super) {
@@ -85,50 +86,61 @@ var NotificationManagerProcess = /** @class */ (function (_super) {
     }
     NotificationManagerProcess.prototype.openDialog = function (props) {
         var _a, _b, _c, _d, _e;
-        var modalWindow = new electron_1.BrowserWindow({
-            parent: electron_1.BaseWindow.getAllWindows()[0],
-            modal: true,
-            width: (_b = (_a = props.size) === null || _a === void 0 ? void 0 : _a.width) !== null && _b !== void 0 ? _b : 800, height: (_d = (_c = props.size) === null || _c === void 0 ? void 0 : _c.height) !== null && _d !== void 0 ? _d : 500,
-            frame: false,
-            webPreferences: {
-                contextIsolation: true,
-                nodeIntegration: false,
-                preload: path_1["default"].join(__dirname, "./view/preload.js")
-            }
-        });
-        modalWindow.loadFile(path_1["default"].join(__dirname, './view/modal.html'));
-        var _f = new electron_1.MessageChannelMain(), remotePort = _f.port1, localPort = _f.port2;
-        localPort.on('message', function (event) {
-            var _a = event.data, eventType = _a.eventType, data = _a.data;
-            switch (eventType) {
-                case "closed":
-                case "reject": {
-                    props.rejectAction.action();
-                    break;
+        return __awaiter(this, void 0, void 0, function () {
+            var window, modalWindow, _f, remotePort, localPort, mdConverter;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
+                    case 0: return [4 /*yield*/, this.requestExternal(main_1.MAIN_ID, 'get-primary-window')];
+                    case 1:
+                        window = (_g.sent()).body;
+                        modalWindow = new electron_1.BrowserWindow({
+                            parent: window,
+                            modal: true,
+                            width: (_b = (_a = props.size) === null || _a === void 0 ? void 0 : _a.width) !== null && _b !== void 0 ? _b : 800, height: (_d = (_c = props.size) === null || _c === void 0 ? void 0 : _c.height) !== null && _d !== void 0 ? _d : 500,
+                            frame: false,
+                            webPreferences: {
+                                contextIsolation: true,
+                                nodeIntegration: false,
+                                preload: path_1["default"].join(__dirname, "./view/preload.js")
+                            }
+                        });
+                        modalWindow.loadFile(path_1["default"].join(__dirname, './view/modal.html'));
+                        _f = new electron_1.MessageChannelMain(), remotePort = _f.port1, localPort = _f.port2;
+                        localPort.on('message', function (event) {
+                            var _a = event.data, eventType = _a.eventType, data = _a.data;
+                            switch (eventType) {
+                                case "closed":
+                                case "reject": {
+                                    props.rejectAction.action();
+                                    break;
+                                }
+                                case "resolve": {
+                                    props.resolveAction.action();
+                                    break;
+                                }
+                                default: {
+                                    console.warn("[Nexus Notification Window] No modal handler found for event: " + eventType);
+                                    break;
+                                }
+                            }
+                        });
+                        mdConverter = new showdown_1["default"].Converter();
+                        localPort.postMessage({
+                            initialData: {
+                                windowTitle: props.windowTitle,
+                                resolveText: props.resolveAction.text,
+                                rejectText: (_e = props.rejectAction) === null || _e === void 0 ? void 0 : _e.text,
+                                htmlContentString: mdConverter.makeHtml(props.markdownContentString.split("\n").map(function (line) { return line.trim(); }).join("\n")),
+                                moduleID: props.sourceModule.getIPCSource()
+                            }
+                        });
+                        localPort.start();
+                        modalWindow.once('ready-to-show', function () {
+                            modalWindow.webContents.postMessage('main-world-port', null, [remotePort]);
+                        });
+                        return [2 /*return*/];
                 }
-                case "resolve": {
-                    props.resolveAction.action();
-                    break;
-                }
-                default: {
-                    console.warn("[Nexus Notification Window] No modal handler found for event: " + eventType);
-                    break;
-                }
-            }
-        });
-        var mdConverter = new showdown_1["default"].Converter();
-        localPort.postMessage({
-            initialData: {
-                windowTitle: props.windowTitle,
-                resolveText: props.resolveAction.text,
-                rejectText: (_e = props.rejectAction) === null || _e === void 0 ? void 0 : _e.text,
-                htmlContentString: mdConverter.makeHtml(props.markdownContentString.split("\n").map(function (line) { return line.trim(); }).join("\n")),
-                moduleID: props.sourceModule.getIPCSource()
-            }
-        });
-        localPort.start();
-        modalWindow.once('ready-to-show', function () {
-            modalWindow.webContents.postMessage('main-world-port', null, [remotePort]);
+            });
         });
     };
     NotificationManagerProcess.prototype.verifyNotificationProps = function (props) {

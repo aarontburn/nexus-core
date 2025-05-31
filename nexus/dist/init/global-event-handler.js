@@ -91,7 +91,7 @@ function handleExternalWrapper(context) {
     return function handleExternal(source, eventType, data) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function () {
-            var target, POSSIBLE_MODES, mode, view, target, view, target, didSwap, target;
+            var target, target, POSSIBLE_MODES, mode, view, target, view, target, didSwap, target;
             return __generator(this, function (_d) {
                 switch (eventType) {
                     case "get-module-IDs": {
@@ -99,6 +99,19 @@ function handleExternalWrapper(context) {
                     }
                     case "get-current-module-id": {
                         return [2 /*return*/, { body: context.displayedModule.getID(), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    case "get-primary-window": {
+                        return [2 /*return*/, { body: context.window, code: nexus_module_builder_1.HTTPStatusCodes.OK }];
+                    }
+                    case "get-module-window": {
+                        target = source.getIPCSource();
+                        if (!context.moduleViewMap.has(target)) {
+                            return [2 /*return*/, {
+                                    body: new Error("Could not retrieve WebContentView for ".concat(target, "; either target doesn't exist or target is an internal module.")),
+                                    code: nexus_module_builder_1.HTTPStatusCodes.NOT_FOUND
+                                }];
+                        }
+                        return [2 /*return*/, { body: context.moduleViewMap.get(target), code: nexus_module_builder_1.HTTPStatusCodes.OK }];
                     }
                     case "open-dev-tools": {
                         target = source.getIPCSource() === "aarontburn.Debug_Console" ? data[1] : source.getIPCSource();

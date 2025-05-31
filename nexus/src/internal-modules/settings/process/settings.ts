@@ -2,6 +2,7 @@ import { Process, Setting } from "@nexus-app/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus-app/nexus-module-builder/settings/types";
 import { BaseWindow, nativeTheme, WebContentsView } from "electron";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
+import { MAIN_ID } from "../../../main";
 
 export const devModeSubscribers: ((isDev: boolean) => void)[] = [];
 
@@ -96,7 +97,7 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setDefault('nexus.Home')
             .setAccessID('startup_module_id')
             .setValidator(async (input: any) => {
-                const installedModules: string[] = (await module.requestExternal("nexus.Main", "get-module-IDs")).body;
+                const installedModules: string[] = (await module.requestExternal(MAIN_ID, "get-module-IDs")).body;
 
                 if (installedModules.includes(input)) {
                     return input;

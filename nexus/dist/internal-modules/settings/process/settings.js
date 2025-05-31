@@ -40,6 +40,7 @@ exports.getInternalSettings = exports.getSettings = exports.onSettingModified = 
 var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
 var electron_1 = require("electron");
 var internal_args_1 = require("../../../init/internal-args");
+var main_1 = require("../../../main");
 exports.devModeSubscribers = [];
 var onSettingModified = function (module, modifiedSetting) { return __awaiter(void 0, void 0, void 0, function () {
     var zoom_1, shouldForceReload_1, mode;
@@ -126,7 +127,7 @@ var getSettings = function (module) {
             var installedModules;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, module.requestExternal("nexus.Main", "get-module-IDs")];
+                    case 0: return [4 /*yield*/, module.requestExternal(main_1.MAIN_ID, "get-module-IDs")];
                     case 1:
                         installedModules = (_a.sent()).body;
                         if (installedModules.includes(input)) {

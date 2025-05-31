@@ -76,6 +76,7 @@ var electron_1 = require("electron");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var compiler_utils_1 = require("../../../compiler/compiler-utils");
+var main_1 = require("../../../main");
 function importModuleArchive() {
     return __awaiter(this, void 0, void 0, function () {
         var options, response, filePath, successful;
@@ -151,7 +152,7 @@ function getImportedModules(process, availableUpdates, deletedModules) {
                                         if (moduleInfo === undefined) {
                                             return [2 /*return*/];
                                         }
-                                        return [4 /*yield*/, process.requestExternal('nexus.Main', 'get-module-icon-path', moduleInfo.id)];
+                                        return [4 /*yield*/, process.requestExternal(main_1.MAIN_ID, 'get-module-icon-path', moduleInfo.id)];
                                     case 2:
                                         iconPath = (_b.sent()).body;
                                         map.set(moduleInfo.id, {

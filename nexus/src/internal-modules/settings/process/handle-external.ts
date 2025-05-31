@@ -2,6 +2,7 @@ import { IPCSource, DataResponse, HTTPStatusCodes, Setting, ModuleInfo } from "@
 import { SettingsProcess } from "./main";
 import { TabInfo } from "./types";
 import { devModeSubscribers } from "./settings";
+import { MAIN_ID } from "../../../main";
 
 
 
@@ -22,7 +23,7 @@ export default async function handleExternal(process: SettingsProcess, source: I
             return { body: setting.getValue(), code: HTTPStatusCodes.OK };
         }
         case "on-module-installed": {
-            process.requestExternal("nexus.Main", "swap-to-module");
+            process.requestExternal(MAIN_ID, "swap-to-module");
             process.sendToRenderer("open-restart-popup");
             break;
         }
@@ -36,7 +37,7 @@ export default async function handleExternal(process: SettingsProcess, source: I
                 return { body: new Error(`The specified module '${target}' either doesn't exist or has no settings.`), code: HTTPStatusCodes.BAD_REQUEST };
             }
 
-            process.requestExternal('nexus.Main', 'swap-to-module')
+            process.requestExternal(MAIN_ID, 'swap-to-module')
             process.sendToRenderer("swap-tabs", output);
             return { body: undefined, code: HTTPStatusCodes.OK };
         }
