@@ -13,11 +13,11 @@ Within the `package.json` at the root of your project, the `scripts` field may l
 "scripts": {
     "start": "npm-run-all --parallel vite:start electron-start",
     "export": "npm run vite:build && node node_modules/@nexus-app/nexus-exporter/exporter.js",
-    "dev_export": "npm run vite:build && node node_modules/@nexus-app/nexus-exporter/exporter.js --dev",
+    "export:dev": "npm run vite:build && node node_modules/@nexus-app/nexus-exporter/exporter.js --dev",
     "preinstall": "cd %npm_package_config_react-wrapper-directory% && npm install",
     "vite:build": "cd %npm_package_config_react-wrapper-directory% && npm run build",
     "vite:start": "cd %npm_package_config_react-wrapper-directory% && npm run dev",
-    "electron-start": "npm run dev_export && electron ./node_modules/@nexus-app/nexus-client/main.js --dev"
+    "electron-start": "npm run export:dev && electron ./node_modules/@nexus-app/nexus-client/main.js --dev"
 }
 ```
 These commands are ran via:
@@ -36,7 +36,7 @@ Useful Commands:
   
 ---
 Commands you can ignore:  
-- `npm run dev_export`: Dev-only fast export (used internally)
+- `npm run export:dev`: Dev-only fast export (used internally)
 - `npm run vite:build`: Builds React wrapper manually
 - `npm run vite:start`: Starts dev server for React wrapper
 - `npm run preinstall`: Installs React wrapper packages
@@ -59,11 +59,11 @@ This will open a file location chooser, and will save your module in a `.zip` fo
 ### Commands to Ignore
 These commands are used under-the-hood or during initial project setup. You normally should not need to run these commands manually.
 
-#### `npm run dev_export`
+#### `npm run export:dev`
 This exports your module directly to `C:\Users\<user home>\.nexus_dev\external_modules` for quick testing. There is very little purpose to run this function instead of `npm start`.
 
 #### `npm run vite:build`
-This command navigates to the `react-wrapper` directory and builds the Vite project, which will output it as a single file within the `react_module` directory. There should be no reason to run this command instead of running `npm run dev_export` or `npm run export`.
+This command navigates to the `react-wrapper` directory and builds the Vite project, which will output it as a single file within the `react_module` directory. There should be no reason to run this command instead of running `npm run export:dev` or `npm run export`.
 
 #### `npm run vite:start`
 This command navigates to the `react-wrapper` directory and starts the Vite project on a development server. There should be no reason to run this command instead of running `npm start`.

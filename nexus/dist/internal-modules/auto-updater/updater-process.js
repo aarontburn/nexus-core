@@ -95,7 +95,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         }) || this;
         _this.finishedChecking = false;
         _this.autoUpdaterStarted = false;
-        _this.version = process.argv.includes("--dev") ? process.env.npm_package_version : electron_1.app.getVersion();
+        _this.version = process.argv.includes("--dev") ? undefined : electron_1.app.getVersion();
         _this.moduleUpdater = new module_updater_1["default"](context);
         _this.context = context;
         _this.setModuleInfo({
@@ -147,6 +147,10 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
     };
     AutoUpdaterProcess.prototype.startAutoUpdater = function () {
         var _this = this;
+        if (process.argv.includes("--dev")) {
+            console.info("[Nexus Auto Updater] You are in development mode; Nexus client is disabled.");
+            return;
+        }
         if (this.autoUpdaterStarted) {
             return;
         }

@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "node builder.js",
+    "test:sample": "npm run build && node ./src/exporter.js --test",
     "test": "jest ./tests",
     "publish": "npm run build && cd ./dist && npm publish --access public"
   },

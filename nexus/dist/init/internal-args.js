@@ -125,9 +125,7 @@ function writeInternal(args) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fs.promises.writeFile(nexus_module_builder_1.DIRECTORIES.INTERNAL_PATH + nexus_module_builder_1.FILE_NAMES.INTERNAL_JSON, JSON.stringify({
-                        args: args.length === 0
-                            ? ''
-                            : args.join(' ')
+                        args: args.length === 0 ? '' : args.join(' ').trim()
                     }, undefined, 4))];
                 case 1:
                     _a.sent();

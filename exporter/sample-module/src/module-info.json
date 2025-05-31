@@ -1,0 +1,37 @@
+{
+    "name": "Export Tester Module",
+    "id": "developer.Test_Module",
+    "version": "1.0.0",
+    "author": "developer",
+    "description": "sample desc",
+    "link": "https://github.com/aarontburn/nexus-chatgpt",
+    "platforms": [],
+    "git-latest": {
+        "git-username": "aarontburn",
+        "git-repo-name": "nexus-chatgpt"
+    },
+    "build": {
+        "build-version": 10,
+        "excluded": [
+            "electron.ts"
+        ],
+        "included": [],
+        "process": "./process/main.js",
+        "replace": [
+            {
+                "from": "{EXPORTED_MODULE_ID}",
+                "to": "%id%",
+                "at": [
+                    "./process/main.ts"
+                ]
+            },
+            {
+                "from": "{EXPORTED_MODULE_NAME}",
+                "to": "%name%",
+                "at": [
+                    "./process/main.ts"
+                ]
+            }
+        ]
+    }
+}

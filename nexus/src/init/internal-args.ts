@@ -29,9 +29,7 @@ export async function writeInternal(args: string[]) {
         DIRECTORIES.INTERNAL_PATH + FILE_NAMES.INTERNAL_JSON,
         JSON.stringify(
             {
-                args: args.length === 0
-                    ? ''
-                    : args.join(' ')
+                args: args.length === 0 ? '' : args.join(' ').trim()
             }, undefined, 4)
     );
 }

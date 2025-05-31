@@ -9,9 +9,9 @@ Within the `package.json` at the root of your project, the `scripts` field may l
 // ...
 
 "scripts": {
-    "start": "npm run dev_export && electron ./node_modules/@nexus-app/nexus-client/main.js --dev",
+    "start": "npm run export:dev && electron ./node_modules/@nexus-app/nexus-client/main.js --dev",
     "export": "node node_modules/@nexus-app/nexus-exporter/exporter.js",
-    "dev_export": "node node_modules/@nexus-app/nexus-exporter/exporter.js --dev"
+    "export:dev": "node node_modules/@nexus-app/nexus-exporter/exporter.js --dev"
 },
 
 // ...
@@ -27,7 +27,7 @@ Useful Commands:
   
 ---
 Commands you can ignore:  
-- `npm run dev_export`: Dev-only fast export (used internally).
+- `npm run export:dev`: Dev-only fast export (used internally).
 
 
 ## Command Details
@@ -47,7 +47,7 @@ This will open a file location chooser, and will save your module in a `.zip` fo
 
 ### Commands to Ignore
 
-#### `npm run dev_export`
+#### `npm run export:dev`
 This exports your module directly to `C:\Users\<user home>\.nexus_dev\external_modules` for quick testing. There is very little purpose to run this function instead of `npm start`.
 
 ## Next Steps

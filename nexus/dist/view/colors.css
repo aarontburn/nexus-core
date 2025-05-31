@@ -58,6 +58,11 @@ body {
     width: 10px;
 }
 
+/* Buttons on the top and bottom of the scrollbar */
+::-webkit-scrollbar-button {
+    display: none;
+}
+
 /* Track */
 ::-webkit-scrollbar-track {
     background: var(--background-color);

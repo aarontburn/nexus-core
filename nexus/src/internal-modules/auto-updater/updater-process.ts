@@ -59,13 +59,20 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	private autoUpdaterStarted = false;
-	private readonly version: string = process.argv.includes("--dev") ? process.env.npm_package_version : app.getVersion();
+	private readonly version: string | undefined = process.argv.includes("--dev") ? undefined : app.getVersion();
 
 	public startAutoUpdater() {
+		if (process.argv.includes("--dev")) {
+			console.info(`[Nexus Auto Updater] You are in development mode; Nexus client is disabled.`);
+			return;
+		}
+
 		if (this.autoUpdaterStarted) {
 			return;
 		}
 		this.autoUpdaterStarted = true;
+
+
 
 		console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
 		console.info("[Nexus Auto Updater] Starting auto updater.");
