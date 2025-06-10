@@ -7,7 +7,7 @@ import { getInternalSettings, getSettings, onSettingModified } from "./settings"
 import { writeModuleSettingsToStorage } from "../../../init/module-loader";
 import handleExternal from "./handle-external";
 import { TabInfo } from "./types";
-import { MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
+import { UPDATER_MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
 import { VersionInfo } from "../../auto-updater/module-updater";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../../notification/notification-process";

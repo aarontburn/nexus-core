@@ -130,7 +130,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                 _super.prototype.initialize.call(this);
                 this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
                 this.populateSettingsList();
-                this.requestExternal(updater_process_1.MODULE_ID, "get-all-updates").then(function (response) {
+                this.requestExternal(updater_process_1.UPDATER_MODULE_ID, "get-all-updates").then(function (response) {
                     if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK) {
                         _this.availableUpdates = response.body;
                     }
@@ -371,7 +371,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                         _c.label = 3;
                     case 3:
                         moduleID_1 = data[0];
-                        return [4 /*yield*/, this.requestExternal(updater_process_1.MODULE_ID, "update-module", undefined, moduleID_1)];
+                        return [4 /*yield*/, this.requestExternal(updater_process_1.UPDATER_MODULE_ID, "update-module", undefined, moduleID_1)];
                     case 4:
                         response = _c.sent();
                         if (response.code !== nexus_module_builder_1.HTTPStatusCodes.OK) {

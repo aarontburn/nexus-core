@@ -131,13 +131,8 @@ export default class ModuleUpdater {
             moduleInfo["git-latest"]['git-username']) {
 
             const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
-            
-
-
 
             if (!response.ok) {
-
-
                 throw { code: response.status, message: response.statusText };
             }
             const releaseData = await response.json();

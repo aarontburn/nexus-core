@@ -77,7 +77,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.AutoUpdaterProcess = exports.MODULE_ID = void 0;
+exports.AutoUpdaterProcess = exports.UPDATER_MODULE_ID = void 0;
 var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var electron_1 = require("electron");
 var electron_updater_1 = require("electron-updater");
@@ -85,12 +85,12 @@ var path = __importStar(require("path"));
 var module_updater_1 = __importDefault(require("./module-updater"));
 var notification_process_1 = require("../notification/notification-process");
 var MODULE_NAME = "Nexus Auto Updater";
-exports.MODULE_ID = 'nexus.Auto_Updater';
+exports.UPDATER_MODULE_ID = 'nexus.Auto_Updater';
 var AutoUpdaterProcess = /** @class */ (function (_super) {
     __extends(AutoUpdaterProcess, _super);
     function AutoUpdaterProcess(context) {
         var _this = _super.call(this, {
-            moduleID: exports.MODULE_ID,
+            moduleID: exports.UPDATER_MODULE_ID,
             moduleName: MODULE_NAME
         }) || this;
         _this.finishedChecking = false;
@@ -100,7 +100,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
         _this.context = context;
         _this.setModuleInfo({
             name: MODULE_NAME,
-            id: exports.MODULE_ID,
+            id: exports.UPDATER_MODULE_ID,
             version: "1.0.0",
             author: "Nexus",
             description: "The Nexus auto-updater and module updater.",
@@ -148,7 +148,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
     AutoUpdaterProcess.prototype.startAutoUpdater = function () {
         var _this = this;
         if (process.argv.includes("--dev")) {
-            console.info("[Nexus Auto Updater] You are in development mode; Nexus client is disabled.");
+            console.info("[Nexus Auto Updater] You are in development; Nexus client updating is disabled.");
             return;
         }
         if (this.autoUpdaterStarted) {
@@ -274,7 +274,7 @@ var AutoUpdaterProcess = /** @class */ (function (_super) {
                         else {
                             return [2 /*return*/, { code: nexus_module_builder_1.HTTPStatusCodes.BAD_REQUEST, body: "Could not download module from ".concat(url) }];
                         }
-                        return [3 /*break*/, 15];
+                        _f.label = 3;
                     case 3:
                         target = (_a = data[0]) !== null && _a !== void 0 ? _a : source.getIPCSource();
                         if (!this.context.moduleMap.has(target)) {

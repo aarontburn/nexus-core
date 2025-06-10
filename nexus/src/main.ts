@@ -9,7 +9,7 @@ import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./
 import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/main";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 import path from "path";
-import { MODULE_ID as UPDATER_ID } from "./internal-modules/auto-updater/updater-process";
+import { UPDATER_MODULE_ID as UPDATER_ID } from "./internal-modules/auto-updater/updater-process";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "./internal-modules/notification/notification-process";
 
 const PROTOCOL: string = "nexus-app";

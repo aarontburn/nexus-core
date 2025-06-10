@@ -5,7 +5,7 @@ import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess, MODULE_ID as HOME_ID } from "../internal-modules/home/HomeProcess";
 import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/settings/process/main";
-import { AutoUpdaterProcess, MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
+import { AutoUpdaterProcess, UPDATER_MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
 import * as fs from "fs";
 import * as path from "path";
 import { NOTIFICATION_MANAGER_ID, NotificationManagerProcess } from "../internal-modules/notification/notification-process";

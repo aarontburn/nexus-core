@@ -1,8 +1,11 @@
-import { Process, Setting } from "@nexus-app/nexus-module-builder";
+import { DataResponse, HTTPStatusCodes, Process, Setting } from "@nexus-app/nexus-module-builder";
 import { BooleanSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
+import { UPDATER_MODULE_ID } from "../auto-updater/updater-process";
+import { app } from "electron";
+import { MAIN_ID } from "../../main";
 
 
 const MODULE_NAME: string = "Home";
@@ -45,8 +48,27 @@ export class HomeProcess extends Process {
 	public async initialize(): Promise<void> {
 		if (this.getSettings().findSetting("is_first_launch").getValue()) {
 			this.sendToRenderer("is-first-launch");
-			await this.getSettings().findSetting("is_first_launch").setValue(false);
-			await this.fileManager.writeSettingsToStorage();
+
+			const installedModules: string[] = (await this.requestExternal(MAIN_ID, "get-module-IDs")).body;
+
+			if (!installedModules.includes("aarontburn.Marketplace")) { // check if marketplace is already installed
+				await this.requestExternal(UPDATER_MODULE_ID, "install-module-from-git", 'github.com/aarontburn/nexus-marketplace/releases/latest/download/aarontburn.Marketplace.zip')
+					.then(async (response: DataResponse) => {
+						if (response.code === HTTPStatusCodes.OK) {
+							app.relaunch();
+							app.quit();
+							
+						} else { // error occurred when installed marketplace, ignore and move on
+							await this.getSettings().findSetting("is_first_launch").setValue(false);
+							await this.fileManager.writeSettingsToStorage();
+						}
+					});
+
+			} else { // if it already is, proceed
+				await this.getSettings().findSetting("is_first_launch").setValue(false);
+				await this.fileManager.writeSettingsToStorage();
+			}
+
 
 			return;
 		}
@@ -142,7 +164,8 @@ export class HomeProcess extends Process {
 			new BooleanSetting(this)
 				.setName("First Launch")
 				.setAccessID("is_first_launch")
-				.setDefault(true)
+				.setDefault(true),
+
 		]
 	}
 

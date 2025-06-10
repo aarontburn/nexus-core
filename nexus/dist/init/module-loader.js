@@ -79,7 +79,7 @@ var updater_process_1 = require("../internal-modules/auto-updater/updater-proces
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var notification_process_1 = require("../internal-modules/notification/notification-process");
-var INTERNAL_MODULE_IDS = [main_1.MODULE_ID, updater_process_1.MODULE_ID, HomeProcess_1.MODULE_ID, notification_process_1.NOTIFICATION_MANAGER_ID];
+var INTERNAL_MODULE_IDS = [main_1.MODULE_ID, updater_process_1.UPDATER_MODULE_ID, HomeProcess_1.MODULE_ID, notification_process_1.NOTIFICATION_MANAGER_ID];
 function loadModules(context) {
     return __awaiter(this, void 0, void 0, function () {
         var loadedModules, settingProcess, internalModules, moduleMap, _i, _a, module_1;

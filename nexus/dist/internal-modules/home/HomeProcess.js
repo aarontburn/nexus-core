@@ -79,6 +79,9 @@ var nexus_module_builder_1 = require("@nexus-app/nexus-module-builder");
 var types_1 = require("@nexus-app/nexus-module-builder/settings/types");
 var path = __importStar(require("path"));
 var time_formats_1 = require("./utils/time-formats");
+var updater_process_1 = require("../auto-updater/updater-process");
+var electron_1 = require("electron");
+var main_1 = require("../../main");
 var MODULE_NAME = "Home";
 exports.MODULE_ID = 'nexus.Home';
 var HTML_PATH = path.join(__dirname, "./static/index.html");
@@ -110,21 +113,52 @@ var HomeProcess = /** @class */ (function (_super) {
     }
     HomeProcess.prototype.initialize = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var installedModules;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.getSettings().findSetting("is_first_launch").getValue()) return [3 /*break*/, 3];
+                        if (!this.getSettings().findSetting("is_first_launch").getValue()) return [3 /*break*/, 7];
                         this.sendToRenderer("is-first-launch");
-                        return [4 /*yield*/, this.getSettings().findSetting("is_first_launch").setValue(false)];
+                        return [4 /*yield*/, this.requestExternal(main_1.MAIN_ID, "get-module-IDs")];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
+                        installedModules = (_a.sent()).body;
+                        if (!!installedModules.includes("aarontburn.Marketplace")) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.requestExternal(updater_process_1.UPDATER_MODULE_ID, "install-module-from-git", 'github.com/aarontburn/nexus-marketplace/releases/latest/download/aarontburn.Marketplace.zip')
+                                .then(function (response) { return __awaiter(_this, void 0, void 0, function () {
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            if (!(response.code === nexus_module_builder_1.HTTPStatusCodes.OK)) return [3 /*break*/, 1];
+                                            electron_1.app.relaunch();
+                                            electron_1.app.quit();
+                                            return [3 /*break*/, 4];
+                                        case 1: // error occurred when installed marketplace, ignore and move on
+                                        return [4 /*yield*/, this.getSettings().findSetting("is_first_launch").setValue(false)];
+                                        case 2:
+                                            _a.sent();
+                                            return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
+                                        case 3:
+                                            _a.sent();
+                                            _a.label = 4;
+                                        case 4: return [2 /*return*/];
+                                    }
+                                });
+                            }); })];
                     case 2:
                         _a.sent();
-                        return [2 /*return*/];
-                    case 3: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                        return [3 /*break*/, 6];
+                    case 3: // if it already is, proceed
+                    return [4 /*yield*/, this.getSettings().findSetting("is_first_launch").setValue(false)];
                     case 4:
+                        _a.sent();
+                        return [4 /*yield*/, this.fileManager.writeSettingsToStorage()];
+                    case 5:
+                        _a.sent();
+                        _a.label = 6;
+                    case 6: return [2 /*return*/];
+                    case 7: return [4 /*yield*/, _super.prototype.initialize.call(this)];
+                    case 8:
                         _a.sent();
                         // Start clock
                         this.updateDateAndTime(false);
@@ -209,7 +243,7 @@ var HomeProcess = /** @class */ (function (_super) {
             new types_1.BooleanSetting(this)
                 .setName("First Launch")
                 .setAccessID("is_first_launch")
-                .setDefault(true)
+                .setDefault(true),
         ];
     };
     HomeProcess.prototype.onSettingModified = function (modifiedSetting) {

@@ -8,7 +8,7 @@ import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../notification/noti
 
 
 const MODULE_NAME: string = "Nexus Auto Updater";
-export const MODULE_ID: string = 'nexus.Auto_Updater';
+export const UPDATER_MODULE_ID: string = 'nexus.Auto_Updater';
 
 export class AutoUpdaterProcess extends Process {
 
@@ -17,7 +17,7 @@ export class AutoUpdaterProcess extends Process {
 
 	public constructor(context: InitContext) {
 		super({
-			moduleID: MODULE_ID,
+			moduleID: UPDATER_MODULE_ID,
 			moduleName: MODULE_NAME,
 		});
 		this.moduleUpdater = new ModuleUpdater(context);
@@ -25,7 +25,7 @@ export class AutoUpdaterProcess extends Process {
 
 		this.setModuleInfo({
 			name: MODULE_NAME,
-			id: MODULE_ID,
+			id: UPDATER_MODULE_ID,
 			version: "1.0.0",
 			author: "Nexus",
 			description: "The Nexus auto-updater and module updater.",
@@ -63,7 +63,7 @@ export class AutoUpdaterProcess extends Process {
 
 	public startAutoUpdater() {
 		if (process.argv.includes("--dev")) {
-			console.info(`[Nexus Auto Updater] You are in development mode; Nexus client is disabled.`);
+			console.info(`[Nexus Auto Updater] You are in development; Nexus client updating is disabled.`);
 			return;
 		}
 
@@ -223,10 +223,8 @@ export class AutoUpdaterProcess extends Process {
 				} else {
 					return { code: HTTPStatusCodes.BAD_REQUEST, body: `Could not download module from ${url}` }
 				}
-
-
-				break;
 			}
+
 
 			case "check-for-update": {
 				const target: string = data[0] ?? source.getIPCSource();

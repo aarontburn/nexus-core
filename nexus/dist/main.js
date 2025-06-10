@@ -172,7 +172,7 @@ function attachSingleInstance(context) {
             switch (splitPath[0]) {
                 case "install": {
                     console.log("Attempting to installing module from " + splitPath.slice(1).join('_'));
-                    context.ipcCallback.requestExternalModule(context.mainIPCSource, updater_process_1.MODULE_ID, "install-module-from-git", splitPath.slice(1).join('_'))
+                    context.ipcCallback.requestExternalModule(context.mainIPCSource, updater_process_1.UPDATER_MODULE_ID, "install-module-from-git", splitPath.slice(1).join('_'))
                         .then(function (response) {
                         if (response.code === nexus_module_builder_1.HTTPStatusCodes.OK) {
                             context.ipcCallback.requestExternalModule(context.mainIPCSource, notification_process_1.NOTIFICATION_MANAGER_ID, "open-dialog", {
