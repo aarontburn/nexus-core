@@ -4,9 +4,9 @@
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
         "start": "npm run build && cd ./dist && electron . --dev --in-core ",
-        "package": "npm run build && npx electron-builder build --win",
+        "package:windows": "npm run build && npx electron-builder build --win",
         "package:arm64": "npm run build && USE_SYSTEM_FPM=true npx electron-builder build --arm64",
-        "package:amd": "npm run build && npx electron-builder build --linux",
+        "package:amd64": "npm run build && npx electron-builder build --linux",
         "package:test": "npm run build && electron-builder --dir",
         "publish": "npm run build && cd ./dist && npm publish --access public",
         "postinstall": "npm install @nexus-app/nexus-exporter@latest @nexus-app/nexus-module-builder@latest"

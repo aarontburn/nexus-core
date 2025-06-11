@@ -1,0 +1,14 @@
+Windows:
+- npm run package:windows
+
+
+Linux ARM64 (Raspberry Pi)
+- sudo apt install ruby
+- sudo apt install gem
+- gem install fpm
+- USE_SYSTEM_FPM=true before build
+or
+- npm run package:arm64
+
+Linux AMD64
+- npm run package:amd

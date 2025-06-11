@@ -11,7 +11,7 @@ icon: ./dist/view/assets/icon
 
 extraMetadata:
     name: "Nexus"
-    version: "0.0.9"
+    version: "0.1.0"
     description: "A cross-platform application loader, designed for productivity and organization."
     author: 
         name: "aarontburn"
@@ -26,7 +26,7 @@ protocols:
 nsis:
     oneClick: false
     allowToChangeInstallationDirectory: true
-    artifactName: ${productName}-Setup.${ext}
+    artifactName: ${productName}-Setup-${os}.${ext}
 
 publish:
     provider: github
@@ -38,6 +38,6 @@ linux:
         - deb
     category: Utility
     icon: ./dist/view/assets/icon.icns
-    synopsis: "A cross-platform application loader"
+    synopsis: "A cross-platform application loader."
     description: "A cross-platform application loader, designed for productivity and organization."
     artifactName: "${productName}-Setup-${os}-${arch}.${ext}"
