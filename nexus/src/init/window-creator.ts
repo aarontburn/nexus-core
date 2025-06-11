@@ -33,8 +33,6 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         backgroundColor: "#111111",
     });
 
-
-
     window.on('close', async (event) => {
         event.preventDefault();
         await close(context, window);
