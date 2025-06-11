@@ -13,7 +13,10 @@ extraMetadata:
     name: "Nexus"
     version: "0.0.9"
     description: "A cross-platform application loader, designed for productivity and organization."
-    author: "aarontburn"
+    author: 
+        name: "aarontburn"
+        email: "aarontburn@outlook.com"
+    homepage: "https://nexus-app.net"
 
 protocols:
     - name: Nexus
