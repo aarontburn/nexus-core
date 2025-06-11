@@ -35,10 +35,9 @@ publish:
 
 linux:
     target:
-        - AppImage
         - deb
     category: Utility
     icon: ./dist/view/assets/icon.icns
     synopsis: "A cross-platform application loader"
     description: "A cross-platform application loader, designed for productivity and organization."
-    artifactName: "${productName}-Setup-${os}.${ext}"
+    artifactName: "${productName}-Setup-${os}-${arch}.${ext}"

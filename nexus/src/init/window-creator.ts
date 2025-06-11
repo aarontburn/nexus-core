@@ -32,7 +32,6 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         icon: path.join(__dirname, `../view/assets/${process.platform === "win32" ? 'icon.ico' : "icon.icns"}`),
         backgroundColor: "#111111",
     });
-    console.log(path.join(__dirname, `../view/assets/${process.platform === "win32" ? 'icon.ico' : "icon.png"}`))
 
     window.on('close', async (event) => {
         event.preventDefault();
