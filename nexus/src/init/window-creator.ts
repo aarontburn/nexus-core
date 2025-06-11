@@ -29,7 +29,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         width: WINDOW_DIMENSION.width,
         autoHideMenuBar: true,
         title: "Nexus",
-        icon: path.join(__dirname, `../view/assets/${process.platform === "win32" ? 'icon.ico' : "icon.png"}`),
+        icon: path.join(__dirname, `../view/assets/${process.platform === "win32" ? 'icon.ico' : "icon.icns"}`),
         backgroundColor: "#111111",
     });
     console.log(path.join(__dirname, `../view/assets/${process.platform === "win32" ? 'icon.ico' : "icon.png"}`))
