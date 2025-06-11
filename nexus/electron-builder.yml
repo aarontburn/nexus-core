@@ -2,30 +2,39 @@ productName: Nexus
 appId: com.aarontburn.Nexus
 asar: true
 files:
-  - dist/**/*
+    - dist/**/*
 
 directories:
-  output: package
+    output: package
 
 icon: ./dist/view/assets/icon
 
 extraMetadata:
-  name: "Nexus"
-  version: "0.0.9"
-  description: "A cross-platform application loader, designed for productivity and organization."
-  author: "aarontburn"
+    name: "Nexus"
+    version: "0.0.9"
+    description: "A cross-platform application loader, designed for productivity and organization."
+    author: "aarontburn"
 
 protocols:
-  - name: Nexus
-    schemes: [nexus-app]
-    role: Viewer
+    - name: Nexus
+      schemes: [nexus-app]
+      role: Viewer
 
 nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-Setup.${ext}
+    oneClick: false
+    allowToChangeInstallationDirectory: true
+    artifactName: ${productName}-Setup.${ext}
 
 publish:
-  provider: github
-  owner: aarontburn
-  repo: nexus-core
+    provider: github
+    owner: aarontburn
+    repo: nexus-core
+
+linux:
+    target:
+        - AppImage
+        - deb
+    category: Utility
+    icon: ./dist/view/assets/icon.png
+    synopsis: "A cross-platform application loader"
+    description: "A cross-platform application loader, designed for productivity and organization."
