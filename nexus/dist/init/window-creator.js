@@ -111,7 +111,7 @@ function createBrowserWindow(context) {
                 width: constants_1.WINDOW_DIMENSION.width,
                 autoHideMenuBar: true,
                 title: "Nexus",
-                icon: path.join(__dirname, "../view/assets/".concat(process.platform === "win32" ? 'icon.ico' : "icon.png")),
+                icon: path.join(__dirname, "../view/assets/".concat(process.platform === "win32" ? 'icon.ico' : "icon.icns")),
                 backgroundColor: "#111111"
             });
             window.on('close', function (event) { return __awaiter(_this, void 0, void 0, function () {
