@@ -123,7 +123,7 @@ var HomeProcess = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.requestExternal(main_1.MAIN_ID, "get-module-IDs")];
                     case 1:
                         installedModules = (_a.sent()).body;
-                        if (!!installedModules.includes("aarontburn.Marketplace")) return [3 /*break*/, 3];
+                        if (!(!process.argv.includes('--dev') && !installedModules.includes("aarontburn.Marketplace"))) return [3 /*break*/, 3];
                         return [4 /*yield*/, this.requestExternal(updater_process_1.UPDATER_MODULE_ID, "install-module-from-git", 'github.com/aarontburn/nexus-marketplace/releases/latest/download/aarontburn.Marketplace.zip')
                                 .then(function (response) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_a) {
@@ -227,6 +227,7 @@ var HomeProcess = /** @class */ (function (_super) {
                 .setDescription("Adjusts the font size of the military time display (e.g. 23:59:49).")
                 .setAccessID('military_time_fs')
                 .setDefault(30.0),
+            "Display",
             new types_1.StringSetting(this)
                 .setName("Display Order")
                 .setDescription("Adjusts the order of the time/date displays.")
@@ -236,6 +237,23 @@ var HomeProcess = /** @class */ (function (_super) {
                 var s = o.toString();
                 return s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null;
             }),
+            new types_1.HexColorSetting(this)
+                .setName("Text Color")
+                .setDefault('#f5f5f5')
+                .setAccessID('text_color'),
+            new types_1.StringSetting(this)
+                .setName('Background Image Path')
+                .setDefault('')
+                .setAccessID('image_path')
+                .setValidator(function (o) {
+                return path.normalize(o);
+            }),
+            new types_1.ChoiceSetting(this)
+                .addOptions("Cover", "Contain")
+                .useDropdown()
+                .setName("Background Image Mode")
+                .setDefault("Cover")
+                .setAccessID("background_image_mode")
         ];
     };
     HomeProcess.prototype.registerInternalSettings = function () {
@@ -248,7 +266,7 @@ var HomeProcess = /** @class */ (function (_super) {
     };
     HomeProcess.prototype.onSettingModified = function (modifiedSetting) {
         return __awaiter(this, void 0, void 0, function () {
-            var sizes, order;
+            var sizes;
             return __generator(this, function (_a) {
                 if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID())) {
                     sizes = {
@@ -259,9 +277,16 @@ var HomeProcess = /** @class */ (function (_super) {
                     };
                     this.sendToRenderer('font-sizes', sizes);
                 }
-                else if ((modifiedSetting === null || modifiedSetting === void 0 ? void 0 : modifiedSetting.getAccessID()) === 'display_order') {
-                    order = this.getSettings().findSetting("display_order").getValue();
-                    this.sendToRenderer('display-order', order);
+                else if (modifiedSetting) {
+                    switch (modifiedSetting.getAccessID()) {
+                        case "background_image_mode":
+                        case 'display_order':
+                        case "text_color":
+                        case "image_path": {
+                            this.sendToRenderer(modifiedSetting.getAccessID(), modifiedSetting.getValue());
+                            break;
+                        }
+                    }
                 }
                 return [2 /*return*/];
             });

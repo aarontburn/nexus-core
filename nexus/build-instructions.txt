@@ -11,4 +11,4 @@ or
 - npm run package:arm64
 
 Linux AMD64
-- npm run package:amd
+- npm run package:amd64

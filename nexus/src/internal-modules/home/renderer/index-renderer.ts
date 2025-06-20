@@ -34,11 +34,32 @@
                 militaryTime.style.fontSize = data[0].militaryTime + "px";
                 break;
             }
-            case 'display-order': {
+            case 'display_order': {
                 const order: string = data[0];
 
                 if (currentOrder === undefined || currentOrder !== order) {
                     changeDisplayOrder(order);
+                }
+                break;
+
+            } case 'text_color': {
+                document.querySelector('body').style.color = data[0];
+                break;
+
+            } case 'image_path': {
+                document.querySelector("body").style.backgroundImage = `url(${(data[0] as string).replace(/\\/g, '/')})`;
+
+                break;
+            } case "background_image_mode": {
+                switch (data[0]) {
+                    case "Cover": {
+                        document.querySelector("body").style.backgroundSize = "cover";
+                        break;
+                    }
+                    case "Contain": {
+                        document.querySelector("body").style.backgroundSize = "contain";
+                        break;
+                    }
                 }
                 break;
             }

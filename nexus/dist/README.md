@@ -13,8 +13,6 @@ Think of **Nexus** as a customizable toolbox — one app that can do anything th
 ![Nexus Image](./repo-assets/sample-image.png)
 
 ## Installing Nexus
-Currently, Nexus is **Windows only**, but support for Linux and MacOS is being worked on.
-
 Download the latest release for your platform and run the installer.
 
 ### [Nexus: Latest Release](https://github.com/aarontburn/nexus-core/releases/latest)

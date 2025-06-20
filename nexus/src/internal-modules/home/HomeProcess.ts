@@ -1,5 +1,5 @@
 import { DataResponse, HTTPStatusCodes, Process, Setting } from "@nexus-app/nexus-module-builder";
-import { BooleanSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import { BooleanSetting, ChoiceSetting, HexColorSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
@@ -51,13 +51,13 @@ export class HomeProcess extends Process {
 
 			const installedModules: string[] = (await this.requestExternal(MAIN_ID, "get-module-IDs")).body;
 
-			if (!installedModules.includes("aarontburn.Marketplace")) { // check if marketplace is already installed
+			if (!process.argv.includes('--dev') && !installedModules.includes("aarontburn.Marketplace")) { // check if marketplace is already installed
 				await this.requestExternal(UPDATER_MODULE_ID, "install-module-from-git", 'github.com/aarontburn/nexus-marketplace/releases/latest/download/aarontburn.Marketplace.zip')
 					.then(async (response: DataResponse) => {
 						if (response.code === HTTPStatusCodes.OK) {
 							app.relaunch();
 							app.quit();
-							
+
 						} else { // error occurred when installed marketplace, ignore and move on
 							await this.getSettings().findSetting("is_first_launch").setValue(false);
 							await this.fileManager.writeSettingsToStorage();
@@ -147,6 +147,7 @@ export class HomeProcess extends Process {
 				.setAccessID('military_time_fs')
 				.setDefault(30.0),
 
+			"Display",
 			new StringSetting(this)
 				.setName("Display Order")
 				.setDescription("Adjusts the order of the time/date displays.")
@@ -156,6 +157,26 @@ export class HomeProcess extends Process {
 					const s: string = o.toString();
 					return s === "" || s.match("^(?!.*(\\d).*\\1)[1-4\\s]+$") ? s : null;
 				}),
+
+			new HexColorSetting(this)
+				.setName("Text Color")
+				.setDefault('#f5f5f5')
+				.setAccessID('text_color'),
+
+			new StringSetting(this)
+				.setName('Background Image Path')
+				.setDefault('')
+				.setAccessID('image_path')
+				.setValidator((o) => {
+					return path.normalize(o)
+				}),
+
+			new ChoiceSetting(this)
+				.addOptions("Cover", "Contain")
+				.useDropdown()
+				.setName("Background Image Mode")
+				.setDefault("Cover")
+				.setAccessID("background_image_mode")
 		];
 	}
 
@@ -182,9 +203,17 @@ export class HomeProcess extends Process {
 				militaryTime: this.getSettings().findSetting('military_time_fs').getValue()
 			};
 			this.sendToRenderer('font-sizes', sizes);
-		} else if (modifiedSetting?.getAccessID() === 'display_order') {
-			const order: string = this.getSettings().findSetting("display_order").getValue() as string
-			this.sendToRenderer('display-order', order);
+
+		} else if (modifiedSetting) {
+			switch (modifiedSetting.getAccessID()) {
+				case "background_image_mode":
+				case 'display_order':
+				case "text_color":
+				case "image_path": {
+					this.sendToRenderer(modifiedSetting.getAccessID(), modifiedSetting.getValue());
+					break;
+				}
+			}
 		}
 	}
 

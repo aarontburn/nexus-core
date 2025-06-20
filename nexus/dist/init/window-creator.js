@@ -102,7 +102,7 @@ function close(context, window) {
 }
 function createBrowserWindow(context) {
     return __awaiter(this, void 0, void 0, function () {
-        var window, view;
+        var window;
         var _this = this;
         return __generator(this, function (_a) {
             window = new electron_1.BaseWindow({
@@ -126,36 +126,11 @@ function createBrowserWindow(context) {
                     }
                 });
             }); });
-            view = new electron_1.WebContentsView({
-                webPreferences: {
-                    webviewTag: true,
-                    additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(context.mainIPCSource.getIPCSource())], false),
-                    backgroundThrottling: false,
-                    preload: path.join(__dirname, "../preload.js"),
-                    partition: context.mainIPCSource.getIPCSource()
-                }
-            });
             window.on('resize', function () {
                 context.moduleViewMap.forEach(function (moduleView) {
                     moduleView.emit("bounds-changed");
                 });
             });
-            window.contentView.addChildView(view);
-            view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
-            view.on('bounds-changed', function () {
-                if (!window || !view) {
-                    return;
-                }
-                var bounds = window.getContentBounds();
-                view.setBounds({
-                    x: 0,
-                    y: 0,
-                    width: 70 * view.webContents.zoomFactor,
-                    height: bounds.height
-                });
-            });
-            view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
-            context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
             return [2 /*return*/, window];
         });
     });
@@ -165,7 +140,7 @@ function createWebViews(context) {
     var _a, _b, _c, _d;
     var viewMap = new Map();
     var _loop_1 = function (module_1) {
-        var view = new electron_1.WebContentsView({
+        var view_1 = new electron_1.WebContentsView({
             webPreferences: {
                 webviewTag: true,
                 additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(module_1.getID())], false),
@@ -174,46 +149,75 @@ function createWebViews(context) {
                 partition: (_a = module_1.getHTTPOptions()) === null || _a === void 0 ? void 0 : _a.partition
             }
         });
-        context.window.contentView.addChildView(view);
+        context.window.contentView.addChildView(view_1);
         if (module_1.getHTMLPath() || module_1.getURL()) {
-            context.moduleViewMap.set(module_1.getIPCSource(), view);
+            context.moduleViewMap.set(module_1.getIPCSource(), view_1);
             if (module_1.getHTMLPath()) {
-                view.webContents.loadURL("file://" + module_1.getHTMLPath(), { userAgent: (_b = module_1.getHTTPOptions()) === null || _b === void 0 ? void 0 : _b.userAgent });
+                view_1.webContents.loadURL("file://" + module_1.getHTMLPath(), { userAgent: (_b = module_1.getHTTPOptions()) === null || _b === void 0 ? void 0 : _b.userAgent });
             }
             else if (module_1.getURL()) {
-                view.webContents.loadURL((_c = module_1.getURL) === null || _c === void 0 ? void 0 : _c.call(module_1).toString(), { userAgent: (_d = module_1.getHTTPOptions()) === null || _d === void 0 ? void 0 : _d.userAgent });
+                view_1.webContents.loadURL((_c = module_1.getURL) === null || _c === void 0 ? void 0 : _c.call(module_1).toString(), { userAgent: (_d = module_1.getHTTPOptions()) === null || _d === void 0 ? void 0 : _d.userAgent });
             }
         }
-        view.on('bounds-changed', function () {
-            if (!context.window || !view) {
+        view_1.on('bounds-changed', function () {
+            if (!context.window || !view_1) {
                 return;
             }
             var bounds = context.window.getContentBounds();
-            view.setBounds({
-                x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
+            view_1.setBounds({
+                x: 0,
+                // x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
                 y: 0,
-                width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
+                width: bounds.width,
+                // width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
                 height: bounds.height
             });
         });
-        view.webContents.setWindowOpenHandler(function (details) {
+        view_1.webContents.setWindowOpenHandler(function (details) {
             electron_1.shell.openExternal(details.url);
             return { action: 'deny' };
         });
-        view.webContents.on("did-attach-webview", function (_, contents) {
+        view_1.webContents.on("did-attach-webview", function (_, contents) {
             contents.setWindowOpenHandler(function (details) {
                 electron_1.shell.openExternal(details.url);
                 return { action: 'deny' };
             });
         });
-        view.setVisible(false);
-        view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
-        viewMap.set(module_1.getIPCSource(), view);
+        view_1.setVisible(false);
+        view_1.setBounds({ x: 0, y: 0, width: 1, height: 1 });
+        viewMap.set(module_1.getIPCSource(), view_1);
     };
     for (var _i = 0, _e = Array.from(context.moduleMap.values()); _i < _e.length; _i++) {
         var module_1 = _e[_i];
         _loop_1(module_1);
     }
+    var view = new electron_1.WebContentsView({
+        webPreferences: {
+            webviewTag: true,
+            additionalArguments: __spreadArray(__spreadArray([], process.argv, true), ["--module-ID:".concat(context.mainIPCSource.getIPCSource())], false),
+            backgroundThrottling: false,
+            preload: path.join(__dirname, "../preload.js"),
+            partition: context.mainIPCSource.getIPCSource(),
+            transparent: true
+        }
+    });
+    context.window.contentView.addChildView(view);
+    view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
+    view.on('bounds-changed', function () {
+        if (!context.window || !view) {
+            return;
+        }
+        var bounds = context.window.getContentBounds();
+        view.setBounds({
+            x: 0,
+            y: 0,
+            // width: 70 * view.webContents.zoomFactor,
+            width: 140 * view.webContents.zoomFactor,
+            height: bounds.height
+        });
+    });
+    view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
+    context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
     return viewMap;
 }
 exports.createWebViews = createWebViews;
