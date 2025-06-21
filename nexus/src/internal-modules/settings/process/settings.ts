@@ -1,6 +1,6 @@
 import { Process, Setting } from "@nexus-app/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus-app/nexus-module-builder/settings/types";
-import { BaseWindow, nativeTheme, WebContentsView } from "electron";
+import { BaseWindow, nativeTheme, Rectangle, WebContentsView } from "electron";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { MAIN_ID } from "../../../main";
 
@@ -11,19 +11,31 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
         return;
     }
     switch (modifiedSetting.getAccessID()) {
+        case 'collapse_sidebar': {
+            const window: BaseWindow = (await module.requestExternal(MAIN_ID, 'get-primary-window')).body;
+            const view: WebContentsView & { collapsed: boolean } = window.contentView.children.at(-1) as any;
+
+            view.collapsed = modifiedSetting.getValue() as boolean;
+            window.contentView.children.forEach((view: WebContentsView) => view.emit("bounds-changed"));
+
+            break;
+        }
+
         case "zoom": {
             const zoom: number = modifiedSetting.getValue() as number;
+            const window: BaseWindow = (await module.requestExternal(MAIN_ID, 'get-primary-window')).body;
 
-            BaseWindow.getAllWindows()[0].contentView.children.forEach(
+            window.contentView.children.forEach(
                 (view: WebContentsView) => {
                     view.webContents.setZoomFactor(zoom / 100);
                     view.emit("bounds-changed");
                 });
-
             break;
         }
         case "accent_color": {
-            BaseWindow.getAllWindows()[0].contentView.children.forEach(
+            const window: BaseWindow = (await module.requestExternal(MAIN_ID, 'get-primary-window')).body;
+
+            window.contentView.children.forEach(
                 (view: WebContentsView) => {
                     view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
                 });
@@ -85,6 +97,11 @@ export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
             .setName("Zoom Level (%)")
             .setDefault(100)
             .setAccessID('zoom'),
+
+        new BooleanSetting(module)
+            .setName('Collapse Sidebar')
+            .setDefault(false)
+            .setAccessID('collapse_sidebar'),
 
         "Startup",
         new BooleanSetting(module)

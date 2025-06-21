@@ -1,85 +1,90 @@
 html,
 body {
-  height: 100%;
-  margin: 0;
-  overflow-x: hidden;
-  width: fit-content;
-  scrollbar-width: none;
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    width: 70px;
+    scrollbar-width: none;
 }
 
 body {
-  box-shadow: -1px 0px 0px 0px var(--text-color) inset;
+    border-right: 1px solid var(--text-color);
 }
 
 .box {
-  display: flex;
-  flex-flow: row;
-  min-height: 100%;
+    display: flex;
+    flex-flow: row;
+    min-height: 100%;
+
+    &>div {
+        background-color: var(--background-color);
+
+    }
+
+    .header {
+        display: flex;
+        flex: 0 1 auto;
+        flex-direction: column;
+        padding: 5px;
+        width: 70px;
+    }
+
+    .content {
+        flex: 1 1 auto;
+    }
+
 }
 
 #built-ins {
-  border-right: none;
-  padding: 0;
+    border-right: none;
+    padding: 0;
+    width: fit-content;
 }
 
-.box .header {
-  display: flex;
-  flex: 0 1 auto;
-  flex-direction: column;
-  padding: 5px;
-  width: 70px;
-}
 
 .header::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
-.box .content {
-  flex: 1 1 auto;
-}
-
-#modules>iframe {
-  border-style: hidden;
-}
 
 .header-button {
-  color: var(--text-color);
-  font-size: 20px;
-  background: none;
-  transition: 50ms;
+    color: var(--text-color);
+    font-size: 20px;
+    background: none;
+    transition: 50ms;
 
-  outline: 1px solid var(--text-color);
-  border-radius: 10px;
-  margin: 5px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  user-select: none;
-  cursor: pointer;
+    outline: 1px solid var(--text-color);
+    border-radius: 10px;
+    margin: 5px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+        outline-color: var(--accent-color);
+    }
 }
 
-.header>.header-button:hover {
-  outline-color: var(--accent-color);
-}
 
 .module-icon {
-  width: 36px;
-  height: 36px;
-  transition: 0.2s;
-  pointer-events: none;
+    width: 36px;
+    height: 36px;
+    transition: 0.2s;
+    pointer-events: none;
 }
 
 
 .svg {
-  mask-size: cover;
-  background-color: var(--text-color);
-  width: 36px;
-  height: 36px;
-  mask-position: center;
-  /* Set the mask image on the div */
-  /* mask-image: url(...) */
+    mask-size: cover;
+    background-color: var(--text-color);
+    width: 36px;
+    height: 36px;
+    mask-position: center;
+    /* Set the mask image on the div */
+    /* mask-image: url(...) */
 }
-

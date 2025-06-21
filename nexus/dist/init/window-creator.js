@@ -164,12 +164,14 @@ function createWebViews(context) {
                 return;
             }
             var bounds = context.window.getContentBounds();
+            var mainView = context.moduleViewMap.get(context.mainIPCSource.getIPCSource());
+            if (!mainView) {
+                return;
+            }
             view_1.setBounds({
-                x: 0,
-                // x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
+                x: mainView.collapsed ? 10 : 70 * mainView.webContents.zoomFactor,
                 y: 0,
-                width: bounds.width,
-                // width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
+                width: mainView.collapsed ? bounds.width - (10 * mainView.webContents.zoomFactor) : bounds.width - (70 * mainView.webContents.zoomFactor),
                 height: bounds.height
             });
         });
@@ -201,6 +203,7 @@ function createWebViews(context) {
             transparent: true
         }
     });
+    view.collapsed = false;
     context.window.contentView.addChildView(view);
     view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
     view.on('bounds-changed', function () {
@@ -211,8 +214,7 @@ function createWebViews(context) {
         view.setBounds({
             x: 0,
             y: 0,
-            // width: 70 * view.webContents.zoomFactor,
-            width: 140 * view.webContents.zoomFactor,
+            width: view.collapsed ? 10 : 70 * view.webContents.zoomFactor,
             height: bounds.height
         });
     });
@@ -235,4 +237,7 @@ function showWindow(context) {
     context.window.show();
 }
 exports.showWindow = showWindow;
+function getSidebarWidth(context) {
+    // return 70 * 
+}
 //# sourceMappingURL=window-creator.js.map

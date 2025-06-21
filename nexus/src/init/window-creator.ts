@@ -1,4 +1,4 @@
-import { app, BaseWindow, Rectangle, shell, WebContentsView } from "electron";
+import { app, BaseWindow, Rectangle, shell, WebContentsView, screen} from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
 import { ModuleSettings } from "@nexus-app/nexus-module-builder/ModuleSettings";
@@ -33,6 +33,7 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
         backgroundColor: "#111111",
     });
 
+
     window.on('close', async (event) => {
         event.preventDefault();
         await close(context, window);
@@ -43,8 +44,6 @@ export async function createBrowserWindow(context: InitContext): Promise<BaseWin
             moduleView.emit("bounds-changed");
         })
     });
-
-
 
     return window;
 }
@@ -81,13 +80,16 @@ export function createWebViews(context: InitContext) {
                 return;
             }
             const bounds: Rectangle = context.window.getContentBounds();
+            const mainView: (WebContentsView & { collapsed: boolean }) | undefined = context.moduleViewMap.get(context.mainIPCSource.getIPCSource()) as any;
+
+            if (!mainView) {
+                return
+            }
 
             view.setBounds({
-                x: 0,
-                // x: 70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor,
+                x: mainView.collapsed ? 10 : 70 * mainView.webContents.zoomFactor,
                 y: 0,
-                width: bounds.width,
-                // width: bounds.width - (70 * context.moduleViewMap.get(context.mainIPCSource.getIPCSource()).webContents.zoomFactor),
+                width: mainView.collapsed ? bounds.width - (10 * mainView.webContents.zoomFactor) : bounds.width - (70 * mainView.webContents.zoomFactor),
                 height: bounds.height
             });
         });
@@ -97,6 +99,7 @@ export function createWebViews(context: InitContext) {
             shell.openExternal(details.url);
             return { action: 'deny' };
         });
+
 
         view.webContents.on("did-attach-webview", (_, contents) => {
             contents.setWindowOpenHandler((details) => {
@@ -110,7 +113,7 @@ export function createWebViews(context: InitContext) {
         viewMap.set(module.getIPCSource(), view);
     }
 
-    const view: WebContentsView = new WebContentsView({
+    const view: WebContentsView & { collapsed: boolean } = new WebContentsView({
         webPreferences: {
             webviewTag: true,
             additionalArguments: [...process.argv, `--module-ID:${context.mainIPCSource.getIPCSource()}`],
@@ -119,7 +122,9 @@ export function createWebViews(context: InitContext) {
             partition: context.mainIPCSource.getIPCSource(),
             transparent: true
         }
-    });
+    }) as any;
+
+    view.collapsed = false;
 
     context.window.contentView.addChildView(view);
     view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
@@ -133,8 +138,7 @@ export function createWebViews(context: InitContext) {
         view.setBounds({
             x: 0,
             y: 0,
-            // width: 70 * view.webContents.zoomFactor,
-            width: 140 * view.webContents.zoomFactor,
+            width: view.collapsed ? 10 : 70 * view.webContents.zoomFactor,
             height: bounds.height,
         });
     });
@@ -160,3 +164,7 @@ export function showWindow(context: InitContext) {
 
 }
 
+
+function getSidebarWidth(context: InitContext) {
+    // return 70 * 
+}

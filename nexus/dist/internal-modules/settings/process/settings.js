@@ -43,55 +43,82 @@ var internal_args_1 = require("../../../init/internal-args");
 var main_1 = require("../../../main");
 exports.devModeSubscribers = [];
 var onSettingModified = function (module, modifiedSetting) { return __awaiter(void 0, void 0, void 0, function () {
-    var zoom_1, shouldForceReload_1, mode;
-    return __generator(this, function (_a) {
-        if (modifiedSetting === undefined) {
-            return [2 /*return*/];
-        }
-        switch (modifiedSetting.getAccessID()) {
-            case "zoom": {
+    var _a, window_1, view, zoom_1, window_2, window_3, shouldForceReload_1, mode;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                if (modifiedSetting === undefined) {
+                    return [2 /*return*/];
+                }
+                _a = modifiedSetting.getAccessID();
+                switch (_a) {
+                    case 'collapse_sidebar': return [3 /*break*/, 1];
+                    case "zoom": return [3 /*break*/, 3];
+                    case "accent_color": return [3 /*break*/, 5];
+                    case "dev_mode": return [3 /*break*/, 7];
+                    case "force_reload": return [3 /*break*/, 8];
+                    case "dark_mode": return [3 /*break*/, 9];
+                }
+                return [3 /*break*/, 10];
+            case 1: return [4 /*yield*/, module.requestExternal(main_1.MAIN_ID, 'get-primary-window')];
+            case 2:
+                window_1 = (_b.sent()).body;
+                view = window_1.contentView.children.at(-1);
+                view.collapsed = modifiedSetting.getValue();
+                window_1.contentView.children.forEach(function (view) { return view.emit("bounds-changed"); });
+                return [3 /*break*/, 10];
+            case 3:
                 zoom_1 = modifiedSetting.getValue();
-                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                return [4 /*yield*/, module.requestExternal(main_1.MAIN_ID, 'get-primary-window')];
+            case 4:
+                window_2 = (_b.sent()).body;
+                window_2.contentView.children.forEach(function (view) {
                     view.webContents.setZoomFactor(zoom_1 / 100);
                     view.emit("bounds-changed");
                 });
-                break;
-            }
-            case "accent_color": {
-                electron_1.BaseWindow.getAllWindows()[0].contentView.children.forEach(function (view) {
+                return [3 /*break*/, 10];
+            case 5: return [4 /*yield*/, module.requestExternal(main_1.MAIN_ID, 'get-primary-window')];
+            case 6:
+                window_3 = (_b.sent()).body;
+                window_3.contentView.children.forEach(function (view) {
                     view.webContents.executeJavaScript("document.documentElement.style.setProperty('--accent-color', '".concat(modifiedSetting.getValue(), "')"));
                 });
-                break;
-            }
-            case "dev_mode": {
-                module.sendToRenderer("is-dev", modifiedSetting.getValue());
-                exports.devModeSubscribers.forEach(function (callback) {
-                    callback(modifiedSetting.getValue());
-                });
-                break;
-            }
-            case "force_reload": {
-                shouldForceReload_1 = modifiedSetting.getValue();
-                (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
-                    if (shouldForceReload_1) {
-                        if (!args.includes("--force-reload")) {
-                            args.push("--force-reload");
+                return [3 /*break*/, 10];
+            case 7:
+                {
+                    module.sendToRenderer("is-dev", modifiedSetting.getValue());
+                    exports.devModeSubscribers.forEach(function (callback) {
+                        callback(modifiedSetting.getValue());
+                    });
+                    return [3 /*break*/, 10];
+                }
+                _b.label = 8;
+            case 8:
+                {
+                    shouldForceReload_1 = modifiedSetting.getValue();
+                    (0, internal_args_1.readInternal)().then(internal_args_1.parseInternalArgs).then(function (args) {
+                        if (shouldForceReload_1) {
+                            if (!args.includes("--force-reload")) {
+                                args.push("--force-reload");
+                            }
                         }
-                    }
-                    else {
-                        args = args.filter(function (arg) { return arg !== "--force-reload"; });
-                    }
-                    return (0, internal_args_1.writeInternal)(args);
-                });
-                break;
-            }
-            case "dark_mode": {
-                mode = modifiedSetting.getValue();
-                electron_1.nativeTheme.themeSource = mode.toLowerCase();
-                break;
-            }
+                        else {
+                            args = args.filter(function (arg) { return arg !== "--force-reload"; });
+                        }
+                        return (0, internal_args_1.writeInternal)(args);
+                    });
+                    return [3 /*break*/, 10];
+                }
+                _b.label = 9;
+            case 9:
+                {
+                    mode = modifiedSetting.getValue();
+                    electron_1.nativeTheme.themeSource = mode.toLowerCase();
+                    return [3 /*break*/, 10];
+                }
+                _b.label = 10;
+            case 10: return [2 /*return*/];
         }
-        return [2 /*return*/];
     });
 }); };
 exports.onSettingModified = onSettingModified;
@@ -114,6 +141,10 @@ var getSettings = function (module) {
             .setName("Zoom Level (%)")
             .setDefault(100)
             .setAccessID('zoom'),
+        new types_1.BooleanSetting(module)
+            .setName('Collapse Sidebar')
+            .setDefault(false)
+            .setAccessID('collapse_sidebar'),
         "Startup",
         new types_1.BooleanSetting(module)
             .setName("Open Last Closed Module on Startup")
