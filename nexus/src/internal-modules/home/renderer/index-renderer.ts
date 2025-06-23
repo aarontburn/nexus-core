@@ -47,7 +47,7 @@
                 break;
 
             } case 'image_path': {
-                document.querySelector("body").style.backgroundImage = `url(${(data[0] as string).replace(/\\/g, '/')})`;
+                document.querySelector("body").style.backgroundImage = `url("${(data[0] as string).replace(/\\/g, '/')}")`;
 
                 break;
             } case "background_image_mode": {
