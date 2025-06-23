@@ -4,11 +4,27 @@ interface ModuleData {
     htmlPath: string;
     iconPath: string;
 }
-
 (() => {
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
         return window.ipc.sendToProcess(eventName, data);
     }
+
+    let isCollapsed: boolean = false;
+    document.querySelector('body').addEventListener('mouseenter', () => {
+        if (isCollapsed) {
+            sendToProcess('expand', true)
+            document.getElementById('drag-list').style.backgroundColor = '';
+            document.getElementById('header').style.display = 'block';
+        }
+    });
+
+    document.querySelector('body').addEventListener('mouseleave', () => {
+        if (isCollapsed) {
+            sendToProcess('expand', false)
+            document.getElementById('drag-list').style.backgroundColor = 'var(--accent-color)';
+            document.getElementById('header').style.display = 'none';
+        }
+    });
 
     window.ipc.onProcessEvent((eventName: string, data: any[]) => {
         switch (eventName) {
@@ -20,6 +36,22 @@ interface ModuleData {
             }
             case "swapped-modules-to": {
                 setSelectedTab(document.getElementById(data[0]));
+                break;
+            }
+            case "collapsed": {
+                isCollapsed = data[0];
+
+                if (isCollapsed) {
+                    document.getElementById('drag-list').style.backgroundColor = 'var(--accent-color)';
+                    document.getElementById('header').style.display = 'none';
+
+                } else {
+                    document.getElementById('drag-list').style.backgroundColor = '';
+                    document.getElementById('header').style.display = 'block';
+                }
+
+
+
                 break;
             }
 

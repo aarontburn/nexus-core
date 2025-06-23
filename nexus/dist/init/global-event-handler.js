@@ -61,6 +61,12 @@ function attachEventHandlerForMain(context) {
                 context.settingModule.handleEvent("module-order", data);
                 break;
             }
+            case 'expand': {
+                var view = context.moduleViewMap.get(context.mainIPCSource.getIPCSource());
+                view.expanded = data[0];
+                view.emit("bounds-changed");
+                break;
+            }
         }
     });
 }

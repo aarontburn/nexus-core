@@ -72,6 +72,8 @@ exports.showWindow = exports.createWebViews = exports.createBrowserWindow = void
 var electron_1 = require("electron");
 var path = __importStar(require("path"));
 var constants_1 = require("../utils/constants");
+var SIDEBAR_COLLAPSED_WIDTH = 10;
+var SIDEBAR_EXPANDED_WIDTH = 70;
 function close(context, window) {
     return __awaiter(this, void 0, void 0, function () {
         var result, _i, result_1, error;
@@ -169,9 +171,9 @@ function createWebViews(context) {
                 return;
             }
             view_1.setBounds({
-                x: mainView.collapsed ? 10 : 70 * mainView.webContents.zoomFactor,
+                x: (mainView.collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH) * mainView.webContents.zoomFactor,
                 y: 0,
-                width: mainView.collapsed ? bounds.width - (10 * mainView.webContents.zoomFactor) : bounds.width - (70 * mainView.webContents.zoomFactor),
+                width: bounds.width - ((mainView.collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH) * mainView.webContents.zoomFactor),
                 height: bounds.height
             });
         });
@@ -203,18 +205,31 @@ function createWebViews(context) {
             transparent: true
         }
     });
-    view.collapsed = false;
+    var isCollapsed = false;
+    view.collapsed = isCollapsed;
+    view.expanded = false;
     context.window.contentView.addChildView(view);
     view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
     view.on('bounds-changed', function () {
         if (!context.window || !view) {
             return;
         }
+        if (view.collapsed !== isCollapsed) {
+            isCollapsed = view.collapsed;
+            context.ipcCallback.notifyRenderer(context.mainIPCSource, 'collapsed', isCollapsed);
+        }
         var bounds = context.window.getContentBounds();
+        var width;
+        if (!view.collapsed) {
+            width = SIDEBAR_EXPANDED_WIDTH * view.webContents.zoomFactor;
+        }
+        else {
+            width = (view.expanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH) * view.webContents.zoomFactor;
+        }
         view.setBounds({
             x: 0,
             y: 0,
-            width: view.collapsed ? 10 : 70 * view.webContents.zoomFactor,
+            width: width,
             height: bounds.height
         });
     });

@@ -1,6 +1,6 @@
 import { DataResponse, HTTPStatusCodes, IPCCallback, IPCSource, Process } from "@nexus-app/nexus-module-builder"
 import { InitContext } from "../utils/types";
-import { ipcMain, WebContentsView } from "electron";
+import { BaseWindow, ipcMain, WebContentsView } from "electron";
 
 
 
@@ -25,6 +25,14 @@ export function attachEventHandlerForMain(context: InitContext): void | Promise<
             }
             case "module-order": {
                 context.settingModule.handleEvent("module-order", data);
+                break;
+            }
+            case 'expand': {
+                const view: WebContentsView & { collapsed: boolean, expanded: boolean } = context.moduleViewMap.get(context.mainIPCSource.getIPCSource()) as any;
+                view.expanded = data[0];
+
+                view.emit("bounds-changed");
+
                 break;
             }
 

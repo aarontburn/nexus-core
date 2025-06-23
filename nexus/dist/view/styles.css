@@ -7,10 +7,6 @@ body {
     scrollbar-width: none;
 }
 
-body {
-    border-right: 1px solid var(--text-color);
-}
-
 .box {
     display: flex;
     flex-flow: row;
@@ -27,6 +23,8 @@ body {
         flex-direction: column;
         padding: 5px;
         width: 70px;
+        border-right: 1px solid var(--text-color);
+
     }
 
     .content {

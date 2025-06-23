@@ -1,9 +1,12 @@
-import { app, BaseWindow, Rectangle, shell, WebContentsView, screen} from "electron";
+import { app, BaseWindow, Rectangle, shell, WebContentsView, screen } from "electron";
 import * as path from "path";
 import { InitContext } from "../utils/types";
 import { ModuleSettings } from "@nexus-app/nexus-module-builder/ModuleSettings";
 import { WINDOW_DIMENSION } from "../utils/constants";
 
+
+const SIDEBAR_COLLAPSED_WIDTH: number = 10;
+const SIDEBAR_EXPANDED_WIDTH: number = 70;
 
 async function close(context: InitContext, window: BaseWindow) {
     let result: PromiseSettledResult<void>[] = await Promise.allSettled(
@@ -63,8 +66,6 @@ export function createWebViews(context: InitContext) {
         });
 
         context.window.contentView.addChildView(view);
-
-
         if (module.getHTMLPath() || module.getURL()) {
             context.moduleViewMap.set(module.getIPCSource(), view);
 
@@ -75,6 +76,8 @@ export function createWebViews(context: InitContext) {
             }
         }
 
+
+
         view.on('bounds-changed', () => {
             if (!context.window || !view) {
                 return;
@@ -83,13 +86,13 @@ export function createWebViews(context: InitContext) {
             const mainView: (WebContentsView & { collapsed: boolean }) | undefined = context.moduleViewMap.get(context.mainIPCSource.getIPCSource()) as any;
 
             if (!mainView) {
-                return
+                return;
             }
 
             view.setBounds({
-                x: mainView.collapsed ? 10 : 70 * mainView.webContents.zoomFactor,
+                x: (mainView.collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH) * mainView.webContents.zoomFactor,
                 y: 0,
-                width: mainView.collapsed ? bounds.width - (10 * mainView.webContents.zoomFactor) : bounds.width - (70 * mainView.webContents.zoomFactor),
+                width: bounds.width - ((mainView.collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH) * mainView.webContents.zoomFactor),
                 height: bounds.height
             });
         });
@@ -113,7 +116,7 @@ export function createWebViews(context: InitContext) {
         viewMap.set(module.getIPCSource(), view);
     }
 
-    const view: WebContentsView & { collapsed: boolean } = new WebContentsView({
+    const view: WebContentsView & { collapsed: boolean, expanded: boolean } = new WebContentsView({
         webPreferences: {
             webviewTag: true,
             additionalArguments: [...process.argv, `--module-ID:${context.mainIPCSource.getIPCSource()}`],
@@ -124,7 +127,11 @@ export function createWebViews(context: InitContext) {
         }
     }) as any;
 
-    view.collapsed = false;
+
+    let isCollapsed: boolean = false;
+    view.collapsed = isCollapsed;
+    view.expanded = false;
+
 
     context.window.contentView.addChildView(view);
     view.webContents.loadURL("file://" + path.join(__dirname, "../view/index.html"));
@@ -134,14 +141,30 @@ export function createWebViews(context: InitContext) {
             return;
         }
 
+        if (view.collapsed !== isCollapsed) {
+            isCollapsed = view.collapsed;
+            context.ipcCallback.notifyRenderer(context.mainIPCSource, 'collapsed', isCollapsed);
+        }
+
         const bounds: Rectangle = context.window.getContentBounds();
+
+        let width: number;
+
+        if (!view.collapsed) {
+            width = SIDEBAR_EXPANDED_WIDTH * view.webContents.zoomFactor;
+        } else {
+            width = (view.expanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH) * view.webContents.zoomFactor;
+        }
+
         view.setBounds({
             x: 0,
             y: 0,
-            width: view.collapsed ? 10 : 70 * view.webContents.zoomFactor,
+            width: width,
             height: bounds.height,
         });
     });
+
+
     view.setBounds({ x: 0, y: 0, width: 1, height: 1 });
     context.moduleViewMap.set(context.mainIPCSource.getIPCSource(), view);
     return viewMap;
