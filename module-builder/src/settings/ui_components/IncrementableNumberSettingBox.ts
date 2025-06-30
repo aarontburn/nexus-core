@@ -33,7 +33,7 @@ export class IncrementableNumberSettingBox extends NumberSettingBox {
         }
 
         return `
-            <div class="left-component">
+            <div class="left-component Nexus-Incrementable-Setting-Box">
                 <div style='display: flex; align-items: center'>
                     <p class='spinner' id='${setting.getID() + "_decrease"}'>–</p>
 
@@ -64,15 +64,19 @@ export class IncrementableNumberSettingBox extends NumberSettingBox {
 
     public getStyle(): string {
         return `
-            .spinner.spinner {
-                font-size: 25px;
-                width: 0.7em;
+            .Nexus-Incrementable-Setting-Box {
+                .spinner.spinner {
+                    font-size: 25px;
+                    width: 0.7em;
+                }
+
+                .spinner:hover {
+                    color: var(--accent-color);
+                    transition: 0.2s; 
+                }
             }
 
-            .spinner:hover {
-                color: var(--accent-color);
-                transition: 0.2s; 
-            }
+
         `    
     }
 

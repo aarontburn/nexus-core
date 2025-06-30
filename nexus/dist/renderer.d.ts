@@ -5,13 +5,18 @@ export interface IIPC {
 	removeAllListeners(): void;
 }
 
+export interface IWebUtils {
+	getPathForFile(file: File): string;
+}
+
 export interface ICommon {
-    args: readonly string[]
+    args: readonly string[];
 }
 
 declare global {
     interface Window {
         ipc: IIPC,
-        common: ICommon
+        common: ICommon,
+        webUtils: IWebUtils,
     }
 }

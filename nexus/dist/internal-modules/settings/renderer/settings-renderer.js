@@ -175,6 +175,13 @@
                         });
                         break;
                     }
+                    case "file": {
+                        element.addEventListener('change', function () {
+                            console.log(Array.from(element[attribute]));
+                            sendToProcess("setting-modified", id, returnValue ? returnValue : Array.from(element[attribute]).map(function (file) { return window.webUtils.getPathForFile(file); }));
+                        });
+                        break;
+                    }
                     case 'number':
                     case 'text': {
                         element.addEventListener('keyup', function (event) {

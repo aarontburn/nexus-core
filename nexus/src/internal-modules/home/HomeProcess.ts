@@ -1,5 +1,5 @@
 import { DataResponse, HTTPStatusCodes, Process, Setting } from "@nexus-app/nexus-module-builder";
-import { BooleanSetting, ChoiceSetting, HexColorSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import { BooleanSetting, ChoiceSetting, FileUploadSetting, HexColorSetting, NumberSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 
 import * as path from "path";
 import { LOCALE, STANDARD_TIME_FORMAT, MILITARY_TIME_FORMAT, FULL_DATE_FORMAT, ABBREVIATED_DATE_FORMAT } from "./utils/time-formats";
@@ -163,13 +163,10 @@ export class HomeProcess extends Process {
 				.setDefault('#f5f5f5')
 				.setAccessID('text_color'),
 
-			new StringSetting(this)
+			new FileUploadSetting(this)
 				.setName('Background Image Path')
 				.setDefault('')
-				.setAccessID('image_path')
-				.setValidator((o) => {
-					return path.normalize(o)
-				}),
+				.setAccessID('image_path'),
 
 			new ChoiceSetting(this)
 				.addOptions("Cover", "Contain")

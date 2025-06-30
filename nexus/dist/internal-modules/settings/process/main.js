@@ -427,7 +427,7 @@ var SettingsProcess = /** @class */ (function (_super) {
                     case 14:
                         _c.trys.push([14, 16, , 17]);
                         console.info("[Nexus Settings] Removing " + info.moduleID);
-                        return [4 /*yield*/, fs.promises.rm(path.normalize(info.path.replace('\\built\\', '\\external_modules\\') + '.zip'))];
+                        return [4 /*yield*/, fs.promises.rm(path.normalize(info.path.replace("".concat(path.sep, "built").concat(path.sep), "".concat(path.sep, "external_modules").concat(path.sep)) + '.zip'))];
                     case 15:
                         _c.sent();
                         this.deletedModules.push(info.moduleID);

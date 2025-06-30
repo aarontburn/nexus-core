@@ -34,7 +34,7 @@ export class RadioSettingBox extends SettingBox<string> {
 
     public createRight(): string {
         const html: string = `
-            <div class="right-component">
+            <div class="right-component Nexus-Radio-Setting-Box">
                 <div style="display: flex; flex-wrap: wrap">
                     <h1><span id='${this.resetID}'>↩</span> ${this.getSetting().getName()}</h1>
                     <p style="align-self: flex-end; padding-left: 24px;">${this.getSetting().getDescription()}</p>
@@ -83,35 +83,39 @@ export class RadioSettingBox extends SettingBox<string> {
 
     public getStyle(): string {
         return `
-            .radio-label {
-                margin-left: 10px;
-                margin-right: 25px;
-                font-size: 18px;
+            .Nexus-Radio-Setting-Box {
+                .radio-label {
+                    margin-left: 10px;
+                    margin-right: 25px;
+                    font-size: 18px;
+                }
+
+                input[type='radio'] {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                input[type='radio']:after {
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 15px;
+                    top: 7px;
+                    left: -1px;
+                    position: relative;
+                    background-color: #6a6a6a;
+                    content: '';
+                    display: inline-block;
+                    visibility: visible;
+                    transition: 0.2s;
+                    cursor: pointer;
+                }
+
+                input[type='radio']:checked:after {
+                    background-color: var(--accent-color);
+                }
             }
 
-            input[type='radio'] {
-                margin: 0;
-                padding: 0;
-            }
 
-            input[type='radio']:after {
-                width: 15px;
-                height: 15px;
-                border-radius: 15px;
-                top: 7px;
-                left: -1px;
-                position: relative;
-                background-color: #6a6a6a;
-                content: '';
-                display: inline-block;
-                visibility: visible;
-                transition: 0.2s;
-                cursor: pointer;
-            }
-
-            input[type='radio']:checked:after {
-                background-color: var(--accent-color);
-            }
         `
     }
 

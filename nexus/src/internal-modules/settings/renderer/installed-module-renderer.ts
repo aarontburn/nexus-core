@@ -91,7 +91,7 @@
                     ? ` 
                         <p class='check-update-button clickable'>${updatedModules.includes(info.moduleID) ? 'Restart Now' : info.updateAvailable ? "Update Now" : 'Check For Update'}</p>
                         <p class='force-reload-button clickable'>${forceReloadedModules.includes(info.moduleID) ? 'Reloading Next Launch' : 'Force Reload'}</p>
-                        <p class='remove-module-button clickable';">Uninstall</p>
+                        <p class='remove-module-button clickable'>Uninstall</p>
                     `
 
                     : `<p style="font-style: italic; text-align: right; color: gray;">Restart Required</p>`

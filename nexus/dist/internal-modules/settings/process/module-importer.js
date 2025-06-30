@@ -85,7 +85,7 @@ function importModuleArchive() {
                 case 0:
                     options = {
                         properties: ['openFile'],
-                        filters: [{ name: 'Nexus Archive File (.zip)', extensions: ['zip'] }]
+                        filters: [{ name: 'Nexus Module File (.zip)', extensions: ['zip'] }]
                     };
                     return [4 /*yield*/, electron_1.dialog.showOpenDialog(options)];
                 case 1:

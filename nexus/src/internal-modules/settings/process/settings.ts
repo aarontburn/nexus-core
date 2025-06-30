@@ -1,5 +1,5 @@
 import { Process, Setting } from "@nexus-app/nexus-module-builder";
-import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting, FileUploadSetting } from "@nexus-app/nexus-module-builder/settings/types";
 import { BaseWindow, nativeTheme, Rectangle, WebContentsView } from "electron";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { MAIN_ID } from "../../../main";
@@ -78,6 +78,12 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
 
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
     return [
+        "test",
+        new FileUploadSetting(module)
+            .setName("Sample file upload")
+            .setDescription("Sample description")
+            .setDefault(''),
+
         "Appearance",
         new ChoiceSetting(module)
             .addOptions("Dark", "Light", "System")

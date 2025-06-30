@@ -6,3 +6,4 @@ export * from './NumberSettingBox';
 export * from './RadioSettingBox';
 export * from './RangeSettingBox';
 export * from './StringSettingBox';
+export * from './FileUploadSettingBox';

@@ -41,5 +41,6 @@
     }
     dragElement(document.getElementById("separator"));
 
+    document.getElementById('right').addEventListener('touchmove', console.log)
 
 })();

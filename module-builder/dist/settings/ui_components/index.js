@@ -22,3 +22,4 @@ __exportStar(require("./NumberSettingBox"), exports);
 __exportStar(require("./RadioSettingBox"), exports);
 __exportStar(require("./RangeSettingBox"), exports);
 __exportStar(require("./StringSettingBox"), exports);
+__exportStar(require("./FileUploadSettingBox"), exports);

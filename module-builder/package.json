@@ -9,5 +9,8 @@
   "devDependencies": {
     "@types/node": "^22.13.14",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@nexus-app/nexus-module-builder": "file:dist"
   }
 }

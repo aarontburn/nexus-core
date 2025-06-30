@@ -42,7 +42,7 @@ var IncrementableNumberSettingBox = /** @class */ (function (_super) {
                 rangeText = "".concat(range.min, " - ").concat(range.max);
             }
         }
-        return "\n            <div class=\"left-component\">\n                <div style='display: flex; align-items: center'>\n                    <p class='spinner' id='".concat(setting.getID() + "_decrease", "'>\u2013</p>\n\n                        <input type=\"number\" \n                            style=\"width: 70px; text-align: center; margin: 0px 5px;\"\n                            id=\"").concat(setting.getID(), "\" value='").concat(setting.getValue(), "'>\n\n                    <p class='spinner' id='").concat(setting.getID() + "_increase", "'>+</p>\n                </div>\n                ").concat(rangeText !== undefined
+        return "\n            <div class=\"left-component Nexus-Incrementable-Setting-Box\">\n                <div style='display: flex; align-items: center'>\n                    <p class='spinner' id='".concat(setting.getID() + "_decrease", "'>\u2013</p>\n\n                        <input type=\"number\" \n                            style=\"width: 70px; text-align: center; margin: 0px 5px;\"\n                            id=\"").concat(setting.getID(), "\" value='").concat(setting.getValue(), "'>\n\n                    <p class='spinner' id='").concat(setting.getID() + "_increase", "'>+</p>\n                </div>\n                ").concat(rangeText !== undefined
             ? "<p style='line-height: 21px; text-align: center'>".concat(rangeText, "</p>")
             : '', "\n            </div>\n        ");
     };
@@ -54,7 +54,7 @@ var IncrementableNumberSettingBox = /** @class */ (function (_super) {
         ];
     };
     IncrementableNumberSettingBox.prototype.getStyle = function () {
-        return "\n            .spinner.spinner {\n                font-size: 25px;\n                width: 0.7em;\n            }\n\n            .spinner:hover {\n                color: var(--accent-color);\n                transition: 0.2s; \n            }\n        ";
+        return "\n            .Nexus-Incrementable-Setting-Box {\n                .spinner.spinner {\n                    font-size: 25px;\n                    width: 0.7em;\n                }\n\n                .spinner:hover {\n                    color: var(--accent-color);\n                    transition: 0.2s; \n                }\n            }\n\n\n        ";
     };
     return IncrementableNumberSettingBox;
 }(NumberSettingBox_1.NumberSettingBox));

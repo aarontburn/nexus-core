@@ -19,3 +19,4 @@ __exportStar(require("./ChoiceSetting"), exports);
 __exportStar(require("./HexColorSetting"), exports);
 __exportStar(require("./NumberSetting"), exports);
 __exportStar(require("./StringSetting"), exports);
+__exportStar(require("./FileUploadSetting"), exports);

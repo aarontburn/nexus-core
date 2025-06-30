@@ -1,3 +1,4 @@
+"use strict";
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -7,6 +8,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+exports.__esModule = true;
+var electron_1 = require("electron");
 var _a = require('electron'), ipcRenderer = _a.ipcRenderer, contextBridge = _a.contextBridge;
 var PRELOAD_MODULE_ID = undefined;
 function getModuleID() {
@@ -39,8 +42,11 @@ contextBridge.exposeInMainWorld('ipc', {
         ipcRenderer.removeAllListeners(getModuleID());
     }
 });
+contextBridge.exposeInMainWorld('webUtils', {
+    getPathForFile: function (file) { return electron_1.webUtils.getPathForFile(file); }
+});
 // Note: This differs from process.argv in the process and has renderer information.
 contextBridge.exposeInMainWorld("common", {
-    args: process.argv
+    args: __spreadArray([], process.argv, true)
 });
 //# sourceMappingURL=preload.js.map

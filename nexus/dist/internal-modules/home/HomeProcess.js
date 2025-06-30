@@ -241,13 +241,10 @@ var HomeProcess = /** @class */ (function (_super) {
                 .setName("Text Color")
                 .setDefault('#f5f5f5')
                 .setAccessID('text_color'),
-            new types_1.StringSetting(this)
+            new types_1.FileUploadSetting(this)
                 .setName('Background Image Path')
                 .setDefault('')
-                .setAccessID('image_path')
-                .setValidator(function (o) {
-                return path.normalize(o);
-            }),
+                .setAccessID('image_path'),
             new types_1.ChoiceSetting(this)
                 .addOptions("Cover", "Contain")
                 .useDropdown()

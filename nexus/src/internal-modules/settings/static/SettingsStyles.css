@@ -2,38 +2,40 @@
     width: 100vw;
     height: 100vh;
     display: flex;
+
+    #separator {
+        cursor: col-resize;
+        background-color: var(--accent-color);
+        width: 10px;
+        height: 100%;
+        min-width: 10px;
+
+        /* Prevent the browser's built-in drag from interfering */
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    #left {
+        width: 20vw;
+        min-width: 15vw;
+        height: 100%;
+        text-align: center;
+        overflow-y: auto;
+    }
+
+    #right {
+        width: 80vw;
+        min-width: 40vw;
+        height: 100%;
+        overflow-y: auto;
+    }
 }
 
-#separator {
-    cursor: col-resize;
-    background-color: var(--accent-color);
-    width: 10px;
-    height: 100%;
-    min-width: 10px;
 
-    /* Prevent the browser's built-in drag from interfering */
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
 
 .clickable {
     cursor: pointer;
-}
-
-#left {
-    width: 20vw;
-    min-width: 15vw;
-    height: 100%;
-    text-align: center;
-    overflow-y: auto;
-}
-
-#right {
-    width: 80vw;
-    min-width: 40vw;
-    height: 100%;
-    overflow-y: auto;
 }
 
 
@@ -44,12 +46,69 @@
 
     display: flex;
     align-items: center;
+
+    h1 {
+        margin: -5px 0px;
+        padding: 0;
+        font-size: 24px;
+        font-weight: 250;
+    }
+
+    p {
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+        margin-top: 3px;
+        font-weight: 250;
+    }
+
+    span:hover {
+        transition: 0.2s;
+        color: var(--accent-color);
+    }
+
+    .spacer {
+        padding-right: 24px;
+        display: inline-block;
+    }
+
+    input {
+        border: thin solid var(--text-color);
+        border-radius: 5px;
+
+        background-color: var(--background-color);
+
+        font-size: 22px;
+        color: var(--text-color);
+        height: 40px;
+        accent-color: var(--accent-color);
+        transition: 0.2s;
+        font-weight: 300;
+
+        &:focus {
+            outline: transparent;
+            border: 1px solid var(--accent-color);
+        }
+    }
+
+    input[type='range'] {
+        height: 15px;
+        width: 100%;
+    }
+
+
+
+    .left-component {
+        width: 115px;
+
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+
 }
 
-.spacer {
-    padding-right: 24px;
-    display: inline-block;
-}
 
 
 #import-button#import-button,
@@ -60,13 +119,13 @@
     padding: 5px;
     margin: 10px 15px;
     border-radius: 5px;
+
+    &:hover {
+        transition: 0.25s;
+        color: var(--accent-color);
+    }
 }
 
-#import-button#import-button:hover,
-#manage-button#manage-button:hover {
-    transition: 0.25s;
-    color: var(--accent-color);
-}
 
 .setting-group {
     font-size: 22px;
@@ -75,32 +134,14 @@
     padding: 10px;
     user-select: none;
     transition: 0.25s;
+
+    &:hover {
+        color: var(--accent-color);
+
+    }
 }
 
-.setting-group:hover {
-    color: var(--accent-color);
-}
 
-
-.setting input {
-    border-style: solid;
-    border-color: var(--text-color);
-    border-width: thin;
-    border-radius: 5px;
-    background-color: var(--background-color);
-
-    font-size: 22px;
-    color: var(--text-color);
-    height: 40px;
-    accent-color: var(--accent-color);
-    transition: 0.2s;
-    font-weight: 300;
-}
-
-input:focus {
-    outline: transparent;
-    border: 1px solid var(--accent-color);
-}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -108,51 +149,10 @@ input::-webkit-inner-spin-button {
     margin: 0;
 }
 
-input[type='range'] {
-    height: 15px;
-    width: 100%;
-}
-
-
-.setting h1 {
-    margin: -5px 0px;
-    padding: 0;
-    font-size: 24px;
-    font-weight: 250;
-}
-
-.setting p {
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    margin-top: 3px;
-    font-weight: 250;
-
-
-}
-
-.left-component {
-    width: 115px;
-
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-}
 
 
 
 
-
-
-
-
-.setting span:hover {
-    transition: 0.2s;
-}
-
-.setting span:hover {
-    color: var(--accent-color);
-}
 
 
 
@@ -180,6 +180,3 @@ br {
     margin: 5px;
     height: min-content;
 }
-
-
-

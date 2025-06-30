@@ -1,5 +1,4 @@
 {
-
     "scripts": {
         "build": "node copyFiles.js --pre && tsc && node copyFiles.js",
         "watch": "tsc -w",
@@ -22,7 +21,7 @@
     },
     "dependencies": {
         "@nexus-app/nexus-exporter": "^1.2.0",
-        "@nexus-app/nexus-module-builder": "^1.0.3",
+        "@nexus-app/nexus-module-builder": "file:../module-builder/dist",
         "electron-updater": "^6.6.2",
         "showdown": "^2.1.0",
         "typescript": "^4.8.3",

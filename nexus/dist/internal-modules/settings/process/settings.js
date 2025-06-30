@@ -124,6 +124,11 @@ var onSettingModified = function (module, modifiedSetting) { return __awaiter(vo
 exports.onSettingModified = onSettingModified;
 var getSettings = function (module) {
     return [
+        "test",
+        new types_1.FileUploadSetting(module)
+            .setName("Sample file upload")
+            .setDescription("Sample description")
+            .setDefault(''),
         "Appearance",
         new types_1.ChoiceSetting(module)
             .addOptions("Dark", "Light", "System")

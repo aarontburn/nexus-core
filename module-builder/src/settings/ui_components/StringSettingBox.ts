@@ -16,7 +16,9 @@ export class StringSettingBox extends SettingBox<string> {
                     <p style="align-self: flex-end; padding-left: 24px; margin: 0;">${this.getSetting().getDescription()}</p>
                 </div>
 
-                <input type="text" style="width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 10px;" 
+                <input 
+                    type="text" 
+                    style="width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 10px;" 
                     value="${this.getSetting().getValue()}" id="${this.getSetting().getID()}">
             </div>
         `;
@@ -29,8 +31,6 @@ export class StringSettingBox extends SettingBox<string> {
     public onChange(newValue: any): ChangeEvent[] {
         return [{ id: this.getSetting().getID(), attribute: 'value', value: newValue }];
     }
-
-
 
 
 }

@@ -281,6 +281,13 @@
                         })
                         break;
                     }
+                    case "file": {
+                        element.addEventListener('change', () => {
+                            console.log(Array.from((element as any)[attribute]))
+                            sendToProcess("setting-modified", id, returnValue ? returnValue : Array.from((element as any)[attribute]).map((file: File) => window.webUtils.getPathForFile(file) ));
+                        })
+                        break;
+                    }
 
                     case 'number':
                     case 'text': {

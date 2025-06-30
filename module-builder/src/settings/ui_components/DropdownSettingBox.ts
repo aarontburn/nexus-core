@@ -23,7 +23,7 @@ export class DropdownSettingBox extends SettingBox<string> {
 
     public createRight(): string {
         const html: string = `
-            <div class="right-component">
+            <div class="right-component Nexus-Dropdown-Setting-Box">
                 <div style="display: flex; flex-wrap: wrap">
                     <h1><span id='${this.resetID}'>↩</span> ${this.getSetting().getName()}</h1>
                     <p style="align-self: flex-end; padding-left: 24px;">${this.getSetting().getDescription()}</p>
@@ -61,54 +61,56 @@ export class DropdownSettingBox extends SettingBox<string> {
 
     public getStyle(): string {
         return `
-            select {
-                /* Reset Select */
-                appearance: none;
-                outline: 10px red;
-                border: 0;
-                box-shadow: none;
+            .Nexus-Dropdown-Setting-Box {
+            
+                select {
+                    /* Reset Select */
+                    appearance: none;
+                    outline: 10px red;
+                    border: 0;
+                    box-shadow: none;
 
-                /* Personalize */
-                flex: 1;
-                padding: 0 1em;
-                color: var(--accent-color);
-                background-color: var(--off-black);
-                cursor: pointer;
-                font-size: 18px;
-            }
+                    /* Personalize */
+                    flex: 1;
+                    padding: 0 1em;
+                    color: var(--accent-color);
+                    background-color: var(--off-black);
+                    cursor: pointer;
+                    font-size: 18px;
+                }
 
-            /* Custom Select wrapper */
-            .select {
-                position: relative;
-                display: flex;
-                width: 500px;
-                height: 2.5em;
-                border-radius: .25em;
-                overflow: hidden;
-                margin-top: 5px;
-                border: 1px solid var(--off-white);
-            }
+                /* Custom Select wrapper */
+                .select {
+                    position: relative;
+                    display: flex;
+                    width: 500px;
+                    height: 2.5em;
+                    border-radius: .25em;
+                    overflow: hidden;
+                    margin-top: 5px;
+                    border: 1px solid var(--off-white);
+                }
 
-            select option {
-                color: var(--off-white);
-            }
+                select option {
+                    color: var(--off-white);
+                }
 
-            /* Arrow */
-            .select::after {
-                content: '\\25BC';
-                position: absolute;
-                
-                right: 0;
-                padding: 0.5em;
-                transition: .25s all ease;
-                pointer-events: none;
-            }
+                /* Arrow */
+                .select::after {
+                    content: '\\25BC';
+                    position: absolute;
+                    
+                    right: 0;
+                    padding: 0.5em;
+                    transition: .25s all ease;
+                    pointer-events: none;
+                }
 
-            /* Transition */
-            .select:hover::after {
-                color: var(--accent-color);
+                /* Transition */
+                .select:hover::after {
+                    color: var(--accent-color);
+                }
             }
-        
         `;
     }
 
