@@ -14,7 +14,7 @@ interface ModuleData {
         if (isCollapsed) {
             sendToProcess('expand', true)
             document.getElementById('drag-list').style.backgroundColor = '';
-            document.getElementById('header').style.display = 'block';
+            document.getElementById('header').style.display = '';
         }
     });
 
@@ -47,7 +47,7 @@ interface ModuleData {
 
                 } else {
                     document.getElementById('drag-list').style.backgroundColor = '';
-                    document.getElementById('header').style.display = 'block';
+                    document.getElementById('header').style.display = '';
                 }
 
 

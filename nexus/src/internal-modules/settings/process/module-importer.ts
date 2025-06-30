@@ -13,7 +13,7 @@ import { MAIN_ID } from '../../../main';
 export async function importModuleArchive(): Promise<boolean> {
     const options: OpenDialogOptions = {
         properties: ['openFile'],
-        filters: [{ name: 'Nexus Archive File (.zip)', extensions: ['zip'] }]
+        filters: [{ name: 'Nexus Module File (.zip)', extensions: ['zip'] }]
     };
 
     const response: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(options);

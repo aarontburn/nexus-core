@@ -317,7 +317,7 @@ export class SettingsProcess extends Process {
 
                 try {
                     console.info("[Nexus Settings] Removing " + info.moduleID);
-                    await fs.promises.rm(info.path.replace('\\built\\', '\\external_modules\\') + '.zip');
+                    await fs.promises.rm(path.normalize(info.path.replace('\\built\\', '\\external_modules\\') + '.zip'));
                     this.deletedModules.push(info.moduleID);
                     return true;
 

@@ -45,7 +45,7 @@
                 break;
             }
             case 'image_path': {
-                document.querySelector("body").style.backgroundImage = "url(".concat(data[0].replace(/\\/g, '/'), ")");
+                document.querySelector("body").style.backgroundImage = "url(\"".concat(data[0].replace(/\\/g, '/'), "\")");
                 break;
             }
             case "background_image_mode": {

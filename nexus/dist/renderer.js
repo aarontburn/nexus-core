@@ -11,7 +11,7 @@
         if (isCollapsed) {
             sendToProcess('expand', true);
             document.getElementById('drag-list').style.backgroundColor = '';
-            document.getElementById('header').style.display = 'block';
+            document.getElementById('header').style.display = '';
         }
     });
     document.querySelector('body').addEventListener('mouseleave', function () {
@@ -41,7 +41,7 @@
                 }
                 else {
                     document.getElementById('drag-list').style.backgroundColor = '';
-                    document.getElementById('header').style.display = 'block';
+                    document.getElementById('header').style.display = '';
                 }
                 break;
             }
