@@ -29,7 +29,7 @@ export class DropdownSettingBox extends SettingBox<string> {
                     <p style="align-self: flex-end; padding-left: 24px;">${this.getSetting().getDescription()}</p>
                 </div>
 
-                <div class='select'>
+                <div class='select-container'>
                     <select id=${this.getSetting().getID()}>
                         ${this.getInputOptions()}
                     </select>
@@ -62,54 +62,54 @@ export class DropdownSettingBox extends SettingBox<string> {
     public getStyle(): string {
         return `
             .Nexus-Dropdown-Setting-Box {
-            
-                select {
-                    /* Reset Select */
-                    appearance: none;
-                    outline: 10px red;
-                    border: 0;
-                    box-shadow: none;
+                .select-container {
+                    position: relative;
+                    display: flex;
+                    max-width: 500px;
+                    width: calc(100% - 5px);
+                    height: 2.5em;
+                    border-radius: 5px;
+                    overflow: hidden;
+                    margin-top: 5px;
+                    background-color: var(--background-color);
+                    border: 1px solid var(--text-color);
+                    outline: none;
 
-                    /* Personalize */
+
+                    &::after {
+                        content: '\\25BC';
+                        position: absolute;
+                        
+                        right: 0;
+                        padding: 0.5em;
+                        transition: .25s all ease;
+                        pointer-events: none;
+                    }
+
+                    &:hover::after {
+                        color: var(--accent-color);
+                    }
+                }
+
+                select {
+                    appearance: none;
+                    box-shadow: none;
+                    border: none;
+                    outline: none;
+
                     flex: 1;
                     padding: 0 1em;
-                    color: var(--accent-color);
-                    background-color: var(--off-black);
+                    color: var(--text-color);
+                    background-color: var(--background-color);
                     cursor: pointer;
                     font-size: 18px;
                 }
 
-                /* Custom Select wrapper */
-                .select {
-                    position: relative;
-                    display: flex;
-                    width: 500px;
-                    height: 2.5em;
-                    border-radius: .25em;
-                    overflow: hidden;
-                    margin-top: 5px;
-                    border: 1px solid var(--off-white);
-                }
 
                 select option {
-                    color: var(--off-white);
+                    color: var(--text-color);
                 }
 
-                /* Arrow */
-                .select::after {
-                    content: '\\25BC';
-                    position: absolute;
-                    
-                    right: 0;
-                    padding: 0.5em;
-                    transition: .25s all ease;
-                    pointer-events: none;
-                }
-
-                /* Transition */
-                .select:hover::after {
-                    color: var(--accent-color);
-                }
             }
         `;
     }

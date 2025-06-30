@@ -18,7 +18,7 @@ export class StringSettingBox extends SettingBox<string> {
 
                 <input 
                     type="text" 
-                    style="width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 10px;" 
+                    style="width: calc(100% - 10px); max-width: 500px; box-sizing: border-box; padding-left: 10px; margin-top: 10px;" 
                     value="${this.getSetting().getValue()}" id="${this.getSetting().getID()}">
             </div>
         `;

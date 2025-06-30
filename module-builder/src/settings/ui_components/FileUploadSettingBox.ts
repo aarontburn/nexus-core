@@ -21,7 +21,7 @@ export class FileUploadSettingBox extends SettingBox<string> {
                     <p style="align-self: flex-end; padding-left: 24px; margin: 0;">${this.getSetting().getDescription()}</p>
                 </div>
 
-                <p id="${this.getSetting().getID()}-value">${this.getSetting().getValue()}</p>
+                <p class="file-path" id="${this.getSetting().getID()}-value">${this.getSetting().getValue()}</p>
             </div>
         `;
     }
@@ -31,6 +31,16 @@ export class FileUploadSettingBox extends SettingBox<string> {
             .Nexus-File-Setting-Box {
                 input {
                     display: none;
+                }
+
+                .file-path {
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    width: 100%;
+                    direction: rtl;
+                    white-space: nowrap;
+                    text-align: left;
+                    padding-right: 20px;
                 }
 
                 label {

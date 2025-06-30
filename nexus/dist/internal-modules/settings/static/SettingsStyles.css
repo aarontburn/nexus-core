@@ -18,7 +18,7 @@
 
     #left {
         width: 20vw;
-        min-width: 15vw;
+        min-width: max(15vw, 135px);
         height: 100%;
         text-align: center;
         overflow-y: auto;
@@ -67,10 +67,7 @@
         color: var(--accent-color);
     }
 
-    .spacer {
-        padding-right: 24px;
-        display: inline-block;
-    }
+
 
     input {
         border: thin solid var(--text-color);
@@ -104,6 +101,16 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+    }
+
+    .right-component {
+        width: calc(100% - 115px - 24px);
+        min-width: 0;
+    }
+
+    .spacer {
+        padding-right: 24px;
+        display: inline-block;
     }
 
 

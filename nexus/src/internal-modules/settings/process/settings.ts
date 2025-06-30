@@ -78,12 +78,6 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
 
 export const getSettings = (module: Process): (Setting<unknown> | string)[] => {
     return [
-        "test",
-        new FileUploadSetting(module)
-            .setName("Sample file upload")
-            .setDescription("Sample description")
-            .setDefault(''),
-
         "Appearance",
         new ChoiceSetting(module)
             .addOptions("Dark", "Light", "System")
