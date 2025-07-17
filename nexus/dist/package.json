@@ -1,6 +1,6 @@
 {
   "name": "@nexus-app/nexus-client",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A cross-platform application loader, designed for productivity and organization.",
   "homepage": "https://github.com/aarontburn/nexus-core",
   "repository": {

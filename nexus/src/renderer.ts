@@ -30,8 +30,10 @@ interface ModuleData {
         switch (eventName) {
             case "load-modules": {
                 const { order, modules }: { order: string, modules: ModuleData[] } = data[0];
-                const reorderedModules = reorderModules(order, modules);
+                const reorderedModules: ModuleData[] = reorderModules(order, modules);
                 loadModules(reorderedModules);
+                sendToProcess("module-order", reorderedModules.map(module => module.moduleID));
+
                 break;
             }
             case "swapped-modules-to": {
