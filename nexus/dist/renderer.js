@@ -27,7 +27,7 @@
                 var _a = data[0], order = _a.order, modules = _a.modules;
                 var reorderedModules = reorderModules(order, modules);
                 loadModules(reorderedModules);
-                sendToProcess("module-order", reorderedModules.map(function (module) { return module.moduleID; }));
+                sendToProcess("module-order", reorderedModules.filter(function (module) { return module.htmlPath !== undefined || module.url !== undefined; }).map(function (module) { return module.moduleID; }));
                 break;
             }
             case "swapped-modules-to": {

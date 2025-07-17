@@ -3,6 +3,7 @@ interface ModuleData {
     moduleID: string;
     htmlPath: string;
     iconPath: string;
+    url: string;
 }
 (() => {
     const sendToProcess = (eventName: string, ...data: any[]): Promise<void> => {
@@ -32,8 +33,7 @@ interface ModuleData {
                 const { order, modules }: { order: string, modules: ModuleData[] } = data[0];
                 const reorderedModules: ModuleData[] = reorderModules(order, modules);
                 loadModules(reorderedModules);
-                sendToProcess("module-order", reorderedModules.map(module => module.moduleID));
-
+                sendToProcess("module-order", reorderedModules.filter(module => module.htmlPath !== undefined || module.url !== undefined).map(module => module.moduleID));
                 break;
             }
             case "swapped-modules-to": {
@@ -62,7 +62,7 @@ interface ModuleData {
 
     function reorderModules(idOrderUnparsed: string, moduleList: ModuleData[]): ModuleData[] {
         if (idOrderUnparsed === '') { // no order set, return the original list
-            return moduleList;
+            return moduleList
         }
 
         const idOrder: string[] = idOrderUnparsed.split("|");
