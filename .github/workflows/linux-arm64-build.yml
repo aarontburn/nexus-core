@@ -16,10 +16,7 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt-get install libopenjp2-tools
-          sudo apt install ruby
-          sudo apt install gem
-          sudo gem install fpm
-
+          
       - name: Install dependencies
         run: cd nexus && npm ci
 
@@ -34,5 +31,5 @@ jobs:
           retention-days: "1"
           path: |
             ./nexus/package/latest-linux-arm64.yml
-            ./nexus/package/Nexus-Setup-linux-arm64.exe
+            ./nexus/package/Nexus-Setup-linux-arm64.deb
 
