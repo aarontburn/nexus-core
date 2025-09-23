@@ -1,11 +1,6 @@
 name: Windows Build
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: Version
-        required: true
-        type: string
 jobs:
   windows-build:
     runs-on: windows-latest

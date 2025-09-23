@@ -1,14 +1,9 @@
 name: Linux ARM64 Build
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: Version
-        required: true
-        type: string
 jobs:
-  windows-build:
-    runs-on: ubuntu-latest-arm64 
+  linux-arm64-build:
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
