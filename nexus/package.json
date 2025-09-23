@@ -4,7 +4,7 @@
         "watch": "tsc -w",
         "start": "npm run build && cd ./dist && electron . --dev --in-core ",
         "package:win": "npm run build && npx electron-builder build --win --publish never",
-        "package:arm64": "npm run build && npx electron-builder build --arm64 --publish never",
+        "package:arm64": "npm run build && USE_SYSTEM_FPM=true npx electron-builder build --arm64 --publish never",
         "package:amd64": "npm run build && npx electron-builder build --linux --publish never",
         "package:test": "npm run build && electron-builder --dir",
         "publish": "npm run build && cd ./dist && npm publish --access public",
