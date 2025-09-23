@@ -12,6 +12,9 @@ jobs:
         uses: actions/setup-node@v4 
         with:
           node-version: '22.14.0'
+      
+      - name: Install openjpeg-tools
+        run: apt-get install openjpeg-tools
 
       - name: Install dependencies
         run: cd nexus && npm ci
