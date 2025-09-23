@@ -13,8 +13,12 @@ jobs:
         with:
           node-version: '22.14.0'
       
-      - name: Install openjpeg-tools
-        run: sudo apt-get install libopenjp2-tools
+      - name: Install required packages
+        run: |
+          sudo apt-get install libopenjp2-tools
+          sudo apt install ruby
+          sudo apt install gem
+          gem install fpm
 
       - name: Install dependencies
         run: cd nexus && npm ci
