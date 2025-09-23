@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: The version to build
+        description: Version
         required: true
         type: string
 jobs:
@@ -23,7 +23,7 @@ jobs:
         run: cd nexus && npm ci
 
       - name: Build Windows installer
-        run: npm run package:win
+        run: cd nexus && npm run package:win
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
