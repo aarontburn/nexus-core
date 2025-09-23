@@ -1,0 +1,34 @@
+name: Windows Prod Build
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version to build
+        required: true
+        type: string
+jobs:
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Use Node.js 22.14.0
+        uses: actions/setup-node@v4 
+        with:
+          node-version: '22.14.0'
+          cache: 'npm' 
+
+      - name: Install dependencies
+        run: cd nexus && npm ci
+
+      - name: Build Windows installer
+        run: npm run package:win
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Nexus-Setup-win"
+          path: "./nexus/package/Nexus-Setup-win.exe"
+          overwrite: true
+          retention-days: "1"

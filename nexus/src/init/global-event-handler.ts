@@ -30,9 +30,7 @@ export function attachEventHandlerForMain(context: InitContext): void | Promise<
             case 'expand': {
                 const view: WebContentsView & { collapsed: boolean, expanded: boolean } = context.moduleViewMap.get(context.mainIPCSource.getIPCSource()) as any;
                 view.expanded = data[0];
-
                 view.emit("bounds-changed");
-
                 break;
             }
 
