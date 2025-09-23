@@ -18,7 +18,7 @@ jobs:
           sudo apt-get install libopenjp2-tools
           sudo apt install ruby
           sudo apt install gem
-          gem install fpm
+          sudo gem install fpm
 
       - name: Install dependencies
         run: cd nexus && npm ci
