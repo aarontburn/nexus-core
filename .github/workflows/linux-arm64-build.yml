@@ -1,4 +1,4 @@
-name: Windows Build
+name: Linux ARM64 Build
 on:
   workflow_dispatch:
     inputs:
@@ -8,7 +8,7 @@ on:
         type: string
 jobs:
   windows-build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest-arm64 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -21,16 +21,16 @@ jobs:
       - name: Install dependencies
         run: cd nexus && npm ci
 
-      - name: Build Windows installer
-        run: cd nexus && npm run package:win
+      - name: Build Linux ARM64 installer
+        run: cd nexus && npm run package:arm64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "nexus-release-win"
+          name: "nexus-release-linux-arm64"
           overwrite: true
           retention-days: "1"
           path: |
-            ./nexus/package/latest.yml
-            ./nexus/package/Nexus-Setup-win.exe
+            ./nexus/package/latest-linux-arm64.yml
+            ./nexus/package/Nexus-Setup-linux-arm64.exe
 
