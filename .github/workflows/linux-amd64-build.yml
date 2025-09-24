@@ -1,0 +1,31 @@
+name: Linux AMD64 Build
+on:
+  workflow_dispatch:
+jobs:
+  linux-amd64-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Use Node.js 22.14.0
+        uses: actions/setup-node@v4 
+        with:
+          node-version: '22.14.0'
+      
+      - name: Install dependencies
+        run: cd nexus && npm ci
+
+      - name: Build Linux AMD64 installer
+        run: cd nexus && npm run package:amd64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "nexus-release-linux-amd64"
+          overwrite: true
+          retention-days: "1"
+          path: |
+            ./nexus/package/latest-linux.yml 
+            ./nexus/package/Nexus-Setup-linux-amd64.deb
+
