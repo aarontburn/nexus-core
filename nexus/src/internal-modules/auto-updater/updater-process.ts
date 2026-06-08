@@ -89,7 +89,7 @@ export class AutoUpdaterProcess extends Process {
 		autoUpdater.logger = null;
 		autoUpdater.disableWebInstaller = true;
 
-		let interval: NodeJS.Timeout = undefined;
+		let interval: NodeJS.Timeout | undefined = undefined;
 
 		autoUpdater.on('checking-for-update', () => {
 			console.info("[Nexus Auto Updater] Checking for update...");
@@ -211,7 +211,7 @@ export class AutoUpdaterProcess extends Process {
 				if (!url.startsWith("https://github.com/") || !url.includes("/releases/latest/download/") || !url.endsWith(".zip")) {
 					return { code: HTTPStatusCodes.BAD_REQUEST, body: new Error("Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'") }
 				}
-				const moduleID: string = url.split("/").at(-1).replace(".zip", '');
+				const moduleID: string = url.split("/").at(-1)!.replace(".zip", '');
 
 				const downloadedSuccess: boolean = await this.moduleUpdater.downloadLatest(moduleID, url);
 				if (downloadedSuccess) {
@@ -229,17 +229,9 @@ export class AutoUpdaterProcess extends Process {
 			case "check-for-update": {
 				const target: string = data[0] ?? source.getIPCSource();
 				if (!this.context.moduleMap.has(target)) {
-					return { body: new Error(`No module with the ID of ${target} found.`), code: HTTPStatusCodes.NOT_FOUND };
+					return { body: `No module with the ID of ${target} found.`, code: HTTPStatusCodes.NOT_FOUND };
 				}
-				try {
-					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.checkForUpdate(target);
-					return { body: updateInfo, code: HTTPStatusCodes.OK };
-
-				} catch ({ code, message }) {
-					return { body: message, code: code };
-
-				}
-
+				return await this.moduleUpdater.checkForUpdate(target);
 			}
 
 			case "get-all-updates": {
@@ -279,27 +271,22 @@ export class AutoUpdaterProcess extends Process {
 					return { body: new Error(`No module with the ID of ${moduleID} found.`), code: HTTPStatusCodes.NOT_FOUND };
 				}
 
-				try {
-					const updateInfo: VersionInfo | undefined = await this.moduleUpdater.getLatestRemoteVersion(moduleID);
-					if (updateInfo === undefined) {
-						return { body: "No latest releases found for " + moduleID, code: HTTPStatusCodes.NO_CONTENT };
-					}
-
-					if (force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1) {
-						const successful: boolean = await this.moduleUpdater.downloadLatest(moduleID, updateInfo.url);
-						if (!successful) {
-							return { body: new Error(`An error occurred while updating ${moduleID}`), code: HTTPStatusCodes.BAD_REQUEST };
-						}
-					}
-
-					return { body: undefined, code: HTTPStatusCodes.OK };
-
-				} catch ({ code, message }) {
-					return { body: message, code: code };
+				const response: DataResponse = await this.moduleUpdater.getLatestRemoteVersion(moduleID);
+				if (response.code !== HTTPStatusCodes.OK) {
+					return response;
 				}
 
-			}
+				const updateInfo: VersionInfo = response.body;
 
+				if (force || this.moduleUpdater.compareSemanticVersion(updateInfo.latestVersion, updateInfo.currentVersion) === 1) {
+					const successful: boolean = await this.moduleUpdater.downloadLatest(moduleID, updateInfo.url);
+					if (!successful) {
+						return { body: `An error occurred while updating ${moduleID}`, code: HTTPStatusCodes.BAD_REQUEST };
+					}
+				}
+
+				return { body: `Successfully updated ${moduleID} from ${updateInfo.currentVersion} to ${updateInfo.latestVersion}`, code: HTTPStatusCodes.OK };
+			}
 
 			default: {
 				return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };

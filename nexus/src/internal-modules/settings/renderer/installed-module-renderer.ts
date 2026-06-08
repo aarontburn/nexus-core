@@ -33,7 +33,7 @@
 
 
 
-    const manageButton: HTMLElement = document.getElementById('manage-button');
+    const manageButton: HTMLElement = document.getElementById('manage-button')!;
     manageButton.addEventListener('click', () => {
         sendToProcess('manage-modules').then(data => {
             openManageScreen(data);
@@ -43,7 +43,7 @@
     const renderIfTrue = (condition: boolean, html: string): string => condition ? html : '';
 
 
-    const list: HTMLElement = document.getElementById('installed-modules-list');
+    const list: HTMLElement = document.getElementById('installed-modules-list')!;
 
     const forceReloadedModules: string[] = [];
     const updatedModules: string[] = [];
@@ -136,7 +136,7 @@
                         checkUpdateButton.style.color = "var(--accent-color)";
 
                         Promise.all([
-                            sendToProcess('check-for-update', info.moduleID),
+                            sendToProcess('on-check-for-update-press', info.moduleID),
                             new Promise(resolve => setTimeout(resolve, 1000)),
                         ]).then(([isUpdateAvailable]) => {
                             if (isUpdateAvailable) {

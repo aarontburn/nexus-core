@@ -1,4 +1,4 @@
-import { DIRECTORIES, ModuleInfo, Process } from "@nexus-app/nexus-module-builder";
+import { DataResponse, DIRECTORIES, HTTPStatusCodes, ModuleInfo, Process } from "@nexus-app/nexus-module-builder";
 import { InitContext } from "../../utils/types";
 
 import { net } from "electron";
@@ -15,7 +15,7 @@ export interface VersionInfo {
 export default class ModuleUpdater {
     private context: InitContext
 
-    private updates: { [moduleID: string]: VersionInfo };
+    private updates: { [moduleID: string]: VersionInfo } | undefined;
 
     constructor(context: InitContext) {
         this.context = context;
@@ -26,21 +26,19 @@ export default class ModuleUpdater {
 
         const releases: { [moduleID: string]: VersionInfo } = {};
         await Promise.all(Array.from(this.context.moduleMap.values()).map(async (module: Process) => {
-            try {
-                const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(module.getID());
+            const response: DataResponse = await this.getLatestRemoteVersion(module.getID());
 
-                if (versionInfo === undefined) {
-                    return;
-                }
-
-                // Decide if this should update for all different version or only ascending version
-                if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
-                    releases[module.getID()] = versionInfo;
-                }
-            } catch ({ code, message }) {
-                console.error(`[Nexus Auto Updater] Error when checking for update: ${code} - ${message}`)
+            if (response.code !== HTTPStatusCodes.OK) {
+                console.error(`[Nexus Auto Updater] Error when checking for update: ${response.code} - ${response.body}`);
+                return;
             }
 
+            const versionInfo: VersionInfo = response.body;
+
+            // Decide if this should update for all different version or only ascending version
+            if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) === 1) {
+                releases[module.getID()] = versionInfo;
+            }
         }));
         this.updates = releases;
 
@@ -58,18 +56,25 @@ export default class ModuleUpdater {
 
 
 
-    public async checkForUpdate(moduleID: string): Promise<VersionInfo | undefined> {
-        const versionInfo: VersionInfo | undefined = await this.getLatestRemoteVersion(moduleID);
+    public async checkForUpdate(moduleID: string): Promise<DataResponse> {
+        const response: DataResponse = await this.getLatestRemoteVersion(moduleID);
 
-        if (versionInfo === undefined
-            || this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) !== 1) {
+        if (response.code !== HTTPStatusCodes.OK) {
+            return response;
+        }
+        const versionInfo: VersionInfo = response.body;
 
-            console.info(`[Nexus Auto Updater] No updates found for ${moduleID}.`);
-            return undefined;
+        if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) !== 1) {
+            return {
+                code: HTTPStatusCodes.NO_CONTENT,
+                body: `No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`
+            }
 
         } else {
-            console.info(`[Nexus Auto Updater] Update found for ${moduleID} (${versionInfo.currentVersion} => ${versionInfo.latestVersion}).`);
-            return versionInfo;
+            return {
+                code: HTTPStatusCodes.OK,
+                body: `Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`
+            }
         }
     }
 
@@ -119,11 +124,14 @@ export default class ModuleUpdater {
         return 0;
     }
 
-    public async getLatestRemoteVersion(moduleID: string): Promise<VersionInfo | undefined> {
+    public async getLatestRemoteVersion(moduleID: string): Promise<DataResponse> {
         const moduleInfo: ModuleInfo | undefined = this.context.moduleMap.get(moduleID)?.getModuleInfo();
 
         if (moduleInfo === undefined) {
-            throw new Error("Attempted to access module info for a module that doesn't exist: " + moduleID);
+            return {
+                body: "Attempted to access module info for a module that doesn't exist: " + moduleID,
+                code: HTTPStatusCodes.BAD_REQUEST
+            }
         }
 
         if (moduleInfo["git-latest"] &&
@@ -140,14 +148,34 @@ export default class ModuleUpdater {
             const assets: any[] | undefined = releaseData.assets;
 
             if (!assets || assets.length === 0) {
-                return undefined;
+                return {
+                    body: `No release assets found for ${moduleID}`,
+                    code: HTTPStatusCodes.NOT_FOUND
+                };
             }
             return {
-                currentVersion: moduleInfo.version,
-                latestVersion: version,
-                url: assets[0].browser_download_url
+                code: HTTPStatusCodes.OK,
+                body: {
+                    currentVersion: moduleInfo.version,
+                    latestVersion: version,
+                    url: assets[0].browser_download_url
+                }
             }
-
+        }
+        const missingFields: string[] = [];
+        if (moduleInfo["git-latest"] === undefined) {
+            missingFields.push(`${moduleID}.git-latest`);
+        } else {
+            if (moduleInfo["git-latest"]["git-username"] === undefined) {
+                missingFields.push(`${moduleID}.git-latest.git-username`);
+            }
+            if (moduleInfo["git-latest"]["git-repo-name"] === undefined) {
+                missingFields.push(`${moduleID}.git-latest.git-repo-name`)
+            }
+        }
+        return {
+            code: HTTPStatusCodes.NOT_IMPLEMENTED,
+            body: `Could not find update version for ${moduleID}. Missing: ${missingFields.join(", ")}`
         }
     }
 
