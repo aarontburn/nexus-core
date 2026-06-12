@@ -1,37 +1,36 @@
 name: Linux AMD64 Build
 on:
-  workflow_dispatch:
-  workflow_call:
+    workflow_dispatch:
+    workflow_call:
 jobs:
-  linux-amd64-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+    linux-amd64-build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
 
-      - name: Use Node.js 22.14.0
-        uses: actions/setup-node@v4 
-        with:
-          node-version: '22.14.0'
+            - name: Use Node.js 22.14.0
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22.14.0"
 
-      - name: Get Build Version
-        run: |
-          cd nexus
-          echo "VERSION=$(node -p "require('./build_package.json').version")" >> $GITHUB_ENV
-      
-      - name: Install dependencies
-        run: cd nexus && npm ci
+            - name: Get Build Version
+              run: |
+                  cd nexus
+                  echo "VERSION=$(node -p "require('./build_package.json').version")" >> $GITHUB_ENV
 
-      - name: Build Linux AMD64 installer
-        run: cd nexus && npm run package:amd64
+            - name: Install dependencies
+              run: cd nexus && npm ci
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: "nexus-release-linux-amd64@${{ env.VERSION }}"
-          overwrite: true
-          retention-days: "1"
-          path: |
-            ./nexus/package/latest-linux.yml 
-            ./nexus/package/Nexus-Setup-linux-amd64.deb
+            - name: Build Linux AMD64 installer
+              run: cd nexus && npm run package:amd64
 
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: "nexus-release-linux-amd64@${{ env.VERSION }}"
+                  overwrite: true
+                  retention-days: "1"
+                  path: |
+                      ./nexus/package/latest-linux.yml 
+                      ./nexus/package/Nexus-Setup-linux-amd64.deb

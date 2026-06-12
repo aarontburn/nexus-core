@@ -1,44 +1,43 @@
 name: Linux ARM64 Build
 on:
-  workflow_dispatch:
-  workflow_call:
+    workflow_dispatch:
+    workflow_call:
 jobs:
-  linux-arm64-build:
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+    linux-arm64-build:
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
 
-      - name: Use Node.js 22.14.0
-        uses: actions/setup-node@v4 
-        with:
-          node-version: '22.14.0'
+            - name: Use Node.js 22.14.0
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22.14.0"
 
-      - name: Get Build Version
-        run: |
-          cd nexus
-          echo "VERSION=$(node -p "require('./build_package.json').version")" >> $GITHUB_ENV
+            - name: Get Build Version
+              run: |
+                  cd nexus
+                  echo "VERSION=$(node -p "require('./build_package.json').version")" >> $GITHUB_ENV
 
-      - name: Install required packages
-        run: |
-          sudo apt-get install libopenjp2-tools
-          sudo apt install ruby
-          sudo apt install gem
-          sudo gem install fpm
+            - name: Install required packages
+              run: |
+                  sudo apt-get install libopenjp2-tools
+                  sudo apt install ruby
+                  sudo apt install gem
+                  sudo gem install fpm
 
-      - name: Install dependencies
-        run: cd nexus && npm ci
+            - name: Install dependencies
+              run: cd nexus && npm ci
 
-      - name: Build Linux ARM64 installer
-        run: cd nexus && npm run package:arm64
+            - name: Build Linux ARM64 installer
+              run: cd nexus && npm run package:arm64
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: "nexus-release-linux-arm64@${{ env.VERSION }}"
-          overwrite: true
-          retention-days: "1"
-          path: |
-            ./nexus/package/latest-linux-arm64.yml
-            ./nexus/package/Nexus-Setup-linux-arm64.deb
-
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: "nexus-release-linux-arm64@${{ env.VERSION }}"
+                  overwrite: true
+                  retention-days: "1"
+                  path: |
+                      ./nexus/package/latest-linux-arm64.yml
+                      ./nexus/package/Nexus-Setup-linux-arm64.deb
