@@ -15,6 +15,7 @@ jobs:
           node-version: '22.14.0'
 
       - name: Get Build Version
+        shell: bash
         run: |
           cd nexus
           echo "VERSION=$(node -p "require('./build_package.json').version")" >> $GITHUB_ENV
