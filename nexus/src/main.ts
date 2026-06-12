@@ -242,7 +242,7 @@ function onProcessAndRendererReady(context: InitContext): void {
 
 
     const moduleOrder: string = context.settingModule.getSettings()
-        .findSetting("module_order")
+        .findSetting("module_order")!
         .getValue() as string;
 
     const data: any[] = [];
