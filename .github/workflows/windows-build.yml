@@ -1,6 +1,7 @@
 name: Windows Build
 on:
   workflow_dispatch:
+  workflow_call:
 jobs:
   windows-build:
     runs-on: windows-latest

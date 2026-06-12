@@ -1,6 +1,7 @@
 name: Linux AMD64 Build
 on:
   workflow_dispatch:
+  workflow_call:
 jobs:
   linux-amd64-build:
     runs-on: ubuntu-latest

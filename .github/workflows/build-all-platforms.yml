@@ -1,0 +1,12 @@
+name: All Platforms Build
+on:
+  workflow_dispatch:
+jobs:
+    windows:
+        uses: ./.github/workflows/windows-build.yml
+    linux-amd64:
+        uses: ./.github/workflows/linux-amd64-build.yml
+    linux-arm64:
+        uses: ./.github/workflows/linux-arm64-build.yml
+
+
