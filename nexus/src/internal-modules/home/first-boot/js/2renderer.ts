@@ -1,8 +1,8 @@
 (() => {
     const FADE_OUT_DELAY: number = 0.25;
 
-    document.getElementById("next-button").addEventListener("click", () => {
-        document.getElementById("center").classList.add('fade-out');
+    document.getElementById("next-button")!.addEventListener("click", () => {
+        document.getElementById("center")!.classList.add('fade-out');
     
         setTimeout(() => {
             window.location.href = "../../static/index.html";

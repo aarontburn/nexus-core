@@ -10,7 +10,7 @@ function getModuleID() {
 	if (!PRELOAD_MODULE_ID) {
 		for (const arg of process.argv) {
 			if (arg.toLocaleLowerCase().startsWith("--module-id")) {
-				PRELOAD_MODULE_ID = arg.split(":").at(-1).toLocaleLowerCase();
+				PRELOAD_MODULE_ID = arg.split(":").at(-1)!.toLocaleLowerCase();
 				break;
 			}
 		}

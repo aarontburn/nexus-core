@@ -174,13 +174,13 @@ export function createWebViews(context: InitContext) {
 export function showWindow(context: InitContext) {
     const settings: ModuleSettings = context.settingModule.getSettings();
     context.window.setBounds({
-        x: Number(settings.findSetting('window_x').getValue()),
-        y: Number(settings.findSetting('window_y').getValue()),
-        height: Number(settings.findSetting('window_height').getValue()),
-        width: Number(settings.findSetting('window_width').getValue()),
+        x: Number(settings.findSetting('window_x')!.getValue()),
+        y: Number(settings.findSetting('window_y')!.getValue()),
+        height: Number(settings.findSetting('window_height')!.getValue()),
+        width: Number(settings.findSetting('window_width')!.getValue()),
     });
 
-    if ((settings.findSetting('window_maximized').getValue() as boolean) === true) {
+    if ((settings.findSetting('window_maximized')!.getValue() as boolean) === true) {
         context.window.maximize();
     }
     context.window.show();

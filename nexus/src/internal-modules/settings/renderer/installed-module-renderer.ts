@@ -50,11 +50,11 @@
 
 
     function openManageScreen(data: ImportedModuleInfo[]): void {
-        document.getElementById("manage-module").hidden = false;
+        document.getElementById("manage-module")!.hidden = false;
 
         // Clear list
         while (list.firstChild) {
-            list.removeChild(list.lastChild);
+            list.removeChild(list.lastChild!);
         }
 
         if (data.length === 0) { // No external modules
@@ -80,7 +80,7 @@
 
                 <div ${info.isDeleted ? 'class="deleted"' : ''}>
                     <p class="module-name">${info.moduleName}${renderIfTrue(info.isDeleted, ' (Deleted)')}</p>
-                    <p class="module-id">${info.moduleID} <span class="module-version">| ${info.version}${renderIfTrue(info.updateAvailable, ` (Update Available)`)}</span></p>
+                    <p class="module-id">${info.moduleID} <span class="module-version">| ${info.version}${renderIfTrue(!!info.updateAvailable, ` (Update Available)`)}</span></p>
                     <p class="module-path">${info.path}</p>
                 </div>
 
@@ -100,7 +100,7 @@
 
             `;
             if (!info.isDeleted) {
-                const checkUpdateButton: HTMLElement = div.querySelector('.check-update-button');
+                const checkUpdateButton: HTMLElement = div.querySelector('.check-update-button')!;
                 if (updatedModules.includes(info.moduleID)) {
                     checkUpdateButton.style.pointerEvents = "none";
                     checkUpdateButton.style.color = "var(--accent-color)";
@@ -142,7 +142,7 @@
                             if (isUpdateAvailable) {
                                 checkUpdateButton.textContent = "Update Now";
                                 checkUpdateButton.style.pointerEvents = "";
-                                div.querySelector('.module-version').textContent = `| ${info.version} (Update Available)`;
+                                div.querySelector('.module-version')!.textContent = `| ${info.version} (Update Available)`;
                             } else {
                                 checkUpdateButton.textContent = "No Update Found";
 
@@ -156,7 +156,7 @@
                     }
                 });
 
-                const forceReloadButton: HTMLElement = div.querySelector('.force-reload-button');
+                const forceReloadButton: HTMLElement = div.querySelector('.force-reload-button')!;
                 if (forceReloadedModules.includes(info.moduleID)) {
                     forceReloadButton.style.pointerEvents = "none";
                     forceReloadButton.style.color = "var(--faded-color)";
@@ -171,7 +171,7 @@
                     sendToProcess('force-reload-module', info.moduleID)
                 });
 
-                div.querySelector('.remove-module-button').addEventListener('click', async () => {
+                div.querySelector('.remove-module-button')!.addEventListener('click', async () => {
                     const proceed: boolean = await openConfirmModuleDeletionPopup(info.moduleID);
                     if (proceed) {
                         sendToProcess('remove-module', info).then(successful => {
@@ -191,7 +191,7 @@
     }
 
 
-    const importButton: HTMLElement = document.getElementById('import-button');
+    const importButton: HTMLElement = document.getElementById('import-button')!;
     importButton.addEventListener('click', () => {
         sendToProcess('import-module').then(successful => {
             if (successful) {

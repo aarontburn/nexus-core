@@ -1,9 +1,9 @@
 (() => {
     function dragElement(element: HTMLElement) {
         let md: any;
-        const left: HTMLElement = document.getElementById("left");
-        const right: HTMLElement = document.getElementById("right");
-        const container: HTMLElement = document.getElementById("splitter");
+        const left: HTMLElement = document.getElementById("left")!;
+        const right: HTMLElement = document.getElementById("right")!;
+        const container: HTMLElement = document.getElementById("splitter")!;
 
         element.onmousedown = (e: MouseEvent) => {
             md = {
@@ -39,5 +39,5 @@
             };
         };
     }
-    dragElement(document.getElementById("separator"));
+    dragElement(document.getElementById("separator")!);
 })();

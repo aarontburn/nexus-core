@@ -34,7 +34,7 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
 function registerModule(map: Map<string, Process>, module: Process) {
     const moduleID: string = module.getIPCSource();
 
-    const existingIPCProcess: Process = map.get(moduleID);
+    const existingIPCProcess: Process | undefined = map.get(moduleID);
     if (existingIPCProcess !== undefined) {
         console.error("WARNING: Modules with duplicate IDs have been found.");
         console.error(`ID: ${moduleID} | Registered Module: ${existingIPCProcess.getName()} | New Module: ${module.getName()}`);
@@ -65,7 +65,7 @@ async function verifyModuleSettings(module: Process): Promise<Process> {
     const moduleSettings: ModuleSettings = module.getSettings();
 
     await Promise.allSettled(Array.from(settingsMap).map(async ([settingName, settingValue]) => {
-        const setting: Setting<unknown> = moduleSettings.findSetting(settingName);
+        const setting: Setting<unknown> | undefined = moduleSettings.findSetting(settingName);
         if (setting === undefined) {
             console.log("WARNING: Invalid setting name: '" + settingName + "' found.");
         } else {

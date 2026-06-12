@@ -11,19 +11,19 @@ interface ModuleData {
     }
 
     let isCollapsed: boolean = false;
-    document.querySelector('body').addEventListener('mouseenter', () => {
+    document.querySelector('body')!.addEventListener('mouseenter', () => {
         if (isCollapsed) {
             sendToProcess('expand', true)
-            document.getElementById('drag-list').style.backgroundColor = '';
-            document.getElementById('header').style.display = '';
+            document.getElementById('drag-list')!.style.backgroundColor = '';
+            document.getElementById('header')!.style.display = '';
         }
     });
 
-    document.querySelector('body').addEventListener('mouseleave', () => {
+    document.querySelector('body')!.addEventListener('mouseleave', () => {
         if (isCollapsed) {
             sendToProcess('expand', false)
-            document.getElementById('drag-list').style.backgroundColor = 'var(--accent-color)';
-            document.getElementById('header').style.display = 'none';
+            document.getElementById('drag-list')!.style.backgroundColor = 'var(--accent-color)';
+            document.getElementById('header')!.style.display = 'none';
         }
     });
 
@@ -37,19 +37,19 @@ interface ModuleData {
                 break;
             }
             case "swapped-modules-to": {
-                setSelectedTab(document.getElementById(data[0]));
+                setSelectedTab(document.getElementById(data[0])!);
                 break;
             }
             case "collapsed": {
                 isCollapsed = data[0];
 
                 if (isCollapsed) {
-                    document.getElementById('drag-list').style.backgroundColor = 'var(--accent-color)';
-                    document.getElementById('header').style.display = 'none';
+                    document.getElementById('drag-list')!.style.backgroundColor = 'var(--accent-color)';
+                    document.getElementById('header')!.style.display = 'none';
 
                 } else {
-                    document.getElementById('drag-list').style.backgroundColor = '';
-                    document.getElementById('header').style.display = '';
+                    document.getElementById('drag-list')!.style.backgroundColor = '';
+                    document.getElementById('header')!.style.display = '';
                 }
 
 
@@ -70,7 +70,7 @@ interface ModuleData {
         const moduleMap = moduleList.reduce((map: Map<string, ModuleData>, module: ModuleData) => {
             if (map.has(module.moduleID)) { // duplicate module found, ignore both of them
                 console.error("WARNING: Modules with duplicate IDs have been found.");
-                console.error(`ID: ${module.moduleID} | Registered Module: ${map.get(module.moduleID).moduleName} | New Module: ${module.moduleName}`);
+                console.error(`ID: ${module.moduleID} | Registered Module: ${map.get(module.moduleID)!.moduleName} | New Module: ${module.moduleName}`);
                 map.delete(module.moduleID);
 
             } else {
@@ -82,7 +82,7 @@ interface ModuleData {
 
         for (const moduleID of idOrder) {
             if (moduleMap.has(moduleID)) {
-                reorderedModules.push(moduleMap.get(moduleID));
+                reorderedModules.push(moduleMap.get(moduleID)!);
                 moduleMap.delete(moduleID)
             }
         }
@@ -96,7 +96,7 @@ interface ModuleData {
 
     sendToProcess("renderer-init");
 
-    let selectedTab: HTMLElement = undefined;
+    let selectedTab: HTMLElement | undefined = undefined;
 
     const handleButtonClick = (moduleID: string, buttonElement: HTMLElement) => {
         setSelectedTab(buttonElement);
@@ -116,7 +116,7 @@ interface ModuleData {
 
 
     function loadModules(data: ModuleData[]) {
-        const moduleIconsHTML: HTMLElement = document.getElementById("header");
+        const moduleIconsHTML: HTMLElement = document.getElementById("header")!;
 
         const getAbbreviation = (moduleName: string) => {
             const ABBREVIATION_LENGTH: number = 3;
@@ -176,7 +176,7 @@ interface ModuleData {
             if (builtIns.includes(moduleID)) {
                 button.draggable = false;
 
-                document.getElementById('built-ins').insertAdjacentElement("beforeend", button);
+                document.getElementById('built-ins')!.insertAdjacentElement("beforeend", button);
             } else {
                 moduleIconsHTML.insertAdjacentElement("beforeend", button);
             }
@@ -187,8 +187,8 @@ interface ModuleData {
 
 
 
-    const dragList = document.getElementById('drag-list');
-    const importedModulesList = document.getElementById('header');
+    const dragList: HTMLElement = document.getElementById('drag-list')!;
+    const importedModulesList: HTMLElement = document.getElementById('header')!;
 
     let draggedItem: HTMLElement | null = null;
     let lastLine: HTMLElement | null = null;
@@ -204,14 +204,14 @@ interface ModuleData {
     // Drag start event handler
     function handleDragStart(event: DragEvent) {
         draggedItem = event.target as HTMLElement;
-        event.dataTransfer.effectAllowed = 'move';
-        event.dataTransfer.setData('text/html', draggedItem.innerHTML);
+        event.dataTransfer!.effectAllowed = 'move';
+        event.dataTransfer!.setData('text/html', draggedItem.innerHTML);
     }
 
     // Drag over event handler
     function handleDragOver(event: DragEvent) {
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
+        event.dataTransfer!.dropEffect = 'move';
 
         const targetItem = event.target as HTMLElement;
 
@@ -226,20 +226,20 @@ interface ModuleData {
         const rect = targetItem.getBoundingClientRect();
         const isBelow = event.clientY > rect.top + (rect.height / 2);
 
-        if (targetItem.parentElement.id === "built-ins") {
+        if (targetItem.parentElement!.id === "built-ins") {
             return
         }
 
-        importedModulesList.insertBefore(removeOldLineAndCreateLine(), isBelow ? targetItem.nextSibling : targetItem);
+        importedModulesList!.insertBefore(removeOldLineAndCreateLine(), isBelow ? targetItem.nextSibling : targetItem);
 
     }
 
     function handleDrop(event: DragEvent) {
         event.preventDefault();
 
-        if (lastLine) {
+        if (lastLine && draggedItem) {
             try {
-                importedModulesList.insertBefore(draggedItem, lastLine);
+                importedModulesList!.insertBefore(draggedItem, lastLine);
             } catch (_) { }
         }
 
