@@ -10,7 +10,7 @@ import { MAIN_ID } from '../../../main';
 
 
 
-export async function importModuleArchive(): Promise<boolean> {
+export async function importModuleArchive(): Promise<boolean | undefined> {
     const options: OpenDialogOptions = {
         properties: ['openFile'],
         filters: [{ name: 'Nexus Module File (.zip)', extensions: ['zip'] }]
@@ -18,16 +18,17 @@ export async function importModuleArchive(): Promise<boolean> {
 
     const response: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(options);
     if (response.canceled) {
+        console.info("[Nexus Settings] Import module operation cancelled.");
         return undefined;
     }
     const filePath: string = response.filePaths[0];
     const successful: boolean = await importPluginArchive(filePath);
 
     if (successful) {
-        console.info("[Nexus Settings] Successfully copied " + filePath + ". Restart required.");
+        console.info(`[Nexus Settings] Successfully copied ${filePath}. Restart required.`);
         return true;
     }
-    console.error("[Nexus Settings] Error copying " + filePath + ".");
+    console.error(`[Nexus Settings] Error copying ${filePath}.`);
     return false;
 }
 
@@ -84,7 +85,7 @@ export async function getImportedModules(process: SettingsProcess, availableUpda
         });
     }));
 
-    deletedModules.forEach((moduleID: string) => map.set(moduleID, { ...map.get(moduleID), isDeleted: true }))
+    deletedModules.forEach((moduleID: string) => map.set(moduleID, { ...map.get(moduleID)!, isDeleted: true }))
 
     return Array.from(map.values());
 }

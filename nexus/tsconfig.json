@@ -4,10 +4,11 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
+    "rootDir": "src",
     "outDir": "dist",
-    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "*": ["node_modules/*"] 
+      "*": ["./node_modules/*"] 
 
     }
   },

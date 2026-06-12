@@ -9,5 +9,9 @@
     "build:nexus-client": "cd ./nexus && npm run build"
   },
   "author": "aarontburn",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/showdown": "^2.0.6",
+    "@types/yauzl-promise": "^4.0.1"
+  }
 }

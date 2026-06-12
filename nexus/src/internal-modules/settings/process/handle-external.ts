@@ -43,15 +43,15 @@ export default async function handleExternal(process: SettingsProcess, source: I
         }
 
         case 'is-developer-mode': {
-            return { body: process.getSettings().findSetting('dev_mode').getValue() as boolean, code: HTTPStatusCodes.OK };
+            return { body: process.getSettings().findSetting('dev_mode')!.getValue() as boolean, code: HTTPStatusCodes.OK };
         }
 
         case "get-accent-color": {
-            return { body: process.getSettings().findSetting("accent_color").getValue(), code: HTTPStatusCodes.OK };
+            return { body: process.getSettings().findSetting("accent_color")!.getValue(), code: HTTPStatusCodes.OK };
         }
 
         case "get-module-order": {
-            return { body: process.getSettings().findSetting("module_order").getValue(), code: HTTPStatusCodes.OK };
+            return { body: process.getSettings().findSetting("module_order")!.getValue(), code: HTTPStatusCodes.OK };
         }
 
         case 'on-developer-mode-changed': {
@@ -62,14 +62,11 @@ export default async function handleExternal(process: SettingsProcess, source: I
             }
 
             devModeSubscribers.push(callback);
-            callback(process.getSettings().findSetting('dev_mode').getValue() as boolean);
+            callback(process.getSettings().findSetting('dev_mode')!.getValue() as boolean);
 
             return { body: undefined, code: HTTPStatusCodes.OK };
         }
-
-        default: {
-            return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
-        }
-
     }
+    return { body: undefined, code: HTTPStatusCodes.NOT_IMPLEMENTED };
+
 }

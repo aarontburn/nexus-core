@@ -40,7 +40,7 @@ export function attachEventHandlerForMain(context: InitContext): void | Promise<
 }
 
 export function swapVisibleModule(context: InitContext, moduleID: string): boolean {
-    const module: Process = context.moduleMap.get(moduleID);
+    const module: Process = context.moduleMap.get(moduleID)!;
     if (module === context.displayedModule) {
         return false; // If the module is the same, don't swap
     }
@@ -49,12 +49,12 @@ export function swapVisibleModule(context: InitContext, moduleID: string): boole
         if (id === context.mainIPCSource.getIPCSource() || id === moduleID) {
             continue;
         };
-        context.moduleViewMap.get(id).setVisible(false);
+        context.moduleViewMap.get(id)!.setVisible(false);
     }
     context.displayedModule?.onGUIHidden();
 
     module.onGUIShown();
-    context.moduleViewMap.get(moduleID).setVisible(true);
+    context.moduleViewMap.get(moduleID)!.setVisible(true);
 
     context.displayedModule = module;
     context.ipcCallback.notifyRenderer(context.mainIPCSource, 'swapped-modules-to', moduleID);
@@ -69,7 +69,7 @@ export function handleExternalWrapper(context: InitContext) {
                 return { body: Array.from(context.moduleMap.keys()), code: HTTPStatusCodes.OK };
             }
             case "get-current-module-id": {
-                return { body: context.displayedModule.getID(), code: HTTPStatusCodes.OK };
+                return { body: context.displayedModule?.getID(), code: HTTPStatusCodes.OK };
             }
             case "get-primary-window": {
                 return { body: context.window, code: HTTPStatusCodes.OK }
@@ -102,7 +102,7 @@ export function handleExternalWrapper(context: InitContext) {
                     };
                 }
 
-                const view: WebContentsView = context.moduleViewMap.get(target);
+                const view: WebContentsView = context.moduleViewMap.get(target)!;
                 if (view.webContents.isDevToolsOpened()) {
                     view.webContents.closeDevTools();
                 }
@@ -119,7 +119,7 @@ export function handleExternalWrapper(context: InitContext) {
                     };
                 }
 
-                const view: WebContentsView = context.moduleViewMap.get(target);
+                const view: WebContentsView = context.moduleViewMap.get(target)!;
                 if (data.includes("--force")) {
                     view.webContents.reloadIgnoringCache();
                 } else {
@@ -154,7 +154,7 @@ export function handleExternalWrapper(context: InitContext) {
                     };
                 }
 
-                return { body: context.moduleMap.get(target).getIconPath(), code: HTTPStatusCodes.OK }
+                return { body: context.moduleMap.get(target)?.getIconPath(), code: HTTPStatusCodes.OK }
             }
 
 
@@ -170,7 +170,7 @@ export function handleExternalWrapper(context: InitContext) {
 
 const notifyRendererWrapper = (context: InitContext) => {
     return (target: IPCSource, eventType: string, ...data: any[]) => {
-        context.moduleViewMap.get(target.getIPCSource()).webContents.send(target.getIPCSource().toLowerCase(), eventType, data);
+        context.moduleViewMap.get(target.getIPCSource())!.webContents.send(target.getIPCSource().toLowerCase(), eventType, data);
     }
 }
 
@@ -182,7 +182,7 @@ const requestExternalModuleWrapper = (context: InitContext) => {
         }
 
 
-        const targetModule: Process = context.moduleMap.get(targetModuleID);
+        const targetModule: Process = context.moduleMap.get(targetModuleID)!;
         if (targetModule === undefined) {
             return { body: `No module with ID of ${targetModuleID} found.`, code: HTTPStatusCodes.NOT_FOUND };
         }

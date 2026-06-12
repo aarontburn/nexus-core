@@ -58,7 +58,7 @@ export class SettingsProcess extends Process {
 
     public async initialize(): Promise<void> {
         super.initialize();
-        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode').getValue());
+        this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode')!.getValue());
 
 
         this.populateSettingsList()
@@ -137,12 +137,12 @@ export class SettingsProcess extends Process {
         const bounds: { width: number, height: number, x: number, y: number } = window.getBounds();
 
         await Promise.allSettled([
-            this.getSettings().findSetting('window_maximized').setValue(isWindowMaximized),
-            this.getSettings().findSetting('window_width').setValue(bounds.width),
-            this.getSettings().findSetting('window_height').setValue(bounds.height),
-            this.getSettings().findSetting('window_x').setValue(bounds.x),
-            this.getSettings().findSetting('window_y').setValue(bounds.y),
-            this.getSettings().findSetting('startup_last_open_id').setValue((await this.requestExternal(MAIN_ID, "get-current-module-id")).body),
+            this.getSettings().findSetting('window_maximized')!.setValue(isWindowMaximized),
+            this.getSettings().findSetting('window_width')!.setValue(bounds.width),
+            this.getSettings().findSetting('window_height')!.setValue(bounds.height),
+            this.getSettings().findSetting('window_x')!.setValue(bounds.x),
+            this.getSettings().findSetting('window_y')!.setValue(bounds.y),
+            this.getSettings().findSetting('startup_last_open_id')!.setValue((await this.requestExternal(MAIN_ID, "get-current-module-id")).body),
         ])
         await this.fileManager.writeSettingsToStorage();
     }
@@ -185,40 +185,44 @@ export class SettingsProcess extends Process {
     }
 
     private swapSettingsTab(targetModuleID: string): TabInfo {
+        let targetModuleSettings: ModuleSettings | undefined = undefined;
         for (const moduleSettings of Array.from(this.moduleSettingsList.values())) {
-            if (targetModuleID !== moduleSettings.getProcess().getIPCSource()) {
+            if (targetModuleID === moduleSettings.getProcess().getIPCSource()) {
+                targetModuleSettings = moduleSettings;
+                break;
+            }
+        }
+
+        if (targetModuleSettings === undefined) {
+            throw new Error(`Could not locate module settings for ${targetModuleID}`);
+        }
+
+        const settingsList: (Setting<unknown> | string)[] = targetModuleSettings.getSettingsAndHeaders();
+        const list: TabInfo = {
+            moduleName: targetModuleSettings.getDisplayName(),
+            moduleID: targetModuleSettings.getProcess().getIPCSource(),
+            moduleInfo: targetModuleSettings.getProcess().getModuleInfo(),
+            settings: []
+        };
+
+
+        for (const s of settingsList) {
+            if (typeof s === 'string') {
+                list.settings.push(s);
                 continue;
             }
 
-            const settingsList: (Setting<unknown> | string)[] = moduleSettings.getSettingsAndHeaders();
-            const list: TabInfo = {
-                moduleName: moduleSettings.getDisplayName(),
-                moduleID: moduleSettings.getProcess().getIPCSource(),
-                moduleInfo: moduleSettings.getProcess().getModuleInfo(),
-                settings: []
+            const setting: Setting<unknown> = s as Setting<unknown>;
+            const settingBox: SettingBox<unknown> = setting.getUIComponent();
+            const settingInfo: any = {
+                settingId: setting.getID(),
+                inputTypeAndId: settingBox.getInputIdAndType(),
+                ui: settingBox.getUI(),
+                style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()],
             };
-
-
-            for (const s of settingsList) {
-                if (typeof s === 'string') {
-                    list.settings.push(s);
-                    continue;
-                }
-
-                const setting: Setting<unknown> = s as Setting<unknown>;
-                const settingBox: SettingBox<unknown> = setting.getUIComponent();
-                const settingInfo: any = {
-                    settingId: setting.getID(),
-                    inputTypeAndId: settingBox.getInputIdAndType(),
-                    ui: settingBox.getUI(),
-                    style: [settingBox.constructor.name + 'Styles', settingBox.getStyle()],
-                };
-                list.settings.push(settingInfo);
-            }
-            return list;
+            list.settings.push(settingInfo);
         }
-
-
+        return list;
     }
 
 
@@ -272,15 +276,28 @@ export class SettingsProcess extends Process {
                 return true
             }
 
-            case "check-for-update": {
+            case "on-check-for-update-press": {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
 
-                if (response.code === HTTPStatusCodes.OK && response.body !== undefined) {
+
+                if (![HTTPStatusCodes.OK, HTTPStatusCodes.NO_CONTENT].includes(response.code)) {
+                    console.error(`[Nexus Settings] An error occurred when checking for an update for ${moduleID}`);
+                    console.error(`[Nexus Settings]\t${response.body}`);
+                    return false;
+                }
+
+
+                if (response.code === HTTPStatusCodes.OK) { // update found
+                    console.info(`[Nexus Settings]\t${response.body}`);
                     return true;
                 }
 
-                return false
+
+                if (response.code === HTTPStatusCodes.NO_CONTENT) { // current version is higher or at the latest version
+                    console.info(`[Nexus Settings]\t${response.body}`);
+                    return false;
+                }
             }
             case "force-reload-module": {
                 const moduleID: string = data[0];
@@ -361,7 +378,7 @@ export class SettingsProcess extends Process {
             }
             case "module-order": {
                 const moduleOrder: string[] = data[0];
-                await this.getSettings().findSetting('module_order').setValue(moduleOrder.join("|"));
+                await this.getSettings().findSetting('module_order')!.setValue(moduleOrder.join("|"));
                 await this.fileManager.writeSettingsToStorage();
                 break;
             }

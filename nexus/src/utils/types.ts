@@ -9,9 +9,9 @@ export interface InitContext {
     window: BaseWindow;
     settingModule: SettingsProcess;
     mainIPCSource: IPCSource;
-    displayedModule: Process;
+    displayedModule: Process | undefined;
 
     setProcessReady: () => void;
     setRendererReady: () => void;
-    ipcCallback: IPCCallback
+    ipcCallback: IPCCallback;
 }

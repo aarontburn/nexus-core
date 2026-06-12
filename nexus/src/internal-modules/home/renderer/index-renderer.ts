@@ -5,14 +5,14 @@
 
     sendToProcess("init");
 
-    const displayContainer: HTMLElement = document.getElementById('center');
+    const displayContainer: HTMLElement = document.getElementById('center')!;
 
-    const fullDate: HTMLElement = document.getElementById("full-date");
-    const abbreviatedDate: HTMLElement = document.getElementById("abbreviated-date");
-    const standardTime: HTMLElement = document.getElementById("standard-time");
-    const militaryTime: HTMLElement = document.getElementById("military-time");
+    const fullDate: HTMLElement = document.getElementById("full-date")!;
+    const abbreviatedDate: HTMLElement = document.getElementById("abbreviated-date")!;
+    const standardTime: HTMLElement = document.getElementById("standard-time")!;
+    const militaryTime: HTMLElement = document.getElementById("military-time")!;
 
-    let currentOrder: string = undefined;
+    let currentOrder: string | undefined = undefined;
     
     window.ipc.onProcessEvent((eventType: string, data: any[]) => {
         switch (eventType) {
@@ -43,21 +43,21 @@
                 break;
 
             } case 'text_color': {
-                document.querySelector('body').style.color = data[0];
+                document.querySelector('body')!.style.color = data[0];
                 break;
 
             } case 'image_path': {
-                document.querySelector("body").style.backgroundImage = `url("${(data[0] as string).replace(/\\/g, '/')}")`;
+                document.querySelector("body")!.style.backgroundImage = `url("${(data[0] as string).replace(/\\/g, '/')}")`;
 
                 break;
             } case "background_image_mode": {
                 switch (data[0]) {
                     case "Cover": {
-                        document.querySelector("body").style.backgroundSize = "cover";
+                        document.querySelector("body")!.style.backgroundSize = "cover";
                         break;
                     }
                     case "Contain": {
-                        document.querySelector("body").style.backgroundSize = "contain";
+                        document.querySelector("body")!.style.backgroundSize = "contain";
                         break;
                     }
                 }
@@ -71,7 +71,7 @@
         currentOrder = newOrder;
 
         while (displayContainer.firstChild) {
-            displayContainer.removeChild(displayContainer.lastChild);
+            displayContainer.removeChild(displayContainer.lastChild!);
         }
 
 

@@ -1,6 +1,6 @@
 import { Process, Setting } from "@nexus-app/nexus-module-builder";
 import { HexColorSetting, NumberSetting, BooleanSetting, StringSetting, ChoiceSetting, FileUploadSetting } from "@nexus-app/nexus-module-builder/settings/types";
-import { BaseWindow, nativeTheme, Rectangle, WebContentsView } from "electron";
+import { BaseWindow, nativeTheme, Rectangle, View, WebContentsView } from "electron";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { MAIN_ID } from "../../../main";
 
@@ -16,7 +16,7 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
             const view: WebContentsView & { collapsed: boolean } = window.contentView.children.at(-1) as any;
 
             view.collapsed = modifiedSetting.getValue() as boolean;
-            window.contentView.children.forEach((view: WebContentsView) => view.emit("bounds-changed"));
+            window.contentView.children.forEach((view: View) => view.emit("bounds-changed"));
 
             break;
         }
@@ -26,8 +26,8 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
             const window: BaseWindow = (await module.requestExternal(MAIN_ID, 'get-primary-window')).body;
 
             window.contentView.children.forEach(
-                (view: WebContentsView) => {
-                    view.webContents.setZoomFactor(zoom / 100);
+                (view: View) => {
+                    (view as WebContentsView).webContents.setZoomFactor(zoom / 100);
                     view.emit("bounds-changed");
                 });
             break;
@@ -36,8 +36,8 @@ export const onSettingModified = async (module: Process, modifiedSetting?: Setti
             const window: BaseWindow = (await module.requestExternal(MAIN_ID, 'get-primary-window')).body;
 
             window.contentView.children.forEach(
-                (view: WebContentsView) => {
-                    view.webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
+                (view: View) => {
+                    (view as WebContentsView).webContents.executeJavaScript(`document.documentElement.style.setProperty('--accent-color', '${modifiedSetting.getValue()}')`)
                 });
             break;
         }

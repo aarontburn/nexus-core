@@ -29,15 +29,15 @@ window.onmessage = (event) => {
         port.onmessage = (event) => {
             if (event.data.initialData) {
                 const modalParams: ModalParams = event.data.initialData;
-                document.getElementById(idMap.windowTitle).textContent = `${modalParams.windowTitle} (${modalParams.moduleID})`;
-                document.getElementById(idMap.resolveButton).textContent = modalParams.resolveText;
+                document.getElementById(idMap.windowTitle)!.textContent = `${modalParams.windowTitle} (${modalParams.moduleID})`;
+                document.getElementById(idMap.resolveButton)!.textContent = modalParams.resolveText;
 
-                document.getElementById(idMap.content).innerHTML = modalParams.htmlContentString
+                document.getElementById(idMap.content)!.innerHTML = modalParams.htmlContentString
 
                 if (modalParams.rejectText) {
-                    document.getElementById(idMap.rejectButton).textContent = modalParams.rejectText;
+                    document.getElementById(idMap.rejectButton)!.textContent = modalParams.rejectText;
                 } else {
-                    document.getElementById(idMap.rejectButton).style.display = "none";
+                    document.getElementById(idMap.rejectButton)!.style.display = "none";
 
                 }
 
@@ -46,18 +46,18 @@ window.onmessage = (event) => {
     }
 }
 
-document.getElementById(idMap.rejectButton).addEventListener('click', () => {
+document.getElementById(idMap.rejectButton)!.addEventListener('click', () => {
     sendToMain("reject")
     window.close()
 });
 
-document.getElementById(idMap.resolveButton).addEventListener('click', () => {
+document.getElementById(idMap.resolveButton)!.addEventListener('click', () => {
     sendToMain("resolve")
     window.close()
 });
 
 
-Array.from(document.getElementsByClassName("close-button")).forEach((e: HTMLElement) => {
+Array.from(document.getElementsByClassName("close-button")).forEach((e: Element) => {
     e.addEventListener('click', () => {
         sendToMain("closed")
         window.close()

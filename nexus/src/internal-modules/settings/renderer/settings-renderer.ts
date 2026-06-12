@@ -51,12 +51,12 @@
 
     let isDeveloperMode: boolean = false;
 
-    let selectedTabElement: HTMLElement = undefined;
-    const moduleList: HTMLElement = document.getElementById("left-list");
-    const settingsList: HTMLElement = document.getElementById("right");
+    let selectedTabElement: HTMLElement | undefined = undefined;
+    const moduleList: HTMLElement = document.getElementById("left-list")!;
+    const settingsList: HTMLElement = document.getElementById("right")!;
 
 
-    const manageButton: HTMLElement = document.getElementById('manage-button');
+    const manageButton: HTMLElement = document.getElementById('manage-button')!;
     manageButton.addEventListener('click', () => {
         swapTabs('manage');
         onTabButtonPressed(undefined);
@@ -85,7 +85,7 @@
             case "swap-tabs": {
                 const tabInfo: TabInfo = data[0];
                 swapTabs(tabInfo);
-                onTabButtonPressed(document.getElementById(`${tabInfo.moduleID}-tab-button`))
+                onTabButtonPressed(document.getElementById(`${tabInfo.moduleID}-tab-button`)!)
                 break;
             }
 
@@ -116,7 +116,7 @@
     }
 
     function populateSettings(data: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }[]): void {
-        let firstModule: HTMLElement = undefined;
+        let firstModule: HTMLElement | undefined = undefined;
 
         const priority: { [id: string]: number } = {
             "nexus.Settings": 0,
@@ -134,7 +134,7 @@
             return a.moduleSettingsName.localeCompare(b.moduleSettingsName);
         });
 
-        data.forEach((obj: { moduleSettingsName: string, moduleID: string, moduleInfo: ModuleInfo }) => {
+        for (const obj of data) {
             // Setting group click button
             const tabButton: HTMLElement = document.createElement("p");
             tabButton.className = 'setting-group';
@@ -150,8 +150,9 @@
             }
 
             moduleList.insertAdjacentElement("beforeend", tabButton);
-        });
-        firstModule.click();
+
+        }
+        firstModule?.click();
     }
 
     const inputTypeToStateMap: Map<string, string> = new Map([
@@ -175,7 +176,7 @@
     function swapTabs(tab: TabInfo | string): void {
         // Clear existing settings
         const removeNodes: Node[] = [];
-        settingsList.childNodes.forEach((node: HTMLElement) => {
+        settingsList.childNodes.forEach((node: any) => {
             if (node.id !== 'manage-module') {
                 removeNodes.push(node);
             } else {
@@ -216,7 +217,7 @@
                 </div>
             `
             settingsList.insertAdjacentHTML("beforeend", moduleInfoHTML);
-            document.getElementById('open-folder').addEventListener('click', () => {
+            document.getElementById('open-folder')!.addEventListener('click', () => {
                 sendToProcess('open-module-folder', tabInfo.moduleID);
             })
         }
@@ -242,7 +243,7 @@
             settingsList.insertAdjacentHTML("beforeend", uiHTML);
 
             // Attach events to reset button
-            const resetButton: HTMLElement = document.getElementById(`reset-button_${settingId}`);
+            const resetButton: HTMLElement | null = document.getElementById(`reset-button_${settingId}`);
             resetButton?.addEventListener("click", () => {
                 sendToProcess("setting-reset", inputTypeAndId[0].id);
             });
@@ -262,7 +263,7 @@
                 const id: string = group.id;
                 const inputType: string = group.inputType;
                 const returnValue: string | undefined = group.returnValue;
-                let attribute: string = inputTypeToStateMap.get(inputType);
+                let attribute: string | undefined = inputTypeToStateMap.get(inputType);
 
                 if (attribute === undefined) {
                     console.error('Invalid input type found: ' + inputType);
@@ -272,7 +273,7 @@
 
 
 
-                const element: HTMLElement = document.getElementById(id);
+                const element: HTMLElement = document.getElementById(id)!;
 
                 switch (inputType) {
                     case 'click': {
@@ -284,7 +285,7 @@
                     case "file": {
                         element.addEventListener('change', () => {
                             console.log(Array.from((element as any)[attribute]))
-                            sendToProcess("setting-modified", id, returnValue ? returnValue : Array.from((element as any)[attribute]).map((file: File) => window.webUtils.getPathForFile(file) ));
+                            sendToProcess("setting-modified", id, returnValue ? returnValue : Array.from<File>((element as any)[attribute]).map((file: File) => window.webUtils.getPathForFile(file) ));
                         })
                         break;
                     }

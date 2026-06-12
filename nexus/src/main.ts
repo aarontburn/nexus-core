@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, Menu, WebContentsView } from "electron";
+import { app, BrowserWindow, contentTracing, globalShortcut, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { DataResponse, HTTPStatusCodes, Process } from "@nexus-app/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
@@ -55,12 +55,12 @@ async function nexusStart() {
     let rendererReady: boolean = false;
 
     const context: InitContext = {
-        moduleMap: undefined,
+        moduleMap: null,
         moduleViewMap: new Map(),
-        window: undefined,
-        settingModule: undefined,
-        ipcCallback: undefined,
-        displayedModule: undefined,
+        window: null,
+        settingModule: null,
+        ipcCallback: null,
+        displayedModule: null,
         mainIPCSource: {
             getIPCSource() {
                 return MAIN_ID;
@@ -78,7 +78,7 @@ async function nexusStart() {
                 onProcessAndRendererReady(context);
             }
         },
-    }
+    } as any;
 
     // Create all directories
     await createAllDirectories();
@@ -189,8 +189,10 @@ function attachSingleInstance(context: InitContext) {
             }
             context.window.focus()
         }
-
-        onDeepLinkOrSecondInstance(commandLine.pop());
+        const pop: string | undefined = commandLine.pop();
+        if (pop) {
+            onDeepLinkOrSecondInstance(pop);
+        }
     });
 
 
@@ -212,16 +214,22 @@ function onProcessAndRendererReady(context: InitContext): void {
                 return;
             }
 
-            const displayedModuleID: string = context.displayedModule.getID();
-            context.moduleViewMap.get(displayedModuleID).webContents.openDevTools();
+            const displayedModule: Process | undefined = context.displayedModule;
+            if (displayedModule) {
+                const displayedModuleID: string = displayedModule.getID();
+                context.moduleViewMap.get(displayedModuleID)!.webContents.openDevTools();
+            }
         })
         globalShortcut.register('CommandOrControl+R', () => {
             if (!context.window.isFocused()) {
                 return;
             }
 
-            const displayedModuleID: string = context.displayedModule.getID();
-            context.moduleViewMap.get(displayedModuleID).webContents.reloadIgnoringCache();
+            const displayedModule: Process | undefined = context.displayedModule;
+            if (displayedModule) {
+                const displayedModuleID: string = displayedModule.getID();
+                context.moduleViewMap.get(displayedModuleID)!.webContents.reloadIgnoringCache();
+            }
         })
     }
 
@@ -234,7 +242,7 @@ function onProcessAndRendererReady(context: InitContext): void {
 
 
     const moduleOrder: string = context.settingModule.getSettings()
-        .findSetting("module_order")
+        .findSetting("module_order")!
         .getValue() as string;
 
     const data: any[] = [];
@@ -253,16 +261,16 @@ function onProcessAndRendererReady(context: InitContext): void {
 
     const openLastModule: boolean = context.settingModule
         .getSettings()
-        .findSetting("startup_should_open_last_closed")
+        .findSetting("startup_should_open_last_closed")!
         .getValue() as boolean;
 
     if (openLastModule) {
         startupModuleID = context.settingModule
             .getSettings()
-            .findSetting("startup_last_open_id")
+            .findSetting("startup_last_open_id")!
             .getValue() as string;
     } else {
-        startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id").getValue() as string;
+        startupModuleID = context.settingModule.getSettings().findSetting("startup_module_id")!.getValue() as string;
     }
 
     if (!context.moduleMap.has(startupModuleID)) {
