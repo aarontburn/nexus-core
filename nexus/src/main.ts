@@ -189,8 +189,10 @@ function attachSingleInstance(context: InitContext) {
             }
             context.window.focus()
         }
-
-        onDeepLinkOrSecondInstance(commandLine.pop());
+        const pop: string | undefined = commandLine.pop();
+        if (pop) {
+            onDeepLinkOrSecondInstance(pop);
+        }
     });
 
 

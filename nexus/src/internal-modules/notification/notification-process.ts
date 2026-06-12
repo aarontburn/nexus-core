@@ -70,11 +70,11 @@ export class NotificationManagerProcess extends Process {
 			switch (eventType) {
 				case "closed":
 				case "reject": {
-					props.rejectAction.action()
+					props.rejectAction?.action()
 					break;
 				}
 				case "resolve": {
-					props.resolveAction.action()
+					props.resolveAction?.action()
 
 					break;
 				}

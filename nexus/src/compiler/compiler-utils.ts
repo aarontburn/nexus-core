@@ -108,7 +108,8 @@ export async function readModuleInfo(path: string): Promise<ModuleInfo | undefin
     try {
         return JSON.parse((await fs.promises.readFile(path, 'utf-8')));
     } catch (err) {
-        if (err.code !== 'ENOENT') { // File doesn't exist
+        const error = err as { code: string };
+        if (error.code !== 'ENOENT') { // File doesn't exist
             console.error(err);
         }
     }
@@ -124,13 +125,13 @@ export async function readModuleInfo(path: string): Promise<ModuleInfo | undefin
  *  @returns false if the module should NOT be recompiled.
  */
 export async function shouldRecompileModule(externalPath: string, builtPath: string): Promise<boolean> {
-    const builtModuleInfo: { [key: string]: any } = await readModuleInfo(builtPath + "/module-info.json");
+    const builtModuleInfo: { [key: string]: any } | undefined = await readModuleInfo(builtPath + "/module-info.json");
     if (!builtModuleInfo) {
         console.log(`WARNING: ${builtPath} does not contain 'module-info.json'.`);
         return true;
     }
 
-    const moduleInfo: { [key: string]: any } = await readModuleInfo(externalPath + "/module-info.json");
+    const moduleInfo: { [key: string]: any } | undefined = await readModuleInfo(externalPath + "/module-info.json");
 
     if (!moduleInfo) {
         console.log(`WARNING: ${externalPath} does not contain 'module-info.json'.`);

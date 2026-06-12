@@ -111,7 +111,8 @@ async function readSettingsFromModuleStorage(module: Process): Promise<Map<strin
     try {
         contents = await fs.promises.readFile(folderName, 'utf-8');
     } catch (err) {
-        if (err.code !== 'ENOENT') {
+        const error = err as { code: string };
+        if (error.code !== 'ENOENT') {
             throw err;
         }
         return settingMap;

@@ -15,10 +15,7 @@ const ICON_PATH: string = path.join(__dirname, "../../view/assets/logo-no-backgr
 
 
 export class HomeProcess extends Process {
-
-
-	private clockTimeout: NodeJS.Timeout;
-
+	private clockTimeout: NodeJS.Timeout | undefined;
 
 	public constructor() {
 		super({
@@ -46,7 +43,7 @@ export class HomeProcess extends Process {
 
 
 	public async initialize(): Promise<void> {
-		if (this.getSettings().findSetting("is_first_launch").getValue()) {
+		if (this.getSettings().findSetting("is_first_launch")!.getValue()) {
 			this.sendToRenderer("is-first-launch");
 
 			const installedModules: string[] = (await this.requestExternal(MAIN_ID, "get-module-IDs")).body;
@@ -59,13 +56,13 @@ export class HomeProcess extends Process {
 							app.quit();
 
 						} else { // error occurred when installed marketplace, ignore and move on
-							await this.getSettings().findSetting("is_first_launch").setValue(false);
+							await this.getSettings().findSetting("is_first_launch")!.setValue(false);
 							await this.fileManager.writeSettingsToStorage();
 						}
 					});
 
 			} else { // if it already is, proceed
-				await this.getSettings().findSetting("is_first_launch").setValue(false);
+				await this.getSettings().findSetting("is_first_launch")!.setValue(false);
 				await this.fileManager.writeSettingsToStorage();
 			}
 
@@ -191,13 +188,17 @@ export class HomeProcess extends Process {
 	private static DATE_TIME_IDS: string[] = ['full_date_fs', 'abbr_date_fs', 'standard_time_fs', 'military_time_fs'];
 
 
-	public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
-		if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting?.getAccessID())) {
+	public async onSettingModified(modifiedSetting?: Setting<unknown> | undefined): Promise<void> {
+		if (modifiedSetting === undefined) {
+			return;
+		}
+
+		if (HomeProcess.DATE_TIME_IDS.includes(modifiedSetting.getAccessID())) {
 			const sizes: object = {
-				fullDate: this.getSettings().findSetting('full_date_fs').getValue(),
-				abbrDate: this.getSettings().findSetting('abbr_date_fs').getValue(),
-				standardTime: this.getSettings().findSetting('standard_time_fs').getValue(),
-				militaryTime: this.getSettings().findSetting('military_time_fs').getValue()
+				fullDate: this.getSettings().findSetting('full_date_fs')!.getValue(),
+				abbrDate: this.getSettings().findSetting('abbr_date_fs')!.getValue(),
+				standardTime: this.getSettings().findSetting('standard_time_fs')!.getValue(),
+				militaryTime: this.getSettings().findSetting('military_time_fs')!.getValue()
 			};
 			this.sendToRenderer('font-sizes', sizes);
 
