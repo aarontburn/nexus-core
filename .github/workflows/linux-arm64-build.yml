@@ -3,6 +3,9 @@ on:
     workflow_dispatch:
     workflow_call:
 jobs:
+    precheck:
+        uses: ./.github/workflows/prebuild.yml
+
     linux-arm64-build:
         runs-on: ubuntu-24.04-arm
         steps:

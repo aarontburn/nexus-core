@@ -1,43 +1,47 @@
-productName: Nexus
-appId: com.aarontburn.Nexus
-asar: true
-files:
-    - dist/**/*
-
-directories:
-    output: package
-
-icon: ./dist/view/assets/icon
-
-extraMetadata:
-    name: "Nexus"
-    version: "0.1.3"
-    description: "A cross-platform application loader, designed for productivity and organization."
-    author: 
-        name: "aarontburn"
-        email: "aarontburn@outlook.com"
-    homepage: "https://nexus-app.net"
-
-protocols:
-    - name: Nexus
-      schemes: [nexus-app]
-      role: Viewer
-
-nsis:
-    oneClick: false
-    allowToChangeInstallationDirectory: true
-    artifactName: ${productName}-Setup-${os}.${ext}
-
-publish:
-    provider: github
-    owner: aarontburn
-    repo: nexus-core
-
-linux:
-    target:
-        - deb
-    category: Utility
-    icon: ./dist/view/assets/icon.icns
-    synopsis: "A cross-platform application loader."
-    description: "A cross-platform application loader, designed for productivity and organization."
-    artifactName: "${productName}-Setup-${os}-${arch}.${ext}"
+{
+  "productName": "Nexus",
+  "appId": "com.aarontburn.Nexus",
+  "asar": true,
+  "files": [
+    "dist/**/*"
+  ],
+  "directories": {
+    "output": "package"
+  },
+  "icon": "./dist/view/assets/icon",
+  "extraMetadata": {
+    "name": "Nexus",
+    "version": "0.1.3",
+    "description": "A cross-platform application loader, designed for productivity and organization.",
+    "author": {
+      "name": "aarontburn",
+      "email": "aarontburn@outlook.com"
+    },
+    "homepage": "https://nexus-app.net"
+  },
+  "protocols": [
+    {
+      "name": "Nexus",
+      "schemes": ["nexus-app"],
+      "role": "Viewer"
+    }
+  ],
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "artifactName": "${productName}-Setup-${os}.${ext}"
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "aarontburn",
+    "repo": "nexus-core"
+  },
+  "linux": {
+    "target": ["deb"],
+    "category": "Utility",
+    "icon": "./dist/view/assets/icon.icns",
+    "synopsis": "A cross-platform application loader.",
+    "description": "A cross-platform application loader, designed for productivity and organization.",
+    "artifactName": "${productName}-Setup-${os}-${arch}.${ext}"
+  }
+}

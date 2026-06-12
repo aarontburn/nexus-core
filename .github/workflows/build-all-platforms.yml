@@ -4,8 +4,10 @@ on:
 jobs:
     windows-build:
         uses: ./.github/workflows/windows-build.yml
+
     linux-amd64-build:
         uses: ./.github/workflows/linux-amd64-build.yml
+        
     linux-arm64-build:
         uses: ./.github/workflows/linux-arm64-build.yml
 
