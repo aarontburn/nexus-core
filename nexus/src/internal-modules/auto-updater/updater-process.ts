@@ -1,6 +1,6 @@
 import { DataResponse, HTTPStatusCodes, IPCSource, Process } from "@nexus-app/nexus-module-builder";
 import { app } from "electron";
-import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater"
+import { autoUpdater as updater, UpdateDownloadedEvent, UpdateInfo } from "electron-updater"
 import * as path from "path";
 import { InitContext } from "../../utils/types";
 import ModuleUpdater, { VersionInfo } from "./module-updater";
@@ -9,6 +9,9 @@ import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../notification/noti
 
 const MODULE_NAME: string = "Nexus Auto Updater";
 export const UPDATER_MODULE_ID: string = 'nexus.Auto_Updater';
+
+const TEN_MIN: number = 10 * 60 * 1000;
+
 
 export class AutoUpdaterProcess extends Process {
 
@@ -39,9 +42,6 @@ export class AutoUpdaterProcess extends Process {
 
 	}
 
-
-
-
 	private finishedChecking: boolean = false;
 
 	public async beforeWindowCreated(): Promise<void> {
@@ -53,49 +53,62 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	public async initialize(): Promise<void> {
+		console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
+
+		this.setUpdaterBehavior();
 		if ((await this.requestExternal("nexus.Settings", "get-setting", "always_update")).body) {
-			this.startAutoUpdater()
+			this.startAutoUpdater();
 		}
+
+		this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+			prefix: "current-version",
+			documentation: {
+				shortDescription: "Display/returns version of the Nexus client."
+			},
+			executeCommand: (args: string[]) => {
+				const SILENT_ARGS: string[] = ["-s", "--s", "-silent", "--silent"];
+
+				if (!args.some(element => SILENT_ARGS.includes(element))) {
+					console.info(this.version);
+				}
+				return this.version;
+			}
+		});
+
+		this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+			prefix: "check-for-update",
+			documentation: {
+				shortDescription: "Checks for an update."
+			},
+			executeCommand: (args: string[]) => {
+				updater.checkForUpdates();
+			}
+		});
+
 	}
 
-	private autoUpdaterStarted = false;
-	private readonly version: string | undefined = process.argv.includes("--dev") ? undefined : app.getVersion();
+	private readonly version: string = app.getVersion();
+	private autoUpdaterInterval: NodeJS.Timeout | undefined;
 
-	public startAutoUpdater() {
+	/**
+	 * 	Configures the electron updater.
+	 */
+	private setUpdaterBehavior() {
 		if (process.argv.includes("--dev")) {
-			console.info(`[Nexus Auto Updater] You are in development; Nexus client updating is disabled.`);
-			return;
+			updater.updateConfigPath = path.join(__dirname, '../../view/dev-app-update.yml');
+			updater.forceDevUpdateConfig = true;
 		}
 
-		if (this.autoUpdaterStarted) {
-			return;
-		}
-		this.autoUpdaterStarted = true;
+		updater.autoInstallOnAppQuit = false;
+		updater.autoDownload = false;
+		updater.logger = null;
+		updater.disableWebInstaller = true;
 
-
-
-		console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
-		console.info("[Nexus Auto Updater] Starting auto updater.");
-
-		const TEN_MIN: number = 10 * 60 * 1000;
-
-		if (process.argv.includes("--dev")) {
-			autoUpdater.updateConfigPath = path.join(__dirname, '../../view/dev-app-update.yml');
-			autoUpdater.forceDevUpdateConfig = true;
-		}
-
-		autoUpdater.autoInstallOnAppQuit = false;
-		autoUpdater.autoDownload = false;
-		autoUpdater.logger = null;
-		autoUpdater.disableWebInstaller = true;
-
-		let interval: NodeJS.Timeout | undefined = undefined;
-
-		autoUpdater.on('checking-for-update', () => {
+		updater.on('checking-for-update', () => {
 			console.info("[Nexus Auto Updater] Checking for update...");
 		});
 
-		autoUpdater.on('update-available', (info: UpdateInfo) => {
+		updater.on('update-available', (info: UpdateInfo) => {
 			this.requestExternal(NOTIFICATION_MANAGER_ID, "open-dialog", {
 				windowTitle: "Nexus Update Available",
 				size: info.releaseNotes ? { width: 800, height: 500 } : { width: 500, height: 300 },
@@ -117,7 +130,7 @@ export class AutoUpdaterProcess extends Process {
 				resolveAction: {
 					text: "Download Now",
 					action: () => {
-						autoUpdater.downloadUpdate();
+						updater.downloadUpdate();
 					}
 				},
 				rejectAction: {
@@ -125,8 +138,6 @@ export class AutoUpdaterProcess extends Process {
 					action: () => { }
 				}
 			} satisfies Omit<NotificationProps, "sourceModule">);
-
-
 
 			const out: string[] = [];
 			out.push("[Nexus Auto Updater] Update Found:");
@@ -143,11 +154,11 @@ export class AutoUpdaterProcess extends Process {
 			}
 
 			console.info("\n" + out.join("\n") + "\n");
-			clearInterval(interval);
+			clearInterval(this.autoUpdaterInterval); // Kill the auto updater interval since we already know there is one.
 		});
 
 
-		autoUpdater.on('update-downloaded', (event: UpdateDownloadedEvent) => {
+		updater.on('update-downloaded', (event: UpdateDownloadedEvent) => {
 			console.info(`[Nexus Auto Updater] Release ${event.version} downloaded.`);
 
 			this.requestExternal(NOTIFICATION_MANAGER_ID, "open-dialog", {
@@ -162,7 +173,7 @@ export class AutoUpdaterProcess extends Process {
 				resolveAction: {
 					text: "Restart Now",
 					action: () => {
-						autoUpdater.quitAndInstall();
+						updater.quitAndInstall();
 					}
 				},
 				rejectAction: {
@@ -170,37 +181,46 @@ export class AutoUpdaterProcess extends Process {
 					action: () => { }
 				}
 			} satisfies Omit<NotificationProps, "sourceModule">)
+			clearInterval(this.autoUpdaterInterval); // At this point, the interval should've been killed but no harm
 
-
-
-			clearInterval(interval);
 		});
 
-		autoUpdater.on('update-cancelled', (event: UpdateInfo) => {
+		updater.on('update-cancelled', (event: UpdateInfo) => {
 			console.info(`[Nexus Auto Updater] Update cancelled.`);
-			clearInterval(interval);
+			clearInterval(this.autoUpdaterInterval); // At this point, the interval should've been killed but no harm
 		});
 
-		autoUpdater.on('update-not-available', (info: UpdateInfo) => {
+		updater.on('update-not-available', (info: UpdateInfo) => {
 			console.info(`[Nexus Auto Updater] No updates found. Current Version: ${this.version} | Remote Version: ${info.version}`);
-
-
-			clearInterval(interval);
-		})
-
-		autoUpdater.on('error', (err: Error) => {
-			console.error("[Nexus Auto Updater] An error occurred while checking for updates: " + err.message);
-			clearInterval(interval);
+			// keep the updater process running
 		});
 
-		autoUpdater.checkForUpdates().catch(() => { }); // Ignore errors since this will be handled by the code above, i think?
-		interval = setInterval(() => {
-			autoUpdater.checkForUpdates().catch(() => { });
-		}, TEN_MIN);
-
-
-
+		updater.on('error', (err: Error) => {
+			console.error("[Nexus Auto Updater] An error occurred while checking for updates: " + err.message);
+			clearInterval(this.autoUpdaterInterval); // Kill the updater if something breaks
+		});
 	}
+
+	private startAutoUpdater() {
+		if (process.argv.includes("--dev")) {
+			console.info(`[Nexus Auto Updater] You are in development; Nexus client updating is disabled.`);
+			return;
+		}
+
+		if (this.autoUpdaterInterval !== undefined) {
+			return;
+		}
+
+		console.info("[Nexus Auto Updater] Starting auto updater.");
+
+
+		updater.checkForUpdates().catch(() => { }); // Ignore errors since this will be handled by the code above, i think?
+		this.autoUpdaterInterval = setInterval(() => {
+			updater.checkForUpdates().catch(() => { });
+		}, TEN_MIN);
+	}
+
+
 	public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
 		switch (eventType) {
 			case "install-module-from-git": {
@@ -209,7 +229,7 @@ export class AutoUpdaterProcess extends Process {
 				// notice no https://, added in later
 
 				if (!url.startsWith("https://github.com/") || !url.includes("/releases/latest/download/") || !url.endsWith(".zip")) {
-					return { code: HTTPStatusCodes.BAD_REQUEST, body: new Error("Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'") }
+					return { code: HTTPStatusCodes.BAD_REQUEST, body: "Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'" }
 				}
 				const moduleID: string = url.split("/").at(-1)!.replace(".zip", '');
 
