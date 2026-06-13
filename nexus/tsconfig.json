@@ -6,6 +6,7 @@
     "sourceMap": true,
     "rootDir": "src",
     "outDir": "dist",
+    "allowJs": true,
     "paths": {
       "*": ["./node_modules/*"] 
 

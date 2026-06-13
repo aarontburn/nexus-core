@@ -1,0 +1,54 @@
+h1,
+h2,
+h3,
+h4,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 5em;
+
+}
+
+h2 {
+    text-align: center;
+}
+
+.arrow {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    font-size: 1.2em;
+    opacity: 0;
+
+}
+
+.arrow:not(:first-child) {
+    margin-top: 10px
+}
+
+#e1 {
+    animation: 0.5s ease 2s normal forwards 1 fade-in;
+}
+
+#e2 {
+    animation: 0.5s ease 4s normal forwards 1 fade-in;
+}
+
+#e3 {
+    animation: 0.5s ease 6s normal forwards 1 fade-in;
+}
+
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
