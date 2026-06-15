@@ -102,9 +102,19 @@ export class AutoUpdaterProcess extends Process {
 				const response: DataResponse = await this.moduleUpdater.checkForUpdate(moduleId);
 
 				if (![HTTPStatusCodes.OK, HTTPStatusCodes.NO_CONTENT].includes(response.code)) {
-					console.error("[Nexus Auto Updater")
+					console.error(`[Nexus Auto Updater] Error checking for an update for ${moduleId}: ${response.body}`);
+					return;
 				}
 
+				const versionInfo: VersionInfo = response.body;
+
+				if (response.code === HTTPStatusCodes.OK) { // update found
+					console.info(`[Nexus Auto Updater] Update found for ${moduleId}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+					console.info(`[Nexus Auto Updater] \tYou can download it at ${versionInfo.url}`);
+
+				} else if (response.code === HTTPStatusCodes.NO_CONTENT) { // no update needed
+					console.info(`[Nexus Auto Updater] No update found for ${moduleId}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+				}
 			}
 		});
 	}

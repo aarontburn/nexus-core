@@ -67,13 +67,13 @@ export default class ModuleUpdater {
         if (this.compareSemanticVersion(versionInfo.latestVersion, versionInfo.currentVersion) !== 1) {
             return {
                 code: HTTPStatusCodes.NO_CONTENT,
-                body: `No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`
+                body: versionInfo
             }
 
         } else {
             return {
                 code: HTTPStatusCodes.OK,
-                body: `Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`
+                body: versionInfo
             }
         }
     }
@@ -135,7 +135,7 @@ export default class ModuleUpdater {
      *      body: error string
      * 
      *  Returns 501 (NOT_IMPLEMENTED) if moduleInfo is missing required fields
-     *      body: Missing: <field-1>|<field-2>|<field-3>
+     *      body: error string
      * 
      *  Returns 200 (OK) if successfully retrieved latest version
      *      body: @see VersionInfo
@@ -202,8 +202,8 @@ export default class ModuleUpdater {
             }
         }
         return {
-            code: HTTPStatusCodes.NOT_IMPLEMENTED,
-            body: `Missing: ${missingFields.join("|")}`
+            code: HTTPStatusCodes.FAILED_DEPENDENCY,
+            body: `module-info.json missing required fields: ${missingFields.join(", ")}`
         }
     }
 
