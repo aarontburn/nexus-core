@@ -280,7 +280,6 @@ export class SettingsProcess extends Process {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
 
-
                 if (![HTTPStatusCodes.OK, HTTPStatusCodes.NO_CONTENT].includes(response.code)) {
                     console.error(`[Nexus Settings] An error occurred when checking for an update for ${moduleID}`);
                     console.error(`[Nexus Settings]\t${response.body}`);
@@ -289,13 +288,13 @@ export class SettingsProcess extends Process {
 
 
                 if (response.code === HTTPStatusCodes.OK) { // update found
-                    console.info(`[Nexus Settings]\t${response.body}`);
+                    console.info(`[Nexus Settings] ${response.body}`);
                     return true;
                 }
 
 
                 if (response.code === HTTPStatusCodes.NO_CONTENT) { // current version is higher or at the latest version
-                    console.info(`[Nexus Settings]\t${response.body}`);
+                    console.info(`[Nexus Settings] ${response.body}`);
                     return false;
                 }
             }

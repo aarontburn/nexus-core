@@ -1,7 +1,8 @@
 import { DataResponse, HTTPStatusCodes, IPCSource, Process } from "@nexus-app/nexus-module-builder";
 import { BaseWindow, BrowserWindow, MessageChannelMain } from "electron";
 import path from 'path';
-import showdown from "showdown";
+// @ts-ignore
+import showdown from "showdown"; // This is causing a weird comp error
 import { MAIN_ID } from "../../main";
 
 const NOTIFICATION_MANAGER_NAME: string = "Nexus Notification Manager";

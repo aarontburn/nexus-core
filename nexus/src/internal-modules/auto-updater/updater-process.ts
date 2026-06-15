@@ -43,6 +43,8 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	private finishedChecking: boolean = false;
+	private readonly version: string = app.getVersion();
+	private autoUpdaterInterval: NodeJS.Timeout | undefined;
 
 	public async beforeWindowCreated(): Promise<void> {
 		if ((await this.requestExternal("nexus.Settings", "get-setting", "check_module_updates")).body) {
@@ -53,25 +55,24 @@ export class AutoUpdaterProcess extends Process {
 	}
 
 	public async initialize(): Promise<void> {
+		this.registerDebugConsoleEvents();
+
 		console.info("[Nexus Auto Updater] Current Nexus Version: " + this.version);
 
 		this.setUpdaterBehavior();
 		if ((await this.requestExternal("nexus.Settings", "get-setting", "always_update")).body) {
 			this.startAutoUpdater();
 		}
+	}
 
+	private registerDebugConsoleEvents() {
 		this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
 			prefix: "current-version",
 			documentation: {
-				shortDescription: "Display/returns version of the Nexus client."
+				shortDescription: "Display/returns version of the Nexus client.",
 			},
 			executeCommand: (args: string[]) => {
-				const SILENT_ARGS: string[] = ["-s", "--s", "-silent", "--silent"];
-
-				if (!args.some(element => SILENT_ARGS.includes(element))) {
-					console.info(this.version);
-				}
-				return this.version;
+				console.info(this.version);
 			}
 		});
 
@@ -85,10 +86,29 @@ export class AutoUpdaterProcess extends Process {
 			}
 		});
 
+		this.requestExternal("aarontburn.Debug_Console", "addCommandPrefix", {
+			prefix: "check-for-module-update",
+			documentation: {
+				shortDescription: "Checks for an update for a specified module."
+			},
+			executeCommand: async (args: string[]) => {
+				const moduleId: string | undefined = args[1];
+
+				if (moduleId === undefined) {
+					console.error("[Nexus Auto Updater] Missing required argument. Command usage: check-for-module-update <moduleID>");
+					return;
+				}
+
+				const response: DataResponse = await this.moduleUpdater.checkForUpdate(moduleId);
+
+				if (![HTTPStatusCodes.OK, HTTPStatusCodes.NO_CONTENT].includes(response.code)) {
+					console.error("[Nexus Auto Updater")
+				}
+
+			}
+		});
 	}
 
-	private readonly version: string = app.getVersion();
-	private autoUpdaterInterval: NodeJS.Timeout | undefined;
 
 	/**
 	 * 	Configures the electron updater.
@@ -224,9 +244,8 @@ export class AutoUpdaterProcess extends Process {
 	public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
 		switch (eventType) {
 			case "install-module-from-git": {
-				const url: string = "https://" + data[0];
+				const url = "https://" + data[0];
 				// input url must be in the format github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip
-				// notice no https://, added in later
 
 				if (!url.startsWith("https://github.com/") || !url.includes("/releases/latest/download/") || !url.endsWith(".zip")) {
 					return { code: HTTPStatusCodes.BAD_REQUEST, body: "Invalid link passed; link can only be in the format 'github.com/<owner>/<repo>/releases/latest/download/<module_id>.zip'" }
@@ -248,9 +267,6 @@ export class AutoUpdaterProcess extends Process {
 
 			case "check-for-update": {
 				const target: string = data[0] ?? source.getIPCSource();
-				if (!this.context.moduleMap.has(target)) {
-					return { body: `No module with the ID of ${target} found.`, code: HTTPStatusCodes.NOT_FOUND };
-				}
 				return await this.moduleUpdater.checkForUpdate(target);
 			}
 

@@ -4,17 +4,18 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
-    "rootDir": "src",
     "outDir": "dist",
     "allowJs": true,
+    "rootDir": "src",
     "paths": {
       "*": ["./node_modules/*"] 
-
     }
   },
   "include": [
     "src/**/*",
     "renderer.d.ts",
+  ],
+  "exclude": [
     "copyFiles.js"
   ]
 }

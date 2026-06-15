@@ -124,6 +124,25 @@ export default class ModuleUpdater {
         return 0;
     }
 
+    /**
+     *  Returns 400 (BAD_REQUEST) if moduleID doesn't exist
+     *      body: error string
+     * 
+     *  Returns 502 (BAD_GATEWAY) if fetch fails
+     *      body: a @see Response object from the fetch
+     * 
+     *  Returns 404 (NOT_FOUND) if there isn't any remote latest release assets
+     *      body: error string
+     * 
+     *  Returns 501 (NOT_IMPLEMENTED) if moduleInfo is missing required fields
+     *      body: Missing: <field-1>|<field-2>|<field-3>
+     * 
+     *  Returns 200 (OK) if successfully retrieved latest version
+     *      body: @see VersionInfo
+     * 
+     * @param moduleID 
+     * @returns 
+     */
     public async getLatestRemoteVersion(moduleID: string): Promise<DataResponse> {
         const moduleInfo: ModuleInfo | undefined = this.context.moduleMap.get(moduleID)?.getModuleInfo();
 
@@ -138,10 +157,9 @@ export default class ModuleUpdater {
             moduleInfo["git-latest"]["git-repo-name"] &&
             moduleInfo["git-latest"]['git-username']) {
 
-            const response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
-
+            const response: Response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
             if (!response.ok) {
-                throw { code: response.status, message: response.statusText };
+                return { code: HTTPStatusCodes.BAD_GATEWAY, body: response };
             }
             const releaseData = await response.json();
             const version: string | undefined = releaseData.tag_name;
@@ -149,17 +167,27 @@ export default class ModuleUpdater {
 
             if (!assets || assets.length === 0) {
                 return {
-                    body: `No release assets found for ${moduleID}`,
+                    body: `No assets found for ${moduleID}`,
                     code: HTTPStatusCodes.NOT_FOUND
                 };
             }
+
+            if (!version || version.length === 0) {
+                return {
+                    body: `No version found for ${moduleID}`,
+                    code: HTTPStatusCodes.NOT_FOUND
+                };
+            }
+
+            const versionInfo: VersionInfo = {
+                currentVersion: moduleInfo.version,
+                latestVersion: version,
+                url: assets[0].browser_download_url
+            };
+
             return {
                 code: HTTPStatusCodes.OK,
-                body: {
-                    currentVersion: moduleInfo.version,
-                    latestVersion: version,
-                    url: assets[0].browser_download_url
-                }
+                body: versionInfo
             }
         }
         const missingFields: string[] = [];
@@ -175,7 +203,7 @@ export default class ModuleUpdater {
         }
         return {
             code: HTTPStatusCodes.NOT_IMPLEMENTED,
-            body: `Could not find update version for ${moduleID}. Missing: ${missingFields.join(", ")}`
+            body: `Missing: ${missingFields.join("|")}`
         }
     }
 
