@@ -288,12 +288,12 @@ export class SettingsProcess extends Process {
 				const versionInfo: VersionInfo = response.body;
 
 				if (response.code === HTTPStatusCodes.OK) { // update found
-					console.info(`[Nexus Auto Updater] Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
-					console.info(`[Nexus Auto Updater] \tYou can download it at ${versionInfo.url}`);
+					console.info(`[Nexus Settings] Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+					console.info(`[Nexus Settings] \tYou can download it at ${versionInfo.url}`);
                     return true;
 
 				} else if (response.code === HTTPStatusCodes.NO_CONTENT) { // no update needed
-					console.info(`[Nexus Auto Updater] No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+					console.info(`[Nexus Settings] No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
                     return false
                 }
 

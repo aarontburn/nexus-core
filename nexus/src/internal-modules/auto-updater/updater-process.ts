@@ -155,7 +155,6 @@ export class AutoUpdaterProcess extends Process {
 								<div>${info.releaseNotes}</div>
 							`
 						: ''}
-
 				`,
 				resolveAction: {
 					text: "Download Now",
@@ -242,7 +241,6 @@ export class AutoUpdaterProcess extends Process {
 		}
 
 		console.info("[Nexus Auto Updater] Starting auto updater.");
-
 
 		updater.checkForUpdates().catch(() => { }); // Ignore errors since this will be handled by the code above, i think?
 		this.autoUpdaterInterval = setInterval(() => {
