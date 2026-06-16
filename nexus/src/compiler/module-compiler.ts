@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as yauzl from 'yauzl-promise';
+// @ts-ignore
+import * as yauzl from 'yauzl-promise'; // This is causing a weird declaration error.
 import { pipeline } from 'stream/promises';
 import { Process, ModuleInfo, DIRECTORIES, FILE_NAMES } from "@nexus-app/nexus-module-builder";
 import { copyFromProd, IO_OPTIONS, compileAndCopyDirectory, readModuleInfo, shouldRecompileModule, isModuleInfoValid } from './compiler-utils';

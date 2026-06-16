@@ -20,9 +20,6 @@ if (process.argv.includes("--pre")) {
     return
 }
 
-
-
-
 const SRC = path.join(__dirname, 'src');
 
 // These are all the files to copy into the "dist" folder

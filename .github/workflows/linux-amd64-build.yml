@@ -3,7 +3,11 @@ on:
     workflow_dispatch:
     workflow_call:
 jobs:
+    precheck:
+        uses: ./.github/workflows/prebuild.yml
+
     linux-amd64-build:
+        needs: [precheck]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository

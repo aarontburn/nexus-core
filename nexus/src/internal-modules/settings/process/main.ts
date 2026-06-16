@@ -279,25 +279,24 @@ export class SettingsProcess extends Process {
             case "on-check-for-update-press": {
                 const moduleID: string = data[0];
                 const response: DataResponse = await this.requestExternal("nexus.Auto_Updater", "check-for-update", moduleID);
-
-
                 if (![HTTPStatusCodes.OK, HTTPStatusCodes.NO_CONTENT].includes(response.code)) {
                     console.error(`[Nexus Settings] An error occurred when checking for an update for ${moduleID}`);
                     console.error(`[Nexus Settings]\t${response.body}`);
                     return false;
                 }
 
+				const versionInfo: VersionInfo = response.body;
 
-                if (response.code === HTTPStatusCodes.OK) { // update found
-                    console.info(`[Nexus Settings]\t${response.body}`);
+				if (response.code === HTTPStatusCodes.OK) { // update found
+					console.info(`[Nexus Settings] Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+					console.info(`[Nexus Settings] \tYou can download it at ${versionInfo.url}`);
                     return true;
+
+				} else if (response.code === HTTPStatusCodes.NO_CONTENT) { // no update needed
+					console.info(`[Nexus Settings] No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+                    return false
                 }
 
-
-                if (response.code === HTTPStatusCodes.NO_CONTENT) { // current version is higher or at the latest version
-                    console.info(`[Nexus Settings]\t${response.body}`);
-                    return false;
-                }
             }
             case "force-reload-module": {
                 const moduleID: string = data[0];

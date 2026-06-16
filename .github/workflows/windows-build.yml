@@ -3,7 +3,11 @@ on:
     workflow_dispatch:
     workflow_call:
 jobs:
+    precheck:
+        uses: ./.github/workflows/prebuild.yml
+
     windows-build:
+        needs: [precheck]
         runs-on: windows-latest
         steps:
             - name: Checkout repository
