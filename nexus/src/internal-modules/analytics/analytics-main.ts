@@ -4,7 +4,8 @@ import { MODULE_ID as SETTINGS_PROCESS_ID } from "../settings/process/main";
 import { NOTIFICATION_MANAGER_ID } from "../notification/notification-process";
 import { MAIN_ID } from "../../main";
 import { UPDATER_MODULE_ID } from "../auto-updater/updater-main";
-import { BooleanSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import { BooleanSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
+import crypto from 'crypto';
 
 const MODULE_NAME: string = "Nexus Analytics";
 export const ANALYTIC_MODULE_ID: string = 'nexus.Analytics';
@@ -49,10 +50,23 @@ export class AnalyticProcess extends Process {
     }
 
     public async beforeWindowCreated(): Promise<void> {
-        if (this.getSettings().findSetting("is_first_launch")!.getValue()) {
+        let needToWrite: boolean = false;
+
+        const isFirstLaunchSetting: Setting<unknown> = this.getSettings().findSetting("is_first_launch")!;
+        if (isFirstLaunchSetting.getValue()) {
             this.handleExternal(this, "send-analytic", ["REMOTE_CLIENT_FIRST_BOOT"]);
 
-            await this.getSettings().findSetting("is_first_launch")!.setValue(false);
+            await isFirstLaunchSetting.setValue(false);
+            needToWrite = true;
+        } 
+
+        const uidSetting: Setting<unknown> = this.getSettings().findSetting("uid")!;
+        if (uidSetting.getValue() === "") {
+            await uidSetting.setValue(crypto.randomUUID());
+            needToWrite = true;
+        }
+        
+        if (needToWrite) {
             await this.fileManager.writeSettingsToStorage();
         }
     }
@@ -63,11 +77,16 @@ export class AnalyticProcess extends Process {
                 .setName("First Launch")
                 .setAccessID("is_first_launch")
                 .setDefault(true),
-        ]
+
+            new StringSetting(this)
+                .setName("Analytic UID")
+                .setAccessID("uid")
+                .setDefault("")
+        ];
     }
 
     public registerSettings(): (Setting<unknown> | string)[] {
-        return []
+        return [];
     }
 
     public async initialize(): Promise<void> {
@@ -125,8 +144,12 @@ export class AnalyticProcess extends Process {
 
                 const analyticData: object | undefined = data[1];
 
-                const requestBody: { [key: string]: string | number | boolean } = {
+                const uidSetting: Setting<unknown> = this.getSettings().findSetting("uid")!;
+
+
+                const requestBody: { [key: string]: any } = {
                     "NEXUS_TYPE": type,
+                    "uid": uidSetting.getValue() as string || null,
                     ...analyticData
                 }
 
