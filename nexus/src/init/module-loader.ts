@@ -5,10 +5,11 @@ import { ModuleCompiler } from "../compiler/module-compiler";
 import { getIPCCallback } from "./global-event-handler";
 import { HomeProcess, MODULE_ID as HOME_ID } from "../internal-modules/home/HomeProcess";
 import { MODULE_ID as SettingID, SettingsProcess } from "../internal-modules/settings/process/main";
-import { AutoUpdaterProcess, UPDATER_MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-process";
+import { AutoUpdaterProcess, UPDATER_MODULE_ID as AutoUpdaterID } from "../internal-modules/auto-updater/updater-main";
 import * as fs from "fs";
 import * as path from "path";
 import { NOTIFICATION_MANAGER_ID, NotificationManagerProcess } from "../internal-modules/notification/notification-process";
+import { AnalyticProcess } from "../internal-modules/analytics/analytics-main";
 
 
 const INTERNAL_MODULE_IDS = [SettingID, AutoUpdaterID, HOME_ID, NOTIFICATION_MANAGER_ID]
@@ -18,7 +19,13 @@ export async function loadModules(context: InitContext): Promise<Map<string, Pro
     const loadedModules: Process[] = await ModuleCompiler.load(process.argv.includes("--force-reload"));
 
     const settingProcess: SettingsProcess = new SettingsProcess();
-    const internalModules: Process[] = [new HomeProcess(), new AutoUpdaterProcess(context), settingProcess, new NotificationManagerProcess()];
+    const internalModules: Process[] = [
+        new HomeProcess(), 
+        new AutoUpdaterProcess(context), 
+        settingProcess,
+        new NotificationManagerProcess(),
+        new AnalyticProcess(),
+    ];
 
     // Register all modules
     const moduleMap: Map<string, Process> = new Map();

@@ -7,11 +7,12 @@ import { getInternalSettings, getSettings, onSettingModified } from "./settings"
 import { writeModuleSettingsToStorage } from "../../../init/module-loader";
 import handleExternal from "./handle-external";
 import { TabInfo } from "./types";
-import { UPDATER_MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-process";
+import { UPDATER_MODULE_ID as UPDATER_ID } from "../../auto-updater/updater-main";
 import { VersionInfo } from "../../auto-updater/module-updater";
 import { readInternal, parseInternalArgs, writeInternal } from "../../../init/internal-args";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../../notification/notification-process";
 import { MAIN_ID } from "../../../main";
+import { ANALYTIC_MODULE_ID } from "../../analytics/analytics-main";
 
 
 const MODULE_NAME: string = "Settings";
@@ -285,15 +286,15 @@ export class SettingsProcess extends Process {
                     return false;
                 }
 
-				const versionInfo: VersionInfo = response.body;
+                const versionInfo: VersionInfo = response.body;
 
-				if (response.code === HTTPStatusCodes.OK) { // update found
-					console.info(`[Nexus Settings] Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
-					console.info(`[Nexus Settings] \tYou can download it at ${versionInfo.url}`);
+                if (response.code === HTTPStatusCodes.OK) { // update found
+                    console.info(`[Nexus Settings] Update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+                    console.info(`[Nexus Settings] \tYou can download it at ${versionInfo.url}`);
                     return true;
 
-				} else if (response.code === HTTPStatusCodes.NO_CONTENT) { // no update needed
-					console.info(`[Nexus Settings] No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
+                } else if (response.code === HTTPStatusCodes.NO_CONTENT) { // no update needed
+                    console.info(`[Nexus Settings] No update found for ${moduleID}. Current: ${versionInfo.currentVersion} | Remote: ${versionInfo.latestVersion}`);
                     return false
                 }
 
@@ -323,7 +324,19 @@ export class SettingsProcess extends Process {
             }
 
             case 'import-module': {
-                return await importModuleArchive();
+                const didImportSuccess: boolean | undefined = await importModuleArchive();
+
+                if (didImportSuccess) {
+                    this.requestExternal(ANALYTIC_MODULE_ID, "send-analytic",
+                        "REMOTE_IMPORTED_MODULE",
+                        {
+                            "moduleId": null, // TODO: Figure out how to send module ID from import
+                        }
+                    );
+                }
+
+
+                return didImportSuccess;
             }
             case 'manage-modules': {
                 return await getImportedModules(this, this.availableUpdates, this.deletedModules);
@@ -333,9 +346,17 @@ export class SettingsProcess extends Process {
 
                 try {
                     console.info("[Nexus Settings] Removing " + info.moduleID);
-                    
+
                     await fs.promises.rm(path.normalize(info.path.replace(`${path.sep}built${path.sep}`, `${path.sep}external_modules${path.sep}`) + '.zip'));
                     this.deletedModules.push(info.moduleID);
+
+                    this.requestExternal(ANALYTIC_MODULE_ID, "send-analytic",
+                        "REMOTE_CLIENT_UNINSTALL",
+                        {
+                            "moduleId": info.moduleID,
+                        }
+                    );
+
                     return true;
 
                 } catch (err) {
