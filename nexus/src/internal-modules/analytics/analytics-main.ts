@@ -57,13 +57,17 @@ export class AnalyticProcess extends Process {
         }
     }
 
-    registerInternalSettings(): Setting<unknown>[] {
+    public registerInternalSettings(): Setting<unknown>[] {
         return [
             new BooleanSetting(this)
                 .setName("First Launch")
                 .setAccessID("is_first_launch")
                 .setDefault(true),
         ]
+    }
+
+    public registerSettings(): (Setting<unknown> | string)[] {
+        return []
     }
 
     public async initialize(): Promise<void> {
@@ -73,6 +77,10 @@ export class AnalyticProcess extends Process {
         setTimeout(() => {
             this.handleExternal(this, "send-analytic", ["REMOTE_CLIENT_ACTIVE"]);
         }, TEN_MIN);
+    }
+
+    public async onSettingModified(modifiedSetting?: Setting<unknown> | undefined): Promise<void> {
+        // do nothing
     }
 
     private WHITELISTED_MODULES: readonly string[] = [
@@ -97,7 +105,7 @@ export class AnalyticProcess extends Process {
                 }
 
                 if (process.argv.includes("--in-core")) {
-                    console.info("Sending analytic: " + data)
+                    console.info("Sending analytic: " + JSON.stringify(data))
                 }
 
                 const type: RemoteAnalyticTypes = data[0];

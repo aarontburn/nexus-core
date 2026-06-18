@@ -61,8 +61,7 @@ export class SettingsProcess extends Process {
         super.initialize();
         this.sendToRenderer("is-dev", this.getSettings().findSetting('dev_mode')!.getValue());
 
-
-        this.populateSettingsList()
+        this.populateSettingsList();
 
         this.requestExternal(UPDATER_ID, "get-all-updates").then(response => {
             if (response.code === HTTPStatusCodes.OK) {
@@ -107,7 +106,7 @@ export class SettingsProcess extends Process {
                 moduleInfo: moduleSettings.getProcess().getModuleInfo(),
             };
 
-            if (moduleSettings.allToArray().length !== 0) {
+            if (moduleSettings.getSettingsAndHeaders().length !== 0) {
                 settings.push(list);
             }
 
@@ -115,19 +114,14 @@ export class SettingsProcess extends Process {
         }
 
         // Swap settings and home module so it appears at the top
-
         if (settings[0].moduleSettingsName === "Home") {
             const temp = settings[0];
             settings[0] = settings[1];
             settings[1] = temp;
         }
 
-
         this.sendToRenderer("populate-settings-list", settings);
     }
-
-
-
 
 
     public async onExit(): Promise<void> {
@@ -334,8 +328,6 @@ export class SettingsProcess extends Process {
                         }
                     );
                 }
-
-
                 return didImportSuccess;
             }
             case 'manage-modules': {
