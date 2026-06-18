@@ -105,7 +105,7 @@ export class AnalyticProcess extends Process {
                 }
 
                 if (process.argv.includes("--in-core")) {
-                    console.info("Sending analytic: " + JSON.stringify(data))
+                    console.info("Sending analytic: " + JSON.stringify(data));
                 }
 
                 const type: RemoteAnalyticTypes = data[0];
@@ -123,8 +123,15 @@ export class AnalyticProcess extends Process {
                     ...analyticData
                 }
 
-                if (process.argv.includes("--dev")) {
+                if (process.argv.includes("--in-core")) {
                     requestBody["isDevTest"] = true;
+                }
+
+                if (process.argv.includes("--dev") && !process.argv.includes("--in-core")) {
+                    return {
+                        code: HTTPStatusCodes.NO_CONTENT, // don't send analytic events if its from a developer working on a module
+                        body: undefined
+                    };
                 }
 
                 try {
