@@ -1,4 +1,4 @@
-import { app, BrowserWindow, contentTracing, globalShortcut, Menu, WebContentsView } from "electron";
+import { app, BrowserWindow, globalShortcut, Menu, WebContentsView } from "electron";
 import { getInternalArguments, writeInternal } from "./init/internal-args";
 import { DataResponse, HTTPStatusCodes, Process } from "@nexus-app/nexus-module-builder";
 import { createAllDirectories } from "./init/init-directory-creator";
@@ -9,8 +9,9 @@ import { attachEventHandlerForMain, getIPCCallback, swapVisibleModule } from "./
 import { MODULE_ID as SETTINGS_ID, SettingsProcess } from "./internal-modules/settings/process/main";
 import { interactWithExternalModules } from "./init/external-module-interfacer";
 import path from "path";
-import { UPDATER_MODULE_ID as UPDATER_ID } from "./internal-modules/auto-updater/updater-process";
+import { UPDATER_MODULE_ID as UPDATER_ID } from "./internal-modules/auto-updater/updater-main";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "./internal-modules/notification/notification-process";
+import { ANALYTIC_MODULE_ID } from "./internal-modules/analytics/analytics-main";
 
 const PROTOCOL: string = "nexus-app";
 
@@ -133,6 +134,12 @@ function attachSingleInstance(context: InitContext) {
                     context.ipcCallback.requestExternalModule(context.mainIPCSource, UPDATER_ID, "install-module-from-git", splitPath.slice(1).join('_'))
                         .then((response: DataResponse) => {
                             if (response.code === HTTPStatusCodes.OK) {
+                                context.ipcCallback.requestExternalModule(context.mainIPCSource, ANALYTIC_MODULE_ID, "send-analytic",
+                                    "REMOTE_INSTALLED_MODULE_FROM_SITE", {
+                                        "moduleId": splitPath.slice(1).join('_').split("/").at(-1)!.replace(".zip", ''),
+                                    }
+                                );
+
                                 context.ipcCallback.requestExternalModule(context.mainIPCSource, NOTIFICATION_MANAGER_ID, "open-dialog", {
                                     windowTitle: "Successfully Installed Module",
                                     size: { width: 500, height: 300 },
@@ -152,7 +159,7 @@ function attachSingleInstance(context: InitContext) {
                                     rejectAction: {
                                         text: "Later",
                                         action: function (): void {
-                                            // do nothing?
+                                            // do nothing
                                         }
                                     },
                                     resolveAction: {
@@ -166,10 +173,7 @@ function attachSingleInstance(context: InitContext) {
                                     }
                                 } satisfies Omit<NotificationProps, "sourceModule">);
                             }
-
                         });
-
-
                     break;
                 }
                 default: {
@@ -219,7 +223,8 @@ function onProcessAndRendererReady(context: InitContext): void {
                 const displayedModuleID: string = displayedModule.getID();
                 context.moduleViewMap.get(displayedModuleID)!.webContents.openDevTools();
             }
-        })
+        });
+
         globalShortcut.register('CommandOrControl+R', () => {
             if (!context.window.isFocused()) {
                 return;
@@ -230,7 +235,7 @@ function onProcessAndRendererReady(context: InitContext): void {
                 const displayedModuleID: string = displayedModule.getID();
                 context.moduleViewMap.get(displayedModuleID)!.webContents.reloadIgnoringCache();
             }
-        })
+        });
     }
 
 

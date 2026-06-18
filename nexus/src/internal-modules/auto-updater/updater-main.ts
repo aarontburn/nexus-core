@@ -5,6 +5,7 @@ import * as path from "path";
 import { InitContext } from "../../utils/types";
 import ModuleUpdater, { VersionInfo } from "./module-updater";
 import { NOTIFICATION_MANAGER_ID, NotificationProps } from "../notification/notification-process";
+import { ANALYTIC_MODULE_ID } from "../analytics/analytics-main";
 
 
 const MODULE_NAME: string = "Nexus Auto Updater";
@@ -159,6 +160,13 @@ export class AutoUpdaterProcess extends Process {
 				resolveAction: {
 					text: "Download Now",
 					action: () => {
+						this.requestExternal(ANALYTIC_MODULE_ID, "send-analytic",
+							"REMOTE_CLIENT_UPDATED",
+							{
+								"oldVersion": app.getVersion(),
+								"newVersion": info.version
+							}
+						);
 						updater.downloadUpdate();
 					}
 				},
@@ -328,6 +336,15 @@ export class AutoUpdaterProcess extends Process {
 						return { body: `An error occurred while updating ${moduleID}`, code: HTTPStatusCodes.BAD_REQUEST };
 					}
 				}
+
+				this.requestExternal(ANALYTIC_MODULE_ID, "send-analytic",
+					"REMOTE_UPDATED_MODULE",
+					{
+						"moduleId": moduleID,
+						"oldVersion": updateInfo.currentVersion,
+						"newVersion": updateInfo.latestVersion
+					}
+				);
 
 				return { body: `Successfully updated ${moduleID} from ${updateInfo.currentVersion} to ${updateInfo.latestVersion}`, code: HTTPStatusCodes.OK };
 			}
