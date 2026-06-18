@@ -97,6 +97,13 @@ export class AnalyticProcess extends Process {
             case "send-analytic": {
                 // data[0] should be a RemoteAnalyticTypes
                 // data[1] should be an object containing the analytic data or undefined
+                if (process.argv.includes("--dev") && !process.argv.includes("--in-core")) {
+                    return {
+                        code: HTTPStatusCodes.NO_CONTENT, // don't send analytic events if its from a developer working on a module
+                        body: undefined
+                    };
+                }
+
                 if (!this.WHITELISTED_MODULES.includes(source.getIPCSource())) {
                     return {
                         code: HTTPStatusCodes.FORBIDDEN,
@@ -125,13 +132,6 @@ export class AnalyticProcess extends Process {
 
                 if (process.argv.includes("--in-core")) {
                     requestBody["isDevTest"] = true;
-                }
-
-                if (process.argv.includes("--dev") && !process.argv.includes("--in-core")) {
-                    return {
-                        code: HTTPStatusCodes.NO_CONTENT, // don't send analytic events if its from a developer working on a module
-                        body: undefined
-                    };
                 }
 
                 try {
