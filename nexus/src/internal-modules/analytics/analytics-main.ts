@@ -21,6 +21,15 @@ const ALLOWED_ANALYTIC_TYPES = [
     "REMOTE_CLIENT_ACTIVE"
 ] as const;
 
+const WHITELISTED_MODULES: readonly string[] = [
+    HOME_PROCESS_ID,
+    SETTINGS_PROCESS_ID,
+    ANALYTIC_MODULE_ID,
+    NOTIFICATION_MANAGER_ID,
+    MAIN_ID,
+    UPDATER_MODULE_ID
+] as const;
+
 type RemoteAnalyticTypes = typeof ALLOWED_ANALYTIC_TYPES[number];
 
 const TEN_MIN: number = 10 * 60 * 1000;
@@ -74,12 +83,12 @@ export class AnalyticProcess extends Process {
     public registerInternalSettings(): Setting<unknown>[] {
         return [
             new BooleanSetting(this)
-                .setName("First Launch")
+                .setName("First Launch - DO NOT CHANGE")
                 .setAccessID("is_first_launch")
                 .setDefault(true),
 
             new StringSetting(this)
-                .setName("Analytic UID")
+                .setName("Analytic UID - DO NOT CHANGE")
                 .setAccessID("uid")
                 .setDefault("")
         ];
@@ -90,7 +99,7 @@ export class AnalyticProcess extends Process {
     }
 
     public async initialize(): Promise<void> {
-        // Send REMOTE_CLIENT_ACTIVE every 10 min or so
+        super.initialize();
 
         this.handleExternal(this, "send-analytic", ["REMOTE_CLIENT_ACTIVE"]);
         setTimeout(() => {
@@ -102,14 +111,7 @@ export class AnalyticProcess extends Process {
         // do nothing
     }
 
-    private WHITELISTED_MODULES: readonly string[] = [
-        HOME_PROCESS_ID,
-        SETTINGS_PROCESS_ID,
-        ANALYTIC_MODULE_ID,
-        NOTIFICATION_MANAGER_ID,
-        MAIN_ID,
-        UPDATER_MODULE_ID
-    ] as const;
+
 
     public async handleExternal(source: IPCSource, eventType: string, data: any[]): Promise<DataResponse> {
         switch (eventType) {
@@ -123,7 +125,7 @@ export class AnalyticProcess extends Process {
                     };
                 }
 
-                if (!this.WHITELISTED_MODULES.includes(source.getIPCSource())) {
+                if (!WHITELISTED_MODULES.includes(source.getIPCSource())) {
                     return {
                         code: HTTPStatusCodes.FORBIDDEN,
                         body: undefined
@@ -158,7 +160,7 @@ export class AnalyticProcess extends Process {
                 }
 
                 try {
-                    const response: Response = await fetch("http://localhost:3000/api/remote-analytics",
+                    const response: Response = await fetch("https://nexus-app.net/api/remote-analytics",
                         {
                             method: "POST",
                             body: JSON.stringify(requestBody)
@@ -186,8 +188,6 @@ export class AnalyticProcess extends Process {
                     code: HTTPStatusCodes.NOT_ACCEPTABLE,
                     body: undefined
                 }
-
-
             }
             default: {
                 return { code: HTTPStatusCodes.NOT_IMPLEMENTED, body: undefined };
