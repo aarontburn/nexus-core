@@ -21,14 +21,7 @@ const ALLOWED_ANALYTIC_TYPES = [
     "REMOTE_CLIENT_ACTIVE"
 ] as const;
 
-const WHITELISTED_MODULES: readonly string[] = [
-    HOME_PROCESS_ID,
-    SETTINGS_PROCESS_ID,
-    ANALYTIC_MODULE_ID,
-    NOTIFICATION_MANAGER_ID,
-    MAIN_ID,
-    UPDATER_MODULE_ID
-] as const;
+
 
 type RemoteAnalyticTypes = typeof ALLOWED_ANALYTIC_TYPES[number];
 
@@ -125,6 +118,15 @@ export class AnalyticProcess extends Process {
                     };
                 }
 
+                const WHITELISTED_MODULES: readonly string[] = [
+                    HOME_PROCESS_ID,
+                    SETTINGS_PROCESS_ID,
+                    ANALYTIC_MODULE_ID,
+                    NOTIFICATION_MANAGER_ID,
+                    MAIN_ID,
+                    UPDATER_MODULE_ID
+                ] as const;
+
                 if (!WHITELISTED_MODULES.includes(source.getIPCSource())) {
                     return {
                         code: HTTPStatusCodes.FORBIDDEN,
@@ -147,7 +149,6 @@ export class AnalyticProcess extends Process {
                 const analyticData: object | undefined = data[1];
 
                 const uidSetting: Setting<unknown> = this.getSettings().findSetting("uid")!;
-
 
                 const requestBody: { [key: string]: any } = {
                     "NEXUS_TYPE": type,
