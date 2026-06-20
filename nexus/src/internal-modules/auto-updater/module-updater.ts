@@ -158,9 +158,7 @@ export default class ModuleUpdater {
             moduleInfo["git-latest"]['git-username']) {
 
             const response: Response = await fetch(`https://api.github.com/repos/${moduleInfo["git-latest"]['git-username']}/${moduleInfo["git-latest"]["git-repo-name"]}/releases/latest`);
-            if (!response.ok) {
-                return { code: HTTPStatusCodes.BAD_GATEWAY, body: response };
-            }
+
             const releaseData = await response.json();
             const version: string | undefined = releaseData.tag_name;
             const assets: any[] | undefined = releaseData.assets;
